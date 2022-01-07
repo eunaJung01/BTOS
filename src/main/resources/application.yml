@@ -1,0 +1,13 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: demo
+
+  datasource:
+    platform: mysql
+    url: jdbc:mysql://euna-database.c1itywigafhd.ap-northeast-2.rds.amazonaws.com/BTOS
+    username: euna
+    password: cjyale01
+    driver-class-name: com.mysql.cj.jdbc.Driver
