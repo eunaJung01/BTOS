@@ -7,7 +7,7 @@ spring:
 
   datasource:
     platform: mysql
-    url: btos.c1itywigafhd.ap-northeast-2.rds.amazonaws.com/BTOS
+    url: btos.cp3evafquu7f.ap-northeast-2.rds.amazonaws.com/BTOS
     username: btos
     password: btos1234
     driver-class-name: com.mysql.cj.jdbc.Driver
