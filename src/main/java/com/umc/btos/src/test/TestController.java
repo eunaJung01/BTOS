@@ -26,7 +26,7 @@ public class TestController {
     @ResponseBody
     @GetMapping("/log")
     public String getAll() {
-        System.out.println("테스트1");
+        System.out.println("테스트2");
         System.out.println("테스트");
         logger.info("INFO Level 테스트");
         logger.warn("Warn Level 테스트");
