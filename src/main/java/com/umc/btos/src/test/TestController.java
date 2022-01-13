@@ -28,6 +28,7 @@ public class TestController {
     public String getAll() {
 
         System.out.println("테스트");
+        System.out.println("dogi 테스트");
         logger.info("INFO Level 테스트");
         logger.warn("Warn Level 테스트");
         logger.error("ERROR Level 테스트");
