@@ -3,11 +3,11 @@ server:
 
 spring:
   application:
-    name: demo
+    name: btos
 
   datasource:
     platform: mysql
-    url: btos.cp3evafquu7f.ap-northeast-2.rds.amazonaws.com/BTOS
+    url: jdbc:mysql://btos.cp3evafquu7f.ap-northeast-2.rds.amazonaws.com:3306/BTOS
     username: btos
     password: btos1234
     driver-class-name: com.mysql.cj.jdbc.Driver
