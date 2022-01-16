@@ -13,7 +13,7 @@ public class PostDiaryReq {
     private int userIdx;
     private int emotionIdx;
     private String diaryDate; // YYYY-MM-DD
-    private String content_diary;
+    private String diaryContent;
     private int isPublic;
     private List doneList;
 }
