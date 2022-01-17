@@ -1,6 +1,7 @@
 package com.umc.btos.src.diary;
 
 import com.umc.btos.src.diary.model.PostDiaryReq;
+import com.umc.btos.src.diary.model.PutDiaryReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -46,6 +47,32 @@ public class DiaryDao {
         }
 
         return doneListIdx;
+    }
+
+    // 일기 수정
+    public int modifyDiary(PutDiaryReq putDiaryReq) {
+        String query = "UPDATE Diary SET emotionIdx = ?, diaryDate = ?, isPublic = ?, content = ? WHERE diaryIdx = ?";
+        Object[] params = new Object[]{putDiaryReq.getEmotionIdx(), putDiaryReq.getDiaryDate(), putDiaryReq.getIsPublic(), putDiaryReq.getDiaryContent(), putDiaryReq.getDiaryIdx()};
+        return this.jdbcTemplate.update(query, params);
+    }
+
+    // 해당 일기의 모든 doneIdx를 List 형태로 반환
+    public List getDoneIdxList(PutDiaryReq putDiaryReq) {
+        String query = "SELECT doneIdx FROM Done WHERE diaryIdx = ?";
+        return this.jdbcTemplate.queryForList(query, int.class, putDiaryReq.getDiaryIdx());
+    }
+
+    // done list 수정
+    public int modifyDoneList(PutDiaryReq putDiaryReq, List doneIdxList) {
+        String query = "UPDATE Done SET content = ? WHERE doneIdx = ?";
+        for (int i = 0; i < doneIdxList.size(); i++) {
+            int result = this.jdbcTemplate.update(query, putDiaryReq.getDoneList().get(i), doneIdxList.get(i));
+
+            if (result == 0) { // MODIFY_FAIL_DONELIST(일기 수정 실패 - done list) 에러 반환
+                return 0;
+            }
+        }
+        return 1;
     }
 
 }
