@@ -19,6 +19,12 @@ public class DiaryDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    // 해당 날짜에 일기 작성 여부 확인
+    public int checkDiary(int userIdx, String date) {
+        String query = "SELECT EXISTS (SELECT diaryDate FROM Diary WHERE userIdx = ? AND diaryDate = ?)";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx, date);
+    }
+
     // 일기 저장 -> diaryIdx 반환
     public int saveDiary(PostDiaryReq postDiaryReq) {
         String query = "INSERT INTO Diary(userIdx, emotionIdx, diaryDate, isPublic, content) VALUES(?,?,?,?,?)";

@@ -24,19 +24,19 @@ public class DiaryController {
 
     /*
      * 일기 작성 여부 확인
-     * [GET] /btos/diary/:date
+     * [GET] /btos/diary/:userIdx/:date
      */
-//    @ResponseBody
-//    @GetMapping("/{date}")
-//    public BaseResponse<GetCheckDiaryRes> checkDiary(@PathVariable("date") String date) {
-//        try {
-//            GetCheckDiaryRes getCheckDiaryRes = diaryProvider.checkDiary(date);
-//            return new BaseResponse<>(getCheckDiaryRes);
-//
-//        } catch (BaseException exception) {
-//            return new BaseResponse<>(exception.getStatus());
-//        }
-//    }
+    @ResponseBody
+    @GetMapping("/{userIdx}/{date}")
+    public BaseResponse<GetCheckDiaryRes> checkDiary(@PathVariable("userIdx") int userIdx, @PathVariable("date") String date) {
+        try {
+            GetCheckDiaryRes getCheckDiaryRes = diaryProvider.checkDiary(userIdx, date);
+            return new BaseResponse<>(getCheckDiaryRes);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 
     /*
      * 일기 저장
