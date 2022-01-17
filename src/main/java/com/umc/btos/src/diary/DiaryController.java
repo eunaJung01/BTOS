@@ -54,4 +54,21 @@ public class DiaryController {
         }
     }
 
+    /*
+     * 일기 삭제 : [PATCH] /btos/diary/:diaryIdx
+     */
+    @ResponseBody
+    @PatchMapping("/{diaryIdx}")
+    public BaseResponse<String> deleteDiary(@PathVariable("diaryIdx") int diaryIdx) {
+        try {
+            diaryService.deleteDiary(diaryIdx);
+
+            String result = "일기 - diaryIdx=" + diaryIdx + " 삭제 완료";
+            return new BaseResponse<>(result);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
 }

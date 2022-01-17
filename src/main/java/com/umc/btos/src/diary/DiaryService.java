@@ -121,4 +121,24 @@ public class DiaryService {
         }
     }
 
+    /*
+     * 일기 삭제 : [PATCH] /btos/diary/:diaryIdx
+     */
+    public void deleteDiary(int diaryIdx) throws BaseException {
+        try {
+            // Diary.status 수정
+            if (diaryDao.deleteDiary(diaryIdx) == 0) {
+                throw new BaseException(DELETE_FAIL_DIARY); // 일기 삭제 실패
+            }
+
+            // Done.status 수정
+            if (diaryDao.deleteDone(diaryIdx) == 0) {
+                throw new BaseException(DELETE_FAIL_DONELIST); // done list 삭제 실패
+            }
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }

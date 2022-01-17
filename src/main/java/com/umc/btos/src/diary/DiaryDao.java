@@ -75,4 +75,18 @@ public class DiaryDao {
         return 1;
     }
 
+    // 일기 삭제 - Diary.status : active -> deleted
+    public int deleteDiary(int diaryIdx) {
+        String query = "UPDATE Diary SET status = ? WHERE diaryIdx = ?";
+        Object[] params = new Object[]{"deleted", diaryIdx};
+        return this.jdbcTemplate.update(query, params);
+    }
+
+    // done list 삭제 - Done.status : active -> deleted
+    public int deleteDone(int diaryIdx) {
+        String query = "UPDATE Done SET status = ? WHERE diaryIdx = ?";
+        Object[] params = new Object[]{"deleted", diaryIdx};
+        return this.jdbcTemplate.update(query, params);
+    }
+
 }

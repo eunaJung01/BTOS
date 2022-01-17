@@ -65,6 +65,8 @@ public enum BaseResponseStatus {
     DIARY_ENCRYPTION_ERROR(false, 6000, "일기 또는 done list 내용 암호화에 실패하였습니다."),
     MODIFY_FAIL_DIARY(false, 6001, "일기 수정 실패 - 일기 내용"),
     MODIFY_FAIL_DONELIST(false, 6001, "일기 수정 실패 - done list"),
+    DELETE_FAIL_DIARY(false, 6002, "일기 삭제 실패"),
+    DELETE_FAIL_DONELIST(false, 6002, "done list 삭제 실패"),
 
 
     // 7000 : 자몽
