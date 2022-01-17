@@ -1,13 +1,11 @@
 package com.umc.btos.src.plant;
 
 import com.umc.btos.config.BaseException;
-import com.umc.btos.config.BaseResponse;
 import com.umc.btos.src.plant.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,25 +19,33 @@ public class PlantProvider {
     private final PlantDao plantDao;
 
     @Autowired
-    public PlantProvider(PlantDao plantDao){
-        this.plantDao = plantDao;
-    }
+    public PlantProvider(PlantDao plantDao) {
+        this.plantDao = plantDao;}
 
 
     //모든식물조회(상점) API
     public List<GetPlantRes> getAllPlant(int userIdx) throws BaseException {
-        try{
+        try {
             return plantDao.getAllPlant(userIdx);
-        }catch(Exception exception) {
+        } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
     //회원이 선택한 화분 조회 API
-    public GetPlantRes getSelectedPlant(int plantIdx, int userIdx) throws BaseException {
+    public GetSpecificPlantRes getSelectedPlant(int plantIdx, int userIdx) throws BaseException {
         try {
             return plantDao.getSelectedPlant(plantIdx, userIdx);
-        } catch(Exception exception){
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    //화분 보유중 목록 조회 API
+    public List<GetSpecificPlantRes> getOwnPlantList(int userIdx) throws BaseException {
+        try {
+            return plantDao.getOwnPlantList(userIdx);
+        } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
     }

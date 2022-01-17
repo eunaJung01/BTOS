@@ -58,8 +58,8 @@ public class PlantController {
     // active상태의 화분 && 선택 행위를 한 userIdx && 화분 보유 및 선택 여부
     @ResponseBody
     @GetMapping("uSelected")
-    public BaseResponse<GetPlantRes> getSelectedPlant(@RequestParam("plantIdx") int plantIdx,
-                                                      @RequestParam("userIdx") int userIdx) {
+    public BaseResponse<GetSpecificPlantRes> getSelectedPlant(@RequestParam("plantIdx") int plantIdx,
+                                                              @RequestParam("userIdx") int userIdx) {
         try {
             //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
             return new BaseResponse<>(plantProvider.getSelectedPlant(plantIdx, userIdx));
@@ -77,36 +77,54 @@ public class PlantController {
      * Path Variable : plantIdx (mandatory: Y)
      */
     @ResponseBody
-    @PatchMapping("/select/{uPlantIdx}")
+    @PatchMapping("select/{uPlantIdx}")
     public BaseResponse<String> selectPlant(@PathVariable int uPlantIdx) { //userIdx가 굳이 필요한가?
-        try{
+        try {
             //status 변경 성공시 : "요청에 성공하였습니다." - 1000
             //           실패시 : "화분 선택에 실패하였습니다." - 7000
             //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
             return new BaseResponse<>(plantService.selectPlant(uPlantIdx));
-        } catch(BaseException exception) {
+        } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
 
     /**
      * 화분 구매(보유)
-     *
+     * [POST] /btos/plant/buy?plantIdx=&userIdx=
+     * Query String : plantIdx, userIdx (mandatory: Y)
      */
-    /*
-    화분 구매 -> UserPlantList.status를 update한다 뭘로? active(String)로
-
-    Figma 참고하기
-    */
+    @ResponseBody
+    @PostMapping("buy")
+    public BaseResponse<String> buyPlant(@RequestParam("plantIdx") int plantIdx,
+                                         @RequestParam("userIdx") int userIdx) {
+        try {
+            //행 추가 성공시 : "요청에 성공하였습니다." - 1000
+            //       실패시 : "화분 구매에 실패하였습니다." - 7010
+            //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
+            return new BaseResponse<>(plantService.buyPlant(plantIdx, userIdx));
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 
     /**
-     * 화분 보유중 목록 조회
-     *
+     * 화분 보유중 목록 조회 API
+     * [GET] /btos/plant/own?userIdx=
+     * Query String : userIdx (mandatory: Y)
      */
     /*
     UserPlatList.status가 "active, selected"인 친구들 가져오기
-
     Figma 참고하기
      */
+    @ResponseBody
+    @GetMapping("own")
+    public BaseResponse<List<GetSpecificPlantRes>> getOwnPlantList(@RequestParam("userIdx") int userIdx) {
+        try {
+            return new BaseResponse<>(plantProvider.getOwnPlantList(userIdx));
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 
 }
