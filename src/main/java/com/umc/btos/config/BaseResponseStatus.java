@@ -52,17 +52,25 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_USERNAME(false, 4014, "유저네임 수정 실패"),
 
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
-    PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다.");
+    PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다."),
 
 
     // 5000 : 도기
+    TEMP1(false, 9000, "conflict 방지용 1"),
 
 
     // 6000 : 레마
+    TEMP2(false, 9000, "conflict 방지용 2"),
 
 
     // 7000 : 자몽
+    TEMP3(false, 9000, "conflict 방지용 3"),
 
+
+    // 8000 : 잭
+
+
+    TEMP4(false, 9000, "conflict 방지용 4");
 
 
     private final boolean isSuccess;

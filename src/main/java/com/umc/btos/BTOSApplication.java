@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Coupang01zApplication {
+public class BTOSApplication {
     public static void main(String[] args) {
 
-        SpringApplication.run(Coupang01zApplication.class, args);
+        SpringApplication.run(BTOSApplication.class, args);
 
         // 메모리 사용량 출력
         long heapSize = Runtime.getRuntime().totalMemory();
