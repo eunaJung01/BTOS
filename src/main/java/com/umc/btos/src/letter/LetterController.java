@@ -45,4 +45,23 @@ public class LetterController {
         }
 
     }
+
+    /**
+     * 편지 조회 API
+     * [GET] /btos/letters/:letterIdx
+     */
+    // Path-variable
+    @ResponseBody
+    @GetMapping("/{letterIdx}") // (GET) localhost:9000/btos/letters/:letterIdx
+    public BaseResponse<GetLetterRes> getLetter(@PathVariable("letterIdx") int letterIdx) {
+        // @PathVariable RESTful(URL)에서 명시된 파라미터({})를 받는 어노테이션, 이 경우 letterIdx값을 받아옴.
+        // Get Letters
+        try {
+            GetLetterRes getLetterRes = letterProvider.getLetter(letterIdx);
+            return new BaseResponse<>(getLetterRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+
+    }
 }
