@@ -23,7 +23,24 @@ public class DiaryController {
     }
 
     /*
-     * 일기 저장 : [POST] /btos/diary
+     * 일기 작성 여부 확인
+     * [GET] /btos/diary/:date
+     */
+//    @ResponseBody
+//    @GetMapping("/{date}")
+//    public BaseResponse<GetCheckDiaryRes> checkDiary(@PathVariable("date") String date) {
+//        try {
+//            GetCheckDiaryRes getCheckDiaryRes = diaryProvider.checkDiary(date);
+//            return new BaseResponse<>(getCheckDiaryRes);
+//
+//        } catch (BaseException exception) {
+//            return new BaseResponse<>(exception.getStatus());
+//        }
+//    }
+
+    /*
+     * 일기 저장
+     * [POST] /btos/diary
      */
     @ResponseBody
     @PostMapping("")
@@ -38,7 +55,8 @@ public class DiaryController {
     }
 
     /*
-     * 일기 수정 : [PUT] /btos/diary
+     * 일기 수정
+     * [PUT] /btos/diary
      */
     @ResponseBody
     @PutMapping("")
@@ -55,7 +73,8 @@ public class DiaryController {
     }
 
     /*
-     * 일기 삭제 : [PATCH] /btos/diary/:diaryIdx
+     * 일기 삭제
+     * [PATCH] /btos/diary/:diaryIdx
      */
     @ResponseBody
     @PatchMapping("/{diaryIdx}")

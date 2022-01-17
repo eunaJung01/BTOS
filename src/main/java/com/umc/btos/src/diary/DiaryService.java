@@ -27,7 +27,8 @@ public class DiaryService {
     }
 
     /*
-     * 일기 저장 : [POST] /btos/diary
+     * 일기 저장
+     * [POST] /btos/diary
      */
     public PostDiaryRes saveDiary(PostDiaryReq postDiaryReq) throws BaseException {
         // TODO : 형식적 validation - 당일에 작성한 일기가 아니라면 발송 불가
@@ -87,7 +88,8 @@ public class DiaryService {
     }
 
     /*
-     * 일기 수정 : [PUT] /btos/diary
+     * 일기 수정
+     * [PUT] /btos/diary
      */
     public void modifyDiary(PutDiaryReq putDiaryReq) throws BaseException {
         // TODO : 형식적 validation - 당일에 작성한 일기가 아니라면 발송 불가
@@ -122,7 +124,8 @@ public class DiaryService {
     }
 
     /*
-     * 일기 삭제 : [PATCH] /btos/diary/:diaryIdx
+     * 일기 삭제
+     * [PATCH] /btos/diary/:diaryIdx
      */
     public void deleteDiary(int diaryIdx) throws BaseException {
         try {
