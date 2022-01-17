@@ -62,6 +62,7 @@ public enum BaseResponseStatus {
     // 6000 : 레마
     TEMP2(false, 9000, "conflict 방지용 2"),
     UNPRIVATE_DATE(false, 6000, "당일에 작성한 일기만 발송 가능합니다!"),
+    DIARY_ENCRYPTION_ERROR(false, 6000, "일기 또는 done list 내용 암호화에 실패하였습니다."),
 
 
     // 7000 : 자몽
