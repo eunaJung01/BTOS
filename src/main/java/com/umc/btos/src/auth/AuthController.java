@@ -52,8 +52,8 @@ public class AuthController {
 
 
     /**
-     * 소셜 로그인 API
-     * [GET] /btos/auth/google
+     * 소셜(구글) 로그인 API : 클라 -> 인가코드로 요청 -> 구글에 토큰 요청
+     * [POST] /btos/auth/google
      */
 
 }

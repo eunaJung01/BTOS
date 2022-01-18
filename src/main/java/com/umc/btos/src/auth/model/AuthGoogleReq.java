@@ -10,7 +10,7 @@ import lombok.Setter;
 
 //승인 요청 시 사용
 //구글에게 요청 매개변수 모델
-public class GetAuthGoogleReq {
+public class AuthGoogleReq {
     //요청 필수 매개변수
     private String redirectUri;
     private String clientId;

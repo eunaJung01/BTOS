@@ -41,10 +41,8 @@ public class AuthService {
 
         try{
             int userIdx = authDao.createUser(postAuthReq);
-            String jwt = jwtService.createJwt(userIdx);
+            return new PostAuthRes(userIdx);
 
-            //jwt 발급
-            return new PostAuthRes(userIdx, jwt);
         } catch (Exception ignored){
             throw new BaseException(DATABASE_ERROR);
         }
