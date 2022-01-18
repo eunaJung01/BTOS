@@ -68,6 +68,7 @@ public class PlantDao {
         return this.jdbcTemplate.update(Query, Params);
     }
 
+    /*
     //화분 보유중 목록 조회 API
     public List<GetSpecificPlantRes> getOwnPlantList(int userIdx) {
         String Query = "SELECT Plant.plantIdx, Plant.plantName, Plant.maxLevel, Plant.plantImgUrl, " +
@@ -88,5 +89,5 @@ public class PlantDao {
                                         rs.getInt("selectedPlantIdx"))
         );
     }
-
+    */
 }

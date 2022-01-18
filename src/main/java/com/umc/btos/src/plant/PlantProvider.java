@@ -41,6 +41,7 @@ public class PlantProvider {
         }
     }
 
+    /*
     //화분 보유중 목록 조회 API
     public List<GetSpecificPlantRes> getOwnPlantList(int userIdx) throws BaseException {
         try {
@@ -49,6 +50,6 @@ public class PlantProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
+    */
 }
 

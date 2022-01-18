@@ -113,16 +113,12 @@ public class PlantController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
-
-    /**
+ㅎ
+    /*
      * 화분 보유중 목록 조회 API
      * [GET] /btos/plant/own?userIdx=
      * Query String : userIdx (mandatory: Y)
-     */
-    /*
-    UserPlatList.status가 "active, selected"인 친구들 가져오기
-    Figma 참고하기
-     */
+
     @ResponseBody
     @GetMapping("own")
     public BaseResponse<List<GetSpecificPlantRes>> getOwnPlantList(@RequestParam("userIdx") int userIdx) {
@@ -132,5 +128,5 @@ public class PlantController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
-
+    */
 }
