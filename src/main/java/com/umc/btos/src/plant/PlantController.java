@@ -79,11 +79,11 @@ public class PlantController {
 
     /**
      * 화분 선택 API
-     * [PATCH] /btos/plant/select/:plantIdx
+     * [PATCH] /btos/plant/:uPlantIdx
      * Path Variable : plantIdx (mandatory: Y)
      */
     @ResponseBody
-    @PatchMapping("select/{uPlantIdx}")
+    @PatchMapping("{uPlantIdx}")
     public BaseResponse<String> selectPlant(@PathVariable int uPlantIdx) { //userIdx가 굳이 필요한가?
         try {
             //status 변경 성공시 : "요청에 성공하였습니다." - 1000
@@ -113,7 +113,7 @@ public class PlantController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
-ㅎ
+
     /*
      * 화분 보유중 목록 조회 API
      * [GET] /btos/plant/own?userIdx=
