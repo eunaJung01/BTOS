@@ -1,9 +1,7 @@
 package com.umc.btos.src.auth;
 
 import com.umc.btos.config.BaseException;
-import com.umc.btos.config.secret.Secret;
 import com.umc.btos.src.auth.model.*;
-import com.umc.btos.utils.AES128;
 import com.umc.btos.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,19 +30,4 @@ public class AuthService {
 
     }
 
-    // 회원가입(POST)
-    public PostAuthRes createUser(PostAuthReq postAuthReq) throws BaseException{
-
-        if (authProvider.checkEmail(postAuthReq.getEmail()) == 1) { // 이메일 중복 확인
-            throw new BaseException(POST_USERS_EXISTS_EMAIL);
-        }
-
-        try{
-            int userIdx = authDao.createUser(postAuthReq);
-            return new PostAuthRes(userIdx);
-
-        } catch (Exception ignored){
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
 }

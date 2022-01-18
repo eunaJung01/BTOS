@@ -34,25 +34,6 @@ public class AuthController {
     }
 
     /**
-     * 회원가입 API
-     * [POST] /btos/auth/sign-up
-     */
-
-    @ResponseBody
-    @PostMapping("/sign-up")
-    public BaseResponse<PostAuthRes> createUser(@RequestBody PostAuthReq postAuthReq){
-        // 형식적 validation은 클라이언트 단에서 처리
-        try {
-            PostAuthRes postAuthRes = authService.createUser(postAuthReq);
-            return new BaseResponse<>(postAuthRes);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
-
-
-
-    /**
      * 소셜(구글) 로그인 API : 클라 -> 인가코드로 요청 -> 구글에 토큰 요청
      * [POST] /btos/auth/google
      */

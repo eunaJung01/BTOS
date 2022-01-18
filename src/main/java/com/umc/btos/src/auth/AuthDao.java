@@ -20,18 +20,6 @@ public class AuthDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    // 회원가입
-    public int createUser(PostAuthReq postAuthReq) {
-        String createUserQuery = "insert into User (email, birth, nickName) VALUES (?,?,?)"; //
-        Object[] createUserParams = new Object[]{
-                postAuthReq.getEmail(),
-                postAuthReq.getBirth(),
-                postAuthReq.getNickName()};
-        this.jdbcTemplate.update(createUserQuery, createUserParams);
-
-        String lastInsertIdQuery = "select last_insert_id()";
-        return this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class);
-    }
 
     // 이메일 확인
     public int checkEmail(String email) {
