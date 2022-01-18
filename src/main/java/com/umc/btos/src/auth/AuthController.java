@@ -38,6 +38,7 @@ public class AuthController {
      * [POST] /btos/auth/sign-up
      */
 
+    @ResponseBody
     @PostMapping("/sign-up")
     public BaseResponse<PostAuthRes> createUser(@RequestBody PostAuthReq postAuthReq){
         // 형식적 validation은 클라이언트 단에서 처리
@@ -55,5 +56,15 @@ public class AuthController {
      * 소셜(구글) 로그인 API : 클라 -> 인가코드로 요청 -> 구글에 토큰 요청
      * [POST] /btos/auth/google
      */
+    /*
+    @PostMapping("/btos/auth/google")
+    public BaseResponse<AuthGoogleRes> googleLogin() {
+        try{
+            return new BaseResponse<>();
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }*/
 
+    
 }
