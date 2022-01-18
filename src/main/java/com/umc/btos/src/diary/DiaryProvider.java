@@ -1,11 +1,15 @@
 package com.umc.btos.src.diary;
 
 import com.umc.btos.config.BaseException;
+import com.umc.btos.src.diary.model.GetCalendarRes;
 import com.umc.btos.src.diary.model.GetCheckDiaryRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
 
@@ -27,6 +31,33 @@ public class DiaryProvider {
     public GetCheckDiaryRes checkDiary(int userIdx, String date) throws BaseException {
         try {
             return new GetCheckDiaryRes(diaryDao.checkDiary(userIdx, date));
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /*
+     * Archive 조회 - 캘린더
+     * [GET] /btos/diary/calendar?userIdx=&date=&type
+     * date = YYYY-MM
+     * type (조회 방식) = 1. doneList : 나뭇잎 색으로 done list 개수 표현 / 2. emotion : 감정 이모티콘
+     */
+    public List<GetCalendarRes> getCalendar(int userIdx, String date, String type) throws BaseException {
+
+        try {
+            List<GetCalendarRes> calendar = diaryDao.getCalendarList(userIdx, date); // 캘린더 (날짜별 일기 정보 목록)
+
+            if (type.compareTo("doneList") == 0) { // done list로 조회 -> 일기 별 doneList 개수 정보 저장 (set doneListNum)
+                for (GetCalendarRes dateInfo : calendar) {
+                    dateInfo.setDoneListNum(diaryDao.setDoneListNum(userIdx, dateInfo.getDiaryDate()));
+                }
+            } else { // emotion으로 조회 -> 일기 별 감정 이모티콘 정보 저장 (set emotionIdx)
+                for (GetCalendarRes dateInfo : calendar) {
+                    dateInfo.setEmotionIdx(diaryDao.setEmotion(userIdx, dateInfo.getDiaryDate()));
+                }
+            }
+            return calendar;
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);

@@ -1,5 +1,6 @@
 package com.umc.btos.src.diary;
 
+import com.umc.btos.src.diary.model.GetCalendarRes;
 import com.umc.btos.src.diary.model.PostDiaryReq;
 import com.umc.btos.src.diary.model.PutDiaryReq;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +94,32 @@ public class DiaryDao {
         String query = "UPDATE Done SET status = ? WHERE diaryIdx = ?";
         Object[] params = new Object[]{"deleted", diaryIdx};
         return this.jdbcTemplate.update(query, params);
+    }
+
+    // 캘린더 조회 (일기 해당 날짜(diaryDate) 기준 오름차순 정렬)
+    public List<GetCalendarRes> getCalendarList(int userIdx, String date) {
+        String startDate = date + "-01";
+        String endDate = date + "-31";
+
+        String query = "SELECT diaryDate FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(diaryDate, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d') ORDER BY diaryDate ASC";
+
+        return this.jdbcTemplate.query(query,
+                (rs, rowNum) -> new GetCalendarRes((
+                        rs.getString("diaryDate")
+                )),
+                userIdx, startDate, endDate);
+    }
+
+    // 일기 별 done list 개수 반환 : COUNT(Done.diaryIdx)
+    public int setDoneListNum(int userIdx, String diaryDate) {
+        String query = "SELECT COUNT(*) FROM Done WHERE diaryIdx = (SELECT diaryIdx FROM Diary WHERE userIdx = ? AND diaryDate = ?)";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx, diaryDate);
+    }
+
+    // 일기 별 감정 이모티콘 반환 : Diary.emotionIdx
+    public int setEmotion(int userIdx, String diaryDate) {
+        String query = "SELECT emotionIdx FROM Diary WHERE userIdx = ? AND diaryDate = ?";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx, diaryDate);
     }
 
 }

@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/btos/diary")
 public class DiaryController {
@@ -84,6 +86,24 @@ public class DiaryController {
 
             String result = "일기 - diaryIdx=" + diaryIdx + " 삭제 완료";
             return new BaseResponse<>(result);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /*
+     * Archive 조회 - 캘린더
+     * [GET] /btos/diary/calendar?userIdx=&date=&type
+     * date = YYYY-MM
+     * type (조회 방식) = 1. doneList : 나뭇잎 색으로 done list 개수 표현 / 2. emotion : 감정 이모티콘
+     */
+    @ResponseBody
+    @GetMapping("/calendar")
+    public BaseResponse<List<GetCalendarRes>> getCalendar(@RequestParam("userIdx") int userIdx, @RequestParam("date") String date, @RequestParam("type") String type) {
+        try {
+            List<GetCalendarRes> getCalendarRes = diaryProvider.getCalendar(userIdx, date, type);
+            return new BaseResponse<>(getCalendarRes);
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
