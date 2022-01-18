@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
-import static com.umc.btos.config.BaseResponseStatus.MODIFY_FAIL_USERNAME;
+import static com.umc.btos.config.BaseResponseStatus.MODIFY_FAIL_LETTER_STATUS;
 
 @Service
 public class LetterService {
@@ -49,7 +49,7 @@ public class LetterService {
     // 편지 삭제 - status를 deleted로 변경 (Patch)
     public void modifyLetterStaus(PatchLetterReq patchLetterReq) throws BaseException {
         try {
-            int result = letterDao.modifyLetterStaus(patchProductReq); // 해당 과정이 무사히 수행되면 True(1), 그렇지 않으면 False(0)입니다.
+            int result = letterDao.modifyLetterStaus(patchLetterReq); // 해당 과정이 무사히 수행되면 True(1), 그렇지 않으면 False(0)입니다.
             if (result == 0) { // result값이 0이면 과정이 실패한 것이므로 에러 메서지를 보냅니다.
                 throw new BaseException(MODIFY_FAIL_LETTER_STATUS);
             }
