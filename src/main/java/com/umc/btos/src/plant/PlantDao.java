@@ -23,9 +23,10 @@ public class PlantDao {
     //모든식물조회(상점) API
     public List<GetPlantRes> getAllPlant(int userIdx) {
         String Query = "SELECT Plant.plantIdx, Plant.plantName, Plant.plantImgUrl, Plant.plantPrice, Plant.maxLevel, " +
-                        "UserPlantList.status, (SELECT UserPlantList.uPlantIdx FROM UserPlantList WHERE UserPlantList.status=?) " +
-                        "FROM Plant, UserPlantList WHERE UserPlantList.userIdx=? AND Plant.status=?";
-        Object[] Params = new Object[]{"selected", userIdx, "active"};
+                        "UserPlantList.level, UserPlantList.status, " +
+                        "(SELECT UserPlantList.uPlantIdx FROM UserPlantList WHERE UserPlantList.status=?) " +
+                        "FROM Plant, UserPlantList WHERE UserPlantList.userIdx=?";
+        Object[] Params = new Object[]{"selected", userIdx};
         return this.jdbcTemplate.query(Query,
                 (rs, rowNum) -> new GetPlantRes(
                         rs.getInt("plantIdx"),
@@ -33,6 +34,7 @@ public class PlantDao {
                         rs.getString("plantImgUrl"),
                         rs.getInt("plantPrice"),
                         rs.getInt("maxLevel"),
+                        rs.getInt("currentLevel"),
                         rs.getString("userStatus"),
                         rs.getInt("selectedPlantIdx"))
         );

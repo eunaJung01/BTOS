@@ -23,10 +23,10 @@ public class PlantProvider {
         this.plantDao = plantDao;}
 
 
-    //모든식물조회(상점) API
+    //모든식물조회(Profile) API
     public List<GetPlantRes> getAllPlant(int userIdx) throws BaseException {
         try {
-            return plantDao.getAllPlant(userIdx);
+            return plantDao.getAllPlant(userIdx); // DB에서 목록가져오기
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

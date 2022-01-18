@@ -32,16 +32,22 @@ public class PlantController {
 
 
     /**
-     * 화분목록조회(상점) API
+     * 화분목록조회(Profile) API
      * [GET] /btos/plant/list?userIdx
      * Query String : userIdx (mandatory: Y)
+     *
+     * "보유, 미보유"을 알아야 하므로 SQL 조건(where)에서 status="active" 제약 걸지 않음
+     * "선택"된 화분은 UserPlantList의 uPlantIdx를 넘겨줌
+     *
+     * Figma) Profile에 들어가면 화분 목록 : 보유 유무, 선택 가능 유무, 미보유시 가격 조회
      */
     @ResponseBody
     @GetMapping("list")
     public BaseResponse<List<GetPlantRes>> getPlantList(@RequestParam("userIdx") int userIdx) {
         try {
+            //조회 성공 시 : List<GetPlantRes> 형태로 결과(화분목록) 반환
             //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
-            List<GetPlantRes> getPlantRes = plantProvider.getAllPlant(userIdx);
+            List<GetPlantRes> getPlantRes = plantProvider.getAllPlant(userIdx); //조회(read) -> Provider
             return new BaseResponse<>(getPlantRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
