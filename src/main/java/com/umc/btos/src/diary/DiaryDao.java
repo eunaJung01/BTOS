@@ -125,4 +125,30 @@ public class DiaryDao {
         return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
     }
 
+    // 달별 일기 리스트 반환
+    public List<GetDiaryRes> getDiaryList(int userIdx, String date) {
+        String startDate = date + "-01";
+        String endDate = date + "-31";
+
+        String query = "SELECT * FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(diaryDate, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d') ORDER BY diaryDate ASC";
+        return this.jdbcTemplate.query(query,
+                (rs, rowNum) -> new GetDiaryRes(
+                        rs.getInt("diaryIdx"),
+                        rs.getInt("emotionIdx"),
+                        rs.getString("diaryDate"),
+                        rs.getInt("isPublic"),
+                        rs.getString("content")),
+                userIdx, startDate, endDate);
+    }
+
+    // done list 반환
+    public List<GetDoneRes> getDoneList(int diaryIdx) {
+        String query = "SELECT * FROM Done WHERE diaryIdx = ?";
+        return this.jdbcTemplate.query(query,
+                (rs, rowNum) -> new GetDoneRes(
+                        rs.getInt("doneIdx"),
+                        rs.getString("content")),
+                diaryIdx);
+    }
+
 }

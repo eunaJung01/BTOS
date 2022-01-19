@@ -110,4 +110,21 @@ public class DiaryController {
         }
     }
 
+    /*
+     * Archive 조회 - 달별 일기 리스트
+     * [GET] /btos/diarylist?userIdx=&date=
+     * date = YYYY-MM
+     */
+    @ResponseBody
+    @GetMapping("/diaryList")
+    public BaseResponse<List<GetDiaryRes>> getDiaryList(@RequestParam("userIdx") int userIdx, @RequestParam("date") String date) {
+        try {
+            List<GetDiaryRes> diaryList = diaryProvider.getDiaryList(userIdx, date);
+            return new BaseResponse<>(diaryList);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
 }

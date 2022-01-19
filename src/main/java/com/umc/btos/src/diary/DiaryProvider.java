@@ -1,8 +1,7 @@
 package com.umc.btos.src.diary;
 
 import com.umc.btos.config.BaseException;
-import com.umc.btos.src.diary.model.GetCalendarRes;
-import com.umc.btos.src.diary.model.GetCheckDiaryRes;
+import com.umc.btos.src.diary.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +60,27 @@ public class DiaryProvider {
                 }
             }
             return calendar;
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /*
+     * Archive 조회 - 달별 일기 리스트
+     * [GET] /btos/diarylist?userIdx=&date=
+     * date = YYYY-MM
+     */
+    public List<GetDiaryRes> getDiaryList(int userIdx, String date) throws BaseException {
+        try {
+            List<GetDiaryRes> diaryList = diaryDao.getDiaryList(userIdx, date); // 달별 일기 정보 저장
+
+            // 각 일기에 해당하는 done list 정보 저장
+            for (GetDiaryRes diary : diaryList) {
+                int diaryIdx = diary.getDiaryIdx();
+                diary.setDoneList(diaryDao.getDoneList(diaryIdx));
+            }
+            return diaryList;
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
