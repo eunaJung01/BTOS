@@ -43,18 +43,24 @@ public class PlantDao {
     //회원이 선택한 화분 조회 API
     public GetSpecificPlantRes getSelectedPlant(int plantIdx, int userIdx) {
         String Query = "SELECT Plant.plantIdx, Plant.plantName, Plant.maxLevel, Plant.plantImgUrl, " +
-                "UserPlantList.level, UserPlantList.status, " +
-                "(SELECT UserPlantList.uPlantIdx FROM UserPlantList WHERE UserPlantList.status=?) " +
-                "FROM Plant, UserPlantList WHERE Plant.status=? AND UserPlantList.userIdx=?";
-        Object[] Params = new Object[]{"selected", "active", userIdx};
+                "UserPlantList.level, UserPlantList.status " +
+                "FROM Plant INNER JOIN UserPlantList ON Plant.plantIdx=UserPlantList.plantIdx " +
+                "WHERE Plant.status=? AND UserPlantList.userIdx=?";
+        Object[] Params = new Object[]{"active", userIdx};
 
         return this.jdbcTemplate.queryForObject(Query, GetSpecificPlantRes.class, Params);
     }
 
     //화분 선택 API
-    public int selectPlant(int uPlantIdx) {
-        String Query = "UPDATE UserPlantList SET status=? WHERE uPlantIdx=?";
-        Object[] Params = new Object[]{"selected", uPlantIdx};
+    public int selectPlant(int userIdx, PatchSelectPlantReq patchSelectPlantReq) {
+        //기존에 선택되어있던 화분의 status를 active로 바꾸자 (selected -> active)
+        String queryToActive = "UPDATE UserPlantList SET status=? WHERE userIdx=? AND uPlantIdx=?";
+        Object[] paramsToActive = new Object[]{"active", userIdx, patchSelectPlantReq.getCurrentPlant()};
+        jdbcTemplate.update(queryToActive, paramsToActive);
+
+        //선택된 화분의 status를 selected로 바꾸자 (active -> selected)
+        String Query = "UPDATE UserPlantList SET status=? WHERE userIdx=? AND uPlantIdx=?";
+        Object[] Params = new Object[]{"selected", userIdx, patchSelectPlantReq.getFuturePlant()};
 
         return this.jdbcTemplate.update(Query, Params);
     }
