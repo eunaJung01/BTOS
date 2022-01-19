@@ -65,7 +65,8 @@ public enum BaseResponseStatus {
 
     // 7000 : 자몽
     TEMP3(false, 9000, "conflict 방지용 3"),
-
+    MODIFY_FAIL_STATUS(false, 7010, "화분 구매에 실패하였습니다."),
+    MODIFY_FAIL_BUY_PLANT(false,7011, "화분 선택에 실패하였습니다."),
 
     // 8000 : 잭
 
