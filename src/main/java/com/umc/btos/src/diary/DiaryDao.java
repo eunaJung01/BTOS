@@ -130,7 +130,7 @@ public class DiaryDao {
         String startDate = date + "-01";
         String endDate = date + "-31";
 
-        String query = "SELECT * FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(diaryDate, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d') ORDER BY diaryDate ASC";
+        String query = "SELECT * FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(diaryDate, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d') ORDER BY diaryDate DESC";
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetDiaryRes(
                         rs.getInt("diaryIdx"),

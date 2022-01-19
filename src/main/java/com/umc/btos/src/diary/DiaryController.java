@@ -114,6 +114,7 @@ public class DiaryController {
      * Archive 조회 - 달별 일기 리스트
      * [GET] /btos/diarylist?userIdx=&date=
      * date = YYYY-MM
+     * 최신순 정렬
      */
     @ResponseBody
     @GetMapping("/diaryList")
