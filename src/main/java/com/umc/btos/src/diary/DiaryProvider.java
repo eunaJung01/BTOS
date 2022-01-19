@@ -8,10 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.umc.btos.config.BaseResponseStatus.*;
 
 @Service
 public class DiaryProvider {
@@ -44,6 +43,10 @@ public class DiaryProvider {
      * type (조회 방식) = 1. doneList : 나뭇잎 색으로 done list 개수 표현 / 2. emotion : 감정 이모티콘
      */
     public List<GetCalendarRes> getCalendar(int userIdx, String date, String type) throws BaseException {
+        // TODO : 형식적 validaion - 프리미엄 미가입자는 감정 이모티콘으로 조회 불가
+        if (type.compareTo("emotion") == 0 && diaryDao.isPremium(userIdx).compareTo("free") == 0) {
+            throw new BaseException(DIARY_NONPREMIUM_USER); // 프리미엄 가입이 필요합니다.
+        }
 
         try {
             List<GetCalendarRes> calendar = diaryDao.getCalendarList(userIdx, date); // 캘린더 (날짜별 일기 정보 목록)

@@ -122,4 +122,10 @@ public class DiaryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, diaryDate);
     }
 
+    // 프리미엄 가입자인지 확인
+    public String isPremium(int userIdx) {
+        String query = "SELECT isPremium FROM User WHERE userIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
+    }
+
 }

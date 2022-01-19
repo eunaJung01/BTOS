@@ -67,6 +67,7 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_DONELIST(false, 6001, "일기 수정 실패 - done list"),
     DELETE_FAIL_DIARY(false, 6002, "일기 삭제 실패"),
     DELETE_FAIL_DONELIST(false, 6002, "done list 삭제 실패"),
+    DIARY_NONPREMIUM_USER(false, 6003, "프리미엄 가입이 필요합니다."),
 
 
     // 7000 : 자몽
