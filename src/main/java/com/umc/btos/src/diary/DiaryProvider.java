@@ -1,7 +1,9 @@
 package com.umc.btos.src.diary;
 
 import com.umc.btos.config.BaseException;
+import com.umc.btos.config.secret.Secret;
 import com.umc.btos.src.diary.model.*;
+import com.umc.btos.utils.AES128;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +81,22 @@ public class DiaryProvider {
             for (GetDiaryRes diary : diaryList) {
                 int diaryIdx = diary.getDiaryIdx();
                 diary.setDoneList(diaryDao.getDoneList(diaryIdx));
+            }
+
+            // content 복호화
+            for (GetDiaryRes diary : diaryList) {
+                if (diary.getIsPublic() == 0) { // private일 경우 (isPublic == 0)
+                    // Diary.content
+                    String diaryContent = diary.getContent();
+                    diary.setContent(new AES128(Secret.PASSWORD_KEY).decrypt(diaryContent));
+
+                    // Done.content
+                    List<GetDoneRes> doneList = diary.getDoneList();
+                    for (int j = 0; j < doneList.size(); j++) {
+                        String doneContent = diary.getDoneList().get(j).getContent();
+                        diary.getDoneList().get(j).setContent(new AES128(Secret.PASSWORD_KEY).decrypt(doneContent));
+                    }
+                }
             }
             return diaryList;
 
