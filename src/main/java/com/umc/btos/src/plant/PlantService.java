@@ -33,4 +33,16 @@ public class PlantService {
         }
     }
 
+    //화분 구매(보유) API
+    public BaseResponseStatus buyPlant(int plantIdx, int userIdx) throws BaseException {
+        try{
+            if(plantDao.buyPlant(plantIdx, userIdx) == 1) //변경 성공시
+                return SUCCESS;
+            else //구매 실패시
+                throw new BaseException(MODIFY_FAIL_BUY_PLANT);
+        }catch(Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }
