@@ -35,11 +35,6 @@ public class PlantController {
      * 화분목록조회(Profile) API
      * [GET] /btos/plant/list?userIdx
      * Query String : userIdx (mandatory: Y)
-     *
-     * "보유, 미보유"을 알아야 하므로 SQL 조건(where)에서 status="active" 제약 걸지 않음
-     * "선택"된 화분은 UserPlantList의 uPlantIdx를 넘겨줌
-     *
-     * Figma) Profile에 들어가면 화분 목록 : 보유 유무, 선택 가능 유무, 미보유시 가격 조회
      */
     @ResponseBody
     @GetMapping("list")
@@ -96,7 +91,7 @@ public class PlantController {
     }
 
     /**
-     * 화분 구매(보유)
+     * 화분 구매(보유) API
      * [POST] /btos/plant/buy?plantIdx=&userIdx=
      * Query String : plantIdx, userIdx (mandatory: Y)
      */

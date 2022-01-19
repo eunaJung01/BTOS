@@ -23,29 +23,29 @@ public class PlantDao {
     //모든식물조회(상점) API
     public List<GetPlantRes> getAllPlant(int userIdx) {
         String Query = "SELECT Plant.plantIdx, Plant.plantName, Plant.plantImgUrl, Plant.plantPrice, Plant.maxLevel, " +
-                        "UserPlantList.level, UserPlantList.status, " +
-                        "(SELECT UserPlantList.uPlantIdx FROM UserPlantList WHERE UserPlantList.status=?) " +
-                        "FROM Plant, UserPlantList WHERE UserPlantList.userIdx=?";
-        Object[] Params = new Object[]{"selected", userIdx};
-        return this.jdbcTemplate.query(Query,
+                "UserPlantList.level, UserPlantList.status " +
+                "FROM Plant INNER JOIN UserPlantList ON Plant.plantIdx=UserPlantList.plantIdx " +
+                "WHERE UserPlantList.userIdx=?";
+        Object[] Params = new Object[]{userIdx};
+
+        return this.jdbcTemplate.query(Query, Params,
                 (rs, rowNum) -> new GetPlantRes(
-                        rs.getInt("plantIdx"),
-                        rs.getString("plantName"),
-                        rs.getString("plantImgUrl"),
-                        rs.getInt("plantPrice"),
-                        rs.getInt("maxLevel"),
-                        rs.getInt("currentLevel"),
-                        rs.getString("userStatus"),
-                        rs.getInt("selectedPlantIdx"))
+                        rs.getInt("Plant.plantIdx"),
+                        rs.getString("Plant.plantName"),
+                        rs.getString("Plant.plantImgUrl"),
+                        rs.getInt("Plant.plantPrice"),
+                        rs.getInt("Plant.maxLevel"),
+                        rs.getInt("UserPlantList.level"),
+                        rs.getString("UserPlantList.status"))
         );
     }
 
     //회원이 선택한 화분 조회 API
     public GetSpecificPlantRes getSelectedPlant(int plantIdx, int userIdx) {
         String Query = "SELECT Plant.plantIdx, Plant.plantName, Plant.maxLevel, Plant.plantImgUrl, " +
-                        "UserPlantList.level, UserPlantList.status, " +
-                        "(SELECT UserPlantList.uPlantIdx FROM UserPlantList WHERE UserPlantList.status=?) " +
-                        "FROM Plant, UserPlantList WHERE Plant.status=? AND UserPlantList.userIdx=?";
+                "UserPlantList.level, UserPlantList.status, " +
+                "(SELECT UserPlantList.uPlantIdx FROM UserPlantList WHERE UserPlantList.status=?) " +
+                "FROM Plant, UserPlantList WHERE Plant.status=? AND UserPlantList.userIdx=?";
         Object[] Params = new Object[]{"selected", "active", userIdx};
 
         return this.jdbcTemplate.queryForObject(Query, GetSpecificPlantRes.class, Params);
@@ -56,7 +56,7 @@ public class PlantDao {
         String Query = "UPDATE UserPlantList SET status=? WHERE uPlantIdx=?";
         Object[] Params = new Object[]{"selected", uPlantIdx};
 
-        return this.jdbcTemplate.update(Query,Params);
+        return this.jdbcTemplate.update(Query, Params);
     }
 
     //화분 구매 API

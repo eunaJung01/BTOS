@@ -17,5 +17,4 @@ public class GetPlantRes {
     private int maxLevel; //최대 레벨
     private int currentLevel; //현재 레벨 (UserPlanList.level) , maxLevel이랑 동일하면 (MAX) 표기
     private String userStatus; //유저의 화분 보유 상태 : active(보유중) / delete(아님) (status FROM UserPlantList 테이블)
-    private int selectedPlantIdx; //보유중인 화분중 선택된 화분 식별자 (plantIdx FROM UserPlantList 테이블)
 }
