@@ -51,12 +51,14 @@ public class PlantController {
 
     /**
      * 회원이 선택한 화분 조회 API
+     * 보류 : 더보기 기능 추가시 다시 진행
+     * "미보유 화분"도 더보기 기능이 가능하다면 userIdx안 받고 plantIdx만 받으면 됨
+     *      1. Controller, Provider, Dao 인자 수정
+     *      2. Dao 쿼리 문 수정 -> WHERE Plant.status="active" AND Plant.plnatIdx=입력한 화분 식별자(plantIdx)
+     *      3. 만약 조회한 화분이 회원이 보유중이라면..? 이경우까지.. 음 그러니까 이렇게까지 정보를 출력해야한다면 userIdx 받아야함
      * [GET] /btos/plant/uSelected?plantIdx=&userIdx=
      * Query String : plantIdx, userIdx (mandatory: Y)
      */
-    //'회원'이 보유중인 것 중에 선택하는 것이므로 userIdx도 필요함
-    //회원이 일단 보유중이어야 함 (Profile 쪽에 있는 걸 보아하니) -> UserPlantList.status = 'active'
-    // active상태의 화분 && 선택 행위를 한 userIdx && 화분 보유 및 선택 여부
     @ResponseBody
     @GetMapping("uSelected")
     public BaseResponse<GetSpecificPlantRes> getSelectedPlant(@RequestParam("plantIdx") int plantIdx,
@@ -74,17 +76,18 @@ public class PlantController {
 
     /**
      * 화분 선택 API
-     * [PATCH] /btos/plant/:uPlantIdx
+     * [PATCH] /btos/plant/:userIdx=
      * Path Variable : plantIdx (mandatory: Y)
      */
     @ResponseBody
-    @PatchMapping("{uPlantIdx}")
-    public BaseResponse<String> selectPlant(@PathVariable int uPlantIdx) { //userIdx가 굳이 필요한가?
+    @PatchMapping("uPlantIdx")
+    public BaseResponse<String> selectPlant(@PathVariable("userIdx") int userIdx,
+                                            @RequestBody PatchSelectPlantReq patchSelectPlantReq) {
         try {
             //status 변경 성공시 : "요청에 성공하였습니다." - 1000
             //           실패시 : "화분 선택에 실패하였습니다." - 7000
             //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
-            return new BaseResponse<>(plantService.selectPlant(uPlantIdx));
+            return new BaseResponse<>(plantService.selectPlant(userIdx, patchSelectPlantReq));
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
