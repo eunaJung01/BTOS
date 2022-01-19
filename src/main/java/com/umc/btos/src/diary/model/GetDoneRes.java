@@ -9,6 +9,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GetDoneRes {
     private int doneIdx;
-    private int diaryIdx;
     private String content;
 }
