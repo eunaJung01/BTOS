@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.umc.btos.config.BaseResponseStatus.INVALIDE_IDX_PLANT;
 
 //Read
 @Service
@@ -20,7 +21,8 @@ public class PlantProvider {
 
     @Autowired
     public PlantProvider(PlantDao plantDao) {
-        this.plantDao = plantDao;}
+        this.plantDao = plantDao;
+    }
 
 
     //모든식물조회(Profile) API
@@ -37,6 +39,18 @@ public class PlantProvider {
         try {
             return plantDao.getSelectedPlant(plantIdx, userIdx);
         } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    //화분 선택 API ~ 회원이 futurePlant를 이미 selected된 화분으로 넘겼는지 체크하기 위한 함수
+    public int checkPlant(PatchSelectPlantReq patchSelectPlantReq) throws BaseException {
+        try { //회원이 futurePlant를 이미 selected된 화분으로 넘겼으면
+            if (patchSelectPlantReq.getFuturePlant() == plantDao.checkPlant(patchSelectPlantReq.getUserIdx()))
+                return -1;
+            else //아니면 3 반환
+                return 3;
+        } catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
     }
