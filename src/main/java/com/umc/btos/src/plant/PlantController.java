@@ -76,18 +76,18 @@ public class PlantController {
 
     /**
      * 화분 선택 API
-     * [PATCH] /btos/plant/:userIdx=
-     * Path Variable : plantIdx (mandatory: Y)
+     * [PATCH] /btos/plant/select
+     * RequestBody : PatchSelectPlantReq - 필드명 userIdx, futurePlant(=uPlantIdx) (mandatory: Y)
      */
     @ResponseBody
-    @PatchMapping("uPlantIdx")
-    public BaseResponse<String> selectPlant(@PathVariable("userIdx") int userIdx,
-                                            @RequestBody PatchSelectPlantReq patchSelectPlantReq) {
+    @PatchMapping("select")
+    public BaseResponse<String> selectPlant(@RequestBody PatchSelectPlantReq patchSelectPlantReq) {
         try {
             //status 변경 성공시 : "요청에 성공하였습니다." - 1000
-            //           실패시 : "화분 선택에 실패하였습니다." - 7000
+            //selected -> active 실패시 : "화분 상태 변경에 실패하였습니다." - 7010
+            //futurePlant값이 이미 선택된 화분인 경우 : "이미 선택된 화분입니다." - 7015
             //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
-            return new BaseResponse<>(plantService.selectPlant(userIdx, patchSelectPlantReq));
+            return new BaseResponse<>(plantService.selectPlant(patchSelectPlantReq));
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -95,18 +95,17 @@ public class PlantController {
 
     /**
      * 화분 구매(보유) API
-     * [POST] /btos/plant/buy?plantIdx=&userIdx=
-     * Query String : plantIdx, userIdx (mandatory: Y)
+     * [POST] /btos/plant/buy
+     * RequestBody : PostBuyPlantReq - 필드명 userIdx, plantIdx (mandatory: Y)
      */
     @ResponseBody
     @PostMapping("buy")
-    public BaseResponse<String> buyPlant(@RequestParam("plantIdx") int plantIdx,
-                                         @RequestParam("userIdx") int userIdx) {
+    public BaseResponse<String> buyPlant(@RequestBody PostBuyPlantReq postBuyPlantReq) {
         try {
             //행 추가 성공시 : "요청에 성공하였습니다." - 1000
-            //       실패시 : "화분 구매에 실패하였습니다." - 7010
+            //       실패시 : "화분 상태 변경에 실패하였습니다." - 7010
             //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
-            return new BaseResponse<>(plantService.buyPlant(plantIdx, userIdx));
+            return new BaseResponse<>(plantService.buyPlant(postBuyPlantReq));
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
