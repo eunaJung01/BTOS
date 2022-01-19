@@ -51,25 +51,37 @@ public class PlantDao {
         return this.jdbcTemplate.queryForObject(Query, GetSpecificPlantRes.class, Params);
     }
 
-    //화분 선택 API
-    public int selectPlant(int userIdx, PatchSelectPlantReq patchSelectPlantReq) {
-        //기존에 선택되어있던 화분의 status를 active로 바꾸자 (selected -> active)
-        String queryToActive = "UPDATE UserPlantList SET status=? WHERE userIdx=? AND uPlantIdx=?";
-        Object[] paramsToActive = new Object[]{"active", userIdx, patchSelectPlantReq.getCurrentPlant()};
-        jdbcTemplate.update(queryToActive, paramsToActive);
+    //화분 선택 API ~ 회원이 futurePlant를 이미 selected된 화분으로 넘겼는지 체크하기 위한 함수
+    public int checkPlant(int userIdx) {
+        String Query = "SELECT uPlantIdx FROM UserPlantList WHERE userIdx=? AND status=?";
+        Object[] Params = new Object[]{userIdx, "selected"};
 
+        return this.jdbcTemplate.queryForObject(Query, int.class, Params);
+    }
+
+    //화분 선택 API ~ 기존에 선택되어있던 화분의 status를 active로 바꾸자 (selected -> active)
+    public int activePlant(int userIdx) {
+        String queryToActive = "UPDATE UserPlantList SET status=? WHERE userIdx=? AND " +
+                "uPlantIdx=(SELECT Idx FROM (SELECT uPlantIdx AS Idx FROM UserPlantList WHERE status=?) T)";
+        Object[] paramsToActive = new Object[]{"active", userIdx, "selected"};
+
+        return this.jdbcTemplate.update(queryToActive, paramsToActive);
+    }
+
+    //화분 선택 API
+    public int selectPlant(PatchSelectPlantReq patchSelectPlantReq) {
         //선택된 화분의 status를 selected로 바꾸자 (active -> selected)
         String Query = "UPDATE UserPlantList SET status=? WHERE userIdx=? AND uPlantIdx=?";
-        Object[] Params = new Object[]{"selected", userIdx, patchSelectPlantReq.getFuturePlant()};
+        Object[] Params = new Object[]{"selected", patchSelectPlantReq.getUserIdx(), patchSelectPlantReq.getFuturePlant()};
 
         return this.jdbcTemplate.update(Query, Params);
     }
 
     //화분 구매 API
-    public int buyPlant(int plantIdx, int userIdx) {
+    public int buyPlant(PostBuyPlantReq postBuyPlantReq) {
         String Query = "INSERT INTO UserPlantList(userIdx, plantIdx, level, score, status, createdAt, updatedAt)" +
                 "VALUES(?, ?, DEFAULT, DEFAULT, DEFAULT, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())";
-        Object[] Params = new Object[]{userIdx, plantIdx};
+        Object[] Params = new Object[]{postBuyPlantReq.getUserIdx(), postBuyPlantReq.getPlantIdx()};
 
         return this.jdbcTemplate.update(Query, Params);
     }
