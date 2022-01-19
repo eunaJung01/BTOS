@@ -22,9 +22,9 @@ public class PlantService {
     }
 
     //화분 선택 API
-    public BaseResponseStatus selectPlant(int uPlantIdx) throws BaseException {
+    public BaseResponseStatus selectPlant(int userIdx, PatchSelectPlantReq patchSelectPlantReq) throws BaseException {
         try{
-            if(plantDao.selectPlant(uPlantIdx) == 1) //변경 성공시
+            if(plantDao.selectPlant(userIdx, patchSelectPlantReq) == 1) //변경 성공시
                 return SUCCESS;
             else //변경 실패시
                 throw new BaseException(MODIFY_FAIL_STATUS);
