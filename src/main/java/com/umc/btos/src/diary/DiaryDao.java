@@ -103,8 +103,8 @@ public class DiaryDao {
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetCalendarRes(
-                        rs.getString("diaryDate")),
-                userIdx, startDate, endDate);
+                        rs.getString("diaryDate")
+                ), userIdx, startDate, endDate);
     }
 
     // 일기 별 done list 개수 반환 : COUNT(Done.diaryIdx)
@@ -137,8 +137,8 @@ public class DiaryDao {
                         rs.getInt("emotionIdx"),
                         rs.getString("diaryDate"),
                         rs.getInt("isPublic"),
-                        rs.getString("content")),
-                userIdx, startDate, endDate);
+                        rs.getString("content")
+                ), userIdx, startDate, endDate);
     }
 
     // done list 반환
@@ -147,8 +147,8 @@ public class DiaryDao {
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetDoneRes(
                         rs.getInt("doneIdx"),
-                        rs.getString("content")),
-                diaryIdx);
+                        rs.getString("content")
+                ), diaryIdx);
     }
 
 }
