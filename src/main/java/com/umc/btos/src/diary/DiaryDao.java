@@ -1,8 +1,6 @@
 package com.umc.btos.src.diary;
 
-import com.umc.btos.src.diary.model.GetCalendarRes;
-import com.umc.btos.src.diary.model.PostDiaryReq;
-import com.umc.btos.src.diary.model.PutDiaryReq;
+import com.umc.btos.src.diary.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -104,9 +102,8 @@ public class DiaryDao {
         String query = "SELECT diaryDate FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(diaryDate, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d') ORDER BY diaryDate ASC";
 
         return this.jdbcTemplate.query(query,
-                (rs, rowNum) -> new GetCalendarRes((
-                        rs.getString("diaryDate")
-                )),
+                (rs, rowNum) -> new GetCalendarRes(
+                        rs.getString("diaryDate")),
                 userIdx, startDate, endDate);
     }
 
