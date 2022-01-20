@@ -2,7 +2,7 @@ package com.umc.btos.src.blocklist;
 
 
 import com.umc.btos.src.blocklist.model.*;
-import com.umc.btos.src.report.model.PostReportReq;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -26,6 +26,13 @@ public class BlocklistDao {
 
         String lastInsertIdQuery = "select last_insert_id()"; // 가장 마지막에 삽입된(생성된) id값은 가져온다.
         return this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class); // 해당 쿼리문의 결과 마지막으로 삽인된 유저의 userIdx번호를 반환한다.
+    }
+    // 편지 status 변경
+    public int modifyBlockStatus(PatchBlocklistReq patchBlocklistReq) {
+        String modifyBlockStatusQuery = "update Blocklist set status = ? where blockIdx = ? "; // 해당 blockIdx를 만족하는 block의 status를 deleted으로 변경한다.
+        Object[] modifyBlockStatusParams = new Object[]{"deleted", patchBlocklistReq.getBlockIdx()}; // 주입될 값들(status, blockIdx) 순
+
+        return this.jdbcTemplate.update(modifyBlockStatusQuery, modifyBlockStatusParams); // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
     }
 
 }
