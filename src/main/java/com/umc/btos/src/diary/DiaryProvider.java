@@ -124,6 +124,11 @@ public class DiaryProvider {
         try {
             GetDiaryRes diary = diaryDao.getDiary(diaryIdx); // 일기 정보 저장
             diary.setDoneList(diaryDao.getDoneList(diaryIdx)); // done list 정보 저장
+
+            // content 복호화
+            if (diary.getIsPublic() == 0) { // private일 경우 (isPublic == 0)
+                decryptContents(diary);
+            }
             return diary;
 
         } catch (Exception exception) {
