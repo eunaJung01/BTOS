@@ -15,4 +15,10 @@ public class MailboxDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    // User.fontIdx 반환
+    public int getFontIdx(int diaryIdx) {
+        String query = "SELECT fontIdx FROM User WHERE userIdx = (SELECT userIdx FROM Diary WHERE diaryIdx = ?)";
+        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
+    }
+
 }
