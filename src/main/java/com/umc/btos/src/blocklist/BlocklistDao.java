@@ -29,7 +29,7 @@ public class BlocklistDao {
     }
     // 편지 status 변경
     public int modifyBlockStatus(PatchBlocklistReq patchBlocklistReq) {
-        String modifyBlockStatusQuery = "update Blocklist set status = ? where blockIdx = ? "; // 해당 blockIdx를 만족하는 block의 status를 deleted으로 변경한다.
+        String modifyBlockStatusQuery = "update BlockList set status = ? where blockIdx = ? "; // 해당 blockIdx를 만족하는 block의 status를 deleted으로 변경한다.
         Object[] modifyBlockStatusParams = new Object[]{"deleted", patchBlocklistReq.getBlockIdx()}; // 주입될 값들(status, blockIdx) 순
 
         return this.jdbcTemplate.update(modifyBlockStatusQuery, modifyBlockStatusParams); // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
