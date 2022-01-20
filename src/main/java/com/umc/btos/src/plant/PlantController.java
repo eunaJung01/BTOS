@@ -12,7 +12,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/btos/plant")
+@RequestMapping("/btos/plants")w
 public class PlantController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -33,7 +33,7 @@ public class PlantController {
 
     /**
      * 화분목록조회(Profile) API
-     * [GET] /btos/plant/list?userIdx
+     * [GET] /btos/plants/list?userIdx
      * Query String : userIdx (mandatory: Y)
      */
     @ResponseBody
@@ -56,7 +56,7 @@ public class PlantController {
      *      1. Controller, Provider, Dao 인자 수정
      *      2. Dao 쿼리 문 수정 -> WHERE Plant.status="active" AND Plant.plnatIdx=입력한 화분 식별자(plantIdx)
      *      3. 만약 조회한 화분이 회원이 보유중이라면..? 이경우까지.. 음 그러니까 이렇게까지 정보를 출력해야한다면 userIdx 받아야함
-     * [GET] /btos/plant/uSelected?plantIdx=&userIdx=
+     * [GET] /btos/plants/uSelected?plantIdx=&userIdx=
      * Query String : plantIdx, userIdx (mandatory: Y)
      */
     @ResponseBody
@@ -71,12 +71,9 @@ public class PlantController {
         }
     }
 
-
-    //아래의 3 API 모두 입력한 userIdx를 WHERE(조건)걸어서 바꿔야함
-
     /**
      * 화분 선택 API
-     * [PATCH] /btos/plant/select
+     * [PATCH] /btos/plants/select
      * RequestBody : PatchSelectPlantReq - 필드명 userIdx, futurePlant(=uPlantIdx) (mandatory: Y)
      */
     @ResponseBody
@@ -95,7 +92,7 @@ public class PlantController {
 
     /**
      * 화분 구매(보유) API
-     * [POST] /btos/plant/buy
+     * [POST] /btos/plants/buy
      * RequestBody : PostBuyPlantReq - 필드명 userIdx, plantIdx (mandatory: Y)
      */
     @ResponseBody
@@ -110,6 +107,12 @@ public class PlantController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 화분 점수 반영 및 단계 변경 API
+     * [PATCH] /btos/plants/level
+     */
+
 
     /*
      * 화분 보유중 목록 조회 API
