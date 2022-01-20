@@ -75,6 +75,7 @@ public enum BaseResponseStatus {
 
     // 8000 : 잭
     MODIFY_FAIL_LETTER_STATUS(false,8001,"편지 삭제 실패"),
+    MODIFY_FAIL_BLOCK_STATUS(false,8002,"차단 해제 실패"),
     TEMP4(false, 9000, "conflict 방지용 4");
 
 
