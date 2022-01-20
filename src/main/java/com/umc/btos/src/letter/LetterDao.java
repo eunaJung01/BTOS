@@ -44,7 +44,7 @@ public class LetterDao {
                 getLetterParams); // 한 개의 편지정보를 얻기 위한 jdbcTemplate 함수(Query, 객체 매핑 정보, Params)의 결과 반환
     }
     // 편지 status 변경
-    public int modifyLetterStaus(PatchLetterReq patchLetterReq) {
+    public int modifyLetterStatus(PatchLetterReq patchLetterReq) {
         String modifyLetterStatusQuery = "update Letter set status = ? where letterIdx = ? "; // 해당 userIdx를 만족하는 User를 해당 nickname으로 변경한다.
         Object[] modifyLetterStatusParams = new Object[]{"deleted", patchLetterReq.getLetterIdx()}; // 주입될 값들(status, letterIdx) 순
 
