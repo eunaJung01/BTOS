@@ -47,9 +47,9 @@ public class LetterService {
     }
 
     // 편지 삭제 - status를 deleted로 변경 (Patch)
-    public void modifyLetterStaus(PatchLetterReq patchLetterReq) throws BaseException {
+    public void modifyLetterStatus(PatchLetterReq patchLetterReq) throws BaseException {
         try {
-            int result = letterDao.modifyLetterStaus(patchLetterReq); // 해당 과정이 무사히 수행되면 True(1), 그렇지 않으면 False(0)입니다.
+            int result = letterDao.modifyLetterStatus(patchLetterReq); // 해당 과정이 무사히 수행되면 True(1), 그렇지 않으면 False(0)입니다.
             if (result == 0) { // result값이 0이면 과정이 실패한 것이므로 에러 메서지를 보냅니다.
                 throw new BaseException(MODIFY_FAIL_LETTER_STATUS);
             }
