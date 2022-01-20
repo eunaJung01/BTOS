@@ -87,22 +87,32 @@ public class DiaryProvider {
             // content 복호화
             for (GetDiaryRes diary : diaryList) {
                 if (diary.getIsPublic() == 0) { // private일 경우 (isPublic == 0)
-                    // Diary.content
-                    String diaryContent = diary.getContent();
-                    diary.setContent(new AES128(Secret.PASSWORD_KEY).decrypt(diaryContent));
-
-                    // Done.content
-                    List<GetDoneRes> doneList = diary.getDoneList();
-                    for (int j = 0; j < doneList.size(); j++) {
-                        String doneContent = diary.getDoneList().get(j).getContent();
-                        diary.getDoneList().get(j).setContent(new AES128(Secret.PASSWORD_KEY).decrypt(doneContent));
-                    }
+                    decryptContents(diary);
                 }
             }
             return diaryList;
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // content 복호화
+    public void decryptContents(GetDiaryRes diary) throws BaseException {
+        try {
+            // Diary.content
+            String diaryContent = diary.getContent();
+            diary.setContent(new AES128(Secret.PASSWORD_KEY).decrypt(diaryContent));
+
+            // Done.content
+            List<GetDoneRes> doneList = diary.getDoneList();
+            for (int j = 0; j < doneList.size(); j++) {
+                String doneContent = diary.getDoneList().get(j).getContent();
+                diary.getDoneList().get(j).setContent(new AES128(Secret.PASSWORD_KEY).decrypt(doneContent));
+            }
+
+        } catch (Exception ignored) {
+            throw new BaseException(DIARY_DECRYPTION_ERROR); // 일기 복호화에 실패하였습니다.
         }
     }
 
