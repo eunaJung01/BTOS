@@ -75,7 +75,7 @@ public class LetterController {
         try {
 
             PatchLetterReq patchLetterReq = new PatchLetterReq(letterIdx);
-            letterService.modifyLetterStaus(patchLetterReq);
+            letterService.modifyLetterStatus(patchLetterReq);
             String result = "편지가 삭제되었습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
