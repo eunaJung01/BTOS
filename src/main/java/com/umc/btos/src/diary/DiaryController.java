@@ -128,4 +128,20 @@ public class DiaryController {
         }
     }
 
+    /*
+     * 일기 조회
+     * [GET] /btos/diary?diaryIdx=
+     */
+    @ResponseBody
+    @GetMapping("")
+    public BaseResponse<GetDiaryRes> getDiary(@RequestParam("diaryIdx") int diaryIdx) {
+        try {
+            GetDiaryRes diary = diaryProvider.getDiary(diaryIdx);
+            return new BaseResponse<>(diary);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
 }

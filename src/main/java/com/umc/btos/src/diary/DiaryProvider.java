@@ -106,4 +106,19 @@ public class DiaryProvider {
         }
     }
 
+    /*
+     * 일기 조회
+     * [GET] /btos/diary?diaryIdx=
+     */
+    public GetDiaryRes getDiary(int diaryIdx) throws BaseException {
+        try {
+            GetDiaryRes diary = diaryDao.getDiary(diaryIdx); // 일기 정보 저장
+            diary.setDoneList(diaryDao.getDoneList(diaryIdx)); // done list 정보 저장
+            return diary;
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }

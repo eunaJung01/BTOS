@@ -151,4 +151,17 @@ public class DiaryDao {
                 ), diaryIdx);
     }
 
+    // 일기 조회
+    public GetDiaryRes getDiary(int diaryIdx) {
+        String query = "SELECT * FROM Diary WHERE diaryIdx = ?";
+        return this.jdbcTemplate.queryForObject(query,
+                (rs, rowNum) -> new GetDiaryRes(
+                        rs.getInt("diaryIdx"),
+                        rs.getInt("emotionIdx"),
+                        rs.getString("diaryDate"),
+                        rs.getInt("isPublic"),
+                        rs.getString("content")
+                ), diaryIdx);
+    }
+
 }
