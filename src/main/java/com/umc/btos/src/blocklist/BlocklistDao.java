@@ -3,11 +3,13 @@ package com.umc.btos.src.blocklist;
 
 import com.umc.btos.src.blocklist.model.*;
 
+import com.umc.btos.src.letter.model.GetLetterRes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 @Repository
 public class BlocklistDao {
@@ -33,6 +35,18 @@ public class BlocklistDao {
         Object[] modifyBlockStatusParams = new Object[]{"deleted", patchBlocklistReq.getBlockIdx()}; // 주입될 값들(status, blockIdx) 순
 
         return this.jdbcTemplate.update(modifyBlockStatusQuery, modifyBlockStatusParams); // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
+    }
+
+    //모든차단조회 API
+    public List<GetBlocklistRes> getBlockList(int userIdx) {
+        String getBlockQuery = "select blockIdx,blockedUserIdx  from BlockList where userIdx=? and status=\"active\"";
+        int getBlocckParams = userIdx;
+
+        return this.jdbcTemplate.query(getBlockQuery,
+                (rs, rowNum) -> new GetBlocklistRes(
+                        rs.getInt("blockIdx"),
+                        rs.getInt("blockedUserIdx")), // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
+                getBlocckParams);
     }
 
 }
