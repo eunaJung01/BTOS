@@ -53,7 +53,6 @@ public class PlantService {
             else //변경 실패시
                 return MODIFY_FAIL_STATUS;
         } catch (Exception exception) {
-            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -66,7 +65,6 @@ public class PlantService {
             else //구매 실패시
                 return MODIFY_FAIL_BUY_PLANT;
         } catch (Exception exception) {
-            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
