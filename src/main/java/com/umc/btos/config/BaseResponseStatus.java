@@ -76,6 +76,7 @@ public enum BaseResponseStatus {
     // 8000 : 잭
     MODIFY_FAIL_LETTER_STATUS(false,8001,"편지 삭제 실패"),
     MODIFY_FAIL_BLOCK_STATUS(false,8002,"차단 해제 실패"),
+    GET_FAIL_USERIDX(false, 8003,"해당 유저의 인덱스가 입력되지않았습니다."),
     TEMP4(false, 9000, "conflict 방지용 4");
 
 
