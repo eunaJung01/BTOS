@@ -6,6 +6,7 @@ import com.umc.btos.src.blocklist.model.*;
 import com.umc.btos.src.blocklist.BlocklistProvider;
 import com.umc.btos.src.blocklist.BlocklistService;
 
+import com.umc.btos.src.letter.model.PatchLetterReq;
 import com.umc.btos.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,5 +46,21 @@ public class BlocklistController {
         }
 
     }
-
+    /**
+     * 차단 해제 API
+     * [PATCH] /btos/blocklists/:blockIdx
+     */
+    @ResponseBody
+    @PatchMapping("/{blockIdx}")
+    // Path-variable
+    public BaseResponse<String> modifyBlock(@PathVariable("blockIdx") int blockIdx) {
+        try {
+            PatchBlocklistReq patchBlocklistReq = new PatchBlocklistReq(blockIdx);
+            blocklistService.modifyBlockStatus(patchBlocklistReq);
+            String result = "차단이 해제되었습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }
