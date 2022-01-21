@@ -8,10 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import static com.umc.btos.utils.ValidationRegex.*;
 
 import com.umc.btos.config.secret.Secret; // 테스트용
 import io.jsonwebtoken.*; // 테스트용
 import static com.umc.btos.config.BaseResponseStatus.*; // 테스트용
+
 
 
 @RestController
@@ -42,7 +44,26 @@ public class UserController {
     @ResponseBody
     @PostMapping("")
     public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq){
-        // 형식적 validation은 클라이언트 단에서 처리
+
+        // ***형식적 validation***
+        // email 값 존재 검사
+        if (postUserReq.getEmail() == null) { // null 값 시 오류 메시지
+            return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
+        }
+        // email 형식 검사
+        if (!isRegexEmail(postUserReq.getEmail())) { // email@domain.xxx와 같은 형식인지 검사. 형식이 올바르지 않다면 에러 메시지
+            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
+        }
+
+        // nickname 값 존재 검사
+        if (postUserReq.getNickName() == null) { // null 값 시 오류 메시지
+            return new BaseResponse<>(POST_USERS_EMPTY_NICKNAME);
+        }
+        // nickname 형식 검사
+        if (postUserReq.getNickName().length() > 10) { // 10글자 초과 시 오류 메시지
+            return new BaseResponse<>(POST_USERS_INVALID_NICKNAME);
+        }
+
 
         try {
             PostUserRes postUserRes = userService.createUser(postUserReq);
