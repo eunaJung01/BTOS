@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.umc.btos.config.BaseResponseStatus.*;
@@ -71,14 +72,27 @@ public class DiaryProvider {
 
     /*
      * Archive 조회 - 달별 일기 리스트
-     * [GET] /diaries/diarylist?userIdx=&date=
+     * [GET] /diaries/diaryList?userIdx=&date=&search=&startDate=&lastDate=
      * date = YYYY-MM
+     * search = 검색할 문장이나 단어 (String)
+     * startDate, lastDate = 날짜 기간 설정 (YYYY-MM-DD ~ YYYY-MM-DD)
      * 최신순 정렬 (diaryDate 기준 내림차순 정렬)
      */
-    public List<GetDiaryRes> getDiaryList(int userIdx, String date) throws BaseException {
+    public List<GetDiaryRes> getDiaryList(String[] params) throws BaseException {
         try {
-            // diaryList : 한달 단위로 저장된 일기들에 대한 모든 정보를 저장
-            List<GetDiaryRes> diaryList = diaryDao.getDiaryList(userIdx, date);
+            // String[] params = new String[]{userIdx, date, search, startDate, lastDate};
+            int userIdx = Integer.parseInt(params[0]);
+            String date = params[1];
+            String search = params[2];
+            String startDate = params[3];
+            String endDate = params[4];
+
+            if (date != null) { // 기간 설정 조회가 아닐 경우 = 한달 단위로 조회 (date)
+                startDate = date + "-01";
+                endDate = date + "-31";
+            }
+            // diaryList : 한달 단위 또는 지정된 날짜 범위에서 저장된 일기들에 대한 모든 정보를 저장
+            List<GetDiaryRes> diaryList = diaryDao.getDiaryList(userIdx, startDate, endDate);
 
             // 각 일기에 해당하는 done list 정보 저장
             for (GetDiaryRes diary : diaryList) {

@@ -5,8 +5,10 @@ import com.umc.btos.src.diary.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -112,15 +114,23 @@ public class DiaryController {
 
     /*
      * Archive 조회 - 달별 일기 리스트
-     * [GET] /diaries/diarylist?userIdx=&date=
+     * [GET] /diaries/diaryList?userIdx=&date=&search=&startDate=&endDate=
      * date = YYYY-MM
+     * search = 검색할 문장이나 단어 (String)
+     * startDate, lastDate = 날짜 기간 설정 (YYYY-MM-DD ~ YYYY-MM-DD)
      * 최신순 정렬 (diaryDate 기준 내림차순 정렬)
      */
     @ResponseBody
     @GetMapping("/diaryList")
-    public BaseResponse<List<GetDiaryRes>> getDiaryList(@RequestParam("userIdx") int userIdx, @RequestParam("date") String date) {
+    public BaseResponse<List<GetDiaryRes>> getDiaryList(@RequestParam String userIdx, @RequestParam(required = false) String date, @RequestParam(required = false) String search, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
         try {
-            List<GetDiaryRes> diaryList = diaryProvider.getDiaryList(userIdx, date);
+            if (startDate != null && endDate == null) {
+                LocalDate now = LocalDate.now();
+                endDate = now.toString();
+            }
+            String[] params = new String[]{userIdx, date, search, startDate, endDate};
+
+            List<GetDiaryRes> diaryList = diaryProvider.getDiaryList(params);
             return new BaseResponse<>(diaryList);
 
         } catch (BaseException exception) {

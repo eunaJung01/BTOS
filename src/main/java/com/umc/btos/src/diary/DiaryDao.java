@@ -126,10 +126,7 @@ public class DiaryDao {
     }
 
     // 달별 일기 리스트 반환 (최신순 정렬 - diaryDate 기준 내림차순 정렬)
-    public List<GetDiaryRes> getDiaryList(int userIdx, String date) {
-        String startDate = date + "-01";
-        String endDate = date + "-31";
-
+    public List<GetDiaryRes> getDiaryList(int userIdx, String startDate, String endDate) {
         String query = "SELECT * FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(diaryDate, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d') ORDER BY diaryDate DESC";
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetDiaryRes(
