@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/btos/mailbox")
+@RequestMapping("/mailboxes")
 public class MailboxController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -26,7 +26,7 @@ public class MailboxController {
 
     /*
      * 우편함 - 일기 조회
-     * [GET] /btos/mailbox?diaryIdx=
+     * [GET] /mailboxes?diaryIdx=
      */
     @ResponseBody
     @GetMapping("")

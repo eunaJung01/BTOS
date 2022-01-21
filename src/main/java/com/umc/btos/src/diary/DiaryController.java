@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/btos/diary")
+@RequestMapping("/diaries")
 public class DiaryController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -26,7 +26,7 @@ public class DiaryController {
 
     /*
      * 일기 작성 여부 확인
-     * [GET] /btos/diary/:userIdx/:date
+     * [GET] /diaries/:userIdx/:date
      */
     @ResponseBody
     @GetMapping("/{userIdx}/{date}")
@@ -42,7 +42,7 @@ public class DiaryController {
 
     /*
      * 일기 저장
-     * [POST] /btos/diary
+     * [POST] /diaries
      */
     @ResponseBody
     @PostMapping("")
@@ -58,7 +58,7 @@ public class DiaryController {
 
     /*
      * 일기 수정
-     * [PUT] /btos/diary
+     * [PUT] /diaries
      */
     @ResponseBody
     @PutMapping("")
@@ -76,7 +76,7 @@ public class DiaryController {
 
     /*
      * 일기 삭제
-     * [PATCH] /btos/diary/:diaryIdx
+     * [PATCH] /diaries/:diaryIdx
      */
     @ResponseBody
     @PatchMapping("/{diaryIdx}")
@@ -94,7 +94,7 @@ public class DiaryController {
 
     /*
      * Archive 조회 - 캘린더
-     * [GET] /btos/diary/calendar?userIdx=&date=&type
+     * [GET] /diaries/calendar?userIdx=&date=&type
      * date = YYYY-MM
      * type (조회 방식) = 1. doneList : 나뭇잎 색으로 done list 개수 표현 / 2. emotion : 감정 이모티콘
      */
@@ -112,7 +112,7 @@ public class DiaryController {
 
     /*
      * Archive 조회 - 달별 일기 리스트
-     * [GET] /btos/diarylist?userIdx=&date=
+     * [GET] /diaries/diarylist?userIdx=&date=
      * date = YYYY-MM
      * 최신순 정렬
      */
@@ -130,7 +130,7 @@ public class DiaryController {
 
     /*
      * 일기 조회
-     * [GET] /btos/diary?diaryIdx=
+     * [GET] /diaries?diaryIdx=
      */
     @ResponseBody
     @GetMapping("")
