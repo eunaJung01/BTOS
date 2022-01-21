@@ -71,8 +71,7 @@ public enum BaseResponseStatus {
     INVALIDE_IDX_PLANT(false, 7015, "이미 선택된 화분입니다."),
 
     MODIFY_FAIL_PREMIUM(false, 7020, "프리미엄 계정 변경에 실패하였습니다."),
-
-
+    MODIFY_FAIL_WITHDRAW(false, 7021, "청약철회에 실패하였습니다."),
 
 
 
