@@ -20,7 +20,7 @@ public class DiaryDao {
 
     // 해당 날짜에 일기 작성 여부 확인 (1 : 작성함, 0 : 작성 안 함)
     public int checkDiaryDate(int userIdx, String date) {
-        String query = "SELECT EXISTS (SELECT diaryDate FROM Diary WHERE userIdx = ? AND diaryDate = ?)";
+        String query = "SELECT EXISTS (SELECT diaryDate FROM Diary WHERE userIdx = ? AND diaryDate = ? AND status = 'active')";
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, date);
     }
 
@@ -56,20 +56,20 @@ public class DiaryDao {
 
     // 일기 수정
     public int modifyDiary(PutDiaryReq putDiaryReq) {
-        String query = "UPDATE Diary SET emotionIdx = ?, diaryDate = ?, isPublic = ?, content = ? WHERE diaryIdx = ?";
+        String query = "UPDATE Diary SET emotionIdx = ?, diaryDate = ?, isPublic = ?, content = ? WHERE diaryIdx = ? AND status = 'active'";
         Object[] params = new Object[]{putDiaryReq.getEmotionIdx(), putDiaryReq.getDiaryDate(), putDiaryReq.getIsPublic(), putDiaryReq.getDiaryContent(), putDiaryReq.getDiaryIdx()};
         return this.jdbcTemplate.update(query, params);
     }
 
     // 해당 일기의 모든 doneIdx를 List 형태로 반환
     public List getDoneIdxList(PutDiaryReq putDiaryReq) {
-        String query = "SELECT doneIdx FROM Done WHERE diaryIdx = ?";
+        String query = "SELECT doneIdx FROM Done WHERE diaryIdx = ? AND status = 'active'";
         return this.jdbcTemplate.queryForList(query, int.class, putDiaryReq.getDiaryIdx());
     }
 
     // done list 수정
     public int modifyDoneList(PutDiaryReq putDiaryReq, List doneIdxList) {
-        String query = "UPDATE Done SET content = ? WHERE doneIdx = ?";
+        String query = "UPDATE Done SET content = ? WHERE doneIdx = ? AND status = 'active'";
         for (int i = 0; i < doneIdxList.size(); i++) {
             int result = this.jdbcTemplate.update(query, putDiaryReq.getDoneList().get(i), doneIdxList.get(i));
 
@@ -82,14 +82,14 @@ public class DiaryDao {
 
     // 일기 삭제 - Diary.status : active -> deleted
     public int deleteDiary(int diaryIdx) {
-        String query = "UPDATE Diary SET status = ? WHERE diaryIdx = ?";
+        String query = "UPDATE Diary SET status = ? WHERE diaryIdx = ? AND status = 'active'";
         Object[] params = new Object[]{"deleted", diaryIdx};
         return this.jdbcTemplate.update(query, params);
     }
 
     // done list 삭제 - Done.status : active -> deleted
     public int deleteDone(int diaryIdx) {
-        String query = "UPDATE Done SET status = ? WHERE diaryIdx = ?";
+        String query = "UPDATE Done SET status = ? WHERE diaryIdx = ? AND status = 'active'";
         Object[] params = new Object[]{"deleted", diaryIdx};
         return this.jdbcTemplate.update(query, params);
     }
@@ -99,7 +99,7 @@ public class DiaryDao {
         String startDate = date + "-01";
         String endDate = date + "-31";
 
-        String query = "SELECT diaryDate FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(diaryDate, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d') ORDER BY diaryDate ASC";
+        String query = "SELECT diaryDate FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(diaryDate, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d') AND status = 'active' ORDER BY diaryDate ASC";
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetCalendarRes(
@@ -109,25 +109,25 @@ public class DiaryDao {
 
     // 일기 별 done list 개수 반환 : COUNT(Done.diaryIdx)
     public int setDoneListNum(int userIdx, String diaryDate) {
-        String query = "SELECT COUNT(*) FROM Done WHERE diaryIdx = (SELECT diaryIdx FROM Diary WHERE userIdx = ? AND diaryDate = ?)";
+        String query = "SELECT COUNT(*) FROM Done WHERE diaryIdx = (SELECT diaryIdx FROM Diary WHERE userIdx = ? AND diaryDate = ? AND status = 'active') AND status = 'active'";
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, diaryDate);
     }
 
     // 일기 별 감정 이모티콘 식별자 반환 : Diary.emotionIdx
     public int setEmotion(int userIdx, String diaryDate) {
-        String query = "SELECT emotionIdx FROM Diary WHERE userIdx = ? AND diaryDate = ?";
+        String query = "SELECT emotionIdx FROM Diary WHERE userIdx = ? AND diaryDate = ? AND status = 'active'";
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, diaryDate);
     }
 
     // 프리미엄 가입자인지 확인 (1 : 프리미엄 O, 0 : 프리미엄 X)
     public String isPremium(int userIdx) {
-        String query = "SELECT isPremium FROM User WHERE userIdx = ?";
+        String query = "SELECT isPremium FROM User WHERE userIdx = ? AND status = 'active'";
         return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
     }
 
     // 달별 일기 리스트 반환 (최신순 정렬 - diaryDate 기준 내림차순 정렬)
     public List<GetDiaryRes> getDiaryList(int userIdx, String startDate, String endDate) {
-        String query = "SELECT * FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(diaryDate, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d') ORDER BY diaryDate DESC";
+        String query = "SELECT * FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(diaryDate, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d') AND status = 'active' ORDER BY diaryDate DESC";
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetDiaryRes(
                         rs.getInt("diaryIdx"),
@@ -140,7 +140,7 @@ public class DiaryDao {
 
     // 일기 조회
     public GetDiaryRes getDiary(int diaryIdx) {
-        String query = "SELECT * FROM Diary WHERE diaryIdx = ?";
+        String query = "SELECT * FROM Diary WHERE diaryIdx = ? AND status = 'active'";
         return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new GetDiaryRes(
                         rs.getInt("diaryIdx"),
@@ -153,7 +153,7 @@ public class DiaryDao {
 
     // done list 조회
     public List<GetDoneRes> getDoneList(int diaryIdx) {
-        String query = "SELECT * FROM Done WHERE diaryIdx = ?";
+        String query = "SELECT * FROM Done WHERE diaryIdx = ? AND status = 'active'";
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetDoneRes(
                         rs.getInt("doneIdx"),
