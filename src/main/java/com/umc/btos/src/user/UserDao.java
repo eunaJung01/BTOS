@@ -34,7 +34,7 @@ public class UserDao {
 
     // 이메일 확인
     public int checkEmail(String email) {
-        String checkEmailQuery = "select exists(select email from User where email = ?)"; // 이메일 중복되는 지 확인
+        String checkEmailQuery = "select exists(select email from User where email = ? and status = 'active')"; // 이메일 중복되는 지 확인(탈퇴 후 재가입 고려하여 active인 유저 중에서만 고려)
         String checkEmailParams = email;
         return this.jdbcTemplate.queryForObject(checkEmailQuery,
                 int.class,
@@ -43,7 +43,7 @@ public class UserDao {
 
     // 해당 userIdx를 갖는 유저조회
     public GetUserRes getUser(int userIdx) {
-        String getUserQuery = "select * from User where userIdx = ?"; // 해당 userIdx를 만족하는 유저를 조회하는 쿼리
+        String getUserQuery = "select * from User where userIdx = ? and status = 'active'"; // 해당 userIdx를 만족하는 유저를 조회하는 쿼리
         int getUserParams = userIdx;
         return this.jdbcTemplate.queryForObject(getUserQuery,
                 (rs, rowNum) -> new GetUserRes(
