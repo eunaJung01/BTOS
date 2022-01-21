@@ -102,7 +102,10 @@ public class DiaryService {
      * [PUT] /btos/diary
      */
     public void modifyDiary(PutDiaryReq putDiaryReq) throws BaseException {
-        // TODO : 형식적 validation - 당일에 작성한 일기가 아니라면 발송 불가
+        // TODO : 의미적 validation - 일기는 하루에 하나만 작성 가능, 당일에 작성한 일기가 아니라면 발송 불가
+        // 1. 일기는 하루에 하나씩만 작성 가능
+        checkDiaryDate(putDiaryReq.getUserIdx(), putDiaryReq.getDiaryDate());
+        // 2. 당일에 작성한 일기가 아니라면 발송 불가
         checkPublicDate(putDiaryReq.getDiaryDate(), putDiaryReq.getIsPublic());
 
         // isPublic == 0(private)인 경우 -> Diary.content & Done.content 부분 암호화하여 저장
