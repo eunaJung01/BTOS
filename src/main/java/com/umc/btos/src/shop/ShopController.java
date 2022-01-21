@@ -48,5 +48,17 @@ public class ShopController {
      * [PATCH] /btos/shops/:userIdx/withdraw
      * Path Variable : userIdx (mandatory: Y)
      */
+    @ResponseBody
+    @PatchMapping("{userIdx}/withdraw")
+    public BaseResponse<String> withdrawPremium(@PathVariable("userIdx") int userIdx) {
+        try{
+            // 변경 성공 시 : "요청에 성공하였습니다." - 1000
+            // 변경 실패 시 : "청약철회에 실패하였습니다." - 7021
+            // DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
+            return new BaseResponse<>(shopService.withdrawPremium(userIdx));
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 
 }
