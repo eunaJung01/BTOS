@@ -12,7 +12,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/btos/plants")w
+@RequestMapping("/btos/plants")
 public class PlantController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
