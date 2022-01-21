@@ -68,7 +68,7 @@ public class DiaryController {
         try {
             diaryService.modifyDiary(putDiaryReq);
 
-            String result = "일기 - diaryIdx=" + putDiaryReq.getDiaryIdx() + " 수정 완료";
+            String result = "일기(diaryIdx=" + putDiaryReq.getDiaryIdx() + ") 수정 완료";
             return new BaseResponse<>(result);
 
         } catch (BaseException exception) {
