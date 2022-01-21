@@ -18,7 +18,7 @@ public class DiaryDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    // 해당 날짜에 일기 작성 여부 확인
+    // 해당 날짜에 일기 작성 여부 확인 (1 : 작성함, 0 : 작성 안 함)
     public int checkDiaryDate(int userIdx, String date) {
         String query = "SELECT EXISTS (SELECT diaryDate FROM Diary WHERE userIdx = ? AND diaryDate = ?)";
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, date);
@@ -94,7 +94,7 @@ public class DiaryDao {
         return this.jdbcTemplate.update(query, params);
     }
 
-    // 캘린더 조회 (일기 해당 날짜(diaryDate) 기준 오름차순 정렬)
+    // 캘린더 조회 (diaryDate(일기의 해당 날짜) 기준 오름차순 정렬)
     public List<GetCalendarRes> getCalendarList(int userIdx, String date) {
         String startDate = date + "-01";
         String endDate = date + "-31";
@@ -113,19 +113,19 @@ public class DiaryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, diaryDate);
     }
 
-    // 일기 별 감정 이모티콘 반환 : Diary.emotionIdx
+    // 일기 별 감정 이모티콘 식별자 반환 : Diary.emotionIdx
     public int setEmotion(int userIdx, String diaryDate) {
         String query = "SELECT emotionIdx FROM Diary WHERE userIdx = ? AND diaryDate = ?";
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, diaryDate);
     }
 
-    // 프리미엄 가입자인지 확인
+    // 프리미엄 가입자인지 확인 (1 : 프리미엄 O, 0 : 프리미엄 X)
     public String isPremium(int userIdx) {
         String query = "SELECT isPremium FROM User WHERE userIdx = ?";
         return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
     }
 
-    // 달별 일기 리스트 반환
+    // 달별 일기 리스트 반환 (최신순 정렬 - diaryDate 기준 내림차순 정렬)
     public List<GetDiaryRes> getDiaryList(int userIdx, String date) {
         String startDate = date + "-01";
         String endDate = date + "-31";
@@ -141,16 +141,6 @@ public class DiaryDao {
                 ), userIdx, startDate, endDate);
     }
 
-    // done list 반환
-    public List<GetDoneRes> getDoneList(int diaryIdx) {
-        String query = "SELECT * FROM Done WHERE diaryIdx = ?";
-        return this.jdbcTemplate.query(query,
-                (rs, rowNum) -> new GetDoneRes(
-                        rs.getInt("doneIdx"),
-                        rs.getString("content")
-                ), diaryIdx);
-    }
-
     // 일기 조회
     public GetDiaryRes getDiary(int diaryIdx) {
         String query = "SELECT * FROM Diary WHERE diaryIdx = ?";
@@ -160,6 +150,16 @@ public class DiaryDao {
                         rs.getInt("emotionIdx"),
                         rs.getString("diaryDate"),
                         rs.getInt("isPublic"),
+                        rs.getString("content")
+                ), diaryIdx);
+    }
+
+    // done list 조회
+    public List<GetDoneRes> getDoneList(int diaryIdx) {
+        String query = "SELECT * FROM Done WHERE diaryIdx = ?";
+        return this.jdbcTemplate.query(query,
+                (rs, rowNum) -> new GetDoneRes(
+                        rs.getInt("doneIdx"),
                         rs.getString("content")
                 ), diaryIdx);
     }

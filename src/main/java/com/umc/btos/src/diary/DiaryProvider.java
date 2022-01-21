@@ -26,7 +26,7 @@ public class DiaryProvider {
 
     /*
      * 일기 작성 여부 확인
-     * [GET] /btos/diary/:date
+     * [GET] /diaries/:date
      */
     public GetCheckDiaryRes checkDiaryDate(int userIdx, String date) throws BaseException {
         try {
@@ -39,20 +39,21 @@ public class DiaryProvider {
 
     /*
      * Archive 조회 - 캘린더
-     * [GET] /btos/diary/calendar?userIdx=&date=&type
+     * [GET] /diaries/calendar?userIdx=&date=&type
      * date = YYYY-MM
      * type (조회 방식) = 1. doneList : 나뭇잎 색으로 done list 개수 표현 / 2. emotion : 감정 이모티콘
      */
     public List<GetCalendarRes> getCalendar(int userIdx, String date, String type) throws BaseException {
-        // TODO : 형식적 validaion - 프리미엄 미가입자는 감정 이모티콘으로 조회 불가
+        // TODO : 의미적 validaion - 프리미엄 미가입자는 감정 이모티콘으로 조회 불가
         if (type.compareTo("emotion") == 0 && diaryDao.isPremium(userIdx).compareTo("free") == 0) {
             throw new BaseException(DIARY_NONPREMIUM_USER); // 프리미엄 가입이 필요합니다.
         }
 
         try {
-            List<GetCalendarRes> calendar = diaryDao.getCalendarList(userIdx, date); // 캘린더 (날짜별 일기 정보 목록)
+            // 캘린더 : 한달 단위로 날짜마다 저장된 일기에 대한 정보(done list 개수 또는 감정 이모티콘 식별자)를 저장
+            List<GetCalendarRes> calendar = diaryDao.getCalendarList(userIdx, date);
 
-            if (type.compareTo("doneList") == 0) { // done list로 조회 -> 일기 별 doneList 개수 정보 저장 (set doneListNum)
+            if (type.compareTo("doneList") == 0) { // done list로 조회 -> 일기 별 doneList 개수 저장 (set doneListNum)
                 for (GetCalendarRes dateInfo : calendar) {
                     dateInfo.setDoneListNum(diaryDao.setDoneListNum(userIdx, dateInfo.getDiaryDate()));
                 }
@@ -70,13 +71,14 @@ public class DiaryProvider {
 
     /*
      * Archive 조회 - 달별 일기 리스트
-     * [GET] /btos/diarylist?userIdx=&date=
+     * [GET] /diaries/diarylist?userIdx=&date=
      * date = YYYY-MM
-     * 최신순 정렬
+     * 최신순 정렬 (diaryDate 기준 내림차순 정렬)
      */
     public List<GetDiaryRes> getDiaryList(int userIdx, String date) throws BaseException {
         try {
-            List<GetDiaryRes> diaryList = diaryDao.getDiaryList(userIdx, date); // 달별 일기 정보 저장
+            // diaryList : 한달 단위로 저장된 일기들에 대한 모든 정보를 저장
+            List<GetDiaryRes> diaryList = diaryDao.getDiaryList(userIdx, date);
 
             // 각 일기에 해당하는 done list 정보 저장
             for (GetDiaryRes diary : diaryList) {
@@ -118,12 +120,12 @@ public class DiaryProvider {
 
     /*
      * 일기 조회
-     * [GET] /btos/diary?diaryIdx=
+     * [GET] /diaries?diaryIdx=
      */
     public GetDiaryRes getDiary(int diaryIdx) throws BaseException {
         try {
-            GetDiaryRes diary = diaryDao.getDiary(diaryIdx); // 일기 정보 저장
-            diary.setDoneList(diaryDao.getDoneList(diaryIdx)); // done list 정보 저장
+            GetDiaryRes diary = diaryDao.getDiary(diaryIdx); // 일기의 정보
+            diary.setDoneList(diaryDao.getDoneList(diaryIdx)); // done list 정보
 
             // content 복호화
             if (diary.getIsPublic() == 0) { // private일 경우 (isPublic == 0)

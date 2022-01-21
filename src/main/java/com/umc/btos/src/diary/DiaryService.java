@@ -28,7 +28,7 @@ public class DiaryService {
 
     /*
      * 일기 저장
-     * [POST] /btos/diary
+     * [POST] /diaries
      */
     public PostDiaryRes saveDiary(PostDiaryReq postDiaryReq) throws BaseException {
         // TODO : 의미적 validation - 일기는 하루에 하나만 작성 가능, 당일에 작성한 일기가 아니라면 발송 불가
@@ -68,7 +68,9 @@ public class DiaryService {
     // 일기 작성 또는 수정 시 의미적 validaion - 당일에 작성한 일기가 아니라면 발송 불가
     public void checkPublicDate(String diaryDate, int isPublic) throws BaseException {
         LocalDate now = LocalDate.now(); // 오늘 날짜 (YYYY-MM-DD)
-        if (diaryDate.compareTo(now.toString()) != 0 && isPublic == 1) { // 작성일 != 일기의 해당 날짜일 경우 발송(public으로 지정) 불가
+
+        // 작성일과 일기의 해당 날짜가 다를 경우 발송(isPublic == 1) 불가
+        if (diaryDate.compareTo(now.toString()) != 0 && isPublic == 1) {
             throw new BaseException(UNPRIVATE_DATE); // 당일에 작성한 일기만 발송 가능합니다!
         }
     }
@@ -86,7 +88,7 @@ public class DiaryService {
     // private 일기 암호화 - Done.content
     public List encryptDoneContents(List doneList) throws BaseException {
         try {
-            List doneList_encrypted = new ArrayList(); // 암호화된 done list 저장하는 리스트
+            List doneList_encrypted = new ArrayList(); // 암호화된 done list 내용들을 저장하는 리스트
             for (int i = 0; i < doneList.size(); i++) {
                 doneList_encrypted.add(new AES128(Secret.PASSWORD_KEY).encrypt(doneList.get(i).toString()));
             }
@@ -99,7 +101,7 @@ public class DiaryService {
 
     /*
      * 일기 수정
-     * [PUT] /btos/diary
+     * [PUT] /diaries
      */
     public void modifyDiary(PutDiaryReq putDiaryReq) throws BaseException {
         // TODO : 의미적 validation - 일기는 하루에 하나만 작성 가능, 당일에 작성한 일기가 아니라면 발송 불가
@@ -126,7 +128,7 @@ public class DiaryService {
             }
 
             // Done Table 수정
-            List doneIdxList = diaryDao.getDoneIdxList(putDiaryReq); // 해당 일기의 모든 doneIdx (List)
+            List doneIdxList = diaryDao.getDoneIdxList(putDiaryReq); // 해당 일기의 모든 doneIdx (List 형태로 저장)
             if (diaryDao.modifyDoneList(putDiaryReq, doneIdxList) == 0) {
                 throw new BaseException(MODIFY_FAIL_DONELIST); // 일기 수정 실패 - done list
             }
@@ -138,7 +140,7 @@ public class DiaryService {
 
     /*
      * 일기 삭제
-     * [PATCH] /btos/diary/:diaryIdx
+     * [PATCH] /diaries/:diaryIdx
      */
     public void deleteDiary(int diaryIdx) throws BaseException {
         try {
