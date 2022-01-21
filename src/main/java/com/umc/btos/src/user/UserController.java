@@ -9,6 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import com.umc.btos.config.secret.Secret; // 테스트용
+import io.jsonwebtoken.*; // 테스트용
+import static com.umc.btos.config.BaseResponseStatus.*; // 테스트용
+
 
 @RestController
 @RequestMapping("/btos/users")
@@ -86,7 +90,28 @@ public class UserController {
 
     @ResponseBody
     @GetMapping("/{userIdx}") //path variable
-    public BaseResponse<GetUserRes> getUser(@PathVariable("userIdx") int userIdx) {
+    public BaseResponse<GetUserRes> getUser(@PathVariable("userIdx") int userIdx) throws BaseException {
+
+// *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
+        String jwt = jwtService.createJwt(userIdx);
+        Jws<Claims> claims;
+        try {
+            claims = Jwts.parser()
+                    .setSigningKey(Secret.JWT_SECRET_KEY)
+                    .parseClaimsJws(jwt);
+        } catch (Exception ignored) {
+            throw new BaseException(INVALID_JWT);
+        }
+        int userIdxByJwt = claims.getBody().get("userIdx", Integer.class);
+
+        // jwt에서 idx 추출.
+        // int userIdxByJwt = jwtService.getUserIdx(); 소셜 로그인 테스트 후 주석해제.
+        //userIdx와 접근한 유저가 같은지 확인
+        if(userIdx != userIdxByJwt){
+            return new BaseResponse<>(INVALID_USER_JWT);
+        }
+        //같다면 변경
+// *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
 
         try {
             GetUserRes getUserRes = userProvider.getUser(userIdx);
