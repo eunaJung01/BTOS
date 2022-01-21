@@ -39,13 +39,11 @@ public class DiaryService {
 
         // isPublic == 0(private)인 경우 -> Diary.content & Done.content 부분 암호화하여 저장
         if (postDiaryReq.getIsPublic() == 0) {
-            // Diary.content 암호화
-            String diaryContent_encrypted = encryptDiaryContent(postDiaryReq.getDiaryContent());
-            postDiaryReq.setDiaryContent(diaryContent_encrypted); // diaryContent 필드값 변경
+            String diaryContent_encrypted = encryptDiaryContent(postDiaryReq.getDiaryContent()); // Diary.content 암호화
+            postDiaryReq.setDiaryContent(diaryContent_encrypted);
 
-            // Done.content 암호화
-            List doneList_encrypted = encryptDoneContents(postDiaryReq.getDoneList());
-            postDiaryReq.setDoneList(doneList_encrypted); // doneList 필드값 변경
+            List doneList_encrypted = encryptDoneContents(postDiaryReq.getDoneList()); // Done.content 암호화
+            postDiaryReq.setDoneList(doneList_encrypted);
         }
 
         try {
@@ -112,13 +110,11 @@ public class DiaryService {
 
         // isPublic == 0(private)인 경우 -> Diary.content & Done.content 부분 암호화하여 저장
         if (putDiaryReq.getIsPublic() == 0) {
-            // Diary.content 암호화
-            String diaryContent_encrypted = encryptDiaryContent(putDiaryReq.getDiaryContent());
-            putDiaryReq.setDiaryContent(diaryContent_encrypted); // diaryContent 필드값 변경
+            String diaryContent_encrypted = encryptDiaryContent(putDiaryReq.getDiaryContent()); // Diary.content 암호화
+            putDiaryReq.setDiaryContent(diaryContent_encrypted);
 
-            // Done.content 암호화
-            List doneList_encrypted = encryptDoneContents(putDiaryReq.getDoneList());
-            putDiaryReq.setDoneList(doneList_encrypted); // doneList 필드값 변경
+            List doneList_encrypted = encryptDoneContents(putDiaryReq.getDoneList()); // Done.content 암호화
+            putDiaryReq.setDoneList(doneList_encrypted);
         }
 
         try {
