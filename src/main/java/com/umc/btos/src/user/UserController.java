@@ -49,7 +49,7 @@ public class UserController {
     }
 
     /**
-     * 회원 탈퇴 API
+     * 회원 상태 변경(탈퇴 / 휴면 / 재활성화) API
      * [PATCH] /btos/users/status
      */
     /*
@@ -78,37 +78,6 @@ public class UserController {
 
  */
 
-    /**
-     * 회원 휴면 API
-     * [PATCH] /btos/users/dormant
-     * 답장 받는 것 외 일기와 익명편지는 수신되지 않게
-     * 5일 기준인데 서버에서 자동으로 처리 불가
-     * recOthers -> false, recSimilarAge -> false, status -> dormant
-     */
-    /*
-    @ResponseBody
-    @PatchMapping("/dormant")
-    public BaseResponse<String> deleteUser(@RequestBody PatchUserReq patchUserReq){
-        // 형식적 validation은 클라이언트 단에서 처리
-        try {
-            //jwt에서 idx 추출.
-            int userIdxByJwt = jwtService.getUserIdx();
-
-            //userIdx와 접근한 유저가 같은지 확인
-            if(userIdx != userIdxByJwt){
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
-
-            PatchDeleteReq patchDeleteReq = new PatchDeleteReq(userIdx, user.getEmail(), user.getNickname(), user.getPassword());
-            userService.deleteUser(patchDeleteReq);
-
-            String result = "휴면 상태가 되었습니다.";
-            return new BaseResponse<>(result);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
-    */
 
     /**
      * 프로필 조회 API
