@@ -57,7 +57,8 @@ public enum BaseResponseStatus {
 
     // 5000 : 도기
     TEMP1(false, 9000, "conflict 방지용 1"),
-
+    POST_USERS_EMPTY_NICKNAME(false, 5000, "닉네임을 입력해주세요."),
+    POST_USERS_INVALID_NICKNAME(false, 5001, "닉네임은 10자까지 입력 가능합니다."),
 
     // 6000 : 레마
     TEMP2(false, 9000, "conflict 방지용 2"),
