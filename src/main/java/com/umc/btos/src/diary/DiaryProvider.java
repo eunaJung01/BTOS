@@ -28,9 +28,9 @@ public class DiaryProvider {
      * 일기 작성 여부 확인
      * [GET] /btos/diary/:date
      */
-    public GetCheckDiaryRes checkDiary(int userIdx, String date) throws BaseException {
+    public GetCheckDiaryRes checkDiaryDate(int userIdx, String date) throws BaseException {
         try {
-            return new GetCheckDiaryRes(diaryDao.checkDiary(userIdx, date));
+            return new GetCheckDiaryRes(diaryDao.checkDiaryDate(userIdx, date));
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);

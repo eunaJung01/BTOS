@@ -19,7 +19,7 @@ public class DiaryDao {
     }
 
     // 해당 날짜에 일기 작성 여부 확인
-    public int checkDiary(int userIdx, String date) {
+    public int checkDiaryDate(int userIdx, String date) {
         String query = "SELECT EXISTS (SELECT diaryDate FROM Diary WHERE userIdx = ? AND diaryDate = ?)";
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, date);
     }

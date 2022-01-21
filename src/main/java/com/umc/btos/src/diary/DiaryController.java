@@ -32,7 +32,7 @@ public class DiaryController {
     @GetMapping("/{userIdx}/{date}")
     public BaseResponse<GetCheckDiaryRes> checkDiary(@PathVariable("userIdx") int userIdx, @PathVariable("date") String date) {
         try {
-            GetCheckDiaryRes getCheckDiaryRes = diaryProvider.checkDiary(userIdx, date);
+            GetCheckDiaryRes getCheckDiaryRes = diaryProvider.checkDiaryDate(userIdx, date);
             return new BaseResponse<>(getCheckDiaryRes);
 
         } catch (BaseException exception) {
