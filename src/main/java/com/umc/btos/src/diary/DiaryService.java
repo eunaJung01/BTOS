@@ -31,11 +31,9 @@ public class DiaryService {
      * [POST] /btos/diary
      */
     public PostDiaryRes saveDiary(PostDiaryReq postDiaryReq) throws BaseException {
-        // TODO : 형식적 validation - 일기는 하루에 하나만 작성 가능, 당일에 작성한 일기가 아니라면 발송 불가
+        // TODO : 의미적 validation - 일기는 하루에 하나만 작성 가능, 당일에 작성한 일기가 아니라면 발송 불가
         // 1. 일기는 하루에 하나씩만 작성 가능
-        if (diaryDao.checkDiaryDate(postDiaryReq.getUserIdx(), postDiaryReq.getDiaryDate()) == 1) {
-            throw new BaseException(DIARY_EXISTS); // 일기는 하루에 하나만 작성 가능합니다.
-        }
+        checkDiaryDate(postDiaryReq.getUserIdx(), postDiaryReq.getDiaryDate());
         // 2. 당일에 작성한 일기가 아니라면 발송 불가
         checkPublicDate(postDiaryReq.getDiaryDate(), postDiaryReq.getIsPublic());
 
@@ -60,7 +58,14 @@ public class DiaryService {
         }
     }
 
-    // 일기 작성 또는 수정 시 형식적 validaion - 당일에 작성한 일기가 아니라면 발송 불가
+    // 일기 작성 또는 수정 시 의미적 validaion - 일기는 하루에 하나씩만 작성 가능
+    public void checkDiaryDate(int userIdx, String diaryDate) throws BaseException {
+        if (diaryDao.checkDiaryDate(userIdx, diaryDate) == 1) {
+            throw new BaseException(DIARY_EXISTS); // 일기는 하루에 하나만 작성 가능합니다.
+        }
+    }
+
+    // 일기 작성 또는 수정 시 의미적 validaion - 당일에 작성한 일기가 아니라면 발송 불가
     public void checkPublicDate(String diaryDate, int isPublic) throws BaseException {
         LocalDate now = LocalDate.now(); // 오늘 날짜 (YYYY-MM-DD)
         if (diaryDate.compareTo(now.toString()) != 0 && isPublic == 1) { // 작성일 != 일기의 해당 날짜일 경우 발송(public으로 지정) 불가
