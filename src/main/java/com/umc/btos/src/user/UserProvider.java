@@ -33,6 +33,15 @@ public class UserProvider {
         }
     }
 
+    // 해당 유저의 상태 확인
+    public String checkStatusOfUser(String email) throws BaseException {
+        try {
+            return userDao.checkStatusOfUser(email);
+        } catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     // 해당 userIdx를 갖는 User의 정보 조회
     public GetUserRes getUser(int userIdx) throws BaseException {
         try {
