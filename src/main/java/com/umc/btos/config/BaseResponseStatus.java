@@ -68,7 +68,10 @@ public enum BaseResponseStatus {
 
     MODIFY_FAIL_STATUS(false, 7010, "화분 상태 변경에 실패하였습니다."),
     MODIFY_FAIL_BUY_PLANT(false,7011, "화분 선택에 실패하였습니다."),
-    INVALIDE_IDX_PLANT(false, 7015, "이미 선택된 화분입니다."),
+    MODIFY_FAIL_SCORE(false, 7012, "화분 점수 변경에 실패하였습니다."),
+    MODIFY_FAIL_LEVEL(false, 7013, "화분 단계 변경에 실패하였습니다."),
+
+    INVALID_IDX_PLANT(false, 7015, "이미 선택된 화분입니다."),
 
     MODIFY_FAIL_PREMIUM(false, 7020, "프리미엄 계정 변경에 실패하였습니다."),
     MODIFY_FAIL_WITHDRAW(false, 7021, "청약철회에 실패하였습니다."),
