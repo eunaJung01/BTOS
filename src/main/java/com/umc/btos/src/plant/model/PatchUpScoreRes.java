@@ -16,6 +16,6 @@ import lombok.Setter;
 레벨 증가 시 : 2
  */
 
-public class PatchUpDownScoreRes {
+public class PatchUpScoreRes {
     private int upScoreOrLevel;
 }

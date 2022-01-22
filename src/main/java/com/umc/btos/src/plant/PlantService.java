@@ -70,7 +70,7 @@ public class PlantService {
     }
 
     //화분 점수 증가 (Service)
-    public PatchUpDownScoreRes upScore(int userIdx, PatchUpDownScoreReq patchUpDownScoreReq) throws BaseException {
+    public PatchUpScoreRes upScore(int userIdx, PatchUpDownScoreReq patchUpDownScoreReq) throws BaseException {
         //userIdx : Dao에서 조건(WHERE) 걸 때 필요 - 해당 회원의 화분 점수 증가
         try {
             if (plantDao.upScore(userIdx, patchUpDownScoreReq.getAddScore()) == 1) { //점수 변경 성공
@@ -90,13 +90,13 @@ public class PlantService {
                 Boolean condFor5 = (currentScore == 70 && currentLevel == 1); //현재 score = 70 && 현재 레벨 5
                 if (condFor0 || condFor1 || condFor2 || condFor3 || condFor4 || condFor5) { //점수 충족 -> 화분 단계 변경 (Service) 호출
                     if (modifyLevel(userIdx) == 1) { //점수 up && 레벨 up --> return 2
-                        PatchUpDownScoreRes patchUpDownScoreRes = new PatchUpDownScoreRes(2);
-                        return patchUpDownScoreRes; //변경 성공
+                        PatchUpScoreRes patchUpScoreRes = new PatchUpScoreRes(2);
+                        return patchUpScoreRes; //변경 성공
                     } else
                         throw new BaseException(MODIFY_FAIL_LEVEL); //변경 실패
                 } else { //점수 up (점수 충족 X) --> return 1
-                    PatchUpDownScoreRes patchUpDownScoreRes = new PatchUpDownScoreRes(1);
-                    return patchUpDownScoreRes;
+                    PatchUpScoreRes patchUpScoreRes = new PatchUpScoreRes(1);
+                    return patchUpScoreRes;
                 }
             } else //점수 변경 실패
                 throw new BaseException(MODIFY_FAIL_SCORE);
