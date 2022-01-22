@@ -9,8 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
-import static com.umc.btos.config.BaseResponseStatus.INVALIDE_IDX_PLANT;
+import static com.umc.btos.config.BaseResponseStatus.*;
 
 //Read
 @Service
@@ -51,6 +50,15 @@ public class PlantProvider {
             else //아니면 3 반환
                 return 3;
         } catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    //화분의 현재 score 가져오기
+    public int selectScore(int userIdx) throws BaseException {
+        try{
+            return plantDao.selectScore(userIdx);
+        } catch(Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
     }
