@@ -109,8 +109,8 @@ public class PlantController {
     }
 
     /**
-     * 화분 점수 반영 및 단계 변경 API
-     * [PATCH] /btos/plants/level
+     * 화분 점수 감소 API
+     * [PATCH] /btos/plants/:userIdx/down-score
      */
 
 
