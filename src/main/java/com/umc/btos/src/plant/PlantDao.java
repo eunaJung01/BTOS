@@ -96,7 +96,7 @@ public class PlantDao {
 
     //화분 점수 증가 (Dao)
         //score = score + addScore : 기존 점수에 addScore 더함
-    public int upScore(int userIdx, int addScore) {
+    public int updownScore(int userIdx, int addScore) {
         String Query = "UPDATE UserPlantList SET score = score+? WHERE userIdx=?";
         Object[] Params = new Object[]{addScore, userIdx};
 
