@@ -1,15 +1,13 @@
 package com.umc.btos.src.mailbox.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 public class GetMailRes<T> {
-    String type; // 일기(diary), 편지(letter), 답장(reply)
-    T content; // 내용
+    String type; // diary : 일기 / letter : 편지 / reply : 답장
+    T content; // 내용 (GetDiaryRes / GetLetterRes / GetReplyRes)
     private int senderFontIdx; // 발송자 폰트 정보
 
     public GetMailRes(String type) {
