@@ -2,7 +2,6 @@ package com.umc.btos.src.mailbox;
 
 import com.umc.btos.config.BaseException;
 import com.umc.btos.config.BaseResponse;
-import com.umc.btos.src.diary.model.GetDiaryRes;
 import com.umc.btos.src.mailbox.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,15 +24,19 @@ public class MailboxController {
     }
 
     /*
-     * 우편함 - 일기 조회
-     * [GET] /mailboxes?diaryIdx=
+     * 우편함 - 일기 / 편지 / 답장 조회
+     * [GET] /mailboxes/mail?type=&idx=
+     * type = 일기, 편지, 답장 구분 (diary / letter / reply)
+     * idx = 식별자 정보 (type-idx : diary-diaryIdx / letter-letterIdx / reply-replyIdx)
      */
     @ResponseBody
-    @GetMapping("")
-    public BaseResponse<GetDiaryRes_Mailbox> getDiary(@RequestParam("diaryIdx") int diaryIdx) {
+    @GetMapping("/mail")
+    public BaseResponse<GetMailRes> getDiary(@RequestParam("type") String type, @RequestParam("idx") int idx) {
         try {
-            GetDiaryRes_Mailbox diary = mailboxProvider.getDiary(diaryIdx);
-            return new BaseResponse<>(diary);
+            GetMailRes getMail = new GetMailRes(type);
+            getMail.setContent(mailboxProvider.setMailContent(type, idx));
+            getMail.setSenderFontIdx(mailboxProvider.setSenderFontIdx(type, idx));
+            return new BaseResponse<>(getMail);
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());

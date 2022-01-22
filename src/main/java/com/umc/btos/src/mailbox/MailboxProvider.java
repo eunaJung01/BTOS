@@ -1,8 +1,9 @@
 package com.umc.btos.src.mailbox;
 
 import com.umc.btos.config.BaseException;
-import com.umc.btos.src.diary.*;
-import com.umc.btos.src.mailbox.model.GetDiaryRes_Mailbox;
+import com.umc.btos.src.diary.DiaryProvider;
+import com.umc.btos.src.diary.DiaryDao;
+import com.umc.btos.src.diary.model.GetDiaryRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,21 +27,40 @@ public class MailboxProvider {
     }
 
     /*
-     * 우편함 - 일기 조회
-     * [GET] /btos/mailbox?diaryIdx=
+     * 우편함 - 일기 / 편지 / 답장 조회
+     * [GET] /mailboxes/mail?type=&idx=
+     * type = 일기, 편지, 답장 구분 (diary / letter / reply)
+     * idx = 식별자 정보 (type-idx : diary-diaryIdx / letter-letterIdx / reply-replyIdx)
      */
-    public GetDiaryRes_Mailbox getDiary(int diaryIdx) throws BaseException {
+    public Object setMailContent(String type, int idx) throws BaseException {
         try {
-            GetDiaryRes_Mailbox diary_mailbox = new GetDiaryRes_Mailbox(diaryDao.getDiary(diaryIdx)); // 일기 정보 저장 (GetDiaryRes)
-            diary_mailbox.getDiary().setDoneList(diaryDao.getDoneList(diaryIdx)); // done list 정보 저장
+            Object mail;
+            if (type.compareTo("diary") == 0) {
+                mail = diaryDao.getDiary(idx); // 일기 정보 저장
+                ((GetDiaryRes) mail).setDoneList(diaryDao.getDoneList(idx)); // done list 정보 저장
 
-            // content 복호화
-            if (diary_mailbox.getDiary().getIsPublic() == 0) { // private일 경우 (isPublic == 0)
-                diaryProvider.decryptContents(diary_mailbox.getDiary());
+                // content 복호화
+                if (((GetDiaryRes) mail).getIsPublic() == 0) { // private일 경우 (isPublic == 0)
+                    diaryProvider.decryptContents((GetDiaryRes) mail);
+                }
+
+            } else if (type.compareTo("letter") == 0) {
+                mail = mailboxDao.getLetter(idx); // 편지 정보 저장
+
+            } else {
+                mail = mailboxDao.getReply(idx); // 답장 정보 저장
             }
+            return mail;
 
-            diary_mailbox.setSenderFontIdx(mailboxDao.getFontIdx(diaryIdx)); // 발송자의 폰트 정보 저장
-            return diary_mailbox;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 발송자 폰트 정보 저장
+    public int setSenderFontIdx(String type, int idx) throws BaseException {
+        try {
+            return mailboxDao.getFontIdx(type, idx);
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
