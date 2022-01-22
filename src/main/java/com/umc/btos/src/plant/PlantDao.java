@@ -86,6 +86,32 @@ public class PlantDao {
         return this.jdbcTemplate.update(Query, Params);
     }
 
+    //화분의 현재 score 가져오기
+    public int selectScore(int userIdx) {
+        String Query = "SELECT score FROM UserPlantList WHERE userIdx = ?";
+        int Param = userIdx;
+
+        return this.jdbcTemplate.queryForObject(Query, int.class, Param);
+    }
+
+    //화분 점수 증가 (Dao)
+        //score = score + addScore : 기존 점수에 addScore 더함
+    public int upScore(int userIdx, int addScore) {
+        String Query = "UPDATE UserPlantList SET score = score+? WHERE userIdx=?";
+        Object[] Params = new Object[]{addScore, userIdx};
+
+        return this.jdbcTemplate.update(Query, Params);
+    }
+
+    //화분 단계 변경 (Dao)
+        //level = level + 1 : 기존 점수에 +1
+    public int modifyLevel(int userIdx) {
+        String Query = "UPDATE UserPlantList SET level = level+? WHERE userIdx=?";
+        Object[] Params = new Object[]{1, userIdx};
+
+        return this.jdbcTemplate.update(Query, Params);
+    }
+
     /*
     //화분 보유중 목록 조회 API
     public List<GetSpecificPlantRes> getOwnPlantList(int userIdx) {
