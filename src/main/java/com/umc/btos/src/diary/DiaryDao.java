@@ -125,8 +125,8 @@ public class DiaryDao {
         return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
     }
 
-    // 달별 일기 리스트 반환 (최신순 정렬 - diaryDate 기준 내림차순 정렬)
-    public List<GetDiaryRes> getDiaryList(int userIdx, String startDate, String endDate) {
+    // 달별 일기 리스트 반환 - 날짜로 조회 (최신순 정렬 - diaryDate 기준 내림차순 정렬)
+    public List<GetDiaryRes> getDiaryList_date(int userIdx, String startDate, String endDate) {
         String query = "SELECT * FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(diaryDate, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d') AND status = 'active' ORDER BY diaryDate DESC";
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetDiaryRes(
