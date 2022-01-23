@@ -8,13 +8,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 
-//인증 코드 받고 교환 받을 때 사용
-//구글에게 받을 응답 모델
+
+// 소셜 로그인 결과
+// -> 신규/탈퇴 회원인 경우 회원가입 메시지
+// -> 휴면 회원일 경우 상태변경 메시지
+// -> 기존 회원일 경우 res jwt
 public class AuthGoogleRes {
-    private int accessToken;
-    private String expiresIn;
-    private String refreshToken;
-    private String scope;
-    private String tokenType;
-    private String idToken;
+    private int userIdx;
+    private String jwt;
 }
