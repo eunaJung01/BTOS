@@ -51,4 +51,17 @@ public class UserService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    // 회원 상태 변경(PATCH)
+    public void changeStatusOfUser(PatchUserReq patchUserReq) throws BaseException {
+        try {
+            int result = userDao.changeStatusOfUser(patchUserReq);
+            if (result == 0) throw new BaseException(MODIFY_FAIL_STATUS); // 상태 변경 실패시 에러 메시지
+
+        }
+        catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }
