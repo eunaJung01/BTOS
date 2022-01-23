@@ -44,4 +44,12 @@ public class AuthProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public GetAuthLoginRes authLogIn() throws BaseException {
+        try {
+            return new GetAuthLoginRes(jwtService.getUserIdx());
+        } catch(Exception exception) {
+            throw new BaseException(INVALID_JWT);
+        }
+    }
 }
