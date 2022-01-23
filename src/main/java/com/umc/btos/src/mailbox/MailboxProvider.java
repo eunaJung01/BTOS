@@ -41,7 +41,7 @@ public class MailboxProvider {
 
                 // content 복호화
                 if (((GetDiaryRes) mail).getIsPublic() == 0) { // private일 경우 (isPublic == 0)
-                    diaryProvider.decryptContents((GetDiaryRes) mail);
+                    diaryProvider.decryptContents((GetDiaryRes) mail, true);
                 }
 
             } else if (type.compareTo("letter") == 0) {

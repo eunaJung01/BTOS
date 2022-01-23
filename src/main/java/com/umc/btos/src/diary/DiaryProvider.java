@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.umc.btos.config.BaseResponseStatus.*;
 
@@ -45,7 +47,7 @@ public class DiaryProvider {
      * type (조회 방식) = 1. doneList : 나뭇잎 색으로 done list 개수 표현 / 2. emotion : 감정 이모티콘
      */
     public List<GetCalendarRes> getCalendar(int userIdx, String date, String type) throws BaseException {
-        // TODO : 의미적 validaion - 프리미엄 미가입자는 감정 이모티콘으로 조회 불가
+        // TODO : 의미적 validation - 프리미엄 미가입자는 감정 이모티콘으로 조회 불가
         if (type.compareTo("emotion") == 0 && diaryDao.isPremium(userIdx).compareTo("free") == 0) {
             throw new BaseException(DIARY_NONPREMIUM_USER); // 프리미엄 가입이 필요합니다.
         }
@@ -72,59 +74,111 @@ public class DiaryProvider {
 
     /*
      * Archive 조회 - 달별 일기 리스트
-     * [GET] /diaries/diaryList?userIdx=&date=&search=&startDate=&lastDate=
-     * date = YYYY-MM
-     * search = 검색할 문장이나 단어 (String)
+     * [GET] /diaries/diaryList?userIdx=&search=&startDate=&endDate=
+     * search = 검색할 문자열 (String)
      * startDate, lastDate = 날짜 기간 설정 (YYYY-MM-DD ~ YYYY-MM-DD)
+     * 검색 & 날짜 기간 설정 조회는 중첩됨
      * 최신순 정렬 (diaryDate 기준 내림차순 정렬)
+     *
+     * 1. 전체 조회 - default
+     * 2. 문자열 검색 (search)
+     * 3. 기간 설정 조회 (startDate ~ endDate)
+     * 4. 기간 설정 조회 & 문자열 검색 (startDate ~ endDate, search)
      */
-    public List<GetDiaryRes> getDiaryList(String[] params) throws BaseException {
-        try {
-            // String[] params = new String[]{userIdx, date, search, startDate, lastDate};
-            int userIdx = Integer.parseInt(params[0]);
-            String date = params[1];
-            String search = params[2];
-            String startDate = params[3];
-            String endDate = params[4];
+//    public List<GetDiaryRes> getDiaryList(String[] params) throws BaseException {
+//        try {
+//            // String[] params = new String[]{userIdx, search, startDate, lastDate};
+//            int userIdx = Integer.parseInt(params[0]);
+//            String search = params[1];
+//            String startDate = params[2];
+//            String endDate = params[3];
+//
+//            List<GetDiaryRes> diaryList = new ArrayList<>(); // 일기 정보 저장 (done list 조회 X, 일기 내용만 조회)
+//
+//            // 1. 전체 조회 - default
+//            if (search == null && startDate == null && endDate == null) {
+//                diaryList = diaryDao.getDiaryList(userIdx);
+//            }
+//
+//            // 2. 문자열 검색 (search) search & Diary.content : 띄어쓰기 모두 제거 -> 찾기
+//            else if (search != null && startDate == null && endDate == null) {
+//                List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(userIdx); // 특정 회원의 모든 일기 diaryIdx : List 형태로 저장
+//
+//                for (int i = 0; i < diaryIdxList.size(); i++) { // 차례대로 문자열 검색 -> 없다면 List에서 제거
+//                    String diaryContent = diaryDao.getDiaryContent(diaryIdxList.get(i)); // Diary.content 가져오기
+//
+//                    // 복호화
+//                    if (diaryDao.getIsPublic(diaryIdxList.get(i)) == 0) { // private일 경우 (isPublic == 0)
+//                        diaryContent = new AES128(Secret.PASSWORD_KEY).decrypt(diaryContent);
+//                    }
+//                    diaryContent = diaryContent.replaceAll(" ", ""); // 공백 제거
+//
+//                    if (!search(diaryContent, search)) { // 문자열 검색
+//                        diaryIdxList.remove(i);
+//                    }
+//                }
+//
+//                for (int i = 0; i < diaryIdxList.size(); i++) {
+//                    diaryList.add(diaryDao.getDiary(userIdx)); // 그 List diaryIdx들만 diaryList에 저장
+//                }
+//
+//            }
+//
+//            else {
+//                // 3. 기간 설정 조회 (startDate ~ endDate)
+//                diaryList = diaryDao.getDiaryList_date(userIdx, startDate, endDate);
+//
+//                // 4. 기간 설정 조회 & 문자열 검색 (startDate ~ endDate, search)
+//                if (search != null) {
+//                    for (int i = 0; i < diaryList.size(); i++) {
+//                        String diaryContent = diaryList.get(i).getContent();
+//                        // 복호화
+//                        if (diaryList.get(i).getIsPublic() == 0) { // private일 경우 (isPublic == 0)
+//                            diaryContent = new AES128(Secret.PASSWORD_KEY).decrypt(diaryContent);
+//                        }
+//                        diaryContent = diaryContent.replaceAll(" ", ""); // 공백 제거
+//
+//                        if (!search(diaryContent, search)) { // 문자열 검색
+//                            diaryList.remove(i);
+//                        }
+//                    }
+//                }
+//            }
+//
+//            // content 복호화
+//            for (GetDiaryRes diary : diaryList) {
+//                if (diary.getIsPublic() == 0) { // private일 경우 (isPublic == 0)
+//                    decryptContents(diary, false);
+//                }
+//            }
+//            return diaryList;
+//
+//        } catch (Exception exception) {
+//            System.out.println(exception);
+//            throw new BaseException(DATABASE_ERROR);
+//        }
+//    }
 
-            if (date != null) { // 기간 설정 조회가 아닐 경우 = 한달 단위로 조회 (date)
-                startDate = date + "-01";
-                endDate = date + "-31";
-            }
-            // diaryList : 한달 단위 또는 지정된 날짜 범위에서 저장된 일기들에 대한 모든 정보를 저장
-            List<GetDiaryRes> diaryList = diaryDao.getDiaryList(userIdx, startDate, endDate);
-
-            // 각 일기에 해당하는 done list 정보 저장
-            for (GetDiaryRes diary : diaryList) {
-                int diaryIdx = diary.getDiaryIdx();
-                diary.setDoneList(diaryDao.getDoneList(diaryIdx));
-            }
-
-            // content 복호화
-            for (GetDiaryRes diary : diaryList) {
-                if (diary.getIsPublic() == 0) { // private일 경우 (isPublic == 0)
-                    decryptContents(diary);
-                }
-            }
-            return diaryList;
-
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
+    // Diary.content 문자열 검색
+//    public boolean search(String diaryContent, String search) {
+//        String content_spaceDeleted = diaryContent.replaceAll(" ", ""); // 공백 제거
+//        return content_spaceDeleted.contains(search); // 문자열 검색 (존재 : true, 미존재 : false)
+//    }
 
     // content 복호화
-    public void decryptContents(GetDiaryRes diary) throws BaseException {
+    public void decryptContents(GetDiaryRes diary, boolean hasDoneList) throws BaseException {
         try {
             // Diary.content
             String diaryContent = diary.getContent();
             diary.setContent(new AES128(Secret.PASSWORD_KEY).decrypt(diaryContent));
 
             // Done.content
-            List<GetDoneRes> doneList = diary.getDoneList();
-            for (int j = 0; j < doneList.size(); j++) {
-                String doneContent = diary.getDoneList().get(j).getContent();
-                diary.getDoneList().get(j).setContent(new AES128(Secret.PASSWORD_KEY).decrypt(doneContent));
+            if (hasDoneList) {
+                List<GetDoneRes> doneList = diary.getDoneList();
+                for (int j = 0; j < doneList.size(); j++) {
+                    String doneContent = diary.getDoneList().get(j).getContent();
+                    diary.getDoneList().get(j).setContent(new AES128(Secret.PASSWORD_KEY).decrypt(doneContent));
+                }
             }
 
         } catch (Exception ignored) {
@@ -143,7 +197,7 @@ public class DiaryProvider {
 
             // content 복호화
             if (diary.getIsPublic() == 0) { // private일 경우 (isPublic == 0)
-                decryptContents(diary);
+                decryptContents(diary, true);
             }
             return diary;
 
