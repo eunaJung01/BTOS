@@ -73,7 +73,7 @@ public class PlantService {
     public PatchUpScoreRes upScore(int userIdx, PatchUpDownScoreReq patchUpDownScoreReq) throws BaseException {
         //userIdx : Dao에서 조건(WHERE) 걸 때 필요 - 해당 회원의 화분 점수 증가
         try {
-            if (plantDao.upScore(userIdx, patchUpDownScoreReq.getAddScore()) == 1) { //점수 변경 성공
+            if (plantDao.updownScore(userIdx, patchUpDownScoreReq.getAddScore()) == 1) { //점수 변경 성공
                 //TODO: 1. 점수 증가 후의 score 가져오기
                 //      2. 가져온 점수가 단계 증가 조건에 충족되면 "화분 단계 변경 (Service)" 호출
 
@@ -113,4 +113,27 @@ public class PlantService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    //화분 점수 감소 API
+    public BaseResponseStatus downScore(int userIdx, PatchUpDownScoreReq patchUpDownScoreReq) throws BaseException {
+        try {
+            // TODO 1. 점수가 0점인지 확인
+            //      2. 점수 0이면 적절한 Status 리턴
+            //      3. 0이 아니면 변경 하러 go
+
+            // 1번
+            if (plantProvider.selectScore(userIdx) != 0) {
+                // 3번
+                if (plantDao.updownScore(userIdx, patchUpDownScoreReq.getAddScore()) == 1) //변경 성공시
+                    return SUCCESS;
+                else //변경 실패 시
+                    return MODIFY_FAIL_SCORE;
+            } else { //2번
+                return INVALID_SCORE_PLANT;
+            }
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }

@@ -79,6 +79,7 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_BUY_PLANT(false,7011, "화분 선택에 실패하였습니다."),
     MODIFY_FAIL_SCORE(false, 7012, "화분 점수 변경에 실패하였습니다."),
     MODIFY_FAIL_LEVEL(false, 7013, "화분 단계 변경에 실패하였습니다."),
+    INVALID_SCORE_PLANT(false,7014, "선택한 화분의 점수가 0점입니다. 점수를 감소시킬 수 없습니다."),
 
     INVALID_IDX_PLANT(false, 7015, "이미 선택된 화분입니다."),
 
