@@ -74,33 +74,47 @@ public class UserController {
 
     /**
      * 회원 상태 변경(탈퇴 / 휴면 / 재활성화) API
-     * [PATCH] /btos/users/status
+     * [PATCH] /btos/users/:userIdx/status
      */
-    /*
+
     @ResponseBody
-    @PatchMapping("/status")
-    public BaseResponse<String> deleteUser(@RequestBody PatchUserReq patchUserReq){
-        // 형식적 validation은 클라이언트 단에서 처리
+    @PatchMapping("/{userIdx}/status")
+    public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserReq userStatus){
+
         try {
+            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
+            String jwt = jwtService.createJwt(userIdx);
+            Jws<Claims> claims;
+            try {
+                claims = Jwts.parser()
+                        .setSigningKey(Secret.JWT_SECRET_KEY)
+                        .parseClaimsJws(jwt);
+            } catch (Exception ignored) {
+                throw new BaseException(INVALID_JWT);
+            }
             //jwt에서 idx 추출.
-            int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = claims.getBody().get("userIdx", Integer.class);
+            // int userIdxByJwt = jwtService.getUserIdx();
 
             //userIdx와 접근한 유저가 같은지 확인
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
+            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
 
-            PatchDeleteReq patchDeleteReq = new PatchDeleteReq(userIdx, user.getEmail(), user.getNickname(), user.getPassword());
-            userService.deleteUser(patchDeleteReq);
+            PatchUserReq patchUserReq = new PatchUserReq(userIdx, userStatus.getStatus());
+            userService.changeStatusOfUser(patchUserReq);
 
             String result = "회원탈퇴가 완료되었습니다.";
+            if (patchUserReq.getStatus().equals("active")) result = "재활성화가 완료되었습니다.";
+            else if (patchUserReq.getStatus().equals("dormant")) result = "휴면 상태로 전환되었습니다.";
+
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
 
- */
 
 
     /**
