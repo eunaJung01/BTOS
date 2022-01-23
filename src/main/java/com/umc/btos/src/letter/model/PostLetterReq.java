@@ -10,8 +10,8 @@ import lombok.*;
 public class PostLetterReq {
 
     private int letterIdx;
-    private int replier;
-    private int receiver;
+    private int replierIdx;
+    private int receiverIdx;
     private String content;
 
 }
