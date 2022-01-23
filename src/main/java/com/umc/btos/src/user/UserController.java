@@ -45,27 +45,26 @@ public class UserController {
     @PostMapping("")
     public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq){
 
-        // ***형식적 validation***
-        // email 값 존재 검사
-        if (postUserReq.getEmail() == null) { // null 값 시 오류 메시지
-            return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
-        }
-        // email 형식 검사
-        if (!isRegexEmail(postUserReq.getEmail())) { // email@domain.xxx와 같은 형식인지 검사. 형식이 올바르지 않다면 에러 메시지
-            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
-        }
-
-        // nickname 값 존재 검사
-        if (postUserReq.getNickName() == null) { // null 값 시 오류 메시지
-            return new BaseResponse<>(POST_USERS_EMPTY_NICKNAME);
-        }
-        // nickname 형식 검사
-        if (postUserReq.getNickName().length() > 10) { // 10글자 초과 시 오류 메시지
-            return new BaseResponse<>(POST_USERS_INVALID_NICKNAME);
-        }
-
-
         try {
+            // ***형식적 validation***
+            // email 값 존재 검사
+            if (postUserReq.getEmail() == null) { // null 값 시 오류 메시지
+                return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
+            }
+            // email 형식 검사
+            if (!isRegexEmail(postUserReq.getEmail())) { // email@domain.xxx와 같은 형식인지 검사. 형식이 올바르지 않다면 에러 메시지
+                return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
+            }
+
+            // nickname 값 존재 검사
+            if (postUserReq.getNickName() == null) { // null 값 시 오류 메시지
+                return new BaseResponse<>(POST_USERS_EMPTY_NICKNAME);
+            }
+            // nickname 형식 검사
+            if (postUserReq.getNickName().length() > 10) { // 10글자 초과 시 오류 메시지
+                return new BaseResponse<>(POST_USERS_INVALID_NICKNAME);
+            }
+
             PostUserRes postUserRes = userService.createUser(postUserReq);
             return new BaseResponse<>(postUserRes);
         } catch (BaseException exception) {
