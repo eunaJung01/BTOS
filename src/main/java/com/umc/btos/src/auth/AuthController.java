@@ -34,18 +34,30 @@ public class AuthController {
     }
 
     /**
-     * 소셜(구글) 로그인 API : 클라 -> 인가코드로 요청 -> 구글에 토큰 요청
+     * 소셜(구글) 로그인 API : 클라에서 받은 정보 body로 받고 회원 상태에 따라 메시지, jwt 반환
      * [POST] /btos/auth/google
      */
-    /*
-    @PostMapping("/btos/auth/google")
-    public BaseResponse<AuthGoogleRes> googleLogin() {
+
+    @ResponseBody
+    @PostMapping("/google")
+    public BaseResponse<AuthGoogleRes> googleLogin(@RequestBody AuthGoogleReq authGoogleReq) {
+
         try{
-            return new BaseResponse<>();
+            // // ***형식적 validation***
+            // email 값 존재 검사
+            if (authGoogleReq.getEmail() == null) {
+                return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
+            }
+            // email 형식 검사
+            if (!isRegexEmail(authGoogleReq.getEmail())) {
+                return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
+            }
+
+            AuthGoogleRes authGoogleRes = authService.logInGoogle(authGoogleReq);
+            return new BaseResponse<>(authGoogleRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
-    }*/
-
+    }
     
 }
