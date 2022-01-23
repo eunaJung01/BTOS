@@ -16,6 +16,7 @@ jobs:
     steps:
       - uses: eunaJung01/BTOS@v2
       - name: push dev branch in EC2
+        uses: btos/ssh-action@master
         with:
           key: ${{ secrets.SSH_KEY }}
           host: ${{ secrets.HOST }}
