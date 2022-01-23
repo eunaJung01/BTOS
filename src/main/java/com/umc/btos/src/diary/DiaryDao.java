@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class DiaryDao {
@@ -125,7 +126,20 @@ public class DiaryDao {
         return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
     }
 
-    // 달별 일기 리스트 반환 - 날짜로 조회 (최신순 정렬 - diaryDate 기준 내림차순 정렬)
+    // 일기 리스트 반환 - 전체 조회 (최신순 정렬 - diaryDate 기준 내림차순 정렬)
+    public List<GetDiaryRes> getDiaryList(int userIdx) {
+        String query = "SELECT * FROM Diary WHERE userIdx = ? AND status = 'active' ORDER BY diaryDate DESC";
+        return this.jdbcTemplate.query(query,
+                (rs, rowNum) -> new GetDiaryRes(
+                        rs.getInt("diaryIdx"),
+                        rs.getInt("emotionIdx"),
+                        rs.getString("diaryDate"),
+                        rs.getInt("isPublic"),
+                        rs.getString("content")
+                ), userIdx);
+    }
+
+    // 일기 리스트 반환 - 날짜 기간으로 조회 (최신순 정렬 - diaryDate 기준 내림차순 정렬)
     public List<GetDiaryRes> getDiaryList_date(int userIdx, String startDate, String endDate) {
         String query = "SELECT * FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(diaryDate, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d') AND status = 'active' ORDER BY diaryDate DESC";
         return this.jdbcTemplate.query(query,
@@ -136,6 +150,24 @@ public class DiaryDao {
                         rs.getInt("isPublic"),
                         rs.getString("content")
                 ), userIdx, startDate, endDate);
+    }
+
+    // 특정 회원의 모든 일기 diaryIdx : List 형태로 반환 (최신순 정렬 - diaryDate 기준 내림차순 정렬)
+    public List<Integer> getDiaryIdxList(int userIdx) {
+        String query = "SELECT diaryIdx FROM Diary WHERE userIdx = ? AND status = 'active' ORDER BY diaryDate DESC";
+        return this.jdbcTemplate.queryForList(query, int.class, userIdx);
+    }
+
+    // isPublic 반환
+    public int getIsPublic(int diaryIdx) {
+        String query = "SELECT isPublic FROM Diary WHERE diaryIdx = ? AND status = 'active'";
+        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
+    }
+
+    // Diary.content 반환
+    public String getDiaryContent(int diaryIdx) {
+        String query = "SELECT content FROM Diary WHERE diaryIdx = ? AND status = 'active'";
+        return this.jdbcTemplate.queryForObject(query, String.class, diaryIdx);
     }
 
     // 일기 조회

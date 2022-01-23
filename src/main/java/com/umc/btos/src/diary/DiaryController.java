@@ -113,23 +113,23 @@ public class DiaryController {
     }
 
     /*
-     * Archive 조회 - 달별 일기 리스트
-     * [GET] /diaries/diaryList?userIdx=&date=&search=&startDate=&endDate=
-     * date = YYYY-MM
-     * search = 검색할 문장이나 단어 (String)
+     * Archive 조회 - 일기 리스트
+     * [GET] /diaries/diaryList?userIdx=&search=&startDate=&endDate=
+     * search = 검색할 문자열 ("String")
      * startDate, lastDate = 날짜 기간 설정 (YYYY-MM-DD ~ YYYY-MM-DD)
+     * 검색 & 기간 설정 조회는 중첩됨
      * 최신순 정렬 (diaryDate 기준 내림차순 정렬)
+     *
+     * 1. 전체 조회 - default
+     * 2. 문자열 검색 (search)
+     * 3. 기간 설정 조회 (startDate ~ endDate)
+     * 4. 문자열 검색 & 기간 설정 조회 (search, startDate ~ endDate)
      */
     @ResponseBody
     @GetMapping("/diaryList")
-    public BaseResponse<List<GetDiaryRes>> getDiaryList(@RequestParam String userIdx, @RequestParam(required = false) String date, @RequestParam(required = false) String search, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
+    public BaseResponse<List<GetDiaryRes>> getDiaryList(@RequestParam String userIdx, @RequestParam(required = false) String search, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
         try {
-            if (startDate != null && endDate == null) {
-                LocalDate now = LocalDate.now();
-                endDate = now.toString();
-            }
-            String[] params = new String[]{userIdx, date, search, startDate, endDate};
-
+            String[] params = new String[]{userIdx, search, startDate, endDate};
             List<GetDiaryRes> diaryList = diaryProvider.getDiaryList(params);
             return new BaseResponse<>(diaryList);
 
