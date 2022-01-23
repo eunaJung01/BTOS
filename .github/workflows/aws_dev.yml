@@ -1,0 +1,27 @@
+# This is a basic workflow to help you get started with Actions
+
+name: deploy
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: dev
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  SSH:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: eunaJung01/BTOS@v2
+      - name: push dev branch in EC2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          script: |
+            cd /var/www/BTOS/dev/BTOS
+            git pull origin dev
+            ./gradlew clean build
+            java -jar build/libs/BTOS-0.0.1-SNAPSHOT.jar
