@@ -193,7 +193,7 @@ public class DiaryProvider {
             diary.setDoneList(diaryDao.getDoneList(diaryIdx)); // done list 정보
 
             // content 복호화
-            if (diary.getIsPublic() == 0) { // private일 경우 (isPublic == 0)
+            if (diary.getIsPublic() == 0) { // private 일기일 경우 content 복호화
                 decryptContents(diary, true);
             }
             return diary;
