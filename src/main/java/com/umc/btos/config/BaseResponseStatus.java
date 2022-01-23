@@ -59,7 +59,10 @@ public enum BaseResponseStatus {
     TEMP1(false, 9000, "conflict 방지용 1"),
     POST_USERS_EMPTY_NICKNAME(false, 5000, "닉네임을 입력해주세요."),
     POST_USERS_INVALID_NICKNAME(false, 5001, "닉네임은 10자까지 입력 가능합니다."),
-    POST_USERS_IS_DORMANT(false, 5002, "휴면 상태 계정입니다."),
+    POST_USERS_DORMANT(false, 5002, "휴면 상태 계정입니다."),
+    AUTH_REQ_SIGNUP(false, 5003, "회원가입이 필요합니다."),
+    AUTH_FAILED_TO_LOGIN(false, 5004, "로그인에 실패하였습니다."),
+    MODIFY_FAIL_STATUS(false, 5005, "상태 변경에 실패하였습니다."),
 
     // 6000 : 레마
     TEMP2(false, 9000, "conflict 방지용 2"),
