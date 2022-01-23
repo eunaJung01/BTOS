@@ -10,8 +10,8 @@ import lombok.Setter;
 @AllArgsConstructor // 해당 클래스의 모든 멤버 변수를 받는 생성자를 생성
 public class GetLetterRes {
     private int letterIdx;
-    private int replier;
-    private int receiver;
+    private int replierIdx;
+    private int receiverIdx;
     private String content;
 
 
