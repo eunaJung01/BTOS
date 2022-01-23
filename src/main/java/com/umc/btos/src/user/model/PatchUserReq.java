@@ -8,5 +8,6 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 
 public class PatchUserReq {
-    private String email;
+    private int userIdx;
+    private String status;
 }
