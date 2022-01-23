@@ -78,6 +78,7 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_BLOCK_STATUS(false,8002,"차단 해제 실패"),
     GET_FAIL_USERIDX(false, 8003,"해당 유저의 인덱스가 입력되지않았습니다."),
     REPLY_DATABASE_ERROR(false,8004,"답장 생성 과정에서 DB에 문제가 있습니다."),
+    MODIFY_FAIL_REPLY_STATUS(false, 8005,"답장 삭제 실패"),
     TEMP4(false, 9000, "conflict 방지용 4");
 
 
