@@ -53,9 +53,9 @@ public class PlantController {
      * 회원이 선택한 화분 조회 API
      * 보류 : 더보기 기능 추가시 다시 진행
      * "미보유 화분"도 더보기 기능이 가능하다면 userIdx안 받고 plantIdx만 받으면 됨
-     *      1. Controller, Provider, Dao 인자 수정
-     *      2. Dao 쿼리 문 수정 -> WHERE Plant.status="active" AND Plant.plnatIdx=입력한 화분 식별자(plantIdx)
-     *      3. 만약 조회한 화분이 회원이 보유중이라면..? 이경우까지.. 음 그러니까 이렇게까지 정보를 출력해야한다면 userIdx 받아야함
+     * 1. Controller, Provider, Dao 인자 수정
+     * 2. Dao 쿼리 문 수정 -> WHERE Plant.status="active" AND Plant.plnatIdx=입력한 화분 식별자(plantIdx)
+     * 3. 만약 조회한 화분이 회원이 보유중이라면..? 이경우까지.. 음 그러니까 이렇게까지 정보를 출력해야한다면 userIdx 받아야함
      * [GET] /btos/plants/uSelected?plantIdx=&userIdx=
      * Query String : plantIdx, userIdx (mandatory: Y)
      */
@@ -111,7 +111,23 @@ public class PlantController {
     /**
      * 화분 점수 감소 API
      * [PATCH] /btos/plants/:userIdx/down-score
+     * RequestBody : PatchUpDownReq - 필드명 addScore, currentLevel (mandatory: Y)
+     * PathVariable : userIdx (mandatory: Y)
      */
+    @ResponseBody
+    @PatchMapping("{userIdx}/down-score")
+    public BaseResponse<String> downScore(@RequestBody PatchUpDownScoreReq patchUpDownScoreReq,
+                                          @PathVariable("userIdx") int userIdx) {
+        try {
+            // 감소 성공시 : "요청에 성공하였습니다." - 1000
+            //     실패시 : "화분 점수 변경에 실패하였습니다." - 7012
+            // 감소시키려는 화분의 점수가 0점인 경우 : "선택한 화분의 점수가 0점입니다. 점수를 감소시킬 수 없습니다." - 7014
+            // DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
+            return new BaseResponse<>(plantService.downScore(userIdx, patchUpDownScoreReq));
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 
 
     /*
