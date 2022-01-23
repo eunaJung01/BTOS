@@ -59,5 +59,19 @@ public class AuthController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
-    
+
+    /**
+     * 자동로그인 API : header에 jwt 넣고 api 호출 - 유저의 idx 요청 - 담긴 정보를 response
+     * [GET] /auth/jwt
+     */
+    @ResponseBody
+    @GetMapping("/auth/jwt")
+    public BaseResponse<GetAuthLoginRes> authLogIn() {
+        try {
+            GetAuthLoginRes getAuthLoginRes = authProvider.authLogIn();
+            return new BaseResponse<>(getAuthLoginRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 }
