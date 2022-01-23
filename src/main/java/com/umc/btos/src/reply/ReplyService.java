@@ -1,13 +1,18 @@
 package com.umc.btos.src.reply;
 
 
-import com.umc.btos.src.letter.LetterDao;
-import com.umc.btos.src.letter.LetterProvider;
+import com.umc.btos.config.BaseException;
+
+
+import com.umc.btos.src.reply.model.*;
 import com.umc.btos.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.umc.btos.config.BaseResponseStatus.REPLY_DATABASE_ERROR;
 
 @Service
 public class ReplyService {
@@ -27,7 +32,20 @@ public class ReplyService {
 
     }
 
+// ******************************************************************************
+    // 답장 작성(POST)
 
+    public PostReplyRes createReply(PostReplyReq postReplyReq) throws BaseException {
+
+        try {
+            int replyIdx = replyDao.createReply(postReplyReq);
+            return new PostReplyRes(replyIdx);
+
+        } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지 : 8004
+
+            throw new BaseException(REPLY_DATABASE_ERROR);
+        }
+    }
 
 
 
