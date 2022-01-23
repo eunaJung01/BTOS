@@ -41,13 +41,6 @@ public class UserDao {
                 checkEmailParams); //결과(존재하지 않음(False,0),존재함(True, 1))를 int형(0,1)으로 반환
     }
 
-    // 해당 이메일을 가진 유저가 있을 때 상태 체크
-    public String checkStatusOfUser(String email){
-        String checkStatusOfUserQuery = "select status from User where email = ?";
-        String checkStatusOfUserParams = email;
-        return this.jdbcTemplate.queryForObject(checkStatusOfUserQuery, String.class, checkStatusOfUserParams);
-    }
-
     // 해당 userIdx를 갖는 유저조회
     public GetUserRes getUser(int userIdx) {
         String getUserQuery = "select * from User where userIdx = ? and status = 'active'"; // 해당 userIdx를 만족하는 유저를 조회하는 쿼리
