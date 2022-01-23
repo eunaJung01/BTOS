@@ -5,6 +5,7 @@ package com.umc.btos.src.reply;
 import com.umc.btos.config.BaseException;
 import com.umc.btos.config.BaseResponse;
 import com.umc.btos.src.letter.model.GetLetterRes;
+import com.umc.btos.src.letter.model.PatchLetterReq;
 import com.umc.btos.src.reply.model.*;
 import com.umc.btos.utils.JwtService;
 import org.slf4j.Logger;
@@ -62,6 +63,24 @@ public class ReplyController {
             return new BaseResponse<>((exception.getStatus()));
         }
 
+    }
+    /**
+     * 답장 삭제 API
+     * [PATCH] /btos/replies/:replyIdx
+     */
+    @ResponseBody
+    @PatchMapping("/{replyIdx}")
+    // Path-variable
+    public BaseResponse<String> deleteReply(@PathVariable("replyIdx") int replyIdx) {
+        try {
+
+            PatchReplyReq patchReplyReq = new PatchReplyReq(replyIdx);
+            replyService.modifyReplyStatus(patchReplyReq);
+            String result = "답장이 삭제되었습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
     }
 
 }
