@@ -38,11 +38,6 @@ public class UserService {
         // 휴면 아니면 신규 or 탈퇴 회원 -> 회원가입 api
         // deleted인 경우, 신규인 경우 : 다시 회원가입 진행(새로운 레코드 생성) -> 회원가입 api 호출
 
-
-        if (userProvider.checkStatusOfUser(postUserReq.getEmail()) == "dormant") { // 휴면일 경우 메시지 출력
-            throw new BaseException(POST_USERS_IS_DORMANT);
-        }
-        
         // status : deleted or 신규회원일 경우 중복 체크
         if (userProvider.checkEmail(postUserReq.getEmail()) == 1) { // 이메일 중복 확인 -> active인 유저들만 조회
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
