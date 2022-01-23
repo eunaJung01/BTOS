@@ -41,6 +41,14 @@ public class UserDao {
                 checkEmailParams); //결과(존재하지 않음(False,0),존재함(True, 1))를 int형(0,1)으로 반환
     }
 
+    // 회원 상태 변경
+    public int changeStatusOfUser(PatchUserReq patchUserReq) {
+        String changeStatusQuery = "update User set status = ?, updatedAt = CURRENT_TIMESTAMP where userIdx = ?";
+        Object[] changeStatusParams = {patchUserReq.getStatus() ,patchUserReq.getUserIdx()};
+        return this.jdbcTemplate.update(changeStatusQuery, changeStatusParams);
+        // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
+    }
+
     // 해당 userIdx를 갖는 유저조회
     public GetUserRes getUser(int userIdx) {
         String getUserQuery = "select * from User where userIdx = ? and status = 'active'"; // 해당 userIdx를 만족하는 유저를 조회하는 쿼리
