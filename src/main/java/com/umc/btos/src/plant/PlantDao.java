@@ -88,26 +88,26 @@ public class PlantDao {
 
     //화분의 현재 score 가져오기
     public int selectScore(int userIdx) {
-        String Query = "SELECT score FROM UserPlantList WHERE userIdx = ?";
-        int Param = userIdx;
+        String Query = "SELECT score FROM UserPlantList WHERE userIdx = ? AND status=?";
+        Object[] Params = new Object[]{userIdx, "selected"};
 
-        return this.jdbcTemplate.queryForObject(Query, int.class, Param);
+        return this.jdbcTemplate.queryForObject(Query, int.class, Params);
     }
 
-    //화분 점수 증가 (Dao)
-        //score = score + addScore : 기존 점수에 addScore 더함
+    //화분 점수 증가/감소 (Dao)
+    //score = score + addScore : 기존 점수에 addScore 더함
     public int updownScore(int userIdx, int addScore) {
-        String Query = "UPDATE UserPlantList SET score = score+? WHERE userIdx=?";
-        Object[] Params = new Object[]{addScore, userIdx};
+        String Query = "UPDATE UserPlantList SET score = score+? WHERE userIdx=? AND status=?";
+        Object[] Params = new Object[]{addScore, userIdx, "selected"};
 
         return this.jdbcTemplate.update(Query, Params);
     }
 
     //화분 단계 변경 (Dao)
-        //level = level + 1 : 기존 점수에 +1
+    //level = level + 1 : 기존 점수에 +1
     public int modifyLevel(int userIdx) {
-        String Query = "UPDATE UserPlantList SET level = level+? WHERE userIdx=?";
-        Object[] Params = new Object[]{1, userIdx};
+        String Query = "UPDATE UserPlantList SET level = level+? WHERE userIdx=? AND status=?";
+        Object[] Params = new Object[]{1, userIdx, "selected"};
 
         return this.jdbcTemplate.update(Query, Params);
     }
