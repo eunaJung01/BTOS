@@ -4,7 +4,7 @@ import com.sun.tracing.dtrace.ProviderAttributes;
 import com.umc.btos.config.BaseException;
 import com.umc.btos.config.secret.Secret;
 import com.umc.btos.src.auth.model.*;
-import com.umc.btos.utils.AES128;
+import com.umc.btos.utils.*;
 import com.umc.btos.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +32,15 @@ public class AuthProvider {
         try {
             return authDao.checkEmail(email);
         } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 해당 이메일을 가진 유저의 상태 확인
+    public String checkStatusOfUser(String email) throws BaseException {
+        try {
+            return authDao.checkStatusOfUser(email);
+        } catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
     }
