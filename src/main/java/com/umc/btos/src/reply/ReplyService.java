@@ -4,6 +4,7 @@ package com.umc.btos.src.reply;
 import com.umc.btos.config.BaseException;
 
 
+import com.umc.btos.src.letter.model.PatchLetterReq;
 import com.umc.btos.src.reply.model.*;
 import com.umc.btos.utils.JwtService;
 import org.slf4j.Logger;
@@ -11,8 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
-import static com.umc.btos.config.BaseResponseStatus.REPLY_DATABASE_ERROR;
+import static com.umc.btos.config.BaseResponseStatus.*;
 
 @Service
 public class ReplyService {
@@ -47,6 +47,17 @@ public class ReplyService {
         }
     }
 
+    // 답장삭제 - status를 deleted로 변경 (Patch)
+    public void modifyReplyStatus(PatchReplyReq patchReplyReq) throws BaseException {
+        try {
+            int result = replyDao.modifyReplyStatus(patchReplyReq); // 해당 과정이 무사히 수행되면 True(1), 그렇지 않으면 False(0)입니다.
+            if (result == 0) { // result값이 0이면 과정이 실패한 것이므로 에러 메서지를 보냅니다.
+                throw new BaseException(MODIFY_FAIL_REPLY_STATUS);
+            }
+        } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 
 }
