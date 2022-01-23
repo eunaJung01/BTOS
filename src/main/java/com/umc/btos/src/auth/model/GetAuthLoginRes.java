@@ -8,8 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 
-//인증 코드 받고 교환 받을 때 사용
-//구글에게 받을 응답 모델
+// 자동 로그인 response 모델
 public class GetAuthLoginRes {
     private int userIdx;
 }
