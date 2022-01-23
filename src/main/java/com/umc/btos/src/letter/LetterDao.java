@@ -21,8 +21,8 @@ public class LetterDao {
     }
     // 편지 생성
     public int createLetter(PostLetterReq postLetterReq) {
-        String createLetterQuery = "insert into Letter (replier,receiver,content) VALUES (?,?,?)"; // 실행될 동적 쿼리문
-        Object[] createLetterParams = new Object[]{postLetterReq.getReplier(),postLetterReq.getReceiver(),postLetterReq.getContent()}; // 동적 쿼리의 ?부분에 주입될 값
+        String createLetterQuery = "insert into Letter (replierIdx,receiverIdx,content) VALUES (?,?,?)"; // 실행될 동적 쿼리문
+        Object[] createLetterParams = new Object[]{postLetterReq.getReplierIdx(),postLetterReq.getReceiverIdx(),postLetterReq.getContent()}; // 동적 쿼리의 ?부분에 주입될 값
         this.jdbcTemplate.update(createLetterQuery, createLetterParams);
 
         // 즉 DB의 Letter Table에 (replier,receiver,content)값을 가지는 편지 데이터를 삽입(생성)한다.
@@ -38,8 +38,8 @@ public class LetterDao {
         return this.jdbcTemplate.queryForObject(getLetterQuery,
                 (rs, rowNum) -> new GetLetterRes(
                         rs.getInt("letterIdx"),
-                        rs.getInt("replier"),
-                        rs.getInt("receiver"),
+                        rs.getInt("replierIdx"),
+                        rs.getInt("receiverIdx"),
                         rs.getString("content")), // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
                 getLetterParams); // 한 개의 편지정보를 얻기 위한 jdbcTemplate 함수(Query, 객체 매핑 정보, Params)의 결과 반환
     }
