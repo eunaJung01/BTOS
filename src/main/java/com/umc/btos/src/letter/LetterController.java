@@ -14,29 +14,27 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/btos/letters")
 public class LetterController {
     final Logger logger = LoggerFactory.getLogger(this.getClass()); // Log를 남기기
-    @Autowired  // 객체 생성을 스프링에서 자동으로 생성해주는 역할. 주입하려 하는 객체의 타입이 일치하는 객체를 자동으로 주입한다.
+    @Autowired
     private final LetterProvider letterProvider;
     @Autowired
     private final LetterService letterService;
-    @Autowired
-    private final JwtService jwtService;
 
 
-    public LetterController(LetterProvider letterProvider, LetterService letterService, JwtService jwtService) {
+
+    public LetterController(LetterProvider letterProvider, LetterService letterService) {
         this.letterProvider = letterProvider;
         this.letterService = letterService;
-        this.jwtService = jwtService;
     }
 
     /**
      * 편지 작성 API
      * [POST] /btos/letters
      */
-    // Body
+    // Body에 json 파일 형식으로 넣음
     @ResponseBody
     @PostMapping("")    // POST 방식의 요청을 매핑하기 위한 어노테이션
     public BaseResponse<PostLetterRes> createLetter(@RequestBody PostLetterReq postLetterReq) {
-        //  @RequestBody란, 클라이언트가 전송하는 HTTP Request Body(우리는 JSON으로 통신하니, 이 경우 body는 JSON)를 자바 객체로 매핑시켜주는 어노테이션
+
         try{
             PostLetterRes postLetterRes = letterService.createLetter(postLetterReq);
             return new BaseResponse<>(postLetterRes);
@@ -50,7 +48,7 @@ public class LetterController {
      * 편지 조회 API
      * [GET] /btos/letters/:letterIdx
      */
-    // Path-variable
+    // Path-variable - letterIdx를 인수로 받아 해당 인덱스의 letter을 불러온다.
     @ResponseBody
     @GetMapping("/{letterIdx}") // (GET) localhost:9000/btos/letters/:letterIdx
     public BaseResponse<GetLetterRes> getLetter(@PathVariable("letterIdx") int letterIdx) {
@@ -70,8 +68,8 @@ public class LetterController {
      */
     @ResponseBody
     @PatchMapping("/{letterIdx}")
-    // Path-variable
-    public BaseResponse<String> deleteLetter(@PathVariable("letterIdx") int letterIdx) {
+    // Path-variable - letterIdx를 파라미터로 받음 - 해당 letterIdx의 status를 deleted로 변경
+    public BaseResponse<String> deleteLetter(@PathVariable("letterIdx") int letterIdx) {  //반환형은 string
         try {
 
             PatchLetterReq patchLetterReq = new PatchLetterReq(letterIdx);
