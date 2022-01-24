@@ -15,19 +15,16 @@ import static com.umc.btos.config.BaseResponseStatus.MODIFY_FAIL_BLOCK_STATUS;
 
 @Service
 public class BlocklistService {
-    final Logger logger = LoggerFactory.getLogger(this.getClass()); // Log 처리부분
+    final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    // *********************** 동작에 있어 필요한 요소들을 불러옵니다. *************************
     private final BlocklistDao blocklistDao;
     private final BlocklistProvider blocklistProvider;
-    private final JwtService jwtService;
 
 
-    @Autowired //readme 참고
-    public BlocklistService(BlocklistDao blocklistDao, BlocklistProvider blocklistProvider, JwtService jwtService) {
+    @Autowired
+    public BlocklistService(BlocklistDao blocklistDao, BlocklistProvider blocklistProvider) {
         this.blocklistDao = blocklistDao;
         this.blocklistProvider = blocklistProvider;
-        this.jwtService = jwtService;
 
     }
     // ******************************************************************************
