@@ -65,7 +65,7 @@ public class AuthController {
      * [GET] /auth/jwt
      */
     @ResponseBody
-    @GetMapping("/auth/jwt")
+    @GetMapping("/jwt")
     public BaseResponse<GetAuthLoginRes> authLogIn() {
         try {
             GetAuthLoginRes getAuthLoginRes = authProvider.authLogIn();
