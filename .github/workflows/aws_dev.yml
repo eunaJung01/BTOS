@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: push dev branch in EC2
-        uses: actions/ssh-action@master
+        uses: BTOS/ssh-action@main
         with:
           key: ${{ secrets.SSH_KEY }}
           host: ${{ secrets.HOST }}
