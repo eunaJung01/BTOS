@@ -13,19 +13,19 @@ import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
 
 @Service
 public class ReportService {
-    final Logger logger = LoggerFactory.getLogger(this.getClass()); // Log 처리부분: Log를 기록하기 위해 필요한 함수입니다.
+    final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    // *********************** 동작에 있어 필요한 요소들을 불러옵니다. *************************
+
     private final ReportDao reportDao;
     private final ReportProvider reportProvider;
-    private final JwtService jwtService;
 
 
-    @Autowired //readme 참고
-    public ReportService(ReportDao reportDao, ReportProvider reportProvider, JwtService jwtService) {
+
+    @Autowired
+    public ReportService(ReportDao reportDao, ReportProvider reportProvider) {
         this.reportDao = reportDao;
         this.reportProvider = reportProvider;
-        this.jwtService = jwtService;
+
 
     }
     // ******************************************************************************
