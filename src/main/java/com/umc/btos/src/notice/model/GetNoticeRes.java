@@ -1,5 +1,6 @@
 package com.umc.btos.src.notice.model;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,5 +12,5 @@ public class GetNoticeRes {
     private int noticeIdx;
     private String title;
     private String content;
-
+    private String createdAt;
 }
