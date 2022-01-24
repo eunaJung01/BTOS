@@ -12,12 +12,12 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   SSH:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: eunaJung01/BTOS@v2
+      - uses: actions/checkout@v2
       - name: push dev branch in EC2
-        uses: ubuntu/ssh-action@master
+        uses: appleboy/ssh-action@master
         with:
           key: ${{ secrets.SSH_KEY }}
           host: ${{ secrets.HOST }}
