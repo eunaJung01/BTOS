@@ -27,7 +27,7 @@ public class UserProvider {
     // 해당 이메일이 이미 User Table에 존재하는지 확인
     public int checkEmail(String email) throws BaseException {
         try {
-            return userDao.checkEmail(email);
+            return userDao.checkEmail(email); // 중복이면 1 반환
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -42,4 +42,14 @@ public class UserProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    // 닉네임 중복 체크
+    public int checkNickName(String nickName) throws BaseException {
+        try {
+            return userDao.checkNickName(nickName); // 중복이면 1 반환
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+    
 }
