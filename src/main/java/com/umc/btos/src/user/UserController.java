@@ -15,7 +15,6 @@ import io.jsonwebtoken.*; // 테스트용
 import static com.umc.btos.config.BaseResponseStatus.*; // 테스트용
 
 
-
 @RestController
 @RequestMapping("/btos/users")
 public class UserController {
@@ -65,12 +64,17 @@ public class UserController {
                 return new BaseResponse<>(POST_USERS_INVALID_NICKNAME);
             }
 
+            if (postUserReq.getBirth() < 0) { // 생년이 0 미만 값으로 들어오면 오류 메시지
+                return new BaseResponse<>(INVALID_USER_BIRTH);
+            }
+
             PostUserRes postUserRes = userService.createUser(postUserReq);
             return new BaseResponse<>(postUserRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
 
     /**
      * 회원 상태 변경(탈퇴 / 휴면 / 재활성화) API
@@ -92,8 +96,11 @@ public class UserController {
             } catch (Exception ignored) {
                 throw new BaseException(INVALID_JWT);
             }
-            //jwt에서 idx 추출.
             int userIdxByJwt = claims.getBody().get("userIdx", Integer.class);
+            // 위 부분 소셜 로그인 테스트 후 제거
+
+            //jwt에서 idx 추출.
+
             // int userIdxByJwt = jwtService.getUserIdx();
 
             //userIdx와 접근한 유저가 같은지 확인
@@ -103,11 +110,13 @@ public class UserController {
             // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
 
             PatchUserReq patchUserReq = new PatchUserReq(userIdx, userStatus.getStatus());
-            userService.changeStatusOfUser(patchUserReq);
 
             String result = "회원탈퇴가 완료되었습니다.";
             if (patchUserReq.getStatus().equals("active")) result = "재활성화가 완료되었습니다.";
             else if (patchUserReq.getStatus().equals("dormant")) result = "휴면 상태로 전환되었습니다.";
+            else return new BaseResponse<>(INVALID_USER_STATUS); // 셋 중 아무것도 아니면 오류 메시지
+
+            userService.changeStatusOfUser(patchUserReq);
 
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
@@ -137,6 +146,7 @@ public class UserController {
             throw new BaseException(INVALID_JWT);
         }
         int userIdxByJwt = claims.getBody().get("userIdx", Integer.class);
+        // 위 부분 소셜 로그인 테스트 후 제거
 
         // jwt에서 idx 추출.
         // int userIdxByJwt = jwtService.getUserIdx(); 소셜 로그인 테스트 후 주석해제.
@@ -154,5 +164,70 @@ public class UserController {
             return new BaseResponse<>((exception.getStatus()));
         }
 
+    }
+
+
+
+    /**
+     * 회원 정보 변경(닉네임, 생년) API
+     * [PATCH] /btos/users/:userIdx
+     */
+
+    @ResponseBody
+    @PatchMapping("/{userIdx}")
+    public BaseResponse<String> modifyUserInfo(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserInfoReq userInfoReq) throws BaseException {
+        try {
+            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
+            String jwt = jwtService.createJwt(userIdx);
+            Jws<Claims> claims;
+            try {
+                claims = Jwts.parser()
+                        .setSigningKey(Secret.JWT_SECRET_KEY)
+                        .parseClaimsJws(jwt);
+            } catch (Exception ignored) {
+                throw new BaseException(INVALID_JWT);
+            }
+            int userIdxByJwt = claims.getBody().get("userIdx", Integer.class);
+            // 위 부분 소셜 로그인 테스트 후 제거
+
+            // jwt에서 idx 추출.
+            // int userIdxByJwt = jwtService.getUserIdx(); 소셜 로그인 테스트 후 주석해제.
+            // userIdx와 접근한 유저가 같은지 확인
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            //같다면 변경
+            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
+
+            // ***형식적 validation***
+            // nickname 형식 검사
+            if (userInfoReq.getNickName().length() > 10) { // 10글자 초과 시 오류 메시지
+                return new BaseResponse<>(POST_USERS_INVALID_NICKNAME);
+            }
+            // birth 범위 검사
+            if (userInfoReq.getBirth() < 0 ) { // 생년이 0 미만 값으로 들어오면 오류 메시지
+                return new BaseResponse<>(INVALID_USER_BIRTH);
+            }
+
+            PatchUserInfoReq patchUserInfoReq = new PatchUserInfoReq(userIdx, userInfoReq.getNickName(), userInfoReq.getBirth());
+
+            if (userInfoReq.getBirth() == 0 && userInfoReq.getNickName() == null) {// 둘 다 값이 없으면 오류 메시지
+                return new BaseResponse<>(PATCH_USERS_NOT_VALUES);
+            }
+            else if (userInfoReq.getBirth() == 0 && userInfoReq.getNickName() != null ) {// 닉네임만 값이 있으면
+                userService.modifyUserNickName(patchUserInfoReq); // 닉네임만 수정
+            }
+            else if (userInfoReq.getBirth() != 0 && userInfoReq.getNickName() == null) {// 생년만 값이 있으면
+                userService.modifyUserBirth(patchUserInfoReq);
+            }
+            else if (userInfoReq.getBirth() != 0 && userInfoReq.getNickName() != null) { // 둘 다 값이 있으면
+                userService.modifyUserInfo(patchUserInfoReq);
+            }
+
+            String result = "회원정보가 수정되었습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
     }
 }
