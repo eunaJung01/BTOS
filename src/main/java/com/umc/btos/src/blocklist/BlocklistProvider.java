@@ -17,18 +17,17 @@ import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
 
 public class BlocklistProvider {
     private final BlocklistDao blocklistDao;
-    private final JwtService jwtService; // JWT부분은 7주차에 다루므로 모르셔도 됩니다!
 
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired //readme 참고
-    public BlocklistProvider(BlocklistDao blocklistDao, JwtService jwtService) {
+    @Autowired
+    public BlocklistProvider(BlocklistDao blocklistDao) {
         this.blocklistDao = blocklistDao;
-        this.jwtService = jwtService; // JWT부분은 7주차에 다루므로 모르셔도 됩니다!
     }
 
     //차단 조회 API
+    // userIdx를 Query String로 받아 차단들을 반환
     public List<GetBlocklistRes> getBlockList(int userIdx) throws BaseException {
         try {
             List<GetBlocklistRes> getBlocklistRes = blocklistDao.getBlockList(userIdx);
