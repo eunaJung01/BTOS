@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: push dev branch in EC2
+      - name: pull main branch in EC2 dev
         uses: appleboy/ssh-action@master
         with:
           key: ${{ secrets.SSH_KEY }}
@@ -26,4 +26,6 @@ jobs:
             cd /var/www/BTOS/dev/BTOS
             git pull origin main
             ./gradlew clean build
+            java -jar BTOS-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev
+            java -jar BTOS-0.0.1-SNAPSHOT.jar --DATASOURCE_URL_TESTDB=${{ secrets.DATASOURCE_URL_TESTDB }} --DATASOURCE_USERNAME=${{ secrets.DATASOURCE_USERNAME }} --DATASOURCE_PASSWORD=${{ secrets.DATASOURCE_PASSWORD }}
             java -jar build/libs/BTOS-0.0.1-SNAPSHOT.jar
