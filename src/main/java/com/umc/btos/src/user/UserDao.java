@@ -34,7 +34,7 @@ public class UserDao {
 
     // 이메일 확인
     public int checkEmail(String email) {
-        String checkEmailQuery = "select exists(select email from User where email = ? and status = 'active')"; // 이메일 중복되는 지 확인(탈퇴 후 재가입 고려하여 active인 유저 중에서만 고려)
+        String checkEmailQuery = "select exists(select email from User where email = ? and status IS NOT 'deleted')"; // 이메일 중복되는 지 확인(탈퇴 후 재가입 고려하여 active인 유저 중에서만 고려)
         String checkEmailParams = email;
         return this.jdbcTemplate.queryForObject(checkEmailQuery,
                 int.class,
@@ -44,7 +44,7 @@ public class UserDao {
     // 회원 상태 변경
     public int changeStatusOfUser(PatchUserReq patchUserReq) {
         String changeStatusQuery = "update User set status = ?, updatedAt = CURRENT_TIMESTAMP where userIdx = ?";
-        Object[] changeStatusParams = {patchUserReq.getStatus() ,patchUserReq.getUserIdx()};
+        Object[] changeStatusParams = new Object[]{patchUserReq.getStatus() ,patchUserReq.getUserIdx()};
         return this.jdbcTemplate.update(changeStatusQuery, changeStatusParams);
         // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
     }
@@ -67,4 +67,37 @@ public class UserDao {
                         rs.getBoolean("pushAlarm")),
                         getUserParams);
     }
+
+    // 닉네임 확인
+    public int checkNickName(String nickName) {
+        String checkNickNameQuery = "select exists(select nickName from User where nickName = ? and status IS NOT 'deleted')";
+        String checkNickNameParams = nickName;
+        return this.jdbcTemplate.queryForObject(checkNickNameQuery, int.class, checkNickNameParams);
+        //결과(존재하지 않음(False,0),존재함(True, 1))를 int형(0,1)으로 반환
+    }
+
+    // 닉네임 변경
+    public int modifyUserNickName(PatchUserInfoReq patchUserInfoReq){
+        String modifyUserNickNameQuery = "update User set nickName = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        Object[] modifyUserNickNameParams = new Object[]{patchUserInfoReq.getNickName(), patchUserInfoReq.getUserIdx()};
+        return this.jdbcTemplate.update(modifyUserNickNameQuery, modifyUserNickNameParams);
+        // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
+    }
+
+    // 생년 변경
+    public int modifyUserBirth(PatchUserInfoReq patchUserInfoReq) {
+        String modifyUserBirthQuery = "update User set birth = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        Object[] modifyUserBirthParams = new Object[]{patchUserInfoReq.getBirth(), patchUserInfoReq.getUserIdx()};
+        return this.jdbcTemplate.update(modifyUserBirthQuery, modifyUserBirthParams);
+        // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
+    }
+
+    // 닉네임, 생년 변경
+    public int modifyUserInfo(PatchUserInfoReq patchUserInfoReq) {
+        String modifyUserInfoQuery = "update User set nickName = ?, birth = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        Object[] modifyUserInfoParams = new Object[]{patchUserInfoReq.getNickName(), patchUserInfoReq.getBirth(), patchUserInfoReq.getUserIdx()};
+        return this.jdbcTemplate.update(modifyUserInfoQuery, modifyUserInfoParams);
+        // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
+    }
+
 }
