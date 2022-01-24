@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: EC2 dev
+      - name: pull main branch in EC2 dev
         uses: appleboy/ssh-action@master
         with:
           key: ${{ secrets.SSH_KEY }}
