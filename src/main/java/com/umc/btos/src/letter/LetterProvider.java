@@ -14,17 +14,16 @@ import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
 @Service
 public class LetterProvider {
     private final LetterDao letterDao;
-    private final JwtService jwtService;
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired //readme 참고
-    public LetterProvider(LetterDao letterDao, JwtService jwtService) {
+    @Autowired
+    public LetterProvider(LetterDao letterDao) {
         this.letterDao = letterDao;
-        this.jwtService = jwtService;
+
     }
 
-    // 해당 letterIdx를 갖는 Letter의 정보 조회
+    // 해당 letterIdx를 갖는 Letter 조회
     public GetLetterRes getLetter(int letterIdx) throws BaseException {
         try {
             GetLetterRes getLetterRes = letterDao.getLetter(letterIdx);
