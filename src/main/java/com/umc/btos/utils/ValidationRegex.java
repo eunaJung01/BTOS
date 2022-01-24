@@ -15,7 +15,11 @@ public class ValidationRegex {
     // 이메일
     public static boolean isRegexEmail(String target) {
 <<<<<<< HEAD
+<<<<<<< HEAD
         String regex = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$";
+=======
+        String regex = "^[A-Z0-9._%+-]{2,64}+@[[A-Z0-9.-]+\\.[A-Z]]{2,255}$"; // local{64자까지} + @ + domain{255자까지} = 320자까지
+>>>>>>> 1424917 (Fix email regex ValidationRegex)
 =======
         String regex = "^[A-Z0-9._%+-]{2,64}+@[[A-Z0-9.-]+\\.[A-Z]]{2,255}$"; // local{64자까지} + @ + domain{255자까지} = 320자까지
 >>>>>>> 1424917 (Fix email regex ValidationRegex)
