@@ -9,14 +9,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class ReportProvider {
     private final ReportDao reportDao;
-    private final JwtService jwtService; // JWT부분은 7주차에 다루므로 모르셔도 됩니다!
 
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired //readme 참고
-    public ReportProvider(ReportDao reportDao, JwtService jwtService) {
+    @Autowired
+    public ReportProvider(ReportDao reportDao) {
         this.reportDao = reportDao;
-        this.jwtService = jwtService; // JWT부분은 7주차에 다루므로 모르셔도 됩니다!
     }
 }
