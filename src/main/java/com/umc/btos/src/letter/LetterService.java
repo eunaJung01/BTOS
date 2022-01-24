@@ -3,13 +3,11 @@ package com.umc.btos.src.letter;
 import com.umc.btos.config.BaseException;
 import com.umc.btos.src.letter.model.*;
 import com.umc.btos.src.letter.model.PostLetterRes;
-import com.umc.btos.src.report.model.PostReportRes;
-import com.umc.btos.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 
 import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
 import static com.umc.btos.config.BaseResponseStatus.MODIFY_FAIL_LETTER_STATUS;
@@ -17,17 +15,13 @@ import static com.umc.btos.config.BaseResponseStatus.MODIFY_FAIL_LETTER_STATUS;
 @Service
 public class LetterService {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    // *********************** 동작에 있어 필요한 요소들을 불러옵니다. *************************
     private final LetterDao letterDao;
     private final LetterProvider letterProvider;
-    private final JwtService jwtService;
 
-    @Autowired //readme 참고
-    public LetterService(LetterDao letterDao, LetterProvider letterProvider, JwtService jwtService) {
+    @Autowired
+    public LetterService(LetterDao letterDao, LetterProvider letterProvider) {
         this.letterDao = letterDao;
         this.letterProvider = letterProvider;
-        this.jwtService = jwtService;
 
     }
 
