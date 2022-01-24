@@ -14,7 +14,7 @@ public class ValidationRegex {
 
     // 이메일
     public static boolean isRegexEmail(String target) {
-        String regex = "^[A-Z0-9._%+-]{2,64}+@[[A-Z0-9.-]+\\.[A-Z]]{2,255}$"; // local{64자까지} + @ + domain{255자까지}
+        String regex = "^[A-Z0-9._%+-]{2,64}+@[[A-Z0-9.-]+\\.[A-Z]]{2,255}$"; // local{64자까지} + @ + domain{255자까지} = 320자까지
         Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE); // Pattern.CASE_INSENSITIVE : 대소문자 구분 X
         Matcher matcher = pattern.matcher(target);
         return matcher.find();
