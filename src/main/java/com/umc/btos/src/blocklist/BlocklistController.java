@@ -25,7 +25,6 @@ public class BlocklistController {
     private final BlocklistProvider blocklistProvider;
     @Autowired
     private final BlocklistService blocklistService;
-    @Autowired
 
 
     public BlocklistController(BlocklistProvider blocklistProvider, BlocklistService blocklistService) {
