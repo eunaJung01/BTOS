@@ -40,15 +40,50 @@ public class PlantDao {
         );
     }
 
-    //회원이 선택한 화분 조회 API
-    public GetSpecificPlantRes getSelectedPlant(int plantIdx, int userIdx) {
-        String Query = "SELECT Plant.plantIdx, Plant.plantName, Plant.maxLevel, Plant.plantImgUrl, " +
-                "UserPlantList.level, UserPlantList.status " +
-                "FROM Plant INNER JOIN UserPlantList ON Plant.plantIdx=UserPlantList.plantIdx " +
-                "WHERE Plant.status=? AND UserPlantList.userIdx=?";
-        Object[] Params = new Object[]{"active", userIdx};
+    //회원에게 plantIdx 화분이 존재하는지 확인
+    //결과값이 존재하면 1, 없으면 0
+    public int checkPlantExist(int plantIdx) {
+        String Query = "SELECT EXISTS(SELECT * FROM UserPlantList WHERE plantIdx=?) as success";
+        int Param = plantIdx;
 
-        return this.jdbcTemplate.queryForObject(Query, GetSpecificPlantRes.class, Params);
+        return this.jdbcTemplate.queryForObject(Query, int.class, Param);
+    }
+
+    //회원이 선택한 화분 조회 API
+    public GetSpecificPlantRes getSelectedPlant(int plantIdx, int status, int userIdx) {
+        //화분 기본 정보 FROM Plant
+        String plantQuery = "SELECT plantIdx, plantName, plantImgUrl, plantInfo, plantPrice, maxLevel " +
+                "FROM Plant WHERE plantIdx=? AND status=?";
+        Object[] plantParams = new Object[]{plantIdx, "active"};
+
+        PlantBasicInfo plantBasicInfo = jdbcTemplate.queryForObject(
+                plantQuery,
+                (rs, rowNum) -> new PlantBasicInfo(
+                        rs.getInt("plantIdx"),
+                        rs.getString("plantName"),
+                        rs.getString("plantImgUrl"),
+                        rs.getString("plantInfo"),
+                        rs.getInt("plantPrice"),
+                        rs.getInt("maxLevel")),
+                plantParams);
+
+        int level = 0; // 현재 레벨 변수, 보유중이면 현재레벨/미보유면 -1
+        if (status == 1) { //보유중이면 화분 현재 레벨 가져오기
+            String currentLevelQuery = "SELECT level FROM UserPlantList WHERE userIdx=? AND plantIdx=?";
+            Object[] currentLevelParams = new Object[]{userIdx, plantIdx};
+
+            level = jdbcTemplate.queryForObject(currentLevelQuery, int.class, currentLevelParams);
+        } else { //미보유
+            level = -1;
+        }
+
+        //반환 형태
+        GetSpecificPlantRes getSpecificPlantRes = new GetSpecificPlantRes(
+                plantBasicInfo.getPlantIdx(), plantBasicInfo.getPlantName(), plantBasicInfo.getPlantImgUrl(),
+                plantBasicInfo.getPlantInfo(), plantBasicInfo.getPlantPrice(), plantBasicInfo.getMaxLevel(),
+                level, status);
+
+        return getSpecificPlantRes;
     }
 
     //화분 선택 API ~ 회원이 futurePlant를 이미 selected된 화분으로 넘겼는지 체크하기 위한 함수
@@ -112,26 +147,4 @@ public class PlantDao {
         return this.jdbcTemplate.update(Query, Params);
     }
 
-    /*
-    //화분 보유중 목록 조회 API
-    public List<GetSpecificPlantRes> getOwnPlantList(int userIdx) {
-        String Query = "SELECT Plant.plantIdx, Plant.plantName, Plant.maxLevel, Plant.plantImgUrl, " +
-                "UserPlantList.level, UserPlantList.status " +
-                "(SELECT UserPlantList.uPlantIdx FROM UserPlantList WHERE UserPlantList.status=?) " +
-                "FROM Plant, UserPlantList " +
-                "WHERE UserPlantList.status = ? OR INUserPlantList.status = ? AND UserPlantList.userIdx = ?";
-        Object[] Params = new Object[]{"selected", userIdx, "active", "selected"};
-
-        return this.jdbcTemplate.query(Query,
-                                (rs, rowNum) -> new GetSpecificPlantRes(
-                                        rs.getInt("plantIdx"),
-                                        rs.getString("plantName"),
-                                        rs.getInt("maxLevel"),
-                                        rs.getString("plantImgUrl"),
-                                        rs.getInt("currentLevel"),
-                                        rs.getString("userStatus"),
-                                        rs.getInt("selectedPlantIdx"))
-        );
-    }
-    */
 }
