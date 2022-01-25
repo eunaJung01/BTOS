@@ -10,12 +10,12 @@ import lombok.Setter;
 
 //Profile에서 회원이 선택한 화분을 조회했을 때를 위한 클래스
 public class GetSpecificPlantRes {
-    //uPlantIdx가 필요할까? 고민
     private int plantIdx; //화분 식별자
     private String plantName; //화분 이름
-    private int maxLevel; //보유 중인 화분의 최대 단계 (Plant.maxLevel)
     private String plantImgUrl; //화분 이미지
-    private int currentLevel; //현재 화분 단계 (UserPlanList.level) , maxLevel이랑 동일하면 (MAX) 표기
-    private String userStatus; //유저의 화분 보유 상태
-    private int selectedPlantIdx; //보유중인 화분중 선택된 화분
+    private String plantInfo; // 화분 정보
+    private int plantPrice; //화분 가격 (미보유)
+    private int maxLevel; //화분의 최대 단계
+    private int currentLevel; //현재 화분 단계 (보유), 미보유시 -1로 set
+    private int plantStatus; //회원의 화분 보유 여부 : 보유 1, 미보유 0
 }
