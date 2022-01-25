@@ -31,7 +31,7 @@ public class MailboxController {
      */
     @ResponseBody
     @GetMapping("/mail")
-    public BaseResponse<GetMailRes> getDiary(@RequestParam("type") String type, @RequestParam("idx") int idx) {
+    public BaseResponse<GetMailRes> getMail(@RequestParam("type") String type, @RequestParam("idx") int idx) {
         try {
             GetMailRes getMail = new GetMailRes(type);
             getMail.setContent(mailboxProvider.setMailContent(type, idx));
