@@ -71,6 +71,8 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_PUSH_ALARM(false, 5011, "푸시 알람 수신 변경에 실패했습니다."),
     INVALID_FONT(false, 5012, "유효하지 않은 폰트입니다."),
     CHANGE_FAIL_FONT(false, 5013, "폰트 변경에 실패하였습니다."),
+    MODIFY_FAIL_RECEIVE_OTHERS(false, 5014, "다른 사람의 편지 수신 변경에 실패하였습니다."),
+    MODIFY_FAIL_RECEIVE_SIMILAR_AGE(false, 5015, "비슷한 연령대의 편지 수신 변경에 실패하였습니다."),
 
     // 6000 : 레마
     TEMP2(false, 9000, "conflict 방지용 2"),
