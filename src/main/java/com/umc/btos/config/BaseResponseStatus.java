@@ -70,6 +70,7 @@ public enum BaseResponseStatus {
     DELETE_FAIL_DONELIST(false, 6003, "done list 삭제 실패"),
     DIARY_NONPREMIUM_USER(false, 6004, "프리미엄 가입이 필요합니다."),
     DIARY_DECRYPTION_ERROR(false, 6005, "일기 복호화에 실패하였습니다."),
+    EMPTY_RESULT(false, 6006, "검색 결과 없음"),
 
 
     // 7000 : 자몽
