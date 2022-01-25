@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 @Repository
 public class MailboxDao {
@@ -14,6 +15,45 @@ public class MailboxDao {
     @Autowired
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
+    }
+
+    // 우편함 조회 - 일기 수신 목록
+    public List<GetMailboxRes> getMailbox_diary(int userIdx) {
+        String query = "SELECT Diary.diaryIdx AS idx, User.nickName AS senderNickName, Diary.createdAt AS sendAt FROM Diary INNER JOIN User ON Diary.userIdx = User.userIdx INNER JOIN DiarySendList ON Diary.diaryIdx = DiarySendList.diaryIdx WHERE DiarySendList.receiverIdx = ?";
+        return this.jdbcTemplate.query(query,
+                (rs, rowNum) -> new GetMailboxRes(
+                        "diary",
+                        rs.getInt("idx"),
+                        rs.getString("senderNickName"),
+                        rs.getString("sendAt"),
+                        true
+                ), userIdx);
+    }
+
+    // 우편함 조회 - 편지 수신 목록
+    public List<GetMailboxRes> getMailbox_letter(int userIdx) {
+        String query = "SELECT Letter.letterIdx AS idx, User.nickName AS senderNickName, Letter.createdAt AS sendAt FROM Letter INNER JOIN User ON Letter.userIdx = User.userIdx INNER JOIN LetterSendList ON Letter.letterIdx = LetterSendList.letterIdx WHERE LetterSendList.receiverIdx = ?";
+        return this.jdbcTemplate.query(query,
+                (rs, rowNum) -> new GetMailboxRes(
+                        "letter",
+                        rs.getInt("idx"),
+                        rs.getString("senderNickName"),
+                        rs.getString("sendAt"),
+                        false
+                ), userIdx);
+    }
+
+    // 우편함 조회 - 답장 수신 목록
+    public List<GetMailboxRes> getMailbox_reply(int userIdx) {
+        String query = "SELECT Reply.replyIdx AS idx, User.nickName AS senderNickName, Reply.createdAt AS sendAt FROM Reply INNER JOIN User ON Reply.replierIdx = User.userIdx WHERE Reply.receiverIdx = ?";
+        return this.jdbcTemplate.query(query,
+                (rs, rowNum) -> new GetMailboxRes(
+                        "reply",
+                        rs.getInt("idx"),
+                        rs.getString("senderNickName"),
+                        rs.getString("sendAt"),
+                        false
+                ), userIdx);
     }
 
     // 편지 조회

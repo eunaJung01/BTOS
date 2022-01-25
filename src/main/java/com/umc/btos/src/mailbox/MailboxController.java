@@ -26,6 +26,22 @@ public class MailboxController {
     }
 
     /*
+     * 우편함 목록 조회
+     * [GET] /mailboxes/:userIdx
+     */
+    @ResponseBody
+    @GetMapping("/{userIdx}")
+    public BaseResponse<List<GetMailboxRes>> getMailbox(@PathVariable("userIdx") int userIdx) {
+        try {
+            List<GetMailboxRes> mailbox = mailboxProvider.getMailbox(userIdx);
+            return new BaseResponse<>(mailbox);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /*
      * 우편함 - 일기 / 편지 / 답장 조회
      * [GET] /mailboxes/mail?type=&idx=
      * type = 일기, 편지, 답장 구분 (diary / letter / reply)

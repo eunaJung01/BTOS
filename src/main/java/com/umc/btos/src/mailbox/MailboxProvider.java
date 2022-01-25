@@ -4,10 +4,16 @@ import com.umc.btos.config.BaseException;
 import com.umc.btos.src.diary.DiaryProvider;
 import com.umc.btos.src.diary.DiaryDao;
 import com.umc.btos.src.diary.model.GetDiaryRes;
+import com.umc.btos.src.mailbox.model.GetMailboxRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static com.umc.btos.config.BaseResponseStatus.*;
 
@@ -24,6 +30,25 @@ public class MailboxProvider {
         this.mailboxDao = mailboxDao;
         this.diaryProvider = diaryProvider;
         this.diaryDao = diaryDao;
+    }
+
+    /*
+     * 우편함 목록 조회
+     * [GET] /mailboxes/:userIdx
+     */
+    public List<GetMailboxRes> getMailbox(int userIdx) throws BaseException {
+        try {
+            List<GetMailboxRes> mailbox = new ArrayList<>();
+            mailbox.addAll(mailboxDao.getMailbox_diary(userIdx)); // 일기 수신 목록 - DiarySendList.receiverIdx
+            mailbox.addAll(mailboxDao.getMailbox_letter(userIdx)); // 편지 수신 목록 - LetterSendList.receiverIdx
+            mailbox.addAll(mailboxDao.getMailbox_reply(userIdx)); // 답장 수신 목록 - Reply.receiverIdx
+
+            Collections.sort(mailbox); // sendDate 기준 내림차순 정렬
+            return mailbox;
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
     }
 
     /*
