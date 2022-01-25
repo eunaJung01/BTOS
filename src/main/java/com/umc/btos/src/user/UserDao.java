@@ -70,34 +70,27 @@ public class UserDao {
 
     // 닉네임 확인
     public int checkNickName(String nickName) {
-        String checkNickNameQuery = "select exists(select nickName from User where nickName = ? and status IS NOT 'deleted')";
+        String checkNickNameQuery = "select exists(select nickName from User where nickName = ? and status in ('active', 'dormant'))";
         String checkNickNameParams = nickName;
         return this.jdbcTemplate.queryForObject(checkNickNameQuery, int.class, checkNickNameParams);
         //결과(존재하지 않음(False,0),존재함(True, 1))를 int형(0,1)으로 반환
     }
 
     // 닉네임 변경
-    public int modifyUserNickName(PatchUserInfoReq patchUserInfoReq){
+    public int modifyUserNickName(PatchUserNickNameReq patchUserNickNameReq){
         String modifyUserNickNameQuery = "update User set nickName = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
-        Object[] modifyUserNickNameParams = new Object[]{patchUserInfoReq.getNickName(), patchUserInfoReq.getUserIdx()};
+        Object[] modifyUserNickNameParams = new Object[]{patchUserNickNameReq.getNickName(), patchUserNickNameReq.getUserIdx()};
         return this.jdbcTemplate.update(modifyUserNickNameQuery, modifyUserNickNameParams);
-        // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
+        // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
     }
 
     // 생년 변경
-    public int modifyUserBirth(PatchUserInfoReq patchUserInfoReq) {
+    public int modifyUserBirth(PatchUserBirthReq patchUserBirthReq) {
         String modifyUserBirthQuery = "update User set birth = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
-        Object[] modifyUserBirthParams = new Object[]{patchUserInfoReq.getBirth(), patchUserInfoReq.getUserIdx()};
+        Object[] modifyUserBirthParams = new Object[]{patchUserBirthReq.getBirth(), patchUserBirthReq.getUserIdx()};
         return this.jdbcTemplate.update(modifyUserBirthQuery, modifyUserBirthParams);
-        // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
+        // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
     }
 
-    // 닉네임, 생년 변경
-    public int modifyUserInfo(PatchUserInfoReq patchUserInfoReq) {
-        String modifyUserInfoQuery = "update User set nickName = ?, birth = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
-        Object[] modifyUserInfoParams = new Object[]{patchUserInfoReq.getNickName(), patchUserInfoReq.getBirth(), patchUserInfoReq.getUserIdx()};
-        return this.jdbcTemplate.update(modifyUserInfoQuery, modifyUserInfoParams);
-        // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
-    }
 
 }
