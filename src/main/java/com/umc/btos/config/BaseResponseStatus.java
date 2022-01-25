@@ -63,7 +63,7 @@ public enum BaseResponseStatus {
     AUTH_REQ_SIGNUP(false, 5003, "회원가입이 필요합니다."),
     AUTH_FAILED_TO_LOGIN(false, 5004, "로그인에 실패하였습니다."),
     MODIFY_FAIL_STATUS(false, 5005, "상태 변경에 실패하였습니다."),
-    INVALID_USER_BIRTH(false, 5006, "생년은 0 이상의 값만 가능합니다."),
+    INVALID_USER_BIRTH(false, 5006, "생년은 1 이상의 값만 가능합니다."),
     INVALID_USER_STATUS(false, 5007, "탈퇴, 활성화, 휴면 상태값만 가능합니다."),
     MODIFY_FAIL_INFO(false, 5008, "정보 변경에 실패하였습니다."),
     PATCH_USERS_EXISTS_NICKNAME(false, 5009, "이미 존재하는 닉네임입니다."),
