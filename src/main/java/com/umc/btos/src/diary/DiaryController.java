@@ -108,8 +108,8 @@ public class DiaryController {
     @GetMapping("/calendar/{userIdx}/{date}")
     public BaseResponse<List<GetCalendarRes>> getCalendar(@PathVariable("userIdx") int userIdx, @PathVariable("date") String date, @RequestParam("type") String type) {
         try {
-            List<GetCalendarRes> getCalendarRes = diaryProvider.getCalendar(userIdx, date, type);
-            return new BaseResponse<>(getCalendarRes);
+            List<GetCalendarRes> calendar = diaryProvider.getCalendar(userIdx, date, type);
+            return new BaseResponse<>(calendar);
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
