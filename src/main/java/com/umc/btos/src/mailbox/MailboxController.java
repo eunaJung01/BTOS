@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/mailboxes")
 public class MailboxController {
@@ -33,10 +35,10 @@ public class MailboxController {
     @GetMapping("/mail")
     public BaseResponse<GetMailRes> getMail(@RequestParam("type") String type, @RequestParam("idx") int idx) {
         try {
-            GetMailRes getMail = new GetMailRes(type);
-            getMail.setContent(mailboxProvider.setMailContent(type, idx));
-            getMail.setSenderFontIdx(mailboxProvider.setSenderFontIdx(type, idx));
-            return new BaseResponse<>(getMail);
+            GetMailRes mail = new GetMailRes(type);
+            mail.setContent(mailboxProvider.setMailContent(type, idx));
+            mail.setSenderFontIdx(mailboxProvider.setSenderFontIdx(type, idx));
+            return new BaseResponse<>(mail);
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
