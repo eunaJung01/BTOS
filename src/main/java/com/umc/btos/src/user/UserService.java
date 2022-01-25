@@ -65,14 +65,13 @@ public class UserService {
     }
 
     // 닉네임 변경
-    public void modifyUserNickName(PatchUserNickNameReq patchUserNickNameReq) throws BaseException{
+    public void modifyUserNickName(PatchUserNickNameReq patchUserNickNameReq) throws BaseException {
         // 닉네임 중복 확인 -> deleted 아닌 유저들한테서만 조회
         if (userProvider.checkNickName(patchUserNickNameReq.getNickName()) == 1) { // 이미 있으면 1
             throw new BaseException(PATCH_USERS_EXISTS_NICKNAME);
         }
         try {
             int result = userDao.modifyUserNickName(patchUserNickNameReq); // result = 0 이 나오고 있음
-            System.out.println("결과 : "+result);
             if (result == 0) throw new BaseException(MODIFY_FAIL_INFO); // 닉네임 변경 실패시 에러 메시지
 
         } catch(Exception exception) {
@@ -81,10 +80,9 @@ public class UserService {
     }
 
     // 생년 변경
-    public void modifyUserBirth(PatchUserBirthReq patchUserBirthReq) throws BaseException{
+    public void modifyUserBirth(PatchUserBirthReq patchUserBirthReq) throws BaseException {
         try {
             int result = userDao.modifyUserBirth(patchUserBirthReq);
-            System.out.println("결과 : "+result);
             if (result == 0) throw new BaseException(MODIFY_FAIL_INFO); // 생년 변경 실패시 에러 메시지
 
         } catch(Exception exception) {
