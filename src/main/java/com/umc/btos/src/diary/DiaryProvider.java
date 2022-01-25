@@ -83,7 +83,7 @@ public class DiaryProvider {
      * 3. 기간 설정 조회 (startDate ~ endDate)
      * 4. 문자열 검색 & 기간 설정 조회 (search, startDate ~ endDate)
      */
-    public List<GetDiaryRes> getDiaryList(String[] params, PagingRes pageInfo) throws BaseException {
+    public List<GetDiaryRes> getDiaryList(String[] params, PagingRes pageInfo) throws BaseException, NullPointerException {
         try {
             // String[] params = new String[]{userIdx, search, startDate, lastDate};
             int userIdx = Integer.parseInt(params[0]);
@@ -158,6 +158,10 @@ public class DiaryProvider {
                 }
             }
 
+            if (diaryList.isEmpty()) {
+                throw new NullPointerException(); // 검색 결과 없음
+            }
+
             // 페이징 처리 (자르기)
             if (needsPaging) {
                 int startDataIdx = (pageNum - 1) * Constant.DIARYLIST_DATA_NUM;
@@ -184,6 +188,8 @@ public class DiaryProvider {
 
             return diaryList;
 
+        } catch (NullPointerException exception) {
+            throw new BaseException(EMPTY_RESULT); // 검색 결과 없음
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
