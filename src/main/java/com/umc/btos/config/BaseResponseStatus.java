@@ -71,6 +71,7 @@ public enum BaseResponseStatus {
     DIARY_NONPREMIUM_USER(false, 6004, "프리미엄 가입이 필요합니다."),
     DIARY_DECRYPTION_ERROR(false, 6005, "일기 복호화에 실패하였습니다."),
     EMPTY_RESULT(false, 6006, "검색 결과 없음"),
+    PAGENUM_ERROR(false, 6006, "잘못된 페이지 요청입니다."),
 
 
     // 7000 : 자몽
