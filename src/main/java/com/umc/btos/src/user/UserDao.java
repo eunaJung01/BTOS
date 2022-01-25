@@ -102,4 +102,12 @@ public class UserDao {
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
     }
 
+
+    // 폰트 변경
+    public int changeFont(PatchUserFontReq patchUserFontReq) {
+        String changeFontQuery = "update User set fontIdx = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        Object[] changeFontParams = new Object[] {patchUserFontReq.getFontIdx(), patchUserFontReq.getUserIdx()};
+        return this.jdbcTemplate.update(changeFontQuery, changeFontParams);
+        // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
+    }
 }
