@@ -95,7 +95,18 @@ public class UserService {
     public void modifyPushAlarm(PatchUserPushAlarmReq patchUserPushAlarmReq) throws BaseException{
         try {
             int result = userDao.modifyPushAlarm(patchUserPushAlarmReq);
-            if (result == 0) throw new BaseException(MODIFY_FAIL_PUSH_ALARM);
+            if (result == 0) throw new BaseException(MODIFY_FAIL_PUSH_ALARM); // 푸시 알람 수신 여부 변경 실패시 에러 메시지
+
+        } catch(Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 폰트 변경
+    public void changeFont(PatchUserFontReq patchUserFontReq) throws BaseException{
+        try {
+            int result = userDao.changeFont(patchUserFontReq);
+            if (result == 0) throw new BaseException(CHANGE_FAIL_FONT); // 폰트 변경 실패시 에러 메시지
 
         } catch(Exception exception) {
             throw new BaseException(DATABASE_ERROR);
