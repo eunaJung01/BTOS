@@ -158,11 +158,19 @@ public class DiaryProvider {
                 }
             }
 
-            if (diaryList.isEmpty()) {
+            if (dataNum == 0) {
                 throw new NullPointerException(); // 검색 결과 없음
             }
 
-            // 페이징 처리 (자르기)
+            // PagingRes
+            int endPage = (int) Math.ceil(dataNum / Constant.DIARYLIST_DATA_NUM); // 마지막 페이지 번호
+            if (pageInfo.getCurrentPage() > endPage) {
+                throw new BaseException(PAGENUM_ERROR); // 잘못된 페이지 요청입니다.
+            }
+            pageInfo.setEndPage(endPage);
+            pageInfo.setHasNext(pageInfo.getCurrentPage() != endPage); // pageNum == endPage -> hasNext = false
+
+            // 페이징 처리
             if (needsPaging) {
                 int startDataIdx = (pageNum - 1) * Constant.DIARYLIST_DATA_NUM;
                 int endDataIdx = pageNum * Constant.DIARYLIST_DATA_NUM;
@@ -181,15 +189,12 @@ public class DiaryProvider {
                 }
             }
 
-            // PagingRes
-            int endPage = (int) Math.ceil(dataNum / Constant.DIARYLIST_DATA_NUM); // 마지막 페이지 번호
-            pageInfo.setEndPage(endPage);
-            pageInfo.setHasNext(pageInfo.getCurrentPage() != endPage); // pageNum == endPage -> hasNext = false
-
             return diaryList;
 
         } catch (NullPointerException exception) {
             throw new BaseException(EMPTY_RESULT); // 검색 결과 없음
+        } catch (BaseException exception) {
+            throw new BaseException(PAGENUM_ERROR); // 잘못된 페이지 요청입니다.
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
