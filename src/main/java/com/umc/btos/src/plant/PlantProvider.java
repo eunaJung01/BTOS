@@ -36,7 +36,8 @@ public class PlantProvider {
     //회원이 선택한 화분 조회 API
     public GetSpecificPlantRes getSelectedPlant(int plantIdx, int userIdx) throws BaseException {
         try {
-            return plantDao.getSelectedPlant(plantIdx, userIdx);
+            int status = plantDao.checkPlantExist(plantIdx); //plantIdx인 화분을 사용자가 보유중이면 1, 미보유 0
+            return plantDao.getSelectedPlant(plantIdx, status, userIdx);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -63,15 +64,5 @@ public class PlantProvider {
         }
     }
 
-    /*
-    //화분 보유중 목록 조회 API
-    public List<GetSpecificPlantRes> getOwnPlantList(int userIdx) throws BaseException {
-        try {
-            return plantDao.getOwnPlantList(userIdx);
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-    */
 }
 
