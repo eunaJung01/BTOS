@@ -319,4 +319,50 @@ public class UserController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 폰트 선택 API
+     * [PATCH] /users/:userIdx/font
+     */
+
+    @ResponseBody
+    @PatchMapping("/{userIdx}/font")
+    public BaseResponse<String> selectFont(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserFontReq font) throws BaseException {
+        try {
+            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
+            String jwt = jwtService.createJwt(userIdx);
+            Jws<Claims> claims;
+            try {
+                claims = Jwts.parser()
+                        .setSigningKey(Secret.JWT_SECRET_KEY)
+                        .parseClaimsJws(jwt);
+            } catch (Exception ignored) {
+                throw new BaseException(INVALID_JWT);
+            }
+            int userIdxByJwt = claims.getBody().get("userIdx", Integer.class);
+            // 위 부분 소셜 로그인 테스트 후 제거
+
+            // jwt에서 idx 추출.
+            // int userIdxByJwt = jwtService.getUserIdx(); 소셜 로그인 테스트 후 주석해제.
+            // userIdx와 접근한 유저가 같은지 확인
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            //같다면 변경
+            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
+
+            if (font.getFontIdx() < 1) { // 유효하지 않은 폰트 idx validation
+                return new BaseResponse<>(INVALID_FONT);
+            }
+
+            PatchUserFontReq patchUserFontReq = new PatchUserFontReq(userIdx, font.getFontIdx());
+            userService.changeFont(patchUserFontReq);
+
+            String result = "폰트가 변경되었습니다.";
+
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }
