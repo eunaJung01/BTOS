@@ -1,6 +1,6 @@
 package com.umc.btos.src.diary;
 
-import com.umc.btos.config.BaseException;
+import com.umc.btos.config.*;
 import com.umc.btos.config.secret.Secret;
 import com.umc.btos.src.diary.model.*;
 import com.umc.btos.utils.AES128;
@@ -72,9 +72,9 @@ public class DiaryProvider {
 
     /*
      * Archive 조회 - 일기 리스트
-     * [GET] /diaries/diaryList?userIdx=&search=&startDate=&endDate=
+     * [GET] /diaries/diaryList?userIdx=&search=&startDate=&endDate=/:pageNum
      * search = 검색할 문자열 ("String")
-     * startDate, lastDate = 기간 설정 (YYYY-MM-DD ~ YYYY-MM-DD)
+     * startDate, lastDate = 날짜 기간 설정 (YYYY-MM-DD ~ YYYY-MM-DD)
      * 검색 & 기간 설정 조회는 중첩됨
      * 최신순 정렬 (diaryDate 기준 내림차순 정렬)
      *
@@ -83,7 +83,7 @@ public class DiaryProvider {
      * 3. 기간 설정 조회 (startDate ~ endDate)
      * 4. 문자열 검색 & 기간 설정 조회 (search, startDate ~ endDate)
      */
-    public List<GetDiaryRes> getDiaryList(String[] params) throws BaseException {
+    public List<GetDiaryRes> getDiaryList(String[] params, PagingRes pageInfo) throws BaseException {
         try {
             // String[] params = new String[]{userIdx, search, startDate, lastDate};
             int userIdx = Integer.parseInt(params[0]);
@@ -91,11 +91,17 @@ public class DiaryProvider {
             String startDate = params[2];
             String endDate = params[3];
 
+            // PagingRes
+            int pageNum = pageInfo.getCurrentPage(); // 페이지 번호
+            double dataNum = 0; // data 총 개수 (후에 Math.ceil 사용하는 연산 때문에 double)
+            boolean needsPaging = false;
+
             List<GetDiaryRes> diaryList = new ArrayList<>(); // 일기 정보 저장 (done list 조회 X, 일기 내용만 조회)
 
             // 1. 전체 조회 - default
             if (search == null && startDate == null && endDate == null) {
-                diaryList = diaryDao.getDiaryList(userIdx);
+                diaryList = diaryDao.getDiaryList(userIdx, pageNum);
+                dataNum = diaryDao.getDiaryList_dataNum(userIdx);
             }
 
             // 2. 문자열 검색 (search)
@@ -118,10 +124,15 @@ public class DiaryProvider {
                         diaryList.add(diaryDao.getDiary(diaryIdx));
                     }
                 }
+                dataNum = diaryList.size();
+                if (dataNum > Constant.DIARYLIST_DATA_NUM) { // 페이징 처리 필요
+                    needsPaging = true;
+                }
 
             } else {
                 // 3. 기간 설정 조회 (startDate ~ endDate)
-                diaryList = diaryDao.getDiaryList_date(userIdx, startDate, endDate);
+                diaryList = diaryDao.getDiaryListByDate(userIdx, startDate, endDate, pageNum);
+                dataNum = diaryDao.getDiaryListByDate_dataNum(userIdx, startDate, endDate);
 
                 // 4. 문자열 검색 & 날짜 기간 설정 조회 (search, startDate ~ endDate)
                 if (search != null) {
@@ -140,7 +151,23 @@ public class DiaryProvider {
                             diaryList.remove(i);
                         }
                     }
+                    dataNum = diaryList.size();
+                    if (dataNum > Constant.DIARYLIST_DATA_NUM) { // 페이징 처리 필요
+                        needsPaging = true;
+                    }
                 }
+            }
+
+            // 페이징 처리 (자르기)
+            if (needsPaging) {
+                int startDataIdx = (pageNum - 1) * Constant.DIARYLIST_DATA_NUM;
+                int endDataIdx = pageNum * Constant.DIARYLIST_DATA_NUM;
+
+                List<GetDiaryRes> diaryList_paging = new ArrayList<>(); // 일기 정보 저장 (done list 조회 X, 일기 내용만 조회)
+                for (int i = startDataIdx; i < endDataIdx; i++) {
+                    diaryList_paging.add(diaryList.get(i));
+                }
+                diaryList = diaryList_paging;
             }
 
             // content 복호화
@@ -149,6 +176,12 @@ public class DiaryProvider {
                     decryptContents(diary, false);
                 }
             }
+
+            // PagingRes
+            int endPage = (int) Math.ceil(dataNum / Constant.DIARYLIST_DATA_NUM); // 마지막 페이지 번호
+            pageInfo.setEndPage(endPage);
+            pageInfo.setHasNext(pageInfo.getCurrentPage() != endPage); // pageNum == endPage -> hasNext = false
+
             return diaryList;
 
         } catch (Exception exception) {
@@ -202,5 +235,34 @@ public class DiaryProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    // 페이지 정보
+    /*
+     * 1. 전체 회원 정보 조회 : [GET] /users
+     * 2. 회원 정보 조회 (nickName) : [GET] /users?nickName=?
+     * 3. 회원 정보 조회 (userIdx) : [GET] /users?usrIdx=?
+     * 페이징 : pageNum=? (by Query Parameter)
+     */
+//    public PagingRes getPageInfo(int idx, String nickName, int pageNum) throws BaseException {
+//        try {
+//            boolean hasNext;
+//            double dataNum = 0; // data 개수 세기
+//            switch (idx) {
+//                case 1:
+//                    dataNum = userDao.getDataNum();
+//                    break;
+//                case 2:
+//                    dataNum = userDao.getDataNumByNickName(nickName);
+//                    break;
+//            }
+//            int endPage = (int) Math.ceil(dataNum / Constant.USER_DATA_NUM); // 마지막 페이지 번호
+//            hasNext = pageNum != endPage; // pageNum == endPage -> hasNext = false
+//
+//            return new PagingRes(hasNext, 1, endPage, pageNum, Constant.USER_DATA_NUM);
+//
+//        } catch (Exception exception) {
+//            throw new BaseException(DATABASE_ERROR);
+//        }
+//    }
 
 }

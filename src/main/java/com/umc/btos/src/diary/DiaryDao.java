@@ -1,5 +1,6 @@
 package com.umc.btos.src.diary;
 
+import com.umc.btos.config.Constant;
 import com.umc.btos.src.diary.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -8,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public class DiaryDao {
@@ -127,8 +127,11 @@ public class DiaryDao {
     }
 
     // 일기 리스트 반환 - 전체 조회 (최신순 정렬 - diaryDate 기준 내림차순 정렬)
-    public List<GetDiaryRes> getDiaryList(int userIdx) {
-        String query = "SELECT * FROM Diary WHERE userIdx = ? AND status = 'active' ORDER BY diaryDate DESC";
+    public List<GetDiaryRes> getDiaryList(int userIdx, int pageNum) {
+        int startData = (pageNum - 1) * Constant.DIARYLIST_DATA_NUM;
+        int endData = pageNum * Constant.DIARYLIST_DATA_NUM;
+
+        String query = "SELECT * FROM Diary WHERE userIdx = ? AND status = 'active' ORDER BY diaryDate DESC LIMIT ?, ?";
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetDiaryRes(
                         rs.getInt("diaryIdx"),
@@ -136,12 +139,21 @@ public class DiaryDao {
                         rs.getString("diaryDate"),
                         rs.getInt("isPublic"),
                         rs.getString("content")
-                ), userIdx);
+                ), userIdx, startData, endData);
+    }
+
+    // 일기 리스트 전체 조회 시 data 개수 반환
+    public int getDiaryList_dataNum(int userIdx) {
+        String query = "SELECT COUNT(*) FROM Diary WHERE userIdx = ? AND status = 'active'";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
     // 일기 리스트 반환 - 날짜 기간으로 조회 (최신순 정렬 - diaryDate 기준 내림차순 정렬)
-    public List<GetDiaryRes> getDiaryList_date(int userIdx, String startDate, String endDate) {
-        String query = "SELECT * FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(diaryDate, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d') AND status = 'active' ORDER BY diaryDate DESC";
+    public List<GetDiaryRes> getDiaryListByDate(int userIdx, String startDate, String endDate, int pageNum) {
+        int startData = (pageNum - 1) * Constant.DIARYLIST_DATA_NUM;
+        int endData = pageNum * Constant.DIARYLIST_DATA_NUM;
+
+        String query = "SELECT * FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(diaryDate, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d') AND status = 'active' ORDER BY diaryDate DESC LIMIT ?, ?";
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetDiaryRes(
                         rs.getInt("diaryIdx"),
@@ -149,7 +161,13 @@ public class DiaryDao {
                         rs.getString("diaryDate"),
                         rs.getInt("isPublic"),
                         rs.getString("content")
-                ), userIdx, startDate, endDate);
+                ), userIdx, startDate, endDate, startData, endData);
+    }
+
+    // 일기 리스트 날짜 기간으로 조회 시 data 개수 반환
+    public int getDiaryListByDate_dataNum(int userIdx, String startDate, String endDate) {
+        String query = "SELECT COUNT(*) FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(diaryDate, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d') AND status = 'active'";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx, startDate, endDate);
     }
 
     // 특정 회원의 모든 일기 diaryIdx : List 형태로 반환 (최신순 정렬 - diaryDate 기준 내림차순 정렬)

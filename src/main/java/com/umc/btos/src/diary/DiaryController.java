@@ -114,7 +114,7 @@ public class DiaryController {
 
     /*
      * Archive 조회 - 일기 리스트
-     * [GET] /diaries/diaryList?userIdx=&search=&startDate=&endDate=
+     * [GET] /diaries/diaryList/:pageNum?userIdx=&search=&startDate=&endDate=
      * search = 검색할 문자열 ("String")
      * startDate, lastDate = 날짜 기간 설정 (YYYY-MM-DD ~ YYYY-MM-DD)
      * 검색 & 기간 설정 조회는 중첩됨
@@ -126,15 +126,17 @@ public class DiaryController {
      * 4. 문자열 검색 & 기간 설정 조회 (search, startDate ~ endDate)
      */
     @ResponseBody
-    @GetMapping("/diaryList")
-    public BaseResponse<List<GetDiaryRes>> getDiaryList(@RequestParam String userIdx, @RequestParam(required = false) String search, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
+    @GetMapping("/diaryList/{pageNum}")
+    public BaseResponsePaging<List<GetDiaryRes>> getDiaryList(@PathVariable(value = "pageNum") int pageNum, @RequestParam("userIdx") String userIdx, @RequestParam(required = false) String search, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
         try {
             String[] params = new String[]{userIdx, search, startDate, endDate};
-            List<GetDiaryRes> diaryList = diaryProvider.getDiaryList(params);
-            return new BaseResponse<>(diaryList);
+            PagingRes pageInfo = new PagingRes(pageNum, Constant.DIARYLIST_DATA_NUM); // 페이징 정보
+
+            List<GetDiaryRes> diaryList = diaryProvider.getDiaryList(params, pageInfo);
+            return new BaseResponsePaging<>(diaryList, pageInfo);
 
         } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
+            return new BaseResponsePaging<>(exception.getStatus());
         }
     }
 
