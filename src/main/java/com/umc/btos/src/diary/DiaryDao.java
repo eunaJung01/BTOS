@@ -57,20 +57,20 @@ public class DiaryDao {
 
     // 일기 수정
     public int modifyDiary(PutDiaryReq putDiaryReq) {
-        String query = "UPDATE Diary SET emotionIdx = ?, diaryDate = ?, isPublic = ?, content = ? WHERE diaryIdx = ? AND status = 'active'";
+        String query = "UPDATE Diary SET emotionIdx = ?, diaryDate = ?, isPublic = ?, content = ? WHERE diaryIdx = ?";
         Object[] params = new Object[]{putDiaryReq.getEmotionIdx(), putDiaryReq.getDiaryDate(), putDiaryReq.getIsPublic(), putDiaryReq.getDiaryContent(), putDiaryReq.getDiaryIdx()};
         return this.jdbcTemplate.update(query, params);
     }
 
     // 해당 일기의 모든 doneIdx를 List 형태로 반환
     public List getDoneIdxList(PutDiaryReq putDiaryReq) {
-        String query = "SELECT doneIdx FROM Done WHERE diaryIdx = ? AND status = 'active'";
+        String query = "SELECT doneIdx FROM Done WHERE diaryIdx = ?";
         return this.jdbcTemplate.queryForList(query, int.class, putDiaryReq.getDiaryIdx());
     }
 
     // done list 수정
     public int modifyDoneList(PutDiaryReq putDiaryReq, List doneIdxList) {
-        String query = "UPDATE Done SET content = ? WHERE doneIdx = ? AND status = 'active'";
+        String query = "UPDATE Done SET content = ? WHERE doneIdx = ?";
         for (int i = 0; i < doneIdxList.size(); i++) {
             int result = this.jdbcTemplate.update(query, putDiaryReq.getDoneList().get(i), doneIdxList.get(i));
 
@@ -83,14 +83,14 @@ public class DiaryDao {
 
     // 일기 삭제 - Diary.status : active -> deleted
     public int deleteDiary(int diaryIdx) {
-        String query = "UPDATE Diary SET status = ? WHERE diaryIdx = ? AND status = 'active'";
+        String query = "UPDATE Diary SET status = ? WHERE diaryIdx = ?";
         Object[] params = new Object[]{"deleted", diaryIdx};
         return this.jdbcTemplate.update(query, params);
     }
 
     // done list 삭제 - Done.status : active -> deleted
     public int deleteDone(int diaryIdx) {
-        String query = "UPDATE Done SET status = ? WHERE diaryIdx = ? AND status = 'active'";
+        String query = "UPDATE Done SET status = ? WHERE diaryIdx = ?";
         Object[] params = new Object[]{"deleted", diaryIdx};
         return this.jdbcTemplate.update(query, params);
     }
