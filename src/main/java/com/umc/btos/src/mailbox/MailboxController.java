@@ -17,12 +17,9 @@ public class MailboxController {
 
     @Autowired
     private final MailboxProvider mailboxProvider;
-    @Autowired
-    private final MailboxService mailboxService;
 
-    public MailboxController(MailboxProvider mailboxProvider, MailboxService mailboxService) {
+    public MailboxController(MailboxProvider mailboxProvider) {
         this.mailboxProvider = mailboxProvider;
-        this.mailboxService = mailboxService;
     }
 
     /*
