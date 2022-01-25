@@ -136,7 +136,7 @@ public class DiaryService {
 
     /*
      * 일기 삭제
-     * [PATCH] /diaries/:diaryIdx
+     * [PATCH] /diaries/delete/:diaryIdx
      */
     public void deleteDiary(int diaryIdx) throws BaseException {
         try {

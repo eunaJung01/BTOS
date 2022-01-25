@@ -78,15 +78,15 @@ public class DiaryController {
 
     /*
      * 일기 삭제
-     * [PATCH] /diaries/:diaryIdx
+     * [PATCH] /diaries/delete/:diaryIdx
      */
     @ResponseBody
-    @PatchMapping("/{diaryIdx}")
+    @PatchMapping("/delete/{diaryIdx}")
     public BaseResponse<String> deleteDiary(@PathVariable("diaryIdx") int diaryIdx) {
         try {
             diaryService.deleteDiary(diaryIdx);
 
-            String result = "일기 - diaryIdx=" + diaryIdx + " 삭제 완료";
+            String result = "일기-diaryIdx=" + diaryIdx + " 삭제 완료";
             return new BaseResponse<>(result);
 
         } catch (BaseException exception) {
