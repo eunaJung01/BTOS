@@ -72,7 +72,7 @@ public class DiaryProvider {
 
     /*
      * Archive 조회 - 일기 리스트
-     * [GET] /diaries/diaryList?userIdx=&search=&startDate=&endDate=/:pageNum
+     * [GET] /diaries/diaryList/:userIdx/:pageNum?search=&startDate=&endDate=
      * search = 검색할 문자열 ("String")
      * startDate, lastDate = 날짜 기간 설정 (YYYY-MM-DD ~ YYYY-MM-DD)
      * 검색 & 기간 설정 조회는 중첩됨
