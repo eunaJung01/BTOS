@@ -96,13 +96,13 @@ public class DiaryController {
 
     /*
      * Archive 조회 - 캘린더
-     * [GET] /diaries/calendar?userIdx=&date=&type
+     * [GET] /diaries/calendar/:userIdx/:date?type=
      * date = YYYY-MM
      * type (조회 방식) = 1. doneList : 나뭇잎 색으로 done list 개수 표현 / 2. emotion : 감정 이모티콘
      */
     @ResponseBody
-    @GetMapping("/calendar")
-    public BaseResponse<List<GetCalendarRes>> getCalendar(@RequestParam("userIdx") int userIdx, @RequestParam("date") String date, @RequestParam("type") String type) {
+    @GetMapping("/calendar/{userIdx}/{date}")
+    public BaseResponse<List<GetCalendarRes>> getCalendar(@PathVariable("userIdx") int userIdx, @PathVariable("date") String date, @RequestParam("type") String type) {
         try {
             List<GetCalendarRes> getCalendarRes = diaryProvider.getCalendar(userIdx, date, type);
             return new BaseResponse<>(getCalendarRes);

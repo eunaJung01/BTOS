@@ -40,7 +40,7 @@ public class DiaryProvider {
 
     /*
      * Archive 조회 - 캘린더
-     * [GET] /diaries/calendar?userIdx=&date=&type
+     * [GET] /diaries/calendar/:userIdx/:date?type
      * date = YYYY-MM
      * type (조회 방식) = 1. doneList : 나뭇잎 색으로 done list 개수 표현 / 2. emotion : 감정 이모티콘
      */
