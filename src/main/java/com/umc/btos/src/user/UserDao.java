@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.util.List;
 
 @Repository
 
@@ -92,7 +91,21 @@ public class UserDao {
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
     }
 
+    // 다른 사람 수신 설정
+    public int modifyReceiveOthers(PatchUserRecOthersReq patchUserReceiveOthersReq) {
+        String modifyReceiveOthersQuery = "update User set recOthers = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        Object[] modifyReceiveOthersParams = new Object[]{patchUserReceiveOthersReq.isRecOthers(), patchUserReceiveOthersReq.getUserIdx()};
+        return this.jdbcTemplate.update(modifyReceiveOthersQuery, modifyReceiveOthersParams);
+        // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
+    }
 
+    // 비슷한 연령대 수신 설정
+    public int modifyReceiveSimilarAge(PatchUserRecSimilarAgeReq patchUserRecSimilarAgeReq) {
+        String modifyReceiveOthersQuery = "update User set recSimilarAge = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        Object[] modifyReceiveOthersParams = new Object[]{patchUserRecSimilarAgeReq.isRecSimilarAge(), patchUserRecSimilarAgeReq.getUserIdx()};
+        return this.jdbcTemplate.update(modifyReceiveOthersQuery, modifyReceiveOthersParams);
+        // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
+    }
 
     // 푸시 알림 수신 변경
     public int modifyPushAlarm(PatchUserPushAlarmReq patchUserPushAlarmReq) {
