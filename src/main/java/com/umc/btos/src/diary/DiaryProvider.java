@@ -229,7 +229,7 @@ public class DiaryProvider {
 
     /*
      * 일기 조회
-     * [GET] /diaries?diaryIdx=
+     * [GET] /diaries/:diaryIdx
      */
     public GetDiaryRes getDiary(int diaryIdx) throws BaseException {
         try {

@@ -142,11 +142,11 @@ public class DiaryController {
 
     /*
      * 일기 조회
-     * [GET] /diaries?diaryIdx=
+     * [GET] /diaries/:diaryIdx
      */
     @ResponseBody
-    @GetMapping("")
-    public BaseResponse<GetDiaryRes> getDiary(@RequestParam("diaryIdx") int diaryIdx) {
+    @GetMapping("/{diaryIdx}")
+    public BaseResponse<GetDiaryRes> getDiary(@PathVariable("diaryIdx") int diaryIdx) {
         try {
             GetDiaryRes diary = diaryProvider.getDiary(diaryIdx);
             return new BaseResponse<>(diary);
