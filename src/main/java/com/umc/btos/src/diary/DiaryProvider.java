@@ -247,33 +247,4 @@ public class DiaryProvider {
         }
     }
 
-    // 페이지 정보
-    /*
-     * 1. 전체 회원 정보 조회 : [GET] /users
-     * 2. 회원 정보 조회 (nickName) : [GET] /users?nickName=?
-     * 3. 회원 정보 조회 (userIdx) : [GET] /users?usrIdx=?
-     * 페이징 : pageNum=? (by Query Parameter)
-     */
-//    public PagingRes getPageInfo(int idx, String nickName, int pageNum) throws BaseException {
-//        try {
-//            boolean hasNext;
-//            double dataNum = 0; // data 개수 세기
-//            switch (idx) {
-//                case 1:
-//                    dataNum = userDao.getDataNum();
-//                    break;
-//                case 2:
-//                    dataNum = userDao.getDataNumByNickName(nickName);
-//                    break;
-//            }
-//            int endPage = (int) Math.ceil(dataNum / Constant.USER_DATA_NUM); // 마지막 페이지 번호
-//            hasNext = pageNum != endPage; // pageNum == endPage -> hasNext = false
-//
-//            return new PagingRes(hasNext, 1, endPage, pageNum, Constant.USER_DATA_NUM);
-//
-//        } catch (Exception exception) {
-//            throw new BaseException(DATABASE_ERROR);
-//        }
-//    }
-
 }
