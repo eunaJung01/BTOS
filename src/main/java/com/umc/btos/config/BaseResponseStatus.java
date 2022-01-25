@@ -68,6 +68,7 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_INFO(false, 5008, "정보 변경에 실패하였습니다."),
     PATCH_USERS_EXISTS_NICKNAME(false, 5009, "이미 존재하는 닉네임입니다."),
     PATCH_USERS_NOT_VALUES(false, 5010, "변경하실 닉네임을 입력해주세요."),
+    MODIFY_FAIL_PUSH_ALARM(false, 5008, "푸시 알람 수신 변경에 실패했습니다."),
 
 
     // 6000 : 레마
