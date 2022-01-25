@@ -14,7 +14,7 @@ import static com.umc.btos.utils.ValidationRegex.*;
 
 
 @RestController
-@RequestMapping("/btos/auth")
+@RequestMapping("/auth")
 public class AuthController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -35,7 +35,7 @@ public class AuthController {
 
     /**
      * 소셜(구글) 로그인 API : 클라에서 받은 정보 body로 받고 회원 상태에 따라 메시지, jwt 반환
-     * [POST] /btos/auth/google
+     * [POST] /auth/google
      */
 
     @ResponseBody

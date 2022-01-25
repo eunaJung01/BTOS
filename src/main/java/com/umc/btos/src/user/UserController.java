@@ -16,7 +16,7 @@ import static com.umc.btos.config.BaseResponseStatus.*; // 테스트용
 
 
 @RestController
-@RequestMapping("/btos/users")
+@RequestMapping("/users")
 public class UserController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -37,7 +37,7 @@ public class UserController {
 
     /**
      * 회원가입 API
-     * [POST] /btos/users
+     * [POST] /users
      */
 
     @ResponseBody
@@ -78,7 +78,7 @@ public class UserController {
 
     /**
      * 회원 상태 변경(탈퇴 / 휴면 / 재활성화) API
-     * [PATCH] /btos/users/:userIdx/status
+     * [PATCH] /users/:userIdx/status
      */
 
     @ResponseBody
@@ -128,7 +128,7 @@ public class UserController {
 
     /**
      * 프로필 조회 API
-     * [GET] /btos/users/:userIdx
+     * [GET] /users/:userIdx
      */
 
     @ResponseBody
@@ -170,7 +170,7 @@ public class UserController {
 
     /**
      * 회원 닉네임 변경 API
-     * [PATCH] /btos/users/:userIdx/nickname
+     * [PATCH] /users/:userIdx/nickname
      */
 
     @ResponseBody
@@ -219,9 +219,11 @@ public class UserController {
         }
     }
 
+
+
     /**
      * 회원 생년 변경 API
-     * [PATCH] /btos/users/:userIdx/birth
+     * [PATCH] /users/:userIdx/birth
      */
 
     @ResponseBody
@@ -266,4 +268,10 @@ public class UserController {
         }
     }
 
+
+
+    /**
+     * 수신 설정(다른 사람 / 비슷한 연령대) API
+     * [PATCH] /users/:userIdx/receive?type=
+     */
 }
