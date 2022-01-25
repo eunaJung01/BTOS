@@ -7,8 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 
-public class PatchUserInfoReq {
+public class PatchUserNickNameReq {
     private int userIdx;
     private String nickName;
-    private int birth;
 }
