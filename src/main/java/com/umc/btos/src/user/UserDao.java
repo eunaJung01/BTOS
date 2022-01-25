@@ -93,4 +93,13 @@ public class UserDao {
     }
 
 
+
+    // 푸시 알림 수신 변경
+    public int modifyPushAlarm(PatchUserPushAlarmReq patchUserPushAlarmReq) {
+        String modifyPushAlarmQuery = "update User set pushAlarm = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        Object[] modifyPushAlarmParams = new Object[] {patchUserPushAlarmReq.isPushAlarm(), patchUserPushAlarmReq.getUserIdx()};
+        return this.jdbcTemplate.update(modifyPushAlarmQuery, modifyPushAlarmParams);
+        // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
+    }
+
 }
