@@ -43,7 +43,7 @@ public class MailboxProvider {
             mailbox.addAll(mailboxDao.getMailbox_letter(userIdx)); // 편지 수신 목록 - LetterSendList.receiverIdx
             mailbox.addAll(mailboxDao.getMailbox_reply(userIdx)); // 답장 수신 목록 - Reply.receiverIdx
 
-            Collections.sort(mailbox); // sendDate 기준 내림차순 정렬
+            Collections.sort(mailbox); // sendAt 기준 내림차순 정렬
             return mailbox;
 
         } catch (Exception exception) {
