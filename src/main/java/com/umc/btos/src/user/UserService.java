@@ -90,4 +90,15 @@ public class UserService {
         }
     }
 
+
+    // 푸시 알림 수신 여부 변경
+    public void modifyPushAlarm(PatchUserPushAlarmReq patchUserPushAlarmReq) throws BaseException{
+        try {
+            int result = userDao.modifyPushAlarm(patchUserPushAlarmReq);
+            if (result == 0) throw new BaseException(MODIFY_FAIL_PUSH_ALARM);
+
+        } catch(Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
