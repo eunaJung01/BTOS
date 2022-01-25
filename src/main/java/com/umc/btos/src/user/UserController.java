@@ -61,7 +61,7 @@ public class UserController {
             }
             // nickname 형식 검사
             if (postUserReq.getNickName().length() > 10) { // 10글자 초과 시 오류 메시지
-                return new BaseResponse<>(POST_USERS_INVALID_NICKNAME);
+                return new BaseResponse<>(USERS_INVALID_NICKNAME);
             }
 
             if (postUserReq.getBirth() < 0) { // 생년이 0 미만 값으로 들어오면 오류 메시지
@@ -110,13 +110,13 @@ public class UserController {
             // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
 
             PatchUserReq patchUserReq = new PatchUserReq(userIdx, userStatus.getStatus());
+            userService.changeStatusOfUser(patchUserReq);
 
-            String result = "회원탈퇴가 완료되었습니다.";
-            if (patchUserReq.getStatus().equals("active")) result = "재활성화가 완료되었습니다.";
+            String result;
+            if (patchUserReq.getStatus().equals("deleted")) result = "회원탈퇴가 완료되었습니다.";
+            else if (patchUserReq.getStatus().equals("active")) result = "재활성화가 완료되었습니다.";
             else if (patchUserReq.getStatus().equals("dormant")) result = "휴면 상태로 전환되었습니다.";
             else return new BaseResponse<>(INVALID_USER_STATUS); // 셋 중 아무것도 아니면 오류 메시지
-
-            userService.changeStatusOfUser(patchUserReq);
 
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
@@ -169,13 +169,13 @@ public class UserController {
 
 
     /**
-     * 회원 정보 변경(닉네임, 생년) API
-     * [PATCH] /btos/users/:userIdx
+     * 회원 닉네임 변경 API
+     * [PATCH] /btos/users/:userIdx/nickname
      */
 
     @ResponseBody
-    @PatchMapping("/{userIdx}")
-    public BaseResponse<String> modifyUserInfo(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserInfoReq userInfoReq) throws BaseException {
+    @PatchMapping("/{userIdx}/nickname")
+    public BaseResponse<String> modifyUserInfo(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserNickNameReq user) throws BaseException {
         try {
             // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
             String jwt = jwtService.createJwt(userIdx);
@@ -201,19 +201,69 @@ public class UserController {
 
             // ***형식적 validation***
             // nickname 형식 검사
-            if (userInfoReq.getNickName().length() > 10) { // 10글자 초과 시 오류 메시지
-                return new BaseResponse<>(POST_USERS_INVALID_NICKNAME);
+            if (user.getNickName().length() > 10) { // 10글자 초과 시 오류 메시지
+                return new BaseResponse<>(USERS_INVALID_NICKNAME);
             }
+
+            if (user.getNickName() == null) { // nickname null값이면 오류 메시지
+                return new BaseResponse<>(PATCH_USERS_NOT_VALUES);
+            }
+            PatchUserNickNameReq patchUserNickNameReq = new PatchUserNickNameReq(userIdx, user.getNickName());
+            userService.modifyUserNickName(patchUserNickNameReq);
+
+            String result = "닉네임이 변경되었습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 회원 생년 변경 API
+     * [PATCH] /btos/users/:userIdx/birth
+     */
+
+    @ResponseBody
+    @PatchMapping("/{userIdx}/birth")
+    public BaseResponse<String> modifyUserBirth(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserBirthReq patchUserBirthReq) throws BaseException {
+        try {
+            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
+            String jwt = jwtService.createJwt(userIdx);
+            Jws<Claims> claims;
+            try {
+                claims = Jwts.parser()
+                        .setSigningKey(Secret.JWT_SECRET_KEY)
+                        .parseClaimsJws(jwt);
+            } catch (Exception ignored) {
+                throw new BaseException(INVALID_JWT);
+            }
+            int userIdxByJwt = claims.getBody().get("userIdx", Integer.class);
+            // 위 부분 소셜 로그인 테스트 후 제거
+
+            // jwt에서 idx 추출.
+            // int userIdxByJwt = jwtService.getUserIdx(); 소셜 로그인 테스트 후 주석해제.
+            // userIdx와 접근한 유저가 같은지 확인
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            //같다면 변경
+            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
+
+            // ***형식적 validation***
             // birth 범위 검사
-            if (userInfoReq.getBirth() < 0 ) { // 생년이 0 미만 값으로 들어오면 오류 메시지
+            if (patchUserBirthReq.getBirth() < 1) { // 생년이 1 미만 값으로 들어오면 오류 메시지
                 return new BaseResponse<>(INVALID_USER_BIRTH);
             }
 
+            /*
             PatchUserInfoReq patchUserInfoReq = new PatchUserInfoReq(userIdx, userInfoReq.getNickName(), userInfoReq.getBirth());
 
-            if (userInfoReq.getBirth() == 0 && userInfoReq.getNickName() == null) {// 둘 다 값이 없으면 오류 메시지
+
+            if (userInfoReq.getBirth() == 0 && userInfoReq.getNickName() == null) { // 둘 다 값이 없으면 오류 메시지
                 return new BaseResponse<>(PATCH_USERS_NOT_VALUES);
             }
+
+
             else if (userInfoReq.getBirth() == 0 && userInfoReq.getNickName() != null ) {// 닉네임만 값이 있으면
                 userService.modifyUserNickName(patchUserInfoReq); // 닉네임만 수정
             }
@@ -222,12 +272,15 @@ public class UserController {
             }
             else if (userInfoReq.getBirth() != 0 && userInfoReq.getNickName() != null) { // 둘 다 값이 있으면
                 userService.modifyUserInfo(patchUserInfoReq);
-            }
+            }*/
 
-            String result = "회원정보가 수정되었습니다.";
+            userService.modifyUserBirth(patchUserBirthReq);
+
+            String result = "생년이 변경되었습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
 }
