@@ -90,6 +90,27 @@ public class UserService {
         }
     }
 
+    // 다른 사람 수신 설정
+    public void modifyReceiveOthers(PatchUserRecOthersReq patchUserReceiveOthersReq) throws BaseException {
+        try {
+            int result = userDao.modifyReceiveOthers(patchUserReceiveOthersReq);
+            if (result == 0) throw new BaseException(MODIFY_FAIL_RECEIVE_OTHERS); // 푸시 알람 수신 여부 변경 실패시 에러 메시지
+
+        } catch(Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 비슷한 연령대 수신 설정
+    public void modifyReceiveSimilarAge(PatchUserRecSimilarAgeReq patchUserRecSimilarAgeReq) throws BaseException {
+        try {
+            int result = userDao.modifyReceiveSimilarAge(patchUserRecSimilarAgeReq);
+            if (result == 0) throw new BaseException(MODIFY_FAIL_RECEIVE_OTHERS); // 푸시 알람 수신 여부 변경 실패시 에러 메시지
+
+        } catch(Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
     // 푸시 알림 수신 여부 변경
     public void modifyPushAlarm(PatchUserPushAlarmReq patchUserPushAlarmReq) throws BaseException{
