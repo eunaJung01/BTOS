@@ -175,7 +175,7 @@ public class UserController {
 
     @ResponseBody
     @PatchMapping("/{userIdx}/nickname")
-    public BaseResponse<String> modifyUserInfo(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserNickNameReq user) throws BaseException {
+    public BaseResponse<String> modifyUserNickName(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserNickNameReq user) throws BaseException {
         try {
             // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
             String jwt = jwtService.createJwt(userIdx);
@@ -208,6 +208,7 @@ public class UserController {
             if (user.getNickName() == null) { // nickname null값이면 오류 메시지
                 return new BaseResponse<>(PATCH_USERS_NOT_VALUES);
             }
+
             PatchUserNickNameReq patchUserNickNameReq = new PatchUserNickNameReq(userIdx, user.getNickName());
             userService.modifyUserNickName(patchUserNickNameReq);
 
@@ -225,7 +226,7 @@ public class UserController {
 
     @ResponseBody
     @PatchMapping("/{userIdx}/birth")
-    public BaseResponse<String> modifyUserBirth(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserBirthReq patchUserBirthReq) throws BaseException {
+    public BaseResponse<String> modifyUserBirth(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserBirthReq user) throws BaseException {
         try {
             // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
             String jwt = jwtService.createJwt(userIdx);
@@ -251,29 +252,11 @@ public class UserController {
 
             // ***형식적 validation***
             // birth 범위 검사
-            if (patchUserBirthReq.getBirth() < 1) { // 생년이 1 미만 값으로 들어오면 오류 메시지
+            if (user.getBirth() < 1) { // 생년이 1 미만 값으로 들어오면 오류 메시지
                 return new BaseResponse<>(INVALID_USER_BIRTH);
             }
 
-            /*
-            PatchUserInfoReq patchUserInfoReq = new PatchUserInfoReq(userIdx, userInfoReq.getNickName(), userInfoReq.getBirth());
-
-
-            if (userInfoReq.getBirth() == 0 && userInfoReq.getNickName() == null) { // 둘 다 값이 없으면 오류 메시지
-                return new BaseResponse<>(PATCH_USERS_NOT_VALUES);
-            }
-
-
-            else if (userInfoReq.getBirth() == 0 && userInfoReq.getNickName() != null ) {// 닉네임만 값이 있으면
-                userService.modifyUserNickName(patchUserInfoReq); // 닉네임만 수정
-            }
-            else if (userInfoReq.getBirth() != 0 && userInfoReq.getNickName() == null) {// 생년만 값이 있으면
-                userService.modifyUserBirth(patchUserInfoReq);
-            }
-            else if (userInfoReq.getBirth() != 0 && userInfoReq.getNickName() != null) { // 둘 다 값이 있으면
-                userService.modifyUserInfo(patchUserInfoReq);
-            }*/
-
+            PatchUserBirthReq patchUserBirthReq = new PatchUserBirthReq(userIdx, user.getBirth());
             userService.modifyUserBirth(patchUserBirthReq);
 
             String result = "생년이 변경되었습니다.";
