@@ -32,13 +32,13 @@ public class AuthService {
 
     public AuthGoogleRes logInGoogle(AuthGoogleReq authGoogleReq) throws BaseException {
 
-        // 삭제 or 신규일 경우 회원가입 msg -> active 상태인 email 존재x 거나 email 존재x 인 경우
-        if (authProvider.checkStatusOfUser(authGoogleReq.getEmail()) == "deleted" ||
+        // 삭제 or 신규일 경우 회원가입 msg ->  email 존재x or active 상태인 email 존재x 인 경우
+        if (authProvider.checkStatusOfUser(authGoogleReq.getEmail()).equals("deleted") ||
                 authProvider.checkEmail(authGoogleReq.getEmail()) == 0) {
             throw new BaseException(AUTH_REQ_SIGNUP); // 회원가입 필요 메시지
         }
 
-        if (authProvider.checkStatusOfUser(authGoogleReq.getEmail()) == "dormant") { // 휴면일 경우 메시지 출력
+        if (authProvider.checkStatusOfUser(authGoogleReq.getEmail()).equals("dormant")) { // 휴면일 경우 메시지 출력
             throw new BaseException(POST_USERS_DORMANT); // 회원 상태 변경 필요 메시지
         }
 
