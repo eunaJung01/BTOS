@@ -274,4 +274,49 @@ public class UserController {
      * 수신 설정(다른 사람 / 비슷한 연령대) API
      * [PATCH] /users/:userIdx/receive?type=
      */
+
+
+    /**
+     * 푸시 알림 수신 여부 변경 API
+     * [PATCH] /users/:userIdx/push-alarm
+     */
+
+    @ResponseBody
+    @PatchMapping("/{userIdx}/push-alarm")
+    public BaseResponse<String> modifyPushAlarm(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserPushAlarmReq alarm) throws BaseException {
+        try {
+            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
+            String jwt = jwtService.createJwt(userIdx);
+            Jws<Claims> claims;
+            try {
+                claims = Jwts.parser()
+                        .setSigningKey(Secret.JWT_SECRET_KEY)
+                        .parseClaimsJws(jwt);
+            } catch (Exception ignored) {
+                throw new BaseException(INVALID_JWT);
+            }
+            int userIdxByJwt = claims.getBody().get("userIdx", Integer.class);
+            // 위 부분 소셜 로그인 테스트 후 제거
+
+            // jwt에서 idx 추출.
+            // int userIdxByJwt = jwtService.getUserIdx(); 소셜 로그인 테스트 후 주석해제.
+            // userIdx와 접근한 유저가 같은지 확인
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            //같다면 변경
+            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
+
+            PatchUserPushAlarmReq patchUserPushAlarmReq = new PatchUserPushAlarmReq(userIdx, alarm.isPushAlarm());
+            userService.modifyPushAlarm(patchUserPushAlarmReq);
+
+            String result = "";
+            if (patchUserPushAlarmReq.isPushAlarm()) result = "푸시 알림을 수신합니다.";
+            else if (!patchUserPushAlarmReq.isPushAlarm()) result = "푸시 알림을 수신하지 않습니다.";
+
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }
