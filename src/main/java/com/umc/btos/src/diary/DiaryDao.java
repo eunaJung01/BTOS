@@ -97,10 +97,10 @@ public class DiaryDao {
 
     // 캘린더 조회 (diaryDate(일기의 해당 날짜) 기준 오름차순 정렬)
     public List<GetCalendarRes> getCalendarList(int userIdx, String date) {
-        String startDate = date + "-01";
-        String endDate = date + "-31";
+        String startDate = date + ".01";
+        String endDate = date + ".31";
 
-        String query = "SELECT diaryDate FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(diaryDate, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d') AND status = 'active' ORDER BY diaryDate ASC";
+        String query = "SELECT diaryDate FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y.%m.%d') >= DATE_FORMAT(?, '%Y.%m.%d') AND DATE_FORMAT(diaryDate, '%Y.%m.%d') <= DATE_FORMAT(?, '%Y.%m.%d') AND status = 'active' ORDER BY diaryDate ASC";
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetCalendarRes(
@@ -122,7 +122,7 @@ public class DiaryDao {
 
     // 프리미엄 가입자인지 확인 (1 : 프리미엄 O, 0 : 프리미엄 X)
     public String isPremium(int userIdx) {
-        String query = "SELECT isPremium FROM User WHERE userIdx = ? AND status = 'active'";
+        String query = "SELECT isPremium FROM User WHERE userIdx = ?";
         return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
     }
 
@@ -153,7 +153,7 @@ public class DiaryDao {
         int startData = (pageNum - 1) * Constant.DIARYLIST_DATA_NUM;
         int endData = pageNum * Constant.DIARYLIST_DATA_NUM;
 
-        String query = "SELECT * FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(diaryDate, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d') AND status = 'active' ORDER BY diaryDate DESC LIMIT ?, ?";
+        String query = "SELECT * FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y.%m.%d') >= DATE_FORMAT(?, '%Y.%m.%d') AND DATE_FORMAT(diaryDate, '%Y.%m.%d') <= DATE_FORMAT(?, '%Y.%m.%d') AND status = 'active' ORDER BY diaryDate DESC LIMIT ?, ?";
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetDiaryRes(
                         rs.getInt("diaryIdx"),
@@ -166,7 +166,7 @@ public class DiaryDao {
 
     // 일기 리스트 날짜 기간으로 조회 시 data 개수 반환
     public int getDiaryListByDate_dataNum(int userIdx, String startDate, String endDate) {
-        String query = "SELECT COUNT(*) FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(diaryDate, '%Y-%m-%d') <= DATE_FORMAT(?, '%Y-%m-%d') AND status = 'active'";
+        String query = "SELECT COUNT(*) FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y.%m.%d') >= DATE_FORMAT(?, '%Y.%m.%d') AND DATE_FORMAT(diaryDate, '%Y.%m.%d') <= DATE_FORMAT(?, '%Y.%m.%d') AND status = 'active'";
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, startDate, endDate);
     }
 

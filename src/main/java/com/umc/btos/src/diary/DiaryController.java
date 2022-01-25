@@ -2,13 +2,14 @@ package com.umc.btos.src.diary;
 
 import com.umc.btos.config.*;
 import com.umc.btos.src.diary.model.*;
+import com.umc.btos.src.plant.model.PatchUpDownScoreReq;
+import com.umc.btos.src.plant.model.PatchUpScoreRes;
+import com.umc.btos.src.plant.PlantService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -20,10 +21,13 @@ public class DiaryController {
     private final DiaryProvider diaryProvider;
     @Autowired
     private final DiaryService diaryService;
+    @Autowired
+    private final PlantService plantService;
 
-    public DiaryController(DiaryProvider diaryProvider, DiaryService diaryService) {
+    public DiaryController(DiaryProvider diaryProvider, DiaryService diaryService, PlantService plantService) {
         this.diaryProvider = diaryProvider;
         this.diaryService = diaryService;
+        this.plantService = plantService;
     }
 
     /*
@@ -97,7 +101,7 @@ public class DiaryController {
     /*
      * Archive 조회 - 캘린더
      * [GET] /diaries/calendar/:userIdx/:date?type=
-     * date = YYYY-MM
+     * date = YYYY.MM
      * type (조회 방식) = 1. doneList : 나뭇잎 색으로 done list 개수 표현 / 2. emotion : 감정 이모티콘
      */
     @ResponseBody
@@ -116,7 +120,7 @@ public class DiaryController {
      * Archive 조회 - 일기 리스트
      * [GET] /diaries/diaryList/:userIdx/:pageNum?search=&startDate=&endDate=
      * search = 검색할 문자열 ("String")
-     * startDate, lastDate = 날짜 기간 설정 (YYYY-MM-DD ~ YYYY-MM-DD)
+     * startDate, lastDate = 날짜 기간 설정 (YYYY.MM.DD ~ YYYY.MM.DD)
      * 검색 & 기간 설정 조회는 중첩됨
      * 최신순 정렬 (diaryDate 기준 내림차순 정렬)
      *
