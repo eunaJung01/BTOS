@@ -50,7 +50,7 @@ public class ReplyController {
      */
     // Path-variable
     @ResponseBody
-    @GetMapping("/{replyIdx}") // (GET) localhost:9000/btos/replies/:replyIdx
+    @GetMapping("/{replyIdx}") // (GET) localhost:9000/replies/:replyIdx
     public BaseResponse<GetReplyRes> getReply(@PathVariable("replyIdx") int replyIdx) {
         // @PathVariable RESTful(URL)에서 명시된 파라미터({})를 받는 어노테이션, 이 경우 letterIdx값을 받아옴.
         // Get Letters
