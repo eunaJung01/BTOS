@@ -33,7 +33,14 @@ public class ReplyDao {
         String lastInsertIdQuery = "select last_insert_id()"; // 가장 마지막에 삽입된(생성된) id값은 가져온다.
         return this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class); // 해당 쿼리문의 결과 마지막으로 삽인된 유저의 userIdx번호를 반환한다.
     }
-    // 해당 replyIdx를 갖는 답장 조회
+    //해당 replyIdx를 갖는 답장의 isChecked를 1로 update // isChecked가 0이면 열람 X, 1이면 열람 O
+    public int modifyIsChecked(int replyIdx) {
+        String getReplyQuery = "update Reply set isChecked=1 where replyIdx = ? "; // 해당 replyIdx를 만족하는 답장의 열람 여부를 변경하는 쿼리문
+        Object[] modifyReplyStatusParams = new Object[]{replyIdx}; // 주입될 값 (replyIdx)
+
+        return this.jdbcTemplate.update(getReplyQuery, modifyReplyStatusParams); // 대응시켜 매핑시켜 쿼리 요청(선공했으면 1, 실패했으면 0)
+    }
+    // 해당 replyIdx를 갖는 답장 조회 // 조회한 답장의 isChecked를 1로 update
     public GetReplyRes getReply(int replyIdx) {
         String getReplyQuery = "select * from Reply where replyIdx = ?"; // 해당 letterIdx를 만족하는 편지를 조회하는 쿼리문
         int getReplyParams = replyIdx;
@@ -42,6 +49,7 @@ public class ReplyDao {
                         rs.getInt("replyIdx"),
                         rs.getInt("replierIdx"),
                         rs.getInt("receiverIdx"),
+                        rs.getInt("isChecked"),
                         rs.getString("firstType"),
                         rs.getString("content")), // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
                 getReplyParams); // 한 개의 편지정보를 얻기 위한 jdbcTemplate 함수(Query, 객체 매핑 정보, Params)의 결과 반환
