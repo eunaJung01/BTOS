@@ -9,19 +9,14 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/btos/shops")
+@RequestMapping("/shops")
 public class ShopController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    /*
-    @Autowired
-    private final ShopProvider shopProvider;
-         */
     @Autowired
     private final ShopService shopService;
 
-    public ShopController(ShopService shopService){ //ShopProvider shopProvider){
-        //this.shopProvider = shopProvider;
+    public ShopController(ShopService shopService) {
         this.shopService = shopService;
     }
 
@@ -33,12 +28,12 @@ public class ShopController {
     @ResponseBody
     @PatchMapping("{userIdx}/join")
     public BaseResponse<String> joinPremium(@PathVariable("userIdx") int userIdx) {
-        try{
+        try {
             // 변경 성공 시 : "요청에 성공하였습니다." - 1000
             // 변경 실패 시 : "프리미엄 계정 변경에 실패하였습니다." - 7020
             // DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
             return new BaseResponse<>(shopService.joinPremium(userIdx));
-        }catch(BaseException exception){
+        } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
@@ -51,12 +46,12 @@ public class ShopController {
     @ResponseBody
     @PatchMapping("{userIdx}/withdraw")
     public BaseResponse<String> withdrawPremium(@PathVariable("userIdx") int userIdx) {
-        try{
+        try {
             // 변경 성공 시 : "요청에 성공하였습니다." - 1000
             // 변경 실패 시 : "청약철회에 실패하였습니다." - 7021
             // DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
             return new BaseResponse<>(shopService.withdrawPremium(userIdx));
-        } catch(BaseException exception){
+        } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }

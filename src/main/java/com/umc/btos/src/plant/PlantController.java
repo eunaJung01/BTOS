@@ -12,7 +12,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/btos/plants")
+@RequestMapping("/plants")
 public class PlantController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -44,6 +44,7 @@ public class PlantController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
 
     /**
      * 회원이 선택한 화분 조회 API
@@ -82,6 +83,7 @@ public class PlantController {
         }
     }
 
+
     /**
      * 화분 구매(보유) API
      * [POST] /btos/plants/buy
@@ -95,27 +97,6 @@ public class PlantController {
             //       실패시 : "화분 상태 변경에 실패하였습니다." - 7010
             //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
             return new BaseResponse<>(plantService.buyPlant(postBuyPlantReq));
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
-
-    /**
-     * 화분 점수 감소 API
-     * [PATCH] /btos/plants/:userIdx/down-score
-     * RequestBody : PatchUpDownReq - 필드명 addScore, currentLevel (mandatory: Y)
-     * PathVariable : userIdx (mandatory: Y)
-     */
-    @ResponseBody
-    @PatchMapping("{userIdx}/down-score")
-    public BaseResponse<String> downScore(@RequestBody PatchUpDownScoreReq patchUpDownScoreReq,
-                                          @PathVariable("userIdx") int userIdx) {
-        try {
-            // 감소 성공시 : "요청에 성공하였습니다." - 1000
-            //     실패시 : "화분 점수 변경에 실패하였습니다." - 7012
-            // 감소시키려는 화분의 점수가 0점인 경우 : "선택한 화분의 점수가 0점입니다. 점수를 감소시킬 수 없습니다." - 7014
-            // DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
-            return new BaseResponse<>(plantService.downScore(userIdx, patchUpDownScoreReq));
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
