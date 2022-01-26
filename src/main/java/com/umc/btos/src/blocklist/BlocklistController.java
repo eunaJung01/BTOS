@@ -3,11 +3,6 @@ package com.umc.btos.src.blocklist;
 import com.umc.btos.config.BaseException;
 import com.umc.btos.config.BaseResponse;
 import com.umc.btos.src.blocklist.model.*;
-import com.umc.btos.src.blocklist.BlocklistProvider;
-import com.umc.btos.src.blocklist.BlocklistService;
-
-import com.umc.btos.src.letter.model.PatchLetterReq;
-import com.umc.btos.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +13,7 @@ import java.util.List;
 import static com.umc.btos.config.BaseResponseStatus.GET_FAIL_USERIDX;
 
 @RestController
-@RequestMapping("/btos/blocklists")
+@RequestMapping("/blocklists")
 public class BlocklistController {
     final Logger logger = LoggerFactory.getLogger(this.getClass()); // Log를 남기기
     @Autowired
@@ -33,7 +28,7 @@ public class BlocklistController {
     }
     /**
             * 차단 작성 API
-     * [POST] /btos/blocklists
+     * [POST] /blocklists
      */
     // Body에 json 파일을 담아 차단 데이터 생성
     @ResponseBody
@@ -50,7 +45,7 @@ public class BlocklistController {
     }
     /**
      * 차단 해제 API
-     * [PATCH] /btos/blocklists/:blockIdx
+     * [PATCH] /blocklists/:blockIdx
      */
     @ResponseBody
     @PatchMapping("/{blockIdx}")
@@ -67,7 +62,7 @@ public class BlocklistController {
     }
     /**
      * 차단목록조회 API
-     * [GET] /btos/blocklists?userIdx=
+     * [GET] /blocklists?userIdx=
      *
      * Query String : userIdx
      */
