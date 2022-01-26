@@ -22,8 +22,8 @@ public class LetterDao {
 
     // 편지 생성
     public int createLetter(PostLetterReq postLetterReq) {
-        String createLetterQuery = "insert into Letter (replierIdx,receiverIdx,content) VALUES (?,?,?)"; // 실행될 동적 쿼리문
-        Object[] createLetterParams = new Object[]{postLetterReq.getReplierIdx(),postLetterReq.getReceiverIdx(),postLetterReq.getContent()}; // 동적 쿼리의 ?부분에 주입될 값
+        String createLetterQuery = "insert into Letter (userIdx,content) VALUES (?,?)"; // 실행될 동적 쿼리문
+        Object[] createLetterParams = new Object[]{postLetterReq.getUserIdx(),postLetterReq.getContent()}; // 동적 쿼리의 ?부분에 주입될 값
         this.jdbcTemplate.update(createLetterQuery, createLetterParams);
 
         // 즉 DB의 Letter Table에 (replierIdx,receiverIdx,content)값을 가지는 편지 데이터를 삽입(생성)한다.
