@@ -10,9 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import static com.umc.btos.utils.ValidationRegex.*;
 
-import com.umc.btos.config.secret.Secret; // 테스트용
-import io.jsonwebtoken.*; // 테스트용
-import static com.umc.btos.config.BaseResponseStatus.*; // 테스트용
+import static com.umc.btos.config.BaseResponseStatus.*;
+
 
 
 @RestController
@@ -77,7 +76,7 @@ public class UserController {
 
 
     /**
-     * 회원 상태 변경(탈퇴 / 휴면 / 재활성화) API
+     * 회원 상태 변경(탈퇴 / 휴면 / 재활성화) API -> 휴면, 재활성화 자동화 필요
      * [PATCH] /users/:userIdx/status
      */
 
@@ -86,28 +85,13 @@ public class UserController {
     public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserReq userStatus){
 
         try {
-            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
-            String jwt = jwtService.createJwt(userIdx);
-            Jws<Claims> claims;
-            try {
-                claims = Jwts.parser()
-                        .setSigningKey(Secret.JWT_SECRET_KEY)
-                        .parseClaimsJws(jwt);
-            } catch (Exception ignored) {
-                throw new BaseException(INVALID_JWT);
-            }
-            int userIdxByJwt = claims.getBody().get("userIdx", Integer.class);
-            // 위 부분 소셜 로그인 테스트 후 제거
-
             //jwt에서 idx 추출.
-
-            // int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx();
 
             //userIdx와 접근한 유저가 같은지 확인
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
-            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
 
             PatchUserReq patchUserReq = new PatchUserReq(userIdx, userStatus.getStatus());
             userService.changeStatusOfUser(patchUserReq);
@@ -135,27 +119,13 @@ public class UserController {
     @GetMapping("/{userIdx}") //path variable
     public BaseResponse<GetUserRes> getUser(@PathVariable("userIdx") int userIdx) throws BaseException {
 
-// *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
-        String jwt = jwtService.createJwt(userIdx);
-        Jws<Claims> claims;
-        try {
-            claims = Jwts.parser()
-                    .setSigningKey(Secret.JWT_SECRET_KEY)
-                    .parseClaimsJws(jwt);
-        } catch (Exception ignored) {
-            throw new BaseException(INVALID_JWT);
-        }
-        int userIdxByJwt = claims.getBody().get("userIdx", Integer.class);
-        // 위 부분 소셜 로그인 테스트 후 제거
-
         // jwt에서 idx 추출.
-        // int userIdxByJwt = jwtService.getUserIdx(); 소셜 로그인 테스트 후 주석해제.
+        int userIdxByJwt = jwtService.getUserIdx();
         //userIdx와 접근한 유저가 같은지 확인
         if(userIdx != userIdxByJwt){
             return new BaseResponse<>(INVALID_USER_JWT);
         }
         //같다면 변경
-// *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
 
         try {
             GetUserRes getUserRes = userProvider.getUser(userIdx);
@@ -177,27 +147,13 @@ public class UserController {
     @PatchMapping("/{userIdx}/nickname")
     public BaseResponse<String> modifyUserNickName(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserNickNameReq user) throws BaseException {
         try {
-            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
-            String jwt = jwtService.createJwt(userIdx);
-            Jws<Claims> claims;
-            try {
-                claims = Jwts.parser()
-                        .setSigningKey(Secret.JWT_SECRET_KEY)
-                        .parseClaimsJws(jwt);
-            } catch (Exception ignored) {
-                throw new BaseException(INVALID_JWT);
-            }
-            int userIdxByJwt = claims.getBody().get("userIdx", Integer.class);
-            // 위 부분 소셜 로그인 테스트 후 제거
-
             // jwt에서 idx 추출.
-            // int userIdxByJwt = jwtService.getUserIdx(); 소셜 로그인 테스트 후 주석해제.
+            int userIdxByJwt = jwtService.getUserIdx();
             // userIdx와 접근한 유저가 같은지 확인
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
             //같다면 변경
-            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
 
             // ***형식적 validation***
             // nickname 형식 검사
@@ -230,27 +186,12 @@ public class UserController {
     @PatchMapping("/{userIdx}/birth")
     public BaseResponse<String> modifyUserBirth(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserBirthReq user) throws BaseException {
         try {
-            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
-            String jwt = jwtService.createJwt(userIdx);
-            Jws<Claims> claims;
-            try {
-                claims = Jwts.parser()
-                        .setSigningKey(Secret.JWT_SECRET_KEY)
-                        .parseClaimsJws(jwt);
-            } catch (Exception ignored) {
-                throw new BaseException(INVALID_JWT);
-            }
-            int userIdxByJwt = claims.getBody().get("userIdx", Integer.class);
-            // 위 부분 소셜 로그인 테스트 후 제거
-
-            // jwt에서 idx 추출.
-            // int userIdxByJwt = jwtService.getUserIdx(); 소셜 로그인 테스트 후 주석해제.
+            int userIdxByJwt = jwtService.getUserIdx();
             // userIdx와 접근한 유저가 같은지 확인
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
             //같다면 변경
-            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
 
             // ***형식적 validation***
             // birth 범위 검사
@@ -278,27 +219,13 @@ public class UserController {
     @PatchMapping("/{userIdx}/receive/others")
     public BaseResponse<String> modifyReceiveOthers(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserRecOthersReq recOthers) throws BaseException {
         try {
-            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
-            String jwt = jwtService.createJwt(userIdx);
-            Jws<Claims> claims;
-            try {
-                claims = Jwts.parser()
-                        .setSigningKey(Secret.JWT_SECRET_KEY)
-                        .parseClaimsJws(jwt);
-            } catch (Exception ignored) {
-                throw new BaseException(INVALID_JWT);
-            }
-            int userIdxByJwt = claims.getBody().get("userIdx", Integer.class);
-            // 위 부분 소셜 로그인 테스트 후 제거
-
             // jwt에서 idx 추출.
-            // int userIdxByJwt = jwtService.getUserIdx(); 소셜 로그인 테스트 후 주석해제.
+            int userIdxByJwt = jwtService.getUserIdx();
             // userIdx와 접근한 유저가 같은지 확인
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
             //같다면 변경
-            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
 
             PatchUserRecOthersReq patchUserRecOthersReq = new PatchUserRecOthersReq(userIdx, recOthers.isRecOthers());
             userService.modifyReceiveOthers(patchUserRecOthersReq);
@@ -321,27 +248,13 @@ public class UserController {
     @PatchMapping("/{userIdx}/receive/age")
     public BaseResponse<String> modifyReceiveSimilarAge(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserRecSimilarAgeReq recSimilarAge) throws BaseException {
         try {
-            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
-            String jwt = jwtService.createJwt(userIdx);
-            Jws<Claims> claims;
-            try {
-                claims = Jwts.parser()
-                        .setSigningKey(Secret.JWT_SECRET_KEY)
-                        .parseClaimsJws(jwt);
-            } catch (Exception ignored) {
-                throw new BaseException(INVALID_JWT);
-            }
-            int userIdxByJwt = claims.getBody().get("userIdx", Integer.class);
-            // 위 부분 소셜 로그인 테스트 후 제거
 
-            // jwt에서 idx 추출.
-            // int userIdxByJwt = jwtService.getUserIdx(); 소셜 로그인 테스트 후 주석해제.
+            int userIdxByJwt = jwtService.getUserIdx();
             // userIdx와 접근한 유저가 같은지 확인
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
             //같다면 변경
-            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
 
             PatchUserRecSimilarAgeReq patchUserRecSimilarAgeReq = new PatchUserRecSimilarAgeReq(userIdx, recSimilarAge.isRecSimilarAge());
             userService.modifyReceiveSimilarAge(patchUserRecSimilarAgeReq);
@@ -366,27 +279,13 @@ public class UserController {
     @PatchMapping("/{userIdx}/push-alarm")
     public BaseResponse<String> modifyPushAlarm(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserPushAlarmReq alarm) throws BaseException {
         try {
-            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
-            String jwt = jwtService.createJwt(userIdx);
-            Jws<Claims> claims;
-            try {
-                claims = Jwts.parser()
-                        .setSigningKey(Secret.JWT_SECRET_KEY)
-                        .parseClaimsJws(jwt);
-            } catch (Exception ignored) {
-                throw new BaseException(INVALID_JWT);
-            }
-            int userIdxByJwt = claims.getBody().get("userIdx", Integer.class);
-            // 위 부분 소셜 로그인 테스트 후 제거
-
             // jwt에서 idx 추출.
-            // int userIdxByJwt = jwtService.getUserIdx(); 소셜 로그인 테스트 후 주석해제.
+            int userIdxByJwt = jwtService.getUserIdx();
             // userIdx와 접근한 유저가 같은지 확인
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
             //같다면 변경
-            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
 
             PatchUserPushAlarmReq patchUserPushAlarmReq = new PatchUserPushAlarmReq(userIdx, alarm.isPushAlarm());
             userService.modifyPushAlarm(patchUserPushAlarmReq);
@@ -410,27 +309,12 @@ public class UserController {
     @PatchMapping("/{userIdx}/font")
     public BaseResponse<String> selectFont(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserFontReq font) throws BaseException {
         try {
-            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
-            String jwt = jwtService.createJwt(userIdx);
-            Jws<Claims> claims;
-            try {
-                claims = Jwts.parser()
-                        .setSigningKey(Secret.JWT_SECRET_KEY)
-                        .parseClaimsJws(jwt);
-            } catch (Exception ignored) {
-                throw new BaseException(INVALID_JWT);
-            }
-            int userIdxByJwt = claims.getBody().get("userIdx", Integer.class);
-            // 위 부분 소셜 로그인 테스트 후 제거
-
-            // jwt에서 idx 추출.
-            // int userIdxByJwt = jwtService.getUserIdx(); 소셜 로그인 테스트 후 주석해제.
+            int userIdxByJwt = jwtService.getUserIdx();
             // userIdx와 접근한 유저가 같은지 확인
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
             //같다면 변경
-            // *********************소셜 로그인으로 발급받은 jwt로 본인 인증이 됐다고 가정********************************
 
             if (font.getFontIdx() < 1) { // 유효하지 않은 폰트 idx validation
                 return new BaseResponse<>(INVALID_FONT);
