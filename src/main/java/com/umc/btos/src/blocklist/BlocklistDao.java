@@ -41,13 +41,13 @@ public class BlocklistDao {
     //모든 차단 조회 API // status가 active인 차단 모두를 list형태로 반환
     public List<GetBlocklistRes> getBlockList(int userIdx) {
         String getBlockQuery = "select blockIdx,blockedUserIdx  from BlockList where userIdx=? and status=\"active\"";
-        int getBlocckParams = userIdx;
+        int getBlockParams = userIdx;
 
         return this.jdbcTemplate.query(getBlockQuery,
                 (rs, rowNum) -> new GetBlocklistRes(
                         rs.getInt("blockIdx"),
                         rs.getInt("blockedUserIdx")),
-                getBlocckParams);
+                getBlockParams);
     }
 
 }
