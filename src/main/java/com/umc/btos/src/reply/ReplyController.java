@@ -4,8 +4,6 @@ package com.umc.btos.src.reply;
 
 import com.umc.btos.config.BaseException;
 import com.umc.btos.config.BaseResponse;
-import com.umc.btos.src.letter.model.GetLetterRes;
-import com.umc.btos.src.letter.model.PatchLetterReq;
 import com.umc.btos.src.reply.model.*;
 import com.umc.btos.utils.JwtService;
 import org.slf4j.Logger;
@@ -14,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/btos/replies")
+@RequestMapping("/replies")
 public class ReplyController {
     final Logger logger = LoggerFactory.getLogger(this.getClass()); // Log를 남기기
     @Autowired  // 객체 생성을 스프링에서 자동으로 생성해주는 역할. 주입하려 하는 객체의 타입이 일치하는 객체를 자동으로 주입한다.
@@ -31,7 +29,7 @@ public class ReplyController {
     }
     /**
      * 답장 작성 API
-     * [POST] /btos/replies
+     * [POST] /replies
      */
     // Body
     @ResponseBody
@@ -48,7 +46,7 @@ public class ReplyController {
     }
     /**
      * 답장 조회 API
-     * [GET] /btos/replies/:replyIdx
+     * [GET] /replies/:replyIdx
      */
     // Path-variable
     @ResponseBody
@@ -66,7 +64,7 @@ public class ReplyController {
     }
     /**
      * 답장 삭제 API
-     * [PATCH] /btos/replies/:replyIdx
+     * [PATCH] /replies/:replyIdx
      */
     @ResponseBody
     @PatchMapping("/{replyIdx}")
