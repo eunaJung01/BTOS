@@ -41,7 +41,7 @@ public class DiaryProvider {
     /*
      * Archive 조회 - 캘린더
      * [GET] /diaries/calendar/:userIdx/:date?type
-     * date = YYYY-MM
+     * date = YYYY.MM
      * type (조회 방식) = 1. doneList : 나뭇잎 색으로 done list 개수 표현 / 2. emotion : 감정 이모티콘
      */
     public List<GetCalendarRes> getCalendar(int userIdx, String date, String type) throws BaseException {
@@ -74,9 +74,10 @@ public class DiaryProvider {
      * Archive 조회 - 일기 리스트
      * [GET] /diaries/diaryList/:userIdx/:pageNum?search=&startDate=&endDate=
      * search = 검색할 문자열 ("String")
-     * startDate, lastDate = 날짜 기간 설정 (YYYY-MM-DD ~ YYYY-MM-DD)
+     * startDate, lastDate = 날짜 기간 설정 (YYYY.MM.DD ~ YYYY.MM.DD)
      * 검색 & 기간 설정 조회는 중첩됨
      * 최신순 정렬 (diaryDate 기준 내림차순 정렬)
+     * 페이징 처리 (무한 스크롤) - 20개씩 조회
      *
      * 1. 전체 조회 - default
      * 2. 문자열 검색 (search)

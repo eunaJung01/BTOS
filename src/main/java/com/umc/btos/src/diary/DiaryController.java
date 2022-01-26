@@ -2,8 +2,6 @@ package com.umc.btos.src.diary;
 
 import com.umc.btos.config.*;
 import com.umc.btos.src.diary.model.*;
-import com.umc.btos.src.plant.model.PatchUpDownScoreReq;
-import com.umc.btos.src.plant.model.PatchUpScoreRes;
 import com.umc.btos.src.plant.PlantService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,6 +121,7 @@ public class DiaryController {
      * startDate, lastDate = 날짜 기간 설정 (YYYY.MM.DD ~ YYYY.MM.DD)
      * 검색 & 기간 설정 조회는 중첩됨
      * 최신순 정렬 (diaryDate 기준 내림차순 정렬)
+     * 페이징 처리 (무한 스크롤) - 20개씩 조회
      *
      * 1. 전체 조회 - default
      * 2. 문자열 검색 (search)
