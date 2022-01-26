@@ -4,7 +4,6 @@ package com.umc.btos.src.notice;
 
 import com.umc.btos.config.BaseException;
 import com.umc.btos.config.BaseResponse;
-import com.umc.btos.src.blocklist.model.GetBlocklistRes;
 import com.umc.btos.src.notice.model.GetNoticeRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.umc.btos.config.BaseResponseStatus.GET_FAIL_USERIDX;
 
 @RestController
-@RequestMapping("/btos/notices")
+@RequestMapping("/notices")
 public class NoticeController {
     final Logger logger = LoggerFactory.getLogger(this.getClass()); // Log를 남기기
     @Autowired
@@ -32,7 +30,7 @@ public class NoticeController {
 
     /**
      * 공지사항 목록 조회 API
-     * [GET] /btos/notices
+     * [GET] /notices
      *
      *
      */
