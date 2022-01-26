@@ -175,7 +175,7 @@ public class PlantService {
                     patchUpDownScoreRes.setReport_sex_hate_downScore(1);
 
                 //점수 감소, 감소 실패시 호출한 함수에서 예외처리 됨
-                downScoreAndLevel(currentScore, addScore, currentLevel, userIdx, patchUpDownScoreReq);
+                downScoreAndLevel(currentScore, addScore, currentLevel, userIdx);
                 return patchUpDownScoreRes;
 
             } else { //6번
@@ -187,7 +187,7 @@ public class PlantService {
     }
 
     //화분 점수 감소를 실제로 수행하는 함수
-    public int downScoreAndLevel(int curScore, int addScore, int currentLevel, int userIdx, PatchUpDownScoreReq patchUpDownScoreReq) throws BaseException {
+    public int downScoreAndLevel(int curScore, int addScore, int currentLevel, int userIdx) throws BaseException {
         int addRes = curScore + addScore; //현재 점수 + 감소시킬 점수(음수)
 
         if (addRes < 0) { //음수 이므로 단계도 감소
