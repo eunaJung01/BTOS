@@ -4,14 +4,13 @@ package com.umc.btos.src.letter;
 import com.umc.btos.config.BaseException;
 import com.umc.btos.config.BaseResponse;
 import com.umc.btos.src.letter.model.*;
-import com.umc.btos.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/btos/letters")
+@RequestMapping("/letters")
 public class LetterController {
     final Logger logger = LoggerFactory.getLogger(this.getClass()); // Log를 남기기
     @Autowired
@@ -28,7 +27,7 @@ public class LetterController {
 
     /**
      * 편지 작성 API
-     * [POST] /btos/letters
+     * [POST] /letters
      */
     // Body에 json 파일 형식으로 넣음
     @ResponseBody
@@ -46,7 +45,7 @@ public class LetterController {
 
     /**
      * 편지 조회 API
-     * [GET] /btos/letters/:letterIdx
+     * [GET] /letters/:letterIdx
      */
     // Path-variable - letterIdx를 인수로 받아 해당 인덱스의 letter을 불러온다.
     @ResponseBody
@@ -64,7 +63,7 @@ public class LetterController {
     }
     /**
      * 편지 삭제 API
-     * [PATCH] /btos/letters/:letterIdx
+     * [PATCH] /letters/:letterIdx
      */
     @ResponseBody
     @PatchMapping("/{letterIdx}")
