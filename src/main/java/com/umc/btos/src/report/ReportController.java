@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/btos/reports")
+@RequestMapping("/reports")
 public class ReportController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -27,7 +27,7 @@ public class ReportController {
 
     /**
      * 신고 작성 API
-     * [POST] /btos/reports
+     * [POST] /reports
      */
     // Body에 json으로 정보를 입력받아 신고 데이터 생성
     @ResponseBody
