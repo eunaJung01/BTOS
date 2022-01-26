@@ -16,14 +16,14 @@ public class ShopService {
     private final ShopDao shopDao;
 
     @Autowired
-    public ShopService(ShopDao shopDao){
+    public ShopService(ShopDao shopDao) {
         this.shopDao = shopDao;
     }
 
     //프리미엄 계정으로 변경 API
     public BaseResponseStatus joinPremium(int userIdx) throws BaseException {
         try {
-            if(shopDao.joinPremium(userIdx) == 1) //변경 성공
+            if (shopDao.joinPremium(userIdx) == 1) //변경 성공
                 return SUCCESS;
             else //변경 실패
                 return MODIFY_FAIL_PREMIUM;
@@ -35,11 +35,11 @@ public class ShopService {
     //청약철회 API
     public BaseResponseStatus withdrawPremium(int userIdx) throws BaseException {
         try {
-            if(shopDao.withdrawPremium(userIdx) == 1) //변경 성공
+            if (shopDao.withdrawPremium(userIdx) == 1) //변경 성공
                 return SUCCESS;
             else //변경 실패
                 return MODIFY_FAIL_WITHDRAW;
-        } catch(Exception exception){
+        } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
