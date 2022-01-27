@@ -29,9 +29,9 @@ spring:
       on-profile: "prodDB"
   datasource:
     platform: mysql
-#    url:
-#    username:
-#    password:
+    #    url:
+    #    username:
+    #    password:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 ---
