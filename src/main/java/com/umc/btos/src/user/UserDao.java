@@ -115,7 +115,6 @@ public class UserDao {
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
     }
 
-
     // 폰트 변경
     public int changeFont(PatchUserFontReq patchUserFontReq) {
         String changeFontQuery = "update User set fontIdx = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
@@ -123,4 +122,13 @@ public class UserDao {
         return this.jdbcTemplate.update(changeFontQuery, changeFontParams);
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
     }
+
+    // 시무룩이 상태 변경
+    public int changeIsSad(PatchUserIsSadReq patchUserIsSadReq) {
+        String changeIsSadQuery = "update User set isSad = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        Object[] changeIsSadParams = new Object[] {patchUserIsSadReq.isIsSad(), patchUserIsSadReq.getUserIdx()};
+        return this.jdbcTemplate.update(changeIsSadQuery, changeIsSadParams);
+        // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
+    }
+
 }
