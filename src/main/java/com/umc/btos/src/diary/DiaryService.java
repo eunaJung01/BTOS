@@ -9,8 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.umc.btos.config.BaseResponseStatus.*;
@@ -30,7 +32,7 @@ public class DiaryService {
      * 일기 저장
      * [POST] /diaries
      */
-    public PostDiaryRes saveDiary(PostDiaryReq postDiaryReq) throws BaseException {
+    public void saveDiary(PostDiaryReq postDiaryReq) throws BaseException {
         // TODO : 의미적 validation - 일기는 하루에 하나만 작성 가능, 당일에 작성한 일기가 아니라면 발송 불가
         // 1. 일기는 하루에 하나씩만 작성 가능
         checkDiaryDate(postDiaryReq.getUserIdx(), postDiaryReq.getDiaryDate());
@@ -49,7 +51,7 @@ public class DiaryService {
         try {
             int diaryIdx = diaryDao.saveDiary(postDiaryReq);
             List doneIdxList = diaryDao.saveDoneList(diaryIdx, postDiaryReq.getDoneList());
-            return new PostDiaryRes(diaryIdx, doneIdxList);
+//            return new PostDiaryRes(diaryIdx, doneIdxList);
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
@@ -65,7 +67,9 @@ public class DiaryService {
 
     // 일기 작성 또는 수정 시 의미적 validaion - 당일에 작성한 일기가 아니라면 발송 불가
     public void checkPublicDate(String diaryDate, int isPublic) throws BaseException {
-        LocalDate now = LocalDate.now(); // 오늘 날짜 (YYYY-MM-DD)
+        LocalDate now = LocalDate.now(); // 오늘 날짜 (YYYY-MM-DD) -> .으로 바꿔야함
+//        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd"); // ex. 2022-01-20 14:03:23
+//        Date now_formatted = format.parse(now.toString());
 
         // 작성일과 일기의 해당 날짜가 다를 경우 발송(isPublic == 1) 불가
         if (diaryDate.compareTo(now.toString()) != 0 && isPublic == 1) {

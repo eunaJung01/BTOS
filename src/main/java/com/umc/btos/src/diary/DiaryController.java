@@ -3,6 +3,7 @@ package com.umc.btos.src.diary;
 import com.umc.btos.config.*;
 import com.umc.btos.src.diary.model.*;
 import com.umc.btos.src.plant.PlantService;
+import com.umc.btos.src.plant.model.PatchModifyScoreRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,20 +46,21 @@ public class DiaryController {
     }
 
     /*
-     * 일기 저장
+     * 일기 저장 및 발송, 화분 점수와 레벨 변경
      * [POST] /diaries
      */
-    @ResponseBody
-    @PostMapping("")
-    public BaseResponse<PostDiaryRes> saveDiary(@RequestBody PostDiaryReq postDiaryReq) {
-        try {
-            PostDiaryRes postDiaryRes = diaryService.saveDiary(postDiaryReq);
-            return new BaseResponse<>(postDiaryRes);
-
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        }
-    }
+//    @ResponseBody
+//    @PostMapping("")
+//    public BaseResponse<PatchModifyScoreRes> saveDiary(@RequestBody PostDiaryReq postDiaryReq) {
+//        try {
+//            diaryService.saveDiary(postDiaryReq);
+//            PatchModifyScoreRes result = plantService.modifyScore_plus(postDiaryReq.getUserIdx(), Constant.PLANT_LEVELUP_DIARY, "diary");
+//            return new BaseResponse<>(result);
+//
+//        } catch (BaseException exception) {
+//            return new BaseResponse<>(exception.getStatus());
+//        }
+//    }
 
     /*
      * 일기 수정
