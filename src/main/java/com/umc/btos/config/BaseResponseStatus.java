@@ -77,6 +77,17 @@ public enum BaseResponseStatus {
 
     // 6000 : 레마
     TEMP2(false, 9000, "conflict 방지용 2"),
+    DIARY_EXISTS(false, 6000, "일기는 하루에 하나만 작성 가능합니다."),
+    UNPRIVATE_DATE(false, 6001, "당일에 작성한 일기만 발송 가능합니다!"),
+    DIARY_ENCRYPTION_ERROR(false, 6001, "일기 또는 done list 내용 암호화에 실패하였습니다."),
+    MODIFY_FAIL_DIARY(false, 6002, "일기 수정 실패 - 일기 내용"),
+    MODIFY_FAIL_DONELIST(false, 6002, "일기 수정 실패 - done list"),
+    DELETE_FAIL_DIARY(false, 6003, "일기 삭제 실패"),
+    DELETE_FAIL_DONELIST(false, 6003, "done list 삭제 실패"),
+    DIARY_NONPREMIUM_USER(false, 6004, "프리미엄 가입이 필요합니다."),
+    DIARY_DECRYPTION_ERROR(false, 6005, "일기 복호화에 실패하였습니다."),
+    EMPTY_RESULT(false, 6006, "검색 결과 없음"),
+    PAGENUM_ERROR(false, 6006, "잘못된 페이지 요청입니다."),
 
 
     // 7000 : 자몽
