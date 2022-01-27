@@ -33,7 +33,7 @@ public class UserDao {
 
     // 이메일 확인
     public int checkEmail(String email) {
-        String checkEmailQuery = "select exists(select email from User where email = ? and status IS NOT 'deleted')"; // 이메일 중복되는 지 확인(탈퇴 후 재가입 고려하여 active인 유저 중에서만 고려)
+        String checkEmailQuery = "select exists(select email from User where email = ? and status in ('active', 'dormant'))"; // 이메일 중복되는 지 확인(탈퇴 후 재가입 고려하여 active인 유저 중에서만 고려)
         String checkEmailParams = email;
         return this.jdbcTemplate.queryForObject(checkEmailQuery,
                 int.class,
