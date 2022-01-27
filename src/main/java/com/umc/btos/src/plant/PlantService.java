@@ -2,11 +2,15 @@ package com.umc.btos.src.plant;
 
 import com.umc.btos.config.BaseException;
 import com.umc.btos.config.BaseResponseStatus;
+import com.umc.btos.config.Constant;
 import com.umc.btos.src.plant.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
+
+import javax.sound.midi.Patch;
 
 import static com.umc.btos.config.BaseResponseStatus.*;
 import static com.umc.btos.config.Constant.*;
@@ -75,6 +79,7 @@ public class PlantService {
 
 
     //화분 점수 증가 (Service)
+    /*
     public PatchUpDownScoreRes upScore(int userIdx, PatchUpDownScoreReq patchUpDownScoreReq) throws BaseException {
         int addScore = patchUpDownScoreReq.getAddScore();
         try {
@@ -125,9 +130,131 @@ public class PlantService {
             throw exception;
         }
     }
+     */
 
+    // 화분 점수 변경 (증가)
+    public PatchModifyScoreRes modifyScore_plus(int userIdx, int score, String type) throws BaseException {
+        // score : 변경할 점수
+
+        try {
+            // 식물 점수 (score) 가져오기
+            int plantScore = plantDao.getScore(userIdx);
+
+            // 식물 단계 (level) 가져오기
+            int plantLevel = plantDao.getLevel(userIdx);
+
+            // 해당 단계의 성장치 불러오기
+            int plantMaxScore = Constant.PLANT_LEVEL[plantLevel]; // 성장치
+
+            PatchModifyScoreRes result = new PatchModifyScoreRes(false, type); // response 객체
+
+            // 최대 단계 & 최대 점수인 경우
+            if (plantLevel == plantDao.getMaxLevel(userIdx) && plantScore == plantMaxScore) {
+                return result; // 단계 변경 X
+            }
+
+            // 점수 += score
+            plantScore += score;
+
+            if (plantScore > plantMaxScore) { // 식물 점수가 해당 단계의 성장치를 넘어간다면? -> 단계 변경
+                plantLevel++; // 단계 + 1
+                plantScore -= plantMaxScore; // 점수 = 변경된 점수 - 성장치
+
+                plantDao.setLevel(userIdx, plantLevel); // 변경된 단계 반영
+                result.setLevelChanged(true); // 단계가 변경되었다는 정보를 response에 넣기
+            }
+
+            plantDao.setScore(userIdx, plantScore); // 변경된 점수 반영
+            result.setStatus("levelUp");
+            return result;
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 화분 점수 변경 (감소)
+    public PatchModifyScoreRes modifyScore_minus(int userIdx, int score, String type) throws BaseException {
+        // score : 변경할 점수
+        try {
+            PatchModifyScoreRes result = new PatchModifyScoreRes(false, type); // response 객체
+
+            // 프리미엄 계정인가? -> 프리미엄 계정이라면 성장치 감소 X (바로 response 반환)
+            if (plantDao.isPremium(userIdx).compareTo("premium") == 0) {
+                return result;
+            }
+
+            // 식물 점수 (score) 가져오기
+            int plantScore = plantDao.getScore(userIdx);
+
+            // 식물 단계 (level) 가져오기
+            int plantLevel = plantDao.getLevel(userIdx);
+
+            // 해당 단계의 성장치 불러오기
+            int plantMaxScore = Constant.PLANT_LEVEL[plantLevel]; // 성장치
+
+            // 성장치 MAX인가? == 최대 단계 & 최대 점수인 경우 -> 성장치 감소 X (바로 response 반환)
+            int maxLevel = plantDao.getMaxLevel(userIdx);
+            if (plantLevel == maxLevel && plantScore == plantMaxScore) {
+                return result;
+            }
+
+            // 단계가 하나씩 줄어드는게 아니라 n단계씩 줄 수 있기 때문에 생각해야 할 것이 많음
+            // public static final int[] PLANT_LEVEL = new int[] {15, 30, 50, 50};
+
+            // 누적 점수 가져오기
+            int plantScore_sum = 0;
+            if (plantLevel != 0) {
+                for (int i = 0; i < plantLevel; i++) { // 전 단계까지 모두 누적
+                    plantScore_sum += Constant.PLANT_LEVEL[i];
+                }
+            }
+            plantScore_sum += plantScore; // 누적 점수
+
+            // 누적 점수 += score(음수)
+            plantScore_sum += score; // 변경된 점수
+
+            int plantLevel_current = 0; // 현재 식물 단계
+            if (plantScore_sum < 0) {
+                plantScore = 0; // 단계 : 0, 점수 : 0 (초기화)
+
+            } else {
+                // 현재 식물 단계 구하기
+                int score_sum = 0; // 누적 성장치
+                plantLevel_current = -1; // 현재 식물 단계
+                for (int i = 0; i <= maxLevel; i++) {
+                    score_sum += Constant.PLANT_LEVEL[++plantLevel_current];
+                    if (plantScore_sum <= score_sum) { // 해당 단계에서 for문 멈추기
+                        break;
+                    }
+                }
+
+                // 현재 식물 점수 구하기
+                if (plantLevel_current != 0) {
+                    score_sum = 0; // 현재 단계까지 누적 성장치
+                    for (int i = 0; i < plantLevel_current; i++) {
+                        score_sum += Constant.PLANT_LEVEL[i];
+                    }
+                    plantScore = plantScore_sum - score_sum; // 점수 변경 (누적 제거)
+                }
+            }
+
+            if (plantLevel_current != plantLevel) {
+                plantDao.setLevel(userIdx, plantLevel_current); // 변경된 단계 반영
+                result.setLevelChanged(true); // 단계가 변경되었다는 정보를 response에 넣기
+            }
+
+            plantDao.setScore(userIdx, plantScore); // 변경된 점수 반영
+            result.setStatus("levelDown");
+            return result;
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
     //화분 단계 증가 (Service)
+    /*
     public int upLevel(int userIdx) throws BaseException {
         try {
             return plantDao.upLevel(userIdx);
@@ -135,9 +262,10 @@ public class PlantService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
+    */
 
     //화분 점수 감소 API
+    /*
     public PatchUpDownScoreRes downScore(int userIdx, PatchUpDownScoreReq patchUpDownScoreReq) throws BaseException {
         try {
             // TODO 1. 프리미엄 계정인지 확인
@@ -186,8 +314,10 @@ public class PlantService {
             throw exception;
         }
     }
+    */
 
     //화분 점수 감소를 실제로 수행하는 함수
+    /*
     public int downScoreAndLevel(int curScore, int addScore, int currentLevel, int userIdx) throws BaseException {
         int addRes = curScore + addScore; //현재 점수 + 감소시킬 점수(음수)
 
@@ -247,6 +377,7 @@ public class PlantService {
             return plantDao.plusScore(userIdx, addScore);
         }
     }
+     */
 
 }
 

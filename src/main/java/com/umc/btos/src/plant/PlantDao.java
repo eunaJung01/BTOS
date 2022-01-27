@@ -204,4 +204,42 @@ public class PlantDao {
         return this.jdbcTemplate.queryForObject(Query, boolean.class, Param);
     }
 
+
+    // 화분 점수 반환
+    public int getScore(int userIdx) {
+        String query = "SELECT score FROM UserPlantList WHERE userIdx = ? AND status = 'selected'";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
+    }
+
+    // 화분 단계 반환
+    public int getLevel(int userIdx) {
+        String query = "SELECT level FROM UserPlantList WHERE userIdx = ? AND status = 'selected'";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
+    }
+
+    // 화분 단계 수정
+    public int setLevel(int userIdx, int level) {
+        String query = "UPDATE UserPlantList SET level = ? WHERE userIdx = ? AND status = 'selected'";
+        return this.jdbcTemplate.update(query, level, userIdx);
+    }
+
+    // 화분 점수 수정
+    public int setScore(int userIdx, int score) {
+        String query = "UPDATE UserPlantList SET score = ? WHERE userIdx = ? AND status = 'selected'";
+        return this.jdbcTemplate.update(query, score, userIdx);
+    }
+
+    // 프리미엄 계정인지 반환
+    public String isPremium(int userIdx) {
+        String query = "SELECT isPremium FROM User WHERE userIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
+    }
+
+    // 식물 최대 단계 반환 (status = 'active')
+    public int getMaxLevel(int userIdx) {
+        String query = "SELECT Plant.maxLevel FROM UserPlantList INNER JOIN Plant ON UserPlantList.plantIdx = Plant.plantIdx WHERE UserPlantList.userIdx = ? AND UserPlantList.status = 'selected'";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
+    }
+
+
 }
