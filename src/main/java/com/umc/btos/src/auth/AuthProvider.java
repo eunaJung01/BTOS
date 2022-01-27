@@ -44,6 +44,7 @@ public class AuthProvider {
         }
     }
 
+    // 자동 로그인
     public GetAuthLoginRes authLogIn() throws BaseException {
         try {
             return new GetAuthLoginRes(jwtService.getUserIdx());
