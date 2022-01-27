@@ -133,4 +133,15 @@ public class UserService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    // 시무룩이 상태 변경
+    public void changeIsSad(PatchUserIsSadReq patchUserIsSadReq) throws BaseException{
+        try {
+            int result = userDao.changeIsSad(patchUserIsSadReq);
+            if (result == 0) throw new BaseException(CHANGE_FAIL_IS_SAD); // 시무룩이 상태 변경 실패시 에러 메시지
+
+        } catch(Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
