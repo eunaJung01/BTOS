@@ -26,7 +26,7 @@ public class ShopService {
             if (shopDao.joinPremium(userIdx) == 1) //변경 성공
                 return SUCCESS;
             else //변경 실패
-                return MODIFY_FAIL_PREMIUM;
+                throw new BaseException(MODIFY_FAIL_PREMIUM);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -38,7 +38,7 @@ public class ShopService {
             if (shopDao.withdrawPremium(userIdx) == 1) //변경 성공
                 return SUCCESS;
             else //변경 실패
-                return MODIFY_FAIL_WITHDRAW;
+                throw new BaseException(MODIFY_FAIL_WITHDRAW);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

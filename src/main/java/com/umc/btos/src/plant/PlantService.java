@@ -82,19 +82,23 @@ public class PlantService {
             //화분이 시무룩 상태면 성장치 오르지 않음
             if(plantProvider.checkSad(userIdx) == true)
                 throw new BaseException(SAD_STATUS_PLANT); //화분이 시무룩 상태입니다. 화분의 성장치를 증가시킬 수 없습니다.
+
             //점수 변경
             if (plantDao.plusScore(userIdx, addScore) == 1) { //점수 변경 성공
                 //TODO: 1. 점수 증가 후의 score 가져오기
                 //      2. 가져온 점수가 단계 증가 조건에 충족되면 "화분 단계 변경 (Service)" 호출
+
                 //점수에 따라서 patchUpDownScoreReq 필드 1로 Set
                 PatchUpDownScoreRes patchUpDownScoreRes = new PatchUpDownScoreRes();
                 if (addScore == 5) //PLANT_LEVELUP_DIARY
                     patchUpDownScoreRes.setDiary_upScore(1);
                 else if (addScore == 3) //PLANT_LEVELUP_LETTER
                     patchUpDownScoreRes.setLetter_upScore(1);
+
                 //1번
                 int currentScore = plantProvider.selectScore(userIdx); //증가 후의 score 가져오기
                 int currentLevel = plantProvider.selectLevel(userIdx); //level 가져오기(점수가 증가는 됐지만 그에 따른 영향은 아직 안받은 상태)
+
                 // 2번
                 Boolean condFor0 = (currentScore == PLANT_LEVEL_0 && currentLevel == 0); //현재 score = 15 && 현재 레벨 0
                 Boolean condFor1 = (currentScore == PLANT_LEVEL_1 && currentLevel == 1); //현재 score = 30 && 현재 레벨 1
@@ -103,15 +107,18 @@ public class PlantService {
                 Boolean condFor4 = (currentScore == PLANT_LEVEL_4 && currentLevel == 4); //현재 score = 70 && 현재 레벨 4
                 Boolean condFor5 = (currentScore == PLANT_LEVEL_5 && currentLevel == 5); //현재 score = 70 && 현재 레벨 5
                 if (condFor0 || condFor1 || condFor2 || condFor3 || condFor4 || condFor5) { //점수 충족 -> 화분 단계 변경 (Service) 호출
+
                     if (upLevel(userIdx) == 1) { //점수 up && 레벨 up --> return 1
                         patchUpDownScoreRes.setUpLevel(1);
                         return patchUpDownScoreRes; //변경 성공
                     } else {
                         throw new BaseException(MODIFY_FAIL_LEVEL); //변경 실패
                     }
+
                 } else { //점수만 up (점수 충족 X)
                     return patchUpDownScoreRes;
                 }
+
             } else { //점수 변경 실패
                 throw new BaseException(MODIFY_FAIL_SCORE);
             }
@@ -264,9 +271,11 @@ public class PlantService {
             //      5. 프리미엄 계정이 아니면 or MAX가 아니면 점수가 0점인지 확인
             //      6. 현재 점수 0 & 단계 0 이면 적절한 Status 리턴
             //      7. 0이 아니면 변경 하러 go
+
             // 1, 2번
             if (plantDao.checkPremium(userIdx).equals("premium")) //프리미엄 계정이면
                 throw new BaseException(PREMIUM_USER); //프리미엄 계정 회원은 화분 성장치가 감소하지 않습니다.
+
             // 3, 4번
             // TODO 1. UserPlantList 테이블에서 selected 화분의 level을 가져온다
             //      2. Plant테이블에서 가져온 화분의 maxlevel을 가져온다
@@ -275,11 +284,13 @@ public class PlantService {
             int maxLevel = plantProvider.maxLevel(userIdx); //최대 레벨
             if (currentLevel == maxLevel)
                 throw new BaseException(MAXLEVEL_PLANT); //성장치가 MAX 단계에 도달한 화분은 성장치가 감소하지 않습니다.
+
             // 5 ~ 7번
             int currentScore = plantProvider.selectScore(userIdx); //현재 점수
             if (currentLevel != 0 && currentScore != 0) {
                 int addScore = patchUpDownScoreReq.getAddScore();
                 PatchUpDownScoreRes patchUpDownScoreRes = new PatchUpDownScoreRes();
+
                 //점수에 따라서 patchUpDownScoreReq 필드 1로 Set
                 if (addScore == -10) //PLANT_LEVELDOWN_DIARY
                     patchUpDownScoreRes.setDiary_downScore(1);
@@ -287,9 +298,11 @@ public class PlantService {
                     patchUpDownScoreRes.setReport_spam_dislike_downScore(1);
                 else if (addScore == -100) //PLANT_LEVELDOWN_REPORT_SEX_HATE
                     patchUpDownScoreRes.setReport_sex_hate_downScore(1);
+
                 //점수 감소, 감소 실패시 호출한 함수에서 예외처리 됨
                 downScoreAndLevel(currentScore, addScore, currentLevel, userIdx);
                 return patchUpDownScoreRes;
+
             } else { //6번
                 throw new BaseException(INVALID_SCORE_PLANT);
             }
@@ -303,17 +316,22 @@ public class PlantService {
     /*
     public int downScoreAndLevel(int curScore, int addScore, int currentLevel, int userIdx) throws BaseException {
         int addRes = curScore + addScore; //현재 점수 + 감소시킬 점수(음수)
+
         if (addRes < 0) { //음수 이므로 단계도 감소
+
             try {
                 if (currentLevel == 0) //단계를 감소시켜야 하는데 0단계라서 감소시킬 수 없음
                     throw new BaseException(INVALID_LEVEL_PLANT); //동작을 수행할 화분의 단계가 0단계이므로 더 이상 단계와 점수를 감소시킬 수 없습니다.
             } catch (Exception e) {
                 throw e;
             }
+
             int totalDec = 0; //단계 감소 횟수
             while (addRes >= 0) { //addRes가 양수 or 0이 되면 탈출
+
                 ++totalDec;
                 int prevLevel = currentLevel - totalDec; //현재 레벨(감소 전) - totalDec
+
                 int prevMaxScore = 0; //감소 전 단계의 최대 점수;
                 if (prevLevel == 0)
                     prevMaxScore = PLANT_LEVEL_0;
@@ -325,7 +343,9 @@ public class PlantService {
                     prevMaxScore = PLANT_LEVEL_3;
                 else if (prevLevel == 4)
                     prevMaxScore = PLANT_LEVEL_4;
+
                 addRes += prevMaxScore;
+
                 try {
                     if (prevLevel <= 0 && addRes < 0) //계속 감소시키다가 0레벨 (음수)점됨. 더 감소 불가능.
                         throw new BaseException(INVALID_LEVEL_PLANT); //동작을 수행할 화분의 단계가 0단계이므로 더 이상 단계와 점수를 감소시킬 수 없습니다.
@@ -336,6 +356,7 @@ public class PlantService {
             //양수 or 0점이 되서 탈출
             //점수 감소시키는 Dao 함수 호출
             //그다음 단계 감소시키는 Dao 함수 호출
+
             try {
                 if (plantDao.setDownScore(userIdx, addRes) != 1) //점수 감소 실패
                     throw new BaseException(MODIFY_FAIL_SCORE); //화분 점수 변경에 실패하였습니다.

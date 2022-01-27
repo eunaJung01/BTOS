@@ -13,7 +13,7 @@ public class PutDiaryReq {
     private int diaryIdx;
     private int userIdx;
     private int emotionIdx;
-    private String diaryDate; // YYYY-MM-DD
+    private String diaryDate; // YYYY.MM.DD
     private String diaryContent;
     private int isPublic;
     private List doneList;

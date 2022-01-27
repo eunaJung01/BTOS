@@ -159,26 +159,38 @@ public class PlantDao {
     public int plusScore(int userIdx, int addScore) {
         String Query = "UPDATE UserPlantList SET score = score+? WHERE userIdx=? AND status=?";
         Object[] Params = new Object[]{addScore, userIdx, "selected"};
+
         return this.jdbcTemplate.update(Query, Params);
     }
+
+
     //화분 점수를 addRes 숫자로 업데이트(단계까지 감소되는 경우의 점수 감소에 사용됨, 이 함수는 plusScore와 다름)
     public int setDownScore(int userIdx, int addRes) {
         String Query = "UPDATE UserPlantList SET score = ? WHERE userIdx=? AND status=?";
         Object[] Params = new Object[]{addRes, userIdx, "selected"};
+
         return this.jdbcTemplate.update(Query, Params);
     }
+
+
+
     //화분 단계 증가 (Dao)
     //level = level + 1 : 기존 단계에 +1
     public int upLevel(int userIdx) {
         String Query = "UPDATE UserPlantList SET level = level+? WHERE userIdx=? AND status=?";
         Object[] Params = new Object[]{1, userIdx, "selected"};
+
         return this.jdbcTemplate.update(Query, Params);
     }
+
+
+
     //화분 단계 감소
     //level = level - totalDec
     public int downLevel(int userIdx, int totalDec) {
         String Query = "UPDATE UserPlantList SET level = level-? WHERE userIdx=? AND status=?";
         Object[] Params = new Object[]{totalDec, userIdx, "selected"};
+
         return this.jdbcTemplate.update(Query, Params);
     }
     */

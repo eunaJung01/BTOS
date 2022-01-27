@@ -57,22 +57,43 @@ public enum BaseResponseStatus {
 
     // 5000 : 도기
     TEMP1(false, 9000, "conflict 방지용 1"),
-
+    POST_USERS_EMPTY_NICKNAME(false, 5000, "닉네임을 입력해주세요."),
+    USERS_INVALID_NICKNAME(false, 5001, "닉네임은 10자까지 입력 가능합니다."),
+    POST_USERS_DORMANT(false, 5002, "휴면 상태 계정입니다."),
+    AUTH_REQ_SIGNUP(false, 5003, "회원가입이 필요합니다."),
+    AUTH_FAILED_TO_LOGIN(false, 5004, "로그인에 실패하였습니다."),
+    MODIFY_FAIL_STATUS(false, 5005, "상태 변경에 실패하였습니다."),
+    INVALID_USER_BIRTH(false, 5006, "생년은 1 이상의 값만 가능합니다."),
+    INVALID_USER_STATUS(false, 5007, "탈퇴, 활성화, 휴면 상태값만 가능합니다."),
+    MODIFY_FAIL_INFO(false, 5008, "정보 변경에 실패하였습니다."),
+    PATCH_USERS_EXISTS_NICKNAME(false, 5009, "이미 존재하는 닉네임입니다."),
+    PATCH_USERS_NOT_VALUES(false, 5010, "변경하실 닉네임을 입력해주세요."),
+    MODIFY_FAIL_PUSH_ALARM(false, 5011, "푸시 알람 수신 변경에 실패했습니다."),
+    INVALID_FONT(false, 5012, "유효하지 않은 폰트입니다."),
+    CHANGE_FAIL_FONT(false, 5013, "폰트 변경에 실패하였습니다."),
+    MODIFY_FAIL_RECEIVE_OTHERS(false, 5014, "다른 사람의 편지 수신 변경에 실패하였습니다."),
+    MODIFY_FAIL_RECEIVE_SIMILAR_AGE(false, 5015, "비슷한 연령대의 편지 수신 변경에 실패하였습니다."),
+    CHANGE_FAIL_IS_SAD(false, 5016, "시무룩이 상태 변경에 실패하였습니다."),
 
     // 6000 : 레마
     TEMP2(false, 9000, "conflict 방지용 2"),
-    UNPRIVATE_DATE(false, 6000, "당일에 작성한 일기만 발송 가능합니다!"),
-    DIARY_ENCRYPTION_ERROR(false, 6000, "일기 또는 done list 내용 암호화에 실패하였습니다."),
-    MODIFY_FAIL_DIARY(false, 6001, "일기 수정 실패 - 일기 내용"),
-    MODIFY_FAIL_DONELIST(false, 6001, "일기 수정 실패 - done list"),
-    DELETE_FAIL_DIARY(false, 6002, "일기 삭제 실패"),
-    DELETE_FAIL_DONELIST(false, 6002, "done list 삭제 실패"),
+    DIARY_EXISTS(false, 6000, "일기는 하루에 하나만 작성 가능합니다."),
+    UNPRIVATE_DATE(false, 6001, "당일에 작성한 일기만 발송 가능합니다!"),
+    DIARY_ENCRYPTION_ERROR(false, 6001, "일기 또는 done list 내용 암호화에 실패하였습니다."),
+    MODIFY_FAIL_DIARY(false, 6002, "일기 수정 실패 - 일기 내용"),
+    MODIFY_FAIL_DONELIST(false, 6002, "일기 수정 실패 - done list"),
+    DELETE_FAIL_DIARY(false, 6003, "일기 삭제 실패"),
+    DELETE_FAIL_DONELIST(false, 6003, "done list 삭제 실패"),
+    DIARY_NONPREMIUM_USER(false, 6004, "프리미엄 가입이 필요합니다."),
+    DIARY_DECRYPTION_ERROR(false, 6005, "일기 복호화에 실패하였습니다."),
+    EMPTY_RESULT(false, 6006, "검색 결과 없음"),
+    PAGENUM_ERROR(false, 6006, "잘못된 페이지 요청입니다."),
 
 
     // 7000 : 자몽
     TEMP3(false, 9000, "conflict 방지용 3"),
 
-    MODIFY_FAIL_STATUS(false, 7010, "화분 상태 변경에 실패하였습니다."),
+//    MODIFY_FAIL_STATUS(false, 7010, "화분 상태 변경에 실패하였습니다."),
     MODIFY_FAIL_BUY_PLANT(false,7011, "화분 선택에 실패하였습니다."),
     MODIFY_FAIL_SCORE(false, 7012, "화분 점수 변경에 실패하였습니다."),
     MODIFY_FAIL_LEVEL(false, 7013, "화분 단계 변경에 실패하였습니다."),
