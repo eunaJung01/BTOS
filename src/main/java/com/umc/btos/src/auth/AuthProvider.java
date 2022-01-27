@@ -1,6 +1,5 @@
 package com.umc.btos.src.auth;
 
-import com.sun.tracing.dtrace.ProviderAttributes;
 import com.umc.btos.config.BaseException;
 import com.umc.btos.config.secret.Secret;
 import com.umc.btos.src.auth.model.*;
