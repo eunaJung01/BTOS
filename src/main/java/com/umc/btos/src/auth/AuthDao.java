@@ -23,7 +23,7 @@ public class AuthDao {
 
     // 이메일 확인
     public int checkEmail(String email) {
-        String checkEmailQuery = "select exists(select email from User where email = ? and status in ('active', 'dormant'))"; // 이메일 중복되는 지 확인
+        String checkEmailQuery = "select exists(select userIdx from User where email = ?)"; // 이메일 중복되는 지 확인
         String checkEmailParams = email;
         return this.jdbcTemplate.queryForObject(checkEmailQuery,
                 int.class,
