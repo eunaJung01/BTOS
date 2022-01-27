@@ -28,7 +28,7 @@ public class ReportController {
     /**
      * 신고 작성 API
      * [POST] /reports
-     */
+
     // Body에 json으로 정보를 입력받아 신고 데이터 생성
     @ResponseBody
     @PostMapping("")    // POST 어노테이션
@@ -42,7 +42,7 @@ public class ReportController {
         }
 
     }
-
+    */
 
 
 }

@@ -6,10 +6,9 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class POSTLetterSendListReq {
+public class PostLetterSendListReq {
     private int sendIdx;
     private int letterIdx;
     private int receiverIdx;
-    private String content;
 
 }

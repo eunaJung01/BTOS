@@ -14,6 +14,7 @@ import static com.umc.btos.config.BaseResponseStatus.MODIFY_REPLY_ISCHECKED_ERRO
 
 @Service
 public class ReplyProvider {
+    /**
     private final ReplyDao replyDao;
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -39,5 +40,5 @@ public class ReplyProvider {
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
-    }
+    }*/
 }

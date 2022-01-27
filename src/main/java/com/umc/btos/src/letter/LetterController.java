@@ -25,10 +25,12 @@ public class LetterController {
         this.letterService = letterService;
     }
 
+
     /**
      * 편지 작성 API
      * [POST] /letters
      */
+    /**
     // Body에 json 파일 형식으로 넣음
     @ResponseBody
     @PostMapping("")    // POST 방식의 요청을 매핑하기 위한 어노테이션
@@ -42,11 +44,11 @@ public class LetterController {
         }
 
     }
-
+    */
     /**
      * 편지 조회 API
      * [GET] /letters/:letterIdx
-     */
+
     // Path-variable - letterIdx를 인수로 받아 해당 인덱스의 letter을 불러온다.
     @ResponseBody
     @GetMapping("/{letterIdx}") // (GET) localhost:9000/btos/letters/:letterIdx
@@ -61,10 +63,12 @@ public class LetterController {
         }
 
     }
+
     /**
      * 편지 삭제 API
      * [PATCH] /letters/:letterIdx
      */
+    /**
     @ResponseBody
     @PatchMapping("/{letterIdx}")
     // Path-variable - letterIdx를 파라미터로 받음 - 해당 letterIdx의 status를 deleted로 변경
@@ -79,7 +83,7 @@ public class LetterController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
-
+    */
 
 
 }

@@ -1,5 +1,6 @@
 package com.umc.btos.src.report;
 import com.umc.btos.config.BaseException;
+
 import com.umc.btos.src.report.model.*;
 
 import com.umc.btos.utils.JwtService;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
+
 
 @Service
 public class ReportService {
@@ -30,7 +32,7 @@ public class ReportService {
     }
     // ******************************************************************************
     // 신고 작성(POST)
-
+    /**
     public PostReportRes createReport(PostReportReq postReportReq) throws BaseException {
 
         try {
@@ -41,5 +43,5 @@ public class ReportService {
 
             throw new BaseException(DATABASE_ERROR);
         }
-    }
+    }*/
 }
