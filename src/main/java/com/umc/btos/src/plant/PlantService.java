@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static com.umc.btos.config.BaseResponseStatus.*;
-import static com.umc.btos.config.Constant.*;
 
 @Service
 public class PlantService {
