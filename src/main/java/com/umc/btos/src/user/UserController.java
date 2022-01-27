@@ -347,13 +347,12 @@ public class UserController {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
             //같다면 변경
-
-            PatchUserIsSadReq patchUserIsSadReq = new PatchUserIsSadReq(userIdx, sad.isSad());
+            PatchUserIsSadReq patchUserIsSadReq = new PatchUserIsSadReq(userIdx, sad.isIsSad());
             userService.changeIsSad(patchUserIsSadReq);
 
             String result = "";
-            if (patchUserIsSadReq.isSad()) result = "시무룩이 상태가 해제되었습니다.";
-            else if (!patchUserIsSadReq.isSad()) result = "시무룩이 상태가 되었습니다.";
+            if (!patchUserIsSadReq.isIsSad()) result = "시무룩이 상태가 해제되었습니다.";
+            else if (patchUserIsSadReq.isIsSad()) result = "시무룩이 상태가 되었습니다.";
 
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
