@@ -63,7 +63,7 @@ public class UserController {
                 return new BaseResponse<>(USERS_INVALID_NICKNAME);
             }
 
-            if (postUserReq.getBirth() < 0) { // 생년이 0 미만 값으로 들어오면 오류 메시지
+            if (postUserReq.getBirth() < 0) { // 생년이 0 미만 값으로 들어오면 오류 메시지, 0은 null 처리이므로 pass
                 return new BaseResponse<>(INVALID_USER_BIRTH);
             }
 
