@@ -55,6 +55,7 @@ public class PlantProvider {
         }
     }
 
+    /*
     //화분의 현재 score 가져오기
     public int selectScore(int userIdx) throws BaseException {
         try {
@@ -99,5 +100,6 @@ public class PlantProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+    */
 }
 
