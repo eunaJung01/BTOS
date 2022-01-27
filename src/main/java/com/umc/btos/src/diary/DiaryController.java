@@ -66,19 +66,19 @@ public class DiaryController {
      * 일기 수정
      * [PUT] /diaries
      */
-    @ResponseBody
-    @PutMapping("")
-    public BaseResponse<String> modifyDiary(@RequestBody PutDiaryReq putDiaryReq) {
-        try {
-            diaryService.modifyDiary(putDiaryReq);
-
-            String result = "일기(diaryIdx=" + putDiaryReq.getDiaryIdx() + ") 수정 완료";
-            return new BaseResponse<>(result);
-
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        }
-    }
+//    @ResponseBody
+//    @PutMapping("")
+//    public BaseResponse<String> modifyDiary(@RequestBody PutDiaryReq putDiaryReq) {
+//        try {
+//            diaryService.modifyDiary(putDiaryReq);
+//
+//            String result = "일기(diaryIdx=" + putDiaryReq.getDiaryIdx() + ") 수정 완료";
+//            return new BaseResponse<>(result);
+//
+//        } catch (BaseException exception) {
+//            return new BaseResponse<>(exception.getStatus());
+//        }
+//    }
 
     /*
      * 일기 삭제
