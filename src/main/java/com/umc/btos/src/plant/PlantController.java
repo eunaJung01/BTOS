@@ -76,7 +76,7 @@ public class PlantController {
         try {
             //status 변경 성공시 : "요청에 성공하였습니다." - 1000
             //selected -> active 실패시 : "화분 상태 변경에 실패하였습니다." - 7010
-            //futurePlant값이 이미 선택된 화분인 경우 : "이미 선택된 화분입니다." - 7015
+            //futurePlant값이 이미 선택된 화분인 경우 : "이미 선택된 화분입니다." - 5005
             //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
             return new BaseResponse<>(plantService.selectPlant(patchSelectPlantReq));
         } catch (BaseException exception) {
@@ -95,7 +95,7 @@ public class PlantController {
     public BaseResponse<String> buyPlant(@RequestBody PostBuyPlantReq postBuyPlantReq) {
         try {
             //행 추가 성공시 : "요청에 성공하였습니다." - 1000
-            //       실패시 : "화분 상태 변경에 실패하였습니다." - 7010
+            //       실패시 : "화분 상태 변경에 실패하였습니다." - 7011
             //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
             return new BaseResponse<>(plantService.buyPlant(postBuyPlantReq));
         } catch (BaseException exception) {
