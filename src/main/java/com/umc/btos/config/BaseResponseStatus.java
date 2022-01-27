@@ -77,10 +77,38 @@ public enum BaseResponseStatus {
 
     // 6000 : 레마
     TEMP2(false, 9000, "conflict 방지용 2"),
+    DIARY_EXISTS(false, 6000, "일기는 하루에 하나만 작성 가능합니다."),
+    UNPRIVATE_DATE(false, 6001, "당일에 작성한 일기만 발송 가능합니다!"),
+    DIARY_ENCRYPTION_ERROR(false, 6001, "일기 또는 done list 내용 암호화에 실패하였습니다."),
+    MODIFY_FAIL_DIARY(false, 6002, "일기 수정 실패 - 일기 내용"),
+    MODIFY_FAIL_DONELIST(false, 6002, "일기 수정 실패 - done list"),
+    DELETE_FAIL_DIARY(false, 6003, "일기 삭제 실패"),
+    DELETE_FAIL_DONELIST(false, 6003, "done list 삭제 실패"),
+    DIARY_NONPREMIUM_USER(false, 6004, "프리미엄 가입이 필요합니다."),
+    DIARY_DECRYPTION_ERROR(false, 6005, "일기 복호화에 실패하였습니다."),
+    EMPTY_RESULT(false, 6006, "검색 결과 없음"),
+    PAGENUM_ERROR(false, 6006, "잘못된 페이지 요청입니다."),
 
 
     // 7000 : 자몽
     TEMP3(false, 9000, "conflict 방지용 3"),
+
+//    MODIFY_FAIL_STATUS(false, 7010, "화분 상태 변경에 실패하였습니다."),
+    MODIFY_FAIL_BUY_PLANT(false,7011, "화분 선택에 실패하였습니다."),
+    MODIFY_FAIL_SCORE(false, 7012, "화분 점수 변경에 실패하였습니다."),
+    MODIFY_FAIL_LEVEL(false, 7013, "화분 단계 변경에 실패하였습니다."),
+
+    INVALID_SCORE_PLANT(false,7014, "선택한 화분의 점수가 0점입니다. 점수를 감소시킬 수 없습니다."),
+    INVALID_LEVEL_PLANT(false,7015,"동작을 수행할 화분의 단계가 0단계이므로 더 이상 단계와 점수를 감소시킬 수 없습니다."),
+
+    INVALID_IDX_PLANT(false, 7016, "이미 선택된 화분입니다."),
+
+    MODIFY_FAIL_PREMIUM(false, 7020, "프리미엄 계정 변경에 실패하였습니다."),
+    MODIFY_FAIL_WITHDRAW(false, 7021, "청약철회에 실패하였습니다."),
+
+    PREMIUM_USER(false,7030,"프리미엄 계정 회원은 화분 성장치가 감소하지 않습니다."),
+    MAXLEVEL_PLANT(false,7031, "성장치가 MAX 단계에 도달한 화분은 성장치가 감소하지 않습니다."),
+    SAD_STATUS_PLANT(false,7032, "화분이 시무룩 상태입니다. 화분의 성장치를 증가시킬 수 없습니다."),
 
 
     // 8000 : 잭
