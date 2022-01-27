@@ -153,6 +153,7 @@ public class PlantDao {
         return this.jdbcTemplate.queryForObject(maxLevelQuery, int.class, maxLevelParam);
     }
 
+    /*
     //화분 점수 더함 (Dao) : 증가, 감소에 쓰임
     //score = score + addScore : 기존 점수에 addScore(양수/음수) 더함
     public int plusScore(int userIdx, int addScore) {
@@ -162,6 +163,7 @@ public class PlantDao {
         return this.jdbcTemplate.update(Query, Params);
     }
 
+
     //화분 점수를 addRes 숫자로 업데이트(단계까지 감소되는 경우의 점수 감소에 사용됨, 이 함수는 plusScore와 다름)
     public int setDownScore(int userIdx, int addRes) {
         String Query = "UPDATE UserPlantList SET score = ? WHERE userIdx=? AND status=?";
@@ -169,6 +171,8 @@ public class PlantDao {
 
         return this.jdbcTemplate.update(Query, Params);
     }
+
+
 
     //화분 단계 증가 (Dao)
     //level = level + 1 : 기존 단계에 +1
@@ -179,6 +183,8 @@ public class PlantDao {
         return this.jdbcTemplate.update(Query, Params);
     }
 
+
+
     //화분 단계 감소
     //level = level - totalDec
     public int downLevel(int userIdx, int totalDec) {
@@ -187,6 +193,8 @@ public class PlantDao {
 
         return this.jdbcTemplate.update(Query, Params);
     }
+    */
+
 
     //프리미엄 계정인지 확인
     public String checkPremium(int userIdx) {
@@ -195,6 +203,7 @@ public class PlantDao {
 
         return this.jdbcTemplate.queryForObject(Query, String.class, Param);
     }
+
 
     //화분이 시무룩 상태인지 확인
     public boolean checkSad(int userIdx) {
