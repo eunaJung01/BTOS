@@ -17,4 +17,23 @@ public class TestController {
     public String TestController(){
         return "Success Test";
     }
+
+    /**
+     * GitHub Actions 테스트 API
+     * [GET] /test/github-actions
+     *
+     * @return String
+     */
+    @ResponseBody
+    @GetMapping("/github-actions")
+    public String getActions() {
+
+        System.out.println("테스트");
+        logger.info("INFO Level 테스트");
+        logger.warn("Warn Level 테스트");
+        logger.error("ERROR Level 테스트");
+
+        return "Success GitHub Actions Test";
+    }
+
 }
