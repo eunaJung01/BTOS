@@ -330,4 +330,36 @@ public class UserController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+
+    /**
+     * 시무룩이 상태 변경 API
+     * [PATCH] /users/:userIdx/sad
+     */
+
+    @ResponseBody
+    @PatchMapping("/{userIdx}/sad")
+    public BaseResponse<String> changeIsSad(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserIsSadReq sad) throws BaseException {
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            // userIdx와 접근한 유저가 같은지 확인
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            //같다면 변경
+
+            PatchUserIsSadReq patchUserIsSadReq = new PatchUserIsSadReq(userIdx, sad.isSad());
+            userService.changeIsSad(patchUserIsSadReq);
+
+            String result = "";
+            if (patchUserIsSadReq.isSad()) result = "시무룩이 상태가 해제되었습니다.";
+            else if (!patchUserIsSadReq.isSad()) result = "시무룩이 상태가 되었습니다.";
+
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
 }
