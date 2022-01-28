@@ -42,7 +42,7 @@ public class UserDao {
 
     // 회원 상태 변경
     public int changeStatusOfUser(PatchUserReq patchUserReq) {
-        String changeStatusQuery = "update User set status = ?, updatedAt = CURRENT_TIMESTAMP where userIdx = ?";
+        String changeStatusQuery = "update User set status = ? where userIdx = ?";
         Object[] changeStatusParams = new Object[]{patchUserReq.getStatus() ,patchUserReq.getUserIdx()};
         return this.jdbcTemplate.update(changeStatusQuery, changeStatusParams);
         // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
@@ -77,7 +77,7 @@ public class UserDao {
 
     // 닉네임 변경
     public int modifyUserNickName(PatchUserNickNameReq patchUserNickNameReq){
-        String modifyUserNickNameQuery = "update User set nickName = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        String modifyUserNickNameQuery = "update User set nickName = ? where userIdx = ?";
         Object[] modifyUserNickNameParams = new Object[]{patchUserNickNameReq.getNickName(), patchUserNickNameReq.getUserIdx()};
         return this.jdbcTemplate.update(modifyUserNickNameQuery, modifyUserNickNameParams);
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
@@ -85,7 +85,7 @@ public class UserDao {
 
     // 생년 변경
     public int modifyUserBirth(PatchUserBirthReq patchUserBirthReq) {
-        String modifyUserBirthQuery = "update User set birth = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        String modifyUserBirthQuery = "update User set birth = ? where userIdx = ?";
         Object[] modifyUserBirthParams = new Object[]{patchUserBirthReq.getBirth(), patchUserBirthReq.getUserIdx()};
         return this.jdbcTemplate.update(modifyUserBirthQuery, modifyUserBirthParams);
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
@@ -93,7 +93,7 @@ public class UserDao {
 
     // 다른 사람 수신 설정
     public int modifyReceiveOthers(PatchUserRecOthersReq patchUserReceiveOthersReq) {
-        String modifyReceiveOthersQuery = "update User set recOthers = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        String modifyReceiveOthersQuery = "update User set recOthers = ? where userIdx = ?";
         Object[] modifyReceiveOthersParams = new Object[]{patchUserReceiveOthersReq.isRecOthers(), patchUserReceiveOthersReq.getUserIdx()};
         return this.jdbcTemplate.update(modifyReceiveOthersQuery, modifyReceiveOthersParams);
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
@@ -101,7 +101,7 @@ public class UserDao {
 
     // 비슷한 연령대 수신 설정
     public int modifyReceiveSimilarAge(PatchUserRecSimilarAgeReq patchUserRecSimilarAgeReq) {
-        String modifyReceiveOthersQuery = "update User set recSimilarAge = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        String modifyReceiveOthersQuery = "update User set recSimilarAge = ? where userIdx = ?";
         Object[] modifyReceiveOthersParams = new Object[]{patchUserRecSimilarAgeReq.isRecSimilarAge(), patchUserRecSimilarAgeReq.getUserIdx()};
         return this.jdbcTemplate.update(modifyReceiveOthersQuery, modifyReceiveOthersParams);
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
@@ -109,7 +109,7 @@ public class UserDao {
 
     // 푸시 알림 수신 변경
     public int modifyPushAlarm(PatchUserPushAlarmReq patchUserPushAlarmReq) {
-        String modifyPushAlarmQuery = "update User set pushAlarm = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        String modifyPushAlarmQuery = "update User set pushAlarm = ? where userIdx = ?";
         Object[] modifyPushAlarmParams = new Object[] {patchUserPushAlarmReq.isPushAlarm(), patchUserPushAlarmReq.getUserIdx()};
         return this.jdbcTemplate.update(modifyPushAlarmQuery, modifyPushAlarmParams);
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
@@ -117,7 +117,7 @@ public class UserDao {
 
     // 폰트 변경
     public int changeFont(PatchUserFontReq patchUserFontReq) {
-        String changeFontQuery = "update User set fontIdx = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        String changeFontQuery = "update User set fontIdx = ? where userIdx = ?";
         Object[] changeFontParams = new Object[] {patchUserFontReq.getFontIdx(), patchUserFontReq.getUserIdx()};
         return this.jdbcTemplate.update(changeFontQuery, changeFontParams);
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
@@ -125,7 +125,7 @@ public class UserDao {
 
     // 시무룩이 상태 변경
     public int changeIsSad(PatchUserIsSadReq patchUserIsSadReq) {
-        String changeIsSadQuery = "update User set isSad = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        String changeIsSadQuery = "update User set isSad = ? where userIdx = ?";
         Object[] changeIsSadParams = new Object[] {patchUserIsSadReq.isIsSad(), patchUserIsSadReq.getUserIdx()};
         return this.jdbcTemplate.update(changeIsSadQuery, changeIsSadParams);
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
