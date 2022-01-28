@@ -1,10 +1,12 @@
 package com.umc.btos.src.history.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class GetHistoryListRes<T> {
     private String type; // diary : 일기 / letter : 편지
     private int idx; // 식별자 (diary - diaryIdx / letter - letterIdx)
