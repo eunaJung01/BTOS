@@ -45,9 +45,10 @@ public class HistoryProvider {
 
             GetHistoryListRes historyListRes = new GetHistoryListRes(filtering);
             /*
-             * filtering = "sender"인 경우 GetHistoryListRes.list = List<HistoryList_Sender>
+             * filtering = "sender" && search == null인 경우 GetHistoryListRes.list = List<HistoryList_Sender>
+             * filtering = "sender" && search != null인 경우 GetHistoryListRes.list = List<History>
              * filtering = "diary" 또는 "letter"인 경우 GetHistoryListRes.list = List<History>
-             * History 객체 : 수신한 일기 또는 편지에 대한 상세 정보를 저장
+             * History_Sender, History 객체 : 수신한 일기 또는 편지에 대한 상세 정보를 저장
              */
 
             if (search == null) {
@@ -84,13 +85,13 @@ public class HistoryProvider {
                     }
 
                     for (String senderNickName : senderNickNameList) {
-                        List<History> historyList = new ArrayList<>(); // HistoryList_Sender.historyList
+                        List<History_Sender> historyList = new ArrayList<>(); // HistoryList_Sender.historyList
 
                         if (historyDao.hasHistory_diary(userIdx, senderNickName) != 0) { // null 확인
-                            historyList.addAll(historyDao.getDiaryList(userIdx, senderNickName)); // 일기
+                            historyList.addAll(historyDao.getDiaryList_sender(userIdx, senderNickName)); // 일기
                         }
                         if (historyDao.hasHistory_letter(userIdx, senderNickName) != 0) { // null 확인
-                            historyList.addAll(historyDao.getLetterList(userIdx, senderNickName)); // 편지
+                            historyList.addAll(historyDao.getLetterList_sender(userIdx, senderNickName)); // 편지
                         }
                         Collections.sort(historyList); // createAt 기준 내림차순 정렬
 
