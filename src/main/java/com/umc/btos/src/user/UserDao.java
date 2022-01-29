@@ -3,9 +3,11 @@ package com.umc.btos.src.user;
 import com.umc.btos.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.*;
 
 @Repository
 
@@ -42,8 +44,16 @@ public class UserDao {
 
     // 회원 상태 변경
     public int changeStatusOfUser(PatchUserReq patchUserReq) {
-        String changeStatusQuery = "update User set status = ? where userIdx = ?";
+        String changeStatusQuery = "";
         Object[] changeStatusParams = new Object[]{patchUserReq.getStatus() ,patchUserReq.getUserIdx()};
+
+        System.out.println("상태값 : "+patchUserReq.getStatus());
+        if (patchUserReq.getStatus().equals("active")) // 재 활성화의 경우
+            changeStatusQuery = "update User set status = ?, recOthers = 1, recSimilarAge = 1 where userIdx = ?";
+
+        else if (patchUserReq.getStatus().equals("dormant") || patchUserReq.getStatus().equals("deleted")) // 휴면 or 탈퇴의 경우
+            changeStatusQuery = "update User set status = ?, recOthers = 0, recSimilarAge = 0 where userIdx = ?";
+
         return this.jdbcTemplate.update(changeStatusQuery, changeStatusParams);
         // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
     }
@@ -129,6 +139,21 @@ public class UserDao {
         Object[] changeIsSadParams = new Object[] {patchUserIsSadReq.isIsSad(), patchUserIsSadReq.getUserIdx()};
         return this.jdbcTemplate.update(changeIsSadQuery, changeIsSadParams);
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
+    }
+
+    // 정해진 시간마다 마지막 로그인 기록과 현재 시간과의 차이 계산
+    @Scheduled(cron = "0 0 0 * * *") // 매일 자정에 미접속 기간 체크 하도록 주기 설정
+    public void checkLastConnect() {
+        // 마지막 로그인 시간과 현재 시간이 5일 이상 차이 나는 userIdx 추출
+        String checkLastConnectQuery = "select userIdx from User where TIMESTAMPDIFF(day, lastConnect, CURRENT_TIMESTAMP) >= 5";
+        // 휴면으로 바꿔야할 userIdx 배열에 저장
+        ArrayList<Integer> needToDormantUsers = new ArrayList<>(this.jdbcTemplate.queryForList(checkLastConnectQuery, int.class)); // 쿼리 결과를 배열에 저장하도록함
+
+        // 휴면 처리 -> 수신 차단까지
+        String changeStatusQuery = "update User set status = 'dormant', recOthers = 0, recSimilarAge = 0 where userIdx = ?";
+        for (int userIdx : needToDormantUsers)
+            this.jdbcTemplate.update(changeStatusQuery, userIdx);
+
     }
 
 }
