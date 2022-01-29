@@ -24,15 +24,6 @@ public class PlantProvider {
     }
 
 
-    //모든식물조회(Profile) API
-    public List<GetPlantRes> getAllPlant(int userIdx) throws BaseException {
-        try {
-            return plantDao.getAllPlant(userIdx); // DB에서 목록가져오기
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
     //회원이 선택한 화분 조회 API
     public GetSpecificPlantRes getSelectedPlant(int plantIdx, int userIdx) throws BaseException {
         try {
@@ -51,6 +42,18 @@ public class PlantProvider {
             else //아니면 3 반환
                 return 3;
         } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    //모든 화분 조회(Profile + 상점)
+    public List<GetPlantRes> getPlantList(int userIdx) throws BaseException {
+        try{
+            List<Integer> plantIdxList = plantDao.getPlantIdx(); //Plant 테이블에 있는 모든 화분 idx
+            List<Integer> userPlantIdxList = plantDao.getUserPlantIdx(userIdx); //해당 user가 가지고 있는 모든 화분 idx
+
+            return plantDao.getPlantList(userIdx, plantIdxList, userPlantIdxList);
+        } catch(Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
