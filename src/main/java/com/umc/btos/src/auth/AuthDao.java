@@ -34,8 +34,17 @@ public class AuthDao {
     // 해당 이메일을 가진 유저가 있을 때 상태 확인
     public String checkStatusOfUser(String email){
         String checkStatusOfUserQuery = "select status from User where email = ?";
-        String checkStatusOfUserParams = email;
-        return this.jdbcTemplate.queryForObject(checkStatusOfUserQuery, String.class, checkStatusOfUserParams);
+        String checkStatusOfUserParam = email;
+        return this.jdbcTemplate.queryForObject(checkStatusOfUserQuery, String.class, checkStatusOfUserParam);
+    }
+
+    // 해당 userIdx을 가진 유저가 휴면 상태면 재활성화
+    public void checkStatusOfUser(int userIdx){
+        String statusOfUserQuery = "select status from User where userIdx = ?";
+
+        if (this.jdbcTemplate.queryForObject(statusOfUserQuery, String.class, userIdx).equals("dormant")) // 휴면 상태면 재활성화
+            jdbcTemplate.update("update User set status = 'active', recOthers = 1, recSimilarAge = 1 where userIdx = ?", userIdx);
+
     }
 
     // 해당 이메일을 가진 유저의 식별자 반환
