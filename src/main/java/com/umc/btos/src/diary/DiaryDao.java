@@ -95,7 +95,7 @@ public class DiaryDao {
         return this.jdbcTemplate.update(query, params);
     }
 
-    // 캘린더 조회 (diaryDate(일기의 해당 날짜) 기준 오름차순 정렬)
+    // 달력 조회 (diaryDate(일기의 해당 날짜) 기준 오름차순 정렬)
     public List<GetCalendarRes> getCalendarList(int userIdx, String date) {
         String startDate = date + ".01";
         String endDate = date + ".31";

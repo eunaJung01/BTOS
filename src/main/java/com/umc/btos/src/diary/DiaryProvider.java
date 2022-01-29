@@ -39,7 +39,7 @@ public class DiaryProvider {
     }
 
     /*
-     * Archive 조회 - 캘린더
+     * Archive 조회 - 달력
      * [GET] /diaries/calendar/:userIdx/:date?type
      * date = YYYY.MM
      * type (조회 방식) = 1. doneList : 나뭇잎 색으로 done list 개수 표현 / 2. emotion : 감정 이모티콘
@@ -51,7 +51,7 @@ public class DiaryProvider {
         }
 
         try {
-            // 캘린더 : 한달 단위로 날짜마다 저장된 일기에 대한 정보(done list 개수 또는 감정 이모티콘 식별자)를 저장
+            // 달력 : 한달 단위로 날짜마다 저장된 일기에 대한 정보(done list 개수 또는 감정 이모티콘 식별자)를 저장
             List<GetCalendarRes> calendar = diaryDao.getCalendarList(userIdx, date);
 
             if (type.compareTo("doneList") == 0) { // done list로 조회 -> 일기 별 doneList 개수 저장 (set doneListNum)
