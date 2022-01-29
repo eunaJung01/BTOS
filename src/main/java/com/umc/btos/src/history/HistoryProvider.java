@@ -81,6 +81,7 @@ public class HistoryProvider {
                         historyList_sender.setHistoryListNum(historyList_sender.getHistoryList().size()); // HistoryList_Sender.historyListNum
                         historyListRes_list.add(historyList_sender);
                     }
+
                     if (historyListRes_list.size() != 0) {
                         historyListRes.setList(historyListRes_list);
                     } else {
@@ -182,7 +183,6 @@ public class HistoryProvider {
                             for (int letterIdx : letterIdxList) {
                                 historyList.add(historyDao.getLetter(userIdx, letterIdx));
                             }
-
                             Collections.sort(historyList); // createAt 기준 내림차순 정렬
                             historyListRes_list.add(new HistoryList_Sender(senderNickName, historyList.size(), historyList));
                         }
@@ -190,7 +190,6 @@ public class HistoryProvider {
 
                     if (historyListRes_list.size() != 0) {
                         historyListRes.setList(historyListRes_list);
-
                     } else {
                         throw new NullPointerException(); // 검색 결과 없음
                     }
@@ -220,7 +219,6 @@ public class HistoryProvider {
                         for (int diaryIdx : diaryIdxList) {
                             historyList.add(historyDao.getDiary(userIdx, diaryIdx));
                         }
-
                         Collections.sort(historyList); // createAt 기준 내림차순 정렬
                         historyListRes.setList(historyList);
 
@@ -253,7 +251,6 @@ public class HistoryProvider {
                         for (int letterIdx : letterIdxList) {
                             historyList.add(historyDao.getDiary(userIdx, letterIdx));
                         }
-
                         Collections.sort(historyList); // createAt 기준 내림차순 정렬
                         historyListRes.setList(historyList);
 
@@ -268,7 +265,6 @@ public class HistoryProvider {
         } catch (NullPointerException nullPointerException) {
             throw new BaseException(EMPTY_RESULT); // 검색 결과 없음
         } catch (Exception exception) {
-            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
