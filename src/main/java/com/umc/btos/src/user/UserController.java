@@ -336,7 +336,7 @@ public class UserController {
      * 시무룩이 상태 변경 API
      * [PATCH] /users/:userIdx/sad
      */
-/*
+
     @ResponseBody
     @PatchMapping("/{userIdx}/sad")
     public BaseResponse<String> changeIsSad(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserIsSadReq sad) throws BaseException {
@@ -359,6 +359,6 @@ public class UserController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
-*/
+
 
 }
