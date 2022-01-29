@@ -76,10 +76,10 @@ public class UserController {
 
 
     /**
-     * 회원 상태 변경(탈퇴 / 휴면 / 재활성화) API -> 휴면, 재활성화 자동화 필요
+     * 회원 상태 변경(탈퇴 / 재활성화) API -> 휴면, 재활성화 자동화
      * [PATCH] /users/:userIdx/status
      */
-/*
+
     @ResponseBody
     @PatchMapping("/{userIdx}/status")
     public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx, @RequestBody PatchUserReq userStatus){
@@ -107,7 +107,6 @@ public class UserController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
-*/
 
 
     /**
