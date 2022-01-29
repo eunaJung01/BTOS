@@ -15,7 +15,7 @@ public class History<T> implements Comparable<History> {
     private String type; // diary : 일기 / letter : 편지
     private int idx; // 식별자 (diary - diaryIdx / letter - letterIdx)
     private String senderNickName; // 발신자 이름
-    private T content; // 내용 (diary : GetDiaryRes_History / letter : String)
+    private T content; // 내용 (diary : History_Diary / letter : String)
     private String sendAt; // yyyy.MM.dd
 
     @SneakyThrows
