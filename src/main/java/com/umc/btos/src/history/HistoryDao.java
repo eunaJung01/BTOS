@@ -34,6 +34,8 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForList(query, String.class, userIdx, userIdx);
     }
 
+    // --------------------------------------- null 확인 ---------------------------------------
+
     // Diary null 확인 : filtering = sender
     public int hasHistory_diary(int userIdx, String senderNickName) {
         String query = "SELECT COUNT(*) " +
@@ -78,6 +80,8 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
+    // --------------------------------------- List<History> 반환 ---------------------------------------
+
     // 일기 리스트 반환 : filtering = sender
     // DiarySendList.receiverIdx = userIdx AND User.nickName = senderNickName
     // provider 단에서의 연산을 줄이기 위해서 sendAt 기준 내림차순 정렬로 반환
@@ -97,6 +101,27 @@ public class HistoryDao {
                         rs.getInt("idx"),
                         rs.getString("senderNickName"),
                         new History_Diary(rs.getString("diaryContent"), rs.getInt("emotionIdx"), rs.getInt("doneListNum")),
+                        rs.getString("sendAt")
+                ), userIdx, senderNickName);
+    }
+
+    // 편지 리스트 반환 : filtering = sender
+    // LetterSendList.receiverIdx = userIdx AND User.nickName = senderNickName
+    // provider 단에서의 연산을 줄이기 위해서 sendAt 기준 내림차순 정렬로 반환
+    public List<History> getLetterList(int userIdx, String senderNickName) {
+        String query = "SELECT Letter.letterIdx AS idx, User.nickName AS senderNickName, Letter.content AS content, Letter.createdAt AS sendAt " +
+                "FROM LetterSendList " +
+                "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
+                "INNER JOIN User ON Letter.userIdx = User.userIdx " +
+                "WHERE LetterSendList.receiverIdx = ? AND User.nickName = ? " +
+                "ORDER BY sendAt DESC";
+
+        return this.jdbcTemplate.query(query,
+                (rs, rowNum) -> new History(
+                        "letter",
+                        rs.getInt("idx"),
+                        rs.getString("senderNickName"),
+                        rs.getString("content"),
                         rs.getString("sendAt")
                 ), userIdx, senderNickName);
     }
@@ -127,33 +152,6 @@ public class HistoryDao {
                 ), userIdx, startData, endData);
     }
 
-    // 일기 리스트 반환 시 (filtering = letter) data 개수 반환
-    public int getDiaryList_dataNum(int userIdx) {
-        String query = "SELECT COUNT(*) FROM DiarySendList WHERE DiarySendList.receiverIdx = ?";
-        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
-    }
-
-    // 편지 리스트 반환 : filtering = sender
-    // LetterSendList.receiverIdx = userIdx AND User.nickName = senderNickName
-    // provider 단에서의 연산을 줄이기 위해서 sendAt 기준 내림차순 정렬로 반환
-    public List<History> getLetterList(int userIdx, String senderNickName) {
-        String query = "SELECT Letter.letterIdx AS idx, User.nickName AS senderNickName, Letter.content AS content, Letter.createdAt AS sendAt " +
-                "FROM LetterSendList " +
-                "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
-                "INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                "WHERE LetterSendList.receiverIdx = ? AND User.nickName = ? " +
-                "ORDER BY sendAt DESC";
-
-        return this.jdbcTemplate.query(query,
-                (rs, rowNum) -> new History(
-                        "letter",
-                        rs.getInt("idx"),
-                        rs.getString("senderNickName"),
-                        rs.getString("content"),
-                        rs.getString("sendAt")
-                ), userIdx, senderNickName);
-    }
-
     // 편지 리스트 반환 : filtering = letter
     // LetterSendList.receiverIdx = userIdx
     public List<History> getLetterList(int userIdx, int pageNum) {
@@ -178,11 +176,21 @@ public class HistoryDao {
                 ), userIdx, startData, endData);
     }
 
+    // --------------------------------------- data 개수 반환 ---------------------------------------
+
+    // 일기 리스트 반환 시 (filtering = diary) data 개수 반환
+    public int getDiaryList_dataNum(int userIdx) {
+        String query = "SELECT COUNT(*) FROM DiarySendList WHERE DiarySendList.receiverIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
+    }
+
     // 편지 리스트 반환 시 (filtering = letter) data 개수 반환
     public int getLetterList_dataNum(int userIdx) {
         String query = "SELECT COUNT(*) FROM LetterSendList WHERE LetterSendList.receiverIdx = ? ";
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
+
+    // --------------------------------------- 인덱스 리스트 반환 ---------------------------------------
 
     // diaryIdx 리스트 반환 : filtering = sender && search
     public List<Integer> getDiaryIdxList(int userIdx, String senderNickName) {
@@ -212,12 +220,6 @@ public class HistoryDao {
                 "LIMIT ?, ?";
 
         return this.jdbcTemplate.queryForList(query, int.class, userIdx, startData, endData);
-    }
-
-    // diaryIdx 리스트 반환 시 (filtering = diary) data 개수 반환
-    public int getDiaryIdxList_dataNum(int userIdx) {
-        String query = "SELECT COUNT(*) FROM DiarySendList WHERE DiarySendList.receiverIdx = ?";
-        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
     // letter 리스트 반환 : filtering = sender && search
@@ -250,11 +252,21 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForList(query, int.class, userIdx, startData, endData);
     }
 
+    // --------------------------------------- 인덱스 리스트 size 반환 ---------------------------------------
+
+    // diaryIdx 리스트 반환 시 (filtering = diary) data 개수 반환
+    public int getDiaryIdxList_dataNum(int userIdx) {
+        String query = "SELECT COUNT(*) FROM DiarySendList WHERE DiarySendList.receiverIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
+    }
+
     // letterIdx 리스트 반환 시 (filtering = letter) data 개수 반환
     public int getLetterIdxList_dataNum(int userIdx) {
         String query = "SELECT COUNT(*) FROM LetterSendList WHERE LetterSendList.receiverIdx = ?";
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
+
+    // --------------------------------------- content 반환 ---------------------------------------
 
     // Diary.content 반환
     public String getDiaryContent(int diaryIdx) {
@@ -267,6 +279,8 @@ public class HistoryDao {
         String query = "SELECT content FROM Letter WHERE letterIdx = ? AND status = 'active'";
         return this.jdbcTemplate.queryForObject(query, String.class, letterIdx);
     }
+
+    // --------------------------------------- History 반환 ---------------------------------------
 
     // 일기 반환
     public History getDiary(int userIdx, int diaryIdx) {
