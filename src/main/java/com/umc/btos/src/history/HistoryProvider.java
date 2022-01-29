@@ -238,7 +238,7 @@ public class HistoryProvider {
 
                         List<Integer> letterIdxList_searched = new ArrayList<>();
                         for (int letterIdx : letterIdxList) {
-                            String letterContent = historyDao.getDiaryContent(letterIdx);
+                            String letterContent = historyDao.getLetterContent(letterIdx);
 
                             if (searchString(letterContent, search)) { // 문자열 검색 -> 찾는 값이 존재하면 저장
                                 letterIdxList_searched.add(letterIdx);
@@ -268,6 +268,7 @@ public class HistoryProvider {
         } catch (NullPointerException nullPointerException) {
             throw new BaseException(EMPTY_RESULT); // 검색 결과 없음
         } catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
