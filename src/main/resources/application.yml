@@ -3,7 +3,7 @@ spring:
     group:
       "local": "testDB, common"
       "dev": "testDB, common"
-      "prod": "prodDB, prod"
+      "prod": "testDB, prod" # "prodDB, prod"
 
 ---
 
@@ -29,9 +29,9 @@ spring:
       on-profile: "prodDB"
   datasource:
     platform: mysql
-    #    url:
-    #    username:
-    #    password:
+#    url:
+#    username:
+#    password:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 ---
