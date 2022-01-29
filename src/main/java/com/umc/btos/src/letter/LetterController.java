@@ -3,7 +3,10 @@ package com.umc.btos.src.letter;
 
 import com.umc.btos.config.BaseException;
 import com.umc.btos.config.BaseResponse;
+import com.umc.btos.config.Constant;
 import com.umc.btos.src.letter.model.*;
+import com.umc.btos.src.plant.PlantService;
+import com.umc.btos.src.plant.model.PatchModifyScoreRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +20,15 @@ public class LetterController {
     private final LetterProvider letterProvider;
     @Autowired
     private final LetterService letterService;
+    @Autowired
+    private final PlantService plantService;
 
 
 
-    public LetterController(LetterProvider letterProvider, LetterService letterService) {
+    public LetterController(LetterProvider letterProvider, LetterService letterService,PlantService plantService) {
         this.letterProvider = letterProvider;
         this.letterService = letterService;
+        this.plantService = plantService;
     }
 
 
@@ -30,21 +36,23 @@ public class LetterController {
      * 편지 작성 API
      * [POST] /letters
      */
-    /**
+
     // Body에 json 파일 형식으로 넣음
     @ResponseBody
     @PostMapping("")    // POST 방식의 요청을 매핑하기 위한 어노테이션
-    public BaseResponse<PostLetterRes> createLetter(@RequestBody PostLetterReq postLetterReq) {
+    public BaseResponse<PatchModifyScoreRes> createLetter(@RequestBody PostLetterReq postLetterReq) {
 
         try{
             PostLetterRes postLetterRes = letterService.createLetter(postLetterReq);
-            return new BaseResponse<>(postLetterRes);
+            // 화분 점수 증가
+            PatchModifyScoreRes result = plantService.modifyScore_plus(postLetterReq.getUserIdx(), Constant.PLANT_LEVELUP_LETTER,"letter");
+            return new BaseResponse<>(result);
         } catch (BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }
 
     }
-    */
+
     /**
      * 편지 조회 API
      * [GET] /letters/:letterIdx
