@@ -47,6 +47,7 @@ public class AuthProvider {
     // 자동 로그인
     public GetAuthLoginRes authLogIn() throws BaseException {
         try {
+            authDao.updateLastConnect(jwtService.getUserIdx()); // 로그인 기록 갱신
             return new GetAuthLoginRes(jwtService.getUserIdx());
         } catch(Exception exception) {
             throw new BaseException(INVALID_JWT);
