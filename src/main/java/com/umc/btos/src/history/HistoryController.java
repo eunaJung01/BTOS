@@ -43,4 +43,26 @@ public class HistoryController {
         }
     }
 
+    /*
+     * History 발신인 조회
+     * [GET] /histories/sender/:userIdx/:senderNickName/:pageNum?search=
+     * search = 검색할 문자열 ("String")
+     * 최신순 정렬 (createdAt 기준 내림차순 정렬)
+     * 페이징 처리 (무한 스크롤) - 20개씩 조회
+     */
+    @ResponseBody
+    @GetMapping("/sender/{userIdx}/{senderNickName}/{pageNum}")
+    BaseResponsePaging<GetSenderRes> getHistoryList_sender(@PathVariable("userIdx") String userIdx, @PathVariable("senderNickName") String senderNickName, @PathVariable("pageNum") int pageNum, @RequestParam(value = "search", required = false) String search) {
+        try {
+            String[] params = new String[]{userIdx, senderNickName, search};
+            PagingRes pageInfo = new PagingRes(pageNum, Constant.HISTORY_DATA_NUM); // 페이징 정보
+
+            GetSenderRes historyList_sender = historyProvider.getHistoryList_sender(params, pageInfo);
+            return new BaseResponsePaging<>(historyList_sender, pageInfo);
+
+        } catch (BaseException exception) {
+            return new BaseResponsePaging<>(exception.getStatus());
+        }
+    }
+
 }
