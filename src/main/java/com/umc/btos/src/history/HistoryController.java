@@ -1,8 +1,8 @@
 package com.umc.btos.src.history;
 
 import com.umc.btos.config.BaseException;
-import com.umc.btos.config.BaseResponse;
-import com.umc.btos.src.history.model.GetHistoryListRes;
+import com.umc.btos.config.*;
+import com.umc.btos.src.history.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +29,17 @@ public class HistoryController {
      * 페이징 처리 (무한 스크롤) - 20개씩 조회
      */
     @ResponseBody
-//    @GetMapping("/list/{userIdx}/{pageNum}")
-    @GetMapping("/list/{userIdx}")
-    BaseResponse<GetHistoryListRes> getHistoryList(@PathVariable("userIdx") String userIdx, @RequestParam(value = "filtering", defaultValue = "sender") String filtering, @RequestParam(value = "search", required = false) String search) {
+    @GetMapping("/list/{userIdx}/{pageNum}")
+    BaseResponsePaging<GetHistoryListRes> getHistoryList(@PathVariable("userIdx") String userIdx, @PathVariable("pageNum") int pageNum, @RequestParam(value = "filtering", defaultValue = "sender") String filtering, @RequestParam(value = "search", required = false) String search) {
         try {
             String[] params = new String[]{userIdx, filtering, search};
-            GetHistoryListRes historyList = historyProvider.getHistoryList(params);
-            return new BaseResponse<>(historyList);
+            PagingRes pageInfo = new PagingRes(pageNum, Constant.HISTORY_DATA_NUM); // 페이징 정보
+
+            GetHistoryListRes historyList = historyProvider.getHistoryList(params, pageInfo);
+            return new BaseResponsePaging<>(historyList, pageInfo);
 
         } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
+            return new BaseResponsePaging<>(exception.getStatus());
         }
     }
 
