@@ -85,7 +85,7 @@ public class HistoryDao {
     // 일기 : filtering = sender && search == null
     // DiarySendList.receiverIdx = userIdx AND User.nickName = senderNickName
     // createAt 기준 내림차순 정렬 시 상위 1번째 항목 반환
-    public History_Sender getDiaryList_sender(int userIdx, String senderNickName) {
+    public History_Sender getDiary_sender(int userIdx, String senderNickName) {
         String query = "SELECT Diary.diaryIdx AS idx, " +
                 "Diary.content AS diaryContent, Diary.emotionIdx AS emotionIdx, COUNT(Done.diaryIdx) AS doneListNum, Diary.createdAt AS sendAt " +
                 "FROM DiarySendList " +
@@ -108,7 +108,7 @@ public class HistoryDao {
     // 편지 : filtering = sender && search == null
     // LetterSendList.receiverIdx = userIdx AND User.nickName = senderNickName
     // createAt 기준 내림차순 정렬 시 상위 1번째 항목 반환
-    public History_Sender getLetterList_sender(int userIdx, String senderNickName) {
+    public History_Sender getLetter_sender(int userIdx, String senderNickName) {
         String query = "SELECT Letter.letterIdx AS idx, Letter.content AS content, Letter.createdAt AS sendAt " +
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
@@ -157,7 +157,7 @@ public class HistoryDao {
     // DiarySendList.receiverIdx = userIdx AND User.nickName = senderNickName
     // provider 단에서의 연산을 줄이기 위해서 sendAt 기준 내림차순 정렬로 반환
     public List<History> getDiaryList(int userIdx, String senderNickName) {
-        String query = "SELECT Diary.diaryIdx AS idx, User.nickName AS senderNickName," +
+        String query = "SELECT Diary.diaryIdx AS idx, User.nickName AS senderNickName, " +
                 "Diary.content AS diaryContent, Diary.emotionIdx AS emotionIdx, COUNT(Done.diaryIdx) AS doneListNum, Diary.createdAt AS sendAt " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
@@ -203,7 +203,7 @@ public class HistoryDao {
         int startData = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
         int endData = pageNum * Constant.HISTORY_DATA_NUM;
 
-        String query = "SELECT Diary.diaryIdx AS idx, User.nickName AS senderNickName," +
+        String query = "SELECT Diary.diaryIdx AS idx, User.nickName AS senderNickName, " +
                 "Diary.content AS diaryContent, Diary.emotionIdx AS emotionIdx, COUNT(Done.diaryIdx) AS doneListNum, Diary.createdAt AS sendAt " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
@@ -245,6 +245,50 @@ public class HistoryDao {
                         rs.getString("content"),
                         rs.getString("sendAt")
                 ), userIdx, startData, endData);
+    }
+
+    // --------------------------------------- List<History_Sender> 반환 ---------------------------------------
+
+    // 일기 리스트 반환 : filtering = sender && search != null
+    // DiarySendList.receiverIdx = userIdx AND User.nickName = senderNickName
+    // provider 단에서의 연산을 줄이기 위해서 sendAt 기준 내림차순 정렬로 반환
+    public List<History_Sender> getDiaryList_sender(int userIdx, String senderNickName) {
+        String query = "SELECT Diary.diaryIdx AS idx, " +
+                "Diary.content AS diaryContent, Diary.emotionIdx AS emotionIdx, COUNT(Done.diaryIdx) AS doneListNum, Diary.createdAt AS sendAt " +
+                "FROM DiarySendList " +
+                "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                "INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                "INNER JOIN Done ON Diary.diaryIdx = Done.diaryIdx " +
+                "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? " +
+                "ORDER BY sendAt DESC";
+
+        return this.jdbcTemplate.query(query,
+                (rs, rowNum) -> new History_Sender(
+                        "diary",
+                        rs.getInt("idx"),
+                        new HistoryContent_Diary(rs.getString("diaryContent"), rs.getInt("emotionIdx"), rs.getInt("doneListNum")),
+                        rs.getString("sendAt")
+                ), userIdx, senderNickName);
+    }
+
+    // 편지 리스트 반환 : filtering = sender
+    // LetterSendList.receiverIdx = userIdx AND User.nickName = senderNickName
+    // provider 단에서의 연산을 줄이기 위해서 sendAt 기준 내림차순 정렬로 반환
+    public List<History_Sender> getLetterList_sender(int userIdx, String senderNickName) {
+        String query = "SELECT Letter.letterIdx AS idx, Letter.content AS content, Letter.createdAt AS sendAt " +
+                "FROM LetterSendList " +
+                "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
+                "INNER JOIN User ON Letter.userIdx = User.userIdx " +
+                "WHERE LetterSendList.receiverIdx = ? AND User.nickName = ? " +
+                "ORDER BY sendAt DESC";
+
+        return this.jdbcTemplate.query(query,
+                (rs, rowNum) -> new History_Sender(
+                        "letter",
+                        rs.getInt("idx"),
+                        rs.getString("content"),
+                        rs.getString("sendAt")
+                ), userIdx, senderNickName);
     }
 
     // --------------------------------------- data 개수 반환 ---------------------------------------
@@ -326,7 +370,7 @@ public class HistoryDao {
     // --------------------------------------- 인덱스 반환 ---------------------------------------
     // diaryIdx 반환 : filtering = sender && search
     // createAt 기준 내림차순 정렬 시 상위 1번째 항목 반환
-    public int getDiaryIdxList_sender(int userIdx, String senderNickName) {
+    public int getDiaryIdx_sender(int userIdx, String senderNickName) {
         String query = "SELECT idx FROM (" +
                 "SELECT Diary.diaryIdx AS idx, Diary.createdAt AS sendAt " +
                 "FROM DiarySendList " +
@@ -341,7 +385,7 @@ public class HistoryDao {
 
     // letter 리스트 반환 : filtering = sender && search
     // createAt 기준 내림차순 정렬 시 상위 1번째 항목 반환
-    public int getLetterIdxList_sender(int userIdx, String senderNickName) {
+    public int getLetterIdx_sender(int userIdx, String senderNickName) {
         String query = "SELECT idx FROM (" +
                 "SELECT Letter.letterIdx AS idx, Letter.createdAt AS sendAt " +
                 "FROM LetterSendList " +
