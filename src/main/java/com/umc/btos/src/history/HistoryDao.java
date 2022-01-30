@@ -23,11 +23,11 @@ public class HistoryDao {
         String query = "SELECT DISTINCT senderNickName FROM (" +
                 "SELECT User.nickName AS senderNickName, Diary.createdAt AS sendAt FROM User " +
                 "INNER JOIN (DiarySendList INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx) ON User.userIdx = Diary.userIdx " +
-                "WHERE DiarySendList.receiverIdx = ? " +
+                "WHERE DiarySendList.receiverIdx = ? AND DiarySendList.status = 'active' " +
                 "UNION " +
                 "SELECT User.nickName AS senderNickName, Letter.createdAt AS sendAt FROM User " +
                 "INNER JOIN (LetterSendList INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx) ON User.userIdx = Letter.userIdx " +
-                "WHERE LetterSendList.receiverIdx = ? " +
+                "WHERE LetterSendList.receiverIdx = ? AND LetterSendList.status = 'active' " +
                 "ORDER BY sendAt DESC" +
                 ") senderNickName";
 
@@ -42,7 +42,7 @@ public class HistoryDao {
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? ";
+                "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? AND DiarySendList.status = 'active'";
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, senderNickName);
     }
@@ -53,7 +53,7 @@ public class HistoryDao {
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                "WHERE LetterSendList.receiverIdx = ? AND User.nickName = ? ";
+                "WHERE LetterSendList.receiverIdx = ? AND User.nickName = ? AND LetterSendList.status = 'active'";
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, senderNickName);
     }
@@ -64,7 +64,7 @@ public class HistoryDao {
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                "WHERE DiarySendList.receiverIdx = ? ";
+                "WHERE DiarySendList.receiverIdx = ? AND DiarySendList.status = 'active'";
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
@@ -75,7 +75,7 @@ public class HistoryDao {
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                "WHERE LetterSendList.receiverIdx = ? ";
+                "WHERE LetterSendList.receiverIdx = ? AND LetterSendList.status = 'active'";
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
@@ -92,7 +92,7 @@ public class HistoryDao {
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
                 "INNER JOIN Done ON Diary.diaryIdx = Done.diaryIdx " +
-                "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? " +
+                "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? AND DiarySendList.status = 'active' " +
                 "ORDER BY sendAt DESC " +
                 "LIMIT 1";
 
@@ -111,7 +111,7 @@ public class HistoryDao {
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                "WHERE LetterSendList.receiverIdx = ? AND User.nickName = ? " +
+                "WHERE LetterSendList.receiverIdx = ? AND User.nickName = ? AND LetterSendList.status = 'active' " +
                 "ORDER BY sendAt DESC " +
                 "LIMIT 1";
 
@@ -135,7 +135,7 @@ public class HistoryDao {
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
                 "INNER JOIN Done ON Diary.diaryIdx = Done.diaryIdx " +
-                "WHERE DiarySendList.receiverIdx = ? AND Diary.diaryIdx = ?";
+                "WHERE DiarySendList.receiverIdx = ? AND Diary.diaryIdx = ? AND DiarySendList.status = 'active'";
 
         return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new History_Sender(
@@ -152,7 +152,7 @@ public class HistoryDao {
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                "WHERE LetterSendList.receiverIdx = ? AND Letter.letterIdx = ?";
+                "WHERE LetterSendList.receiverIdx = ? AND Letter.letterIdx = ? AND LetterSendList.status = 'active'";
 
         return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new History_Sender(
@@ -175,7 +175,7 @@ public class HistoryDao {
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
                 "INNER JOIN Done ON Diary.diaryIdx = Done.diaryIdx " +
-                "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? " +
+                "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? AND DiarySendList.status = 'active' " +
                 "ORDER BY sendAt DESC";
 
         return this.jdbcTemplate.query(query,
@@ -193,7 +193,7 @@ public class HistoryDao {
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                "WHERE LetterSendList.receiverIdx = ? AND User.nickName = ? " +
+                "WHERE LetterSendList.receiverIdx = ? AND User.nickName = ? AND LetterSendList.status = 'active' " +
                 "ORDER BY sendAt DESC";
 
         return this.jdbcTemplate.query(query,
@@ -213,7 +213,7 @@ public class HistoryDao {
         String query = "SELECT COUNT(*) FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ?";
+                "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? AND DiarySendList.status = 'active'";
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, senderNickName);
     }
@@ -224,7 +224,7 @@ public class HistoryDao {
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                "WHERE LetterSendList.receiverIdx = ? AND User.nickName = ?";
+                "WHERE LetterSendList.receiverIdx = ? AND User.nickName = ? AND LetterSendList.status = 'active'";
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, senderNickName);
     }
@@ -243,7 +243,7 @@ public class HistoryDao {
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
                 "INNER JOIN Done ON Diary.diaryIdx = Done.diaryIdx " +
-                "WHERE DiarySendList.receiverIdx = ? " +
+                "WHERE DiarySendList.receiverIdx = ? AND DiarySendList.status = 'active' " +
                 "ORDER BY sendAt DESC " +
                 "LIMIT ?, ?";
 
@@ -266,7 +266,7 @@ public class HistoryDao {
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                "WHERE LetterSendList.receiverIdx = ? " +
+                "WHERE LetterSendList.receiverIdx = ? AND LetterSendList.status = 'active' " +
                 "ORDER BY sendAt DESC " +
                 "LIMIT ?, ?";
 
@@ -284,13 +284,13 @@ public class HistoryDao {
 
     // 일기 (filtering = diary)
     public int getDiaryList_dataNum(int userIdx) {
-        String query = "SELECT COUNT(*) FROM DiarySendList WHERE DiarySendList.receiverIdx = ?";
+        String query = "SELECT COUNT(*) FROM DiarySendList WHERE DiarySendList.receiverIdx = ? AND DiarySendList.status = 'active'";
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
     // 편지 (filtering = letter)
     public int getLetterList_dataNum(int userIdx) {
-        String query = "SELECT COUNT(*) FROM LetterSendList WHERE LetterSendList.receiverIdx = ? ";
+        String query = "SELECT COUNT(*) FROM LetterSendList WHERE LetterSendList.receiverIdx = ? AND LetterSendList.status = 'active'";
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
@@ -304,7 +304,7 @@ public class HistoryDao {
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
                 "INNER JOIN Done ON Diary.diaryIdx = Done.diaryIdx " +
-                "WHERE DiarySendList.receiverIdx = ? AND Diary.diaryIdx = ?";
+                "WHERE DiarySendList.receiverIdx = ? AND Diary.diaryIdx = ? AND DiarySendList.status = 'active'";
 
         return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new History(
@@ -322,7 +322,7 @@ public class HistoryDao {
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                "WHERE LetterSendList.receiverIdx = ? AND Letter.letterIdx = ?";
+                "WHERE LetterSendList.receiverIdx = ? AND Letter.letterIdx = ? AND LetterSendList.status = 'active'";
 
         return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new History(
@@ -344,7 +344,7 @@ public class HistoryDao {
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? " +
+                "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? AND DiarySendList.status = 'active' " +
                 "ORDER BY sendAt DESC) idx";
 
         return this.jdbcTemplate.queryForList(query, int.class, userIdx, senderNickName);
@@ -357,7 +357,7 @@ public class HistoryDao {
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                "WHERE LetterSendList.receiverIdx = ? AND User.nickName = ? " +
+                "WHERE LetterSendList.receiverIdx = ? AND User.nickName = ? AND LetterSendList.status = 'active' " +
                 "ORDER BY sendAt DESC) idx";
 
         return this.jdbcTemplate.queryForList(query, int.class, userIdx, senderNickName);
@@ -373,7 +373,7 @@ public class HistoryDao {
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                "WHERE DiarySendList.receiverIdx = ? " +
+                "WHERE DiarySendList.receiverIdx = ? AND DiarySendList.status = 'active' " +
                 "ORDER BY sendAt DESC) idx " +
                 "LIMIT ?, ?";
 
@@ -390,7 +390,7 @@ public class HistoryDao {
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                "WHERE LetterSendList.receiverIdx = ? " +
+                "WHERE LetterSendList.receiverIdx = ? AND LetterSendList.status = 'active' " +
                 "ORDER BY sendAt DESC) idx " +
                 "LIMIT ?, ?";
 
@@ -401,13 +401,13 @@ public class HistoryDao {
 
     // diaryIdx 리스트 반환 시 (filtering = diary) data 개수 반환
     public int getDiaryIdxList_dataNum(int userIdx) {
-        String query = "SELECT COUNT(*) FROM DiarySendList WHERE DiarySendList.receiverIdx = ?";
+        String query = "SELECT COUNT(*) FROM DiarySendList WHERE DiarySendList.receiverIdx = ? AND DiarySendList.status = 'active'";
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
     // letterIdx 리스트 반환 시 (filtering = letter) data 개수 반환
     public int getLetterIdxList_dataNum(int userIdx) {
-        String query = "SELECT COUNT(*) FROM LetterSendList WHERE LetterSendList.receiverIdx = ?";
+        String query = "SELECT COUNT(*) FROM LetterSendList WHERE LetterSendList.receiverIdx = ? AND LetterSendList.status = 'active'";
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
@@ -421,7 +421,7 @@ public class HistoryDao {
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? " +
+                "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? AND DiarySendList.status = 'active' " +
                 "ORDER BY sendAt DESC) idx " +
                 "LIMIT 1";
 
@@ -435,7 +435,7 @@ public class HistoryDao {
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                "WHERE LetterSendList.receiverIdx = ? AND User.nickName = ? " +
+                "WHERE LetterSendList.receiverIdx = ? AND User.nickName = ? AND LetterSendList.status = 'active' " +
                 "ORDER BY sendAt DESC) idx " +
                 "LIMIT 1";
 
