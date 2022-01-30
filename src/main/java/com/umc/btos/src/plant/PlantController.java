@@ -32,7 +32,6 @@ public class PlantController {
      * [GET] /btos/plants/:userIdx/list
      * Path variable : userIdx (mandatory: Y)
     */
-
     @ResponseBody
     @GetMapping("{userIdx}/list")
     public BaseResponse<List<GetPlantRes>> getPlantList(@PathVariable("userIdx") int userIdx) {
@@ -54,7 +53,7 @@ public class PlantController {
      */
     @ResponseBody
     @GetMapping("")
-    public BaseResponse<GetSpecificPlantRes> getSelectedPlant(@RequestParam("plantIdx") int plantIdx,
+    public BaseResponse<GetPlantRes> getSelectedPlant(@RequestParam("plantIdx") int plantIdx,
                                                               @RequestParam("userIdx") int userIdx) {
         try {
             //조회 성공 시 : GetSpecificPlantRes 형태로 결과 반환 - 1000
