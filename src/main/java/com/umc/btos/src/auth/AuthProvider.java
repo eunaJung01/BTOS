@@ -44,9 +44,13 @@ public class AuthProvider {
         }
     }
 
+
+    // 자동 로그인
     public GetAuthLoginRes authLogIn() throws BaseException {
         try {
-            return new GetAuthLoginRes(jwtService.getUserIdx());
+            authDao.checkStatusOfUser(jwtService.getUserIdx()); // 휴면 상태 로그인 시 상태 재 활성화
+            authDao.updateLastConnect(jwtService.getUserIdx()); // 로그인 기록 갱신
+            return new GetAuthLoginRes(jwtService.getUserIdx()); // 유저 idx
         } catch(Exception exception) {
             throw new BaseException(INVALID_JWT);
         }

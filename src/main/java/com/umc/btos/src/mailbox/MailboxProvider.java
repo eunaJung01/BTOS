@@ -4,11 +4,11 @@ import com.umc.btos.config.BaseException;
 import com.umc.btos.src.diary.DiaryProvider;
 import com.umc.btos.src.diary.DiaryDao;
 import com.umc.btos.src.diary.model.GetDiaryRes;
+import com.umc.btos.src.mailbox.model.GetLetterRes;
 import com.umc.btos.src.mailbox.model.GetMailboxRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

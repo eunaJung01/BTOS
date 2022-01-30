@@ -115,11 +115,9 @@ public class DiaryProvider {
 
                 for (int diaryIdx : diaryIdxList) { // 차례대로 문자열 검색 -> 없다면 diaryIdxList에서 제거
                     String diaryContent = diaryDao.getDiaryContent(diaryIdx);
-
                     if (diaryDao.getIsPublic(diaryIdx) == 0) { // private 일기일 경우 content 복호화
                         diaryContent = new AES128(Secret.PASSWORD_KEY).decrypt(diaryContent);
                     }
-                    diaryContent = diaryContent.replaceAll(" ", ""); // 공백 제거
 
                     if (searchString(diaryContent, search)) { // 문자열 검색 -> 찾는 값이 존재하는 일기들만 저장
                         diaryList.add(diaryDao.getDiary(diaryIdx));
@@ -142,11 +140,9 @@ public class DiaryProvider {
 
                     for (int i = 0; i < diaryList.size(); i++) {
                         String diaryContent = diaryList.get(i).getContent();
-
                         if (diaryList.get(i).getIsPublic() == 0) { // private 일기일 경우 content 복호화
                             diaryContent = new AES128(Secret.PASSWORD_KEY).decrypt(diaryContent);
                         }
-                        diaryContent = diaryContent.replaceAll(" ", ""); // 공백 제거
 
                         if (!searchString(diaryContent, search)) { // 문자열 검색 -> 찾는 값이 존재하지 않는 일기들은 제거
                             diaryList.remove(i);

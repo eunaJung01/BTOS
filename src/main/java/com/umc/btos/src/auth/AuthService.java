@@ -32,18 +32,20 @@ public class AuthService {
 
     public AuthGoogleRes logInGoogle(AuthGoogleReq authGoogleReq) throws BaseException {
 
-        // 삭제 or 신규일 경우 회원가입 msg ->  email 존재x or active 상태인 email 존재x 인 경우
-        if (authProvider.checkStatusOfUser(authGoogleReq.getEmail()).equals("deleted") ||
-                authProvider.checkEmail(authGoogleReq.getEmail()) == 0) {
+        // 신규일 경우 회원가입 msg
+        if (authProvider.checkEmail(authGoogleReq.getEmail()) == 0) {
             throw new BaseException(AUTH_REQ_SIGNUP); // 회원가입 필요 메시지
         }
-
-        if (authProvider.checkStatusOfUser(authGoogleReq.getEmail()).equals("dormant")) { // 휴면일 경우 메시지 출력
+        //삭제 일 경우
+        if (authProvider.checkStatusOfUser(authGoogleReq.getEmail()).equals("deleted")) {
+            throw new BaseException(AUTH_REQ_SIGNUP); // 회원가입 필요 메시지
+        }
+        else if (authProvider.checkStatusOfUser(authGoogleReq.getEmail()).equals("dormant")) { // 휴면일 경우 메시지 출력
             throw new BaseException(POST_USERS_DORMANT); // 회원 상태 변경 필요 메시지
         }
 
         // active 유저의 이메일인 경우 로그인 진행
-        if (authProvider.checkEmail(authGoogleReq.getEmail()) == 1) { // 기존 회원이면 jwt 반환
+        else if (authProvider.checkEmail(authGoogleReq.getEmail()) == 1) { // 기존 회원이면 jwt 반환
             int userIdx = authDao.idxOfUserWithEmail(authGoogleReq.getEmail()); // userIdx 가져오기
             String jwt = jwtService.createJwt(userIdx);
             return new AuthGoogleRes(userIdx, jwt);

@@ -58,7 +58,11 @@ public class MailboxDao {
 
     // 편지 조회
     public GetLetterRes getLetter(int letterIdx) {
-        String query = "SELECT * FROM Letter WHERE letterIdx = ? AND status = 'active'";
+        String query = "SELECT Letter.letterIdx, Letter.userIdx AS replierIdx, LetterSendList.receiverIdx, Letter.content " +
+                "FROM Letter " +
+                "INNER JOIN LetterSendList ON Letter.letterIdx = LetterSendList.letterIdx " +
+                "WHERE Letter.letterIdx = ? " +
+                "AND Letter.status = 'active'";
         return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new GetLetterRes(
                         rs.getInt("letterIdx"),
@@ -84,15 +88,15 @@ public class MailboxDao {
     public int getFontIdx(String type, int idx) {
         // type : Table 명 (Diary / Letter / Reply)
         String typeIdx = type + "Idx"; // 해당 Table의 식별자 명 (Diary : diaryIdx / Letter : letterIdx / Reply : replyIdx)
-        String columnName_sender = "replierIdx"; // 발신자 Column 명 (Diary : userIdx / Letter & Reply : replierIdx)
+        String columnName_sender = "userIdx"; // 발신자 Column 명 (Diary & Letter : userIdx / & Reply : replierIdx)
 
         if (type.compareTo("diary") == 0) { // 일기
             type = "Diary";
-            columnName_sender = "userIdx";
         } else if (type.compareTo("letter") == 0) { // 편지
             type = "Letter";
         } else { // 답장
             type = "Reply";
+            columnName_sender = "replierIdx";
         }
 
         String query = "SELECT fontIdx FROM User WHERE userIdx = (SELECT " + columnName_sender + " FROM " + type + " WHERE " + typeIdx + " = ? AND status = 'active') AND status = 'active'";

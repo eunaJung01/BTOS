@@ -68,7 +68,6 @@ public class PlantProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
     //화분의 현재 Level 가져오기
     public int selectLevel(int userIdx) throws BaseException {
         try {
@@ -77,7 +76,6 @@ public class PlantProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
     //userIdx의 selected 화분의 MAX Level 가져오기
     public int maxLevel(int userIdx) throws BaseException {
         try{
@@ -86,7 +84,6 @@ public class PlantProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
     //회원이 프리미엄 계정인지 확인
     public String checkPremium(int userIdx) throws BaseException {
         try{
@@ -95,7 +92,6 @@ public class PlantProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
     //화분이 시무룩 상태인지 확인
     public boolean checkSad(int userIdx) throws BaseException {
         try{

@@ -64,7 +64,7 @@ public class UserService {
         }
     }
 
-    // 닉네임 변경
+    // 닉네임 변경(PATCH)
     public void modifyUserNickName(PatchUserNickNameReq patchUserNickNameReq) throws BaseException {
         // 닉네임 중복 확인 -> deleted 아닌 유저들한테서만 조회
         if (userProvider.checkNickName(patchUserNickNameReq.getNickName()) == 1) { // 이미 있으면 1
@@ -79,7 +79,7 @@ public class UserService {
         }
     }
 
-    // 생년 변경
+    // 생년 변경(PATCH)
     public void modifyUserBirth(PatchUserBirthReq patchUserBirthReq) throws BaseException {
         try {
             int result = userDao.modifyUserBirth(patchUserBirthReq);
@@ -90,9 +90,10 @@ public class UserService {
         }
     }
 
-    // 다른 사람 수신 설정
+    // 다른 사람 수신 설정(PATCH)
     public void modifyReceiveOthers(PatchUserRecOthersReq patchUserReceiveOthersReq) throws BaseException {
         try {
+            //userDao.checkLastConnect();
             int result = userDao.modifyReceiveOthers(patchUserReceiveOthersReq);
             if (result == 0) throw new BaseException(MODIFY_FAIL_RECEIVE_OTHERS); // 푸시 알람 수신 여부 변경 실패시 에러 메시지
 
@@ -101,7 +102,7 @@ public class UserService {
         }
     }
 
-    // 비슷한 연령대 수신 설정
+    // 비슷한 연령대 수신 설정(PATCH)
     public void modifyReceiveSimilarAge(PatchUserRecSimilarAgeReq patchUserRecSimilarAgeReq) throws BaseException {
         try {
             int result = userDao.modifyReceiveSimilarAge(patchUserRecSimilarAgeReq);
@@ -112,7 +113,7 @@ public class UserService {
         }
     }
 
-    // 푸시 알림 수신 여부 변경
+    // 푸시 알림 수신 여부 변경(PATCH)
     public void modifyPushAlarm(PatchUserPushAlarmReq patchUserPushAlarmReq) throws BaseException{
         try {
             int result = userDao.modifyPushAlarm(patchUserPushAlarmReq);
@@ -123,7 +124,7 @@ public class UserService {
         }
     }
 
-    // 폰트 변경
+    // 폰트 변경(PATCH)
     public void changeFont(PatchUserFontReq patchUserFontReq) throws BaseException{
         try {
             int result = userDao.changeFont(patchUserFontReq);
@@ -134,7 +135,7 @@ public class UserService {
         }
     }
 
-    // 시무룩이 상태 변경
+    // 시무룩이 상태 변경(PATCH)
     public void changeIsSad(PatchUserIsSadReq patchUserIsSadReq) throws BaseException{
         try {
             int result = userDao.changeIsSad(patchUserIsSadReq);
@@ -144,4 +145,5 @@ public class UserService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
 }
