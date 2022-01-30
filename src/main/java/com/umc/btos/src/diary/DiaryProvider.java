@@ -39,7 +39,7 @@ public class DiaryProvider {
     }
 
     /*
-     * Archive 조회 - 캘린더
+     * Archive 조회 - 달력
      * [GET] /diaries/calendar/:userIdx/:date?type
      * date = YYYY.MM
      * type (조회 방식) = 1. doneList : 나뭇잎 색으로 done list 개수 표현 / 2. emotion : 감정 이모티콘
@@ -51,7 +51,7 @@ public class DiaryProvider {
         }
 
         try {
-            // 캘린더 : 한달 단위로 날짜마다 저장된 일기에 대한 정보(done list 개수 또는 감정 이모티콘 식별자)를 저장
+            // 달력 : 한달 단위로 날짜마다 저장된 일기에 대한 정보(done list 개수 또는 감정 이모티콘 식별자)를 저장
             List<GetCalendarRes> calendar = diaryDao.getCalendarList(userIdx, date);
 
             if (type.compareTo("doneList") == 0) { // done list로 조회 -> 일기 별 doneList 개수 저장 (set doneListNum)
@@ -116,7 +116,7 @@ public class DiaryProvider {
                 for (int diaryIdx : diaryIdxList) { // 차례대로 문자열 검색 -> 없다면 diaryIdxList에서 제거
                     String diaryContent = diaryDao.getDiaryContent(diaryIdx);
                     if (diaryDao.getIsPublic(diaryIdx) == 0) { // private 일기일 경우 content 복호화
-                        diaryContent = new AES128(Secret.PASSWORD_KEY).decrypt(diaryContent);
+                        diaryContent = new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent);
                     }
 
                     if (searchString(diaryContent, search)) { // 문자열 검색 -> 찾는 값이 존재하는 일기들만 저장
@@ -141,7 +141,7 @@ public class DiaryProvider {
                     for (int i = 0; i < diaryList.size(); i++) {
                         String diaryContent = diaryList.get(i).getContent();
                         if (diaryList.get(i).getIsPublic() == 0) { // private 일기일 경우 content 복호화
-                            diaryContent = new AES128(Secret.PASSWORD_KEY).decrypt(diaryContent);
+                            diaryContent = new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent);
                         }
 
                         if (!searchString(diaryContent, search)) { // 문자열 검색 -> 찾는 값이 존재하지 않는 일기들은 제거
@@ -208,14 +208,14 @@ public class DiaryProvider {
         try {
             // Diary.content
             String diaryContent = diary.getContent();
-            diary.setContent(new AES128(Secret.PASSWORD_KEY).decrypt(diaryContent));
+            diary.setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent));
 
             // Done.content
             if (hasDoneList) {
                 List<GetDoneRes> doneList = diary.getDoneList();
                 for (int j = 0; j < doneList.size(); j++) {
                     String doneContent = diary.getDoneList().get(j).getContent();
-                    diary.getDoneList().get(j).setContent(new AES128(Secret.PASSWORD_KEY).decrypt(doneContent));
+                    diary.getDoneList().get(j).setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
                 }
             }
 

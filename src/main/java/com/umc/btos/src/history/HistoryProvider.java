@@ -45,8 +45,7 @@ public class HistoryProvider {
 
             GetHistoryListRes historyListRes = new GetHistoryListRes(filtering);
             /*
-             * filtering = "sender" && search == null인 경우 GetHistoryListRes.list = List<HistoryList_Sender>
-             * filtering = "sender" && search != null인 경우 GetHistoryListRes.list = List<History>
+             * filtering = "sender"인 경우 GetHistoryListRes.list = List<HistoryList_Sender>
              * filtering = "diary" 또는 "letter"인 경우 GetHistoryListRes.list = List<History>
              * History_Sender, History 객체 : 수신한 일기 또는 편지에 대한 상세 정보를 저장
              */
@@ -88,14 +87,16 @@ public class HistoryProvider {
                         List<History_Sender> historyList = new ArrayList<>(); // HistoryList_Sender.historyList
 
                         if (historyDao.hasHistory_diary(userIdx, senderNickName) != 0) { // null 확인
-                            historyList.addAll(historyDao.getDiaryList_sender(userIdx, senderNickName)); // 일기
+                            historyList.add(historyDao.getDiary_sender(userIdx, senderNickName)); // 일기
                         }
                         if (historyDao.hasHistory_letter(userIdx, senderNickName) != 0) { // null 확인
-                            historyList.addAll(historyDao.getLetterList_sender(userIdx, senderNickName)); // 편지
+                            historyList.add(historyDao.getLetter_sender(userIdx, senderNickName)); // 편지
                         }
                         Collections.sort(historyList); // createAt 기준 내림차순 정렬
 
-                        HistoryList_Sender historyList_sender = new HistoryList_Sender(senderNickName, historyList.size(), historyList.get(0));
+                        int historyListNum = historyDao.getDiaryListSize_sender(userIdx, senderNickName) + historyDao.getLetterListSize_sender(userIdx, senderNickName);
+
+                        HistoryList_Sender historyList_sender = new HistoryList_Sender(senderNickName, historyListNum, historyList.get(0));
                         historyListRes_list.add(historyList_sender);
                     }
 
@@ -139,7 +140,14 @@ public class HistoryProvider {
                  * 문자열 검색 (search)
                  * search && (Diary.content || Letter.content) : 띄어쓰기 모두 제거 후 찾기
                  *
-                 * filtering = diary(일기만) & letter(편지만)
+                 * 1. filtering = sender(발신인)
+                 *      senderNickNameList에 저장되어 있는 닉네임 순서대로(createdAt 기준 내림차순 정렬)
+                 *      userIdx 회원이 수신한 일기 또는 편지에서 가장 최근에 받은 일기와 편지에 대한 diaryIdx, letterIdx 받기
+                 *      둘 중 더 최근에 받은 데이터의 content에서 문자열 검색
+                 *      찾는 문자열이 있는 idx의 정보들만 List<HistoryList_Sender>에 저장
+                 *      -> GetSenderRes.historyList에 저장
+                 *
+                 * 2. filtering = diary(일기만) & letter(편지만)
                  *      userIdx 회원이 수신한 일기 또는 편지에 대한 diaryIdxList, letterIdxList 생성
                  *      list에 저장되어 있는 값을 통해 차례대로 content를 불러와서 문자열 검색 -> 찾는 문자열이 있는 idx들만 따로 저장하여 list 갱신
                  *      list 정보를 통해서 List<History>에 add
@@ -149,8 +157,73 @@ public class HistoryProvider {
                 search = search.replaceAll("\"", ""); // 따옴표 제거
                 search = search.replaceAll(" ", ""); // 공백 제거
 
+                // 발신인
+                if (filtering.compareTo("sender") == 0) {
+                    List<HistoryList_Sender> historyListRes_list = new ArrayList<>(); // GetHistoryListRes.list
+
+                    // userIdx 회원이 받은 일기와 편지의 발신자 닉네임 목록 (createdAt 기준 내림차순 정렬)
+                    List<String> senderNickNameList = historyDao.getNickNameList_sortedByCreatedAt(userIdx);
+
+                    for (String senderNickName : senderNickNameList) {
+                        int diaryIdx = 0;
+                        int letterIdx = 0;
+
+                        // diaryIdxList
+                        if (historyDao.hasHistory_diary(userIdx, senderNickName) != 0) { // null 확인
+                            diaryIdx = historyDao.getDiaryIdx_sender(userIdx, senderNickName); // 수신받은 일기 diaryIdx
+
+                            String diaryContent = historyDao.getDiaryContent(diaryIdx);
+
+                            if (!searchString(diaryContent, search)) { // 문자열 검색 -> 찾는 값이 존재하면 저장
+                                diaryIdx = 0;
+                            }
+                        }
+                        // letterIdxList
+                        if (historyDao.hasHistory_letter(userIdx, senderNickName) != 0) { // null 확인
+                            letterIdx = historyDao.getLetterIdx_sender(userIdx, senderNickName); // 수신받은 편지 letterIdx
+
+                            String letterContent = historyDao.getLetterContent(letterIdx);
+
+                            if (!searchString(letterContent, search)) { // 문자열 검색 -> 찾는 값이 존재하면 저장
+                                letterIdx = 0;
+                            }
+                        }
+
+                        List<History_Sender> historyList = new ArrayList<>(); // HistoryList_Sender.historyList
+                        if (diaryIdx != 0) {
+                            historyList.add(historyDao.getDiary_sender(userIdx, diaryIdx));
+                        }
+                        if (letterIdx != 0) {
+                            historyList.add(historyDao.getLetter_sender(userIdx, letterIdx));
+                        }
+                        if (historyList.size() != 0) {
+                            Collections.sort(historyList); // createAt 기준 내림차순 정렬
+                            historyListRes_list.add(new HistoryList_Sender(senderNickName, historyList.size(), historyList.get(0)));
+                        }
+                    }
+
+                    // 페이징 처리 - 발신인 명수 : HISTORY_DATA_NUM
+                    dataNum = historyListRes_list.size();
+                    if (dataNum > Constant.HISTORY_DATA_NUM) {
+                        int startDataIdx = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
+                        int endDataIdx = pageNum * Constant.HISTORY_DATA_NUM;
+
+                        List<HistoryList_Sender> historyListRes_list_paging = new ArrayList<>();
+                        for (int i = startDataIdx; i < endDataIdx; i++) {
+                            historyListRes_list_paging.add(historyListRes_list.get(i));
+                        }
+                        historyListRes_list = historyListRes_list_paging;
+                    }
+
+                    if (historyListRes_list.size() != 0) {
+                        historyListRes.setList(historyListRes_list);
+                    } else {
+                        throw new NullPointerException(); // 검색 결과 없음
+                    }
+                }
+
                 // 일기만
-                if (filtering.compareTo("diary") == 0) {
+                else if (filtering.compareTo("diary") == 0) {
                     List<Integer> diaryIdxList = new ArrayList<>();
 
                     if (historyDao.hasHistory_diary(userIdx) != 0) { // null 확인
@@ -258,14 +331,14 @@ public class HistoryProvider {
             double dataNum = 0; // data 총 개수 (후에 Math.ceil 사용하는 연산 때문에 double)
 
             GetSenderRes historyList_sender = new GetSenderRes(senderNickName);
-            List<History> historyList = new ArrayList<>(); // GetSenderRes.historyList
+            List<History_Sender> historyList = new ArrayList<>(); // GetSenderRes.historyList
 
             if (search == null) {
                 if (historyDao.hasHistory_diary(userIdx, senderNickName) != 0) { // null 확인
-                    historyList.addAll(historyDao.getDiaryList(userIdx, senderNickName)); // 일기
+                    historyList.addAll(historyDao.getDiaryList_sender(userIdx, senderNickName)); // 일기
                 }
                 if (historyDao.hasHistory_letter(userIdx, senderNickName) != 0) { // null 확인
-                    historyList.addAll(historyDao.getLetterList(userIdx, senderNickName)); // 편지
+                    historyList.addAll(historyDao.getLetterList_sender(userIdx, senderNickName)); // 편지
                 }
                 Collections.sort(historyList); // createAt 기준 내림차순 정렬
 
@@ -277,7 +350,7 @@ public class HistoryProvider {
                         int startDataIdx = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
                         int endDataIdx = pageNum * Constant.HISTORY_DATA_NUM;
 
-                        List<History> historyList_paging = new ArrayList<>();
+                        List<History_Sender> historyList_paging = new ArrayList<>();
                         for (int i = startDataIdx; i < endDataIdx; i++) {
                             historyList_paging.add(historyList.get(i));
                         }
@@ -339,10 +412,10 @@ public class HistoryProvider {
 
                 if (diaryIdxList.size() != 0 || letterIdxList.size() != 0) {
                     for (int diaryIdx : diaryIdxList) {
-                        historyList.add(historyDao.getDiary(userIdx, diaryIdx));
+                        historyList.add(historyDao.getDiary_sender(userIdx, diaryIdx));
                     }
                     for (int letterIdx : letterIdxList) {
-                        historyList.add(historyDao.getLetter(userIdx, letterIdx));
+                        historyList.add(historyDao.getLetter_sender(userIdx, letterIdx));
                     }
                     Collections.sort(historyList); // createAt 기준 내림차순 정렬
                 }
@@ -355,7 +428,7 @@ public class HistoryProvider {
                         int startDataIdx = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
                         int endDataIdx = pageNum * Constant.HISTORY_DATA_NUM;
 
-                        List<History> historyList_paging = new ArrayList<>();
+                        List<History_Sender> historyList_paging = new ArrayList<>();
                         for (int i = startDataIdx; i < endDataIdx; i++) {
                             historyList_paging.add(historyList.get(i));
                         }
