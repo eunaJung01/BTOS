@@ -25,6 +25,7 @@ jobs:
           script: |
             cd /var/www/BTOS/dev/BTOS
             sudo chmod -R 777 /var/www/BTOS/dev/BTOS/.gradle/7.3.1/fileHashes/fileHashes.lock
+            sudo chmod -R 777 /var/www/BTOS/dev/BTOS/.gradle/7.3.1/checksums/checksums.lock
             git pull origin main
             pkill -9 -ef "java -jar build/libs/BTOS-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev --DATASOURCE_URL_TESTDB=*** --DATASOURCE_USERNAME=*** --DATASOURCE_PASSWORD=***"
             ./gradlew clean build
