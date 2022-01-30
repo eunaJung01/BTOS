@@ -80,7 +80,7 @@ public class DiaryService {
     // private 일기 암호화 - Diary.content
     public String encryptDiaryContent(String diaryContent) throws BaseException {
         try {
-            return new AES128(Secret.PASSWORD_KEY).encrypt(diaryContent);
+            return new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(diaryContent);
 
         } catch (Exception ignored) {
             throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 또는 done list 내용 암호화에 실패하였습니다.
@@ -92,7 +92,7 @@ public class DiaryService {
         try {
             List doneList_encrypted = new ArrayList(); // 암호화된 done list 내용들을 저장하는 리스트
             for (int i = 0; i < doneList.size(); i++) {
-                doneList_encrypted.add(new AES128(Secret.PASSWORD_KEY).encrypt(doneList.get(i).toString()));
+                doneList_encrypted.add(new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(doneList.get(i).toString()));
             }
             return doneList_encrypted;
 
