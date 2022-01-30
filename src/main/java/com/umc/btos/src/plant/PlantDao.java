@@ -23,15 +23,18 @@ public class PlantDao {
 
     //회원에게 plantIdx 화분이 존재하는지 확인
     //결과값이 존재하면 1, 없으면 0
-    public int checkPlantExist(int plantIdx) {
-        String Query = "SELECT EXISTS(SELECT * FROM UserPlantList WHERE plantIdx=?) as success";
-        int Param = plantIdx;
+    public int checkPlantExist(int plantIdx, int userIdx) {
+        String Query = "SELECT EXISTS(SELECT * FROM UserPlantList WHERE plantIdx=? AND userIdx=?) as success";
+        Object[] Params = new Object[] {plantIdx, userIdx};
 
-        return this.jdbcTemplate.queryForObject(Query, int.class, Param);
+        return this.jdbcTemplate.queryForObject(Query, int.class, Params);
     }
 
     //회원이 선택한 화분 조회 API
-    public GetSpecificPlantRes getSelectedPlant(int plantIdx, int status, int userIdx) {
+    public GetPlantRes getSelectedPlant(int plantIdx, int status, int userIdx) {
+
+        GetPlantRes getPlantRes = new GetPlantRes();
+
         //화분 기본 정보 FROM Plant
         String plantQuery = "SELECT plantIdx, plantName, plantImgUrl, plantInfo, plantPrice, maxLevel " +
                 "FROM Plant WHERE plantIdx=? AND status=?";
@@ -48,23 +51,28 @@ public class PlantDao {
                         rs.getInt("maxLevel")),
                 plantParams);
 
-        int level = 0; // 현재 레벨 변수, 보유중이면 현재레벨/미보유면 -1
-        if (status == 1) { //보유중이면 화분 현재 레벨 가져오기
-            String currentLevelQuery = "SELECT level FROM UserPlantList WHERE userIdx=? AND plantIdx=?";
-            Object[] currentLevelParams = new Object[]{userIdx, plantIdx};
+        getPlantRes.setPlantIdx(plantBasicInfo.getPlantIdx());
+        getPlantRes.setPlantName(plantBasicInfo.getPlantName());
+        getPlantRes.setPlantImgUrl(plantBasicInfo.getPlantImgUrl());
+        getPlantRes.setPlantInfo(plantBasicInfo.getPlantInfo());
+        getPlantRes.setMaxLevel(plantBasicInfo.getMaxLevel());
 
-            level = jdbcTemplate.queryForObject(currentLevelQuery, int.class, currentLevelParams);
+        if (status == 1) { //보유중이면 화분 현재 레벨, 보유 상태 가져오기
+            String currentLevelQuery = "SELECT level FROM UserPlantList WHERE userIdx=? AND plantIdx=?";
+            Object[] Params = new Object[]{userIdx, plantIdx};
+            int level = jdbcTemplate.queryForObject(currentLevelQuery, int.class, Params);
+
+            String statusQuery = "SELECT status FROM UserPlantList WHERE userIdx=? AND plantIdx=?";
+            String plantStatus = jdbcTemplate.queryForObject(statusQuery, String.class, Params);
+
+            getPlantRes.setCurrentLevel(level); // 현재레벨
+            getPlantRes.setPlantStatus(plantStatus); // "active" OR "selected"
         } else { //미보유
-            level = -1;
+            getPlantRes.setPlantStatus("inactive");
+            getPlantRes.setIsOwn(false);
         }
 
-        //반환 형태
-        GetSpecificPlantRes getSpecificPlantRes = new GetSpecificPlantRes(
-                plantBasicInfo.getPlantIdx(), plantBasicInfo.getPlantName(), plantBasicInfo.getPlantImgUrl(),
-                plantBasicInfo.getPlantInfo(), plantBasicInfo.getPlantPrice(), plantBasicInfo.getMaxLevel(),
-                level, status);
-
-        return getSpecificPlantRes;
+        return getPlantRes;
     }
 
     //화분 선택 API ~ 회원이 futurePlant를 이미 selected된 화분으로 넘겼는지 체크하기 위한 함수
