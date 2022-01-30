@@ -25,6 +25,6 @@ jobs:
           script: |
             cd /var/www/BTOS/dev/BTOS
             git pull origin main
-            pkill -9 -ef "java -jar build/libs/BTOS-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev --DATASOURCE_URL_TESTDB=${{ secrets.DATASOURCE_URL_TESTDB }} --DATASOURCE_USERNAME=${{ secrets.DATASOURCE_USERNAME }} --DATASOURCE_PASSWORD=${{ secrets.DATASOURCE_PASSWORD }}"
+            sudo pkill -9 -ef "java -jar build/libs/BTOS-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev --DATASOURCE_URL_TESTDB=${{ secrets.DATASOURCE_URL_TESTDB }} --DATASOURCE_USERNAME=${{ secrets.DATASOURCE_USERNAME }} --DATASOURCE_PASSWORD=${{ secrets.DATASOURCE_PASSWORD }}"
             ./gradlew clean build
             nohup java -jar build/libs/BTOS-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev --DATASOURCE_URL_TESTDB=${{ secrets.DATASOURCE_URL_TESTDB }} --DATASOURCE_USERNAME=${{ secrets.DATASOURCE_USERNAME }} --DATASOURCE_PASSWORD=${{ secrets.DATASOURCE_PASSWORD }} &
