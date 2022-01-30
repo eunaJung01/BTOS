@@ -45,8 +45,7 @@ public class HistoryProvider {
 
             GetHistoryListRes historyListRes = new GetHistoryListRes(filtering);
             /*
-             * filtering = "sender" && search == null인 경우 GetHistoryListRes.list = List<HistoryList_Sender>
-             * filtering = "sender" && search != null인 경우 GetHistoryListRes.list = List<History>
+             * filtering = "sender"인 경우 GetHistoryListRes.list = List<HistoryList_Sender>
              * filtering = "diary" 또는 "letter"인 경우 GetHistoryListRes.list = List<History>
              * History_Sender, History 객체 : 수신한 일기 또는 편지에 대한 상세 정보를 저장
              */
