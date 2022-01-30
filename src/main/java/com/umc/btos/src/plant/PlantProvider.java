@@ -25,9 +25,9 @@ public class PlantProvider {
 
 
     //회원이 선택한 화분 조회 API
-    public GetSpecificPlantRes getSelectedPlant(int plantIdx, int userIdx) throws BaseException {
+    public GetPlantRes getSelectedPlant(int plantIdx, int userIdx) throws BaseException {
         try {
-            int status = plantDao.checkPlantExist(plantIdx); //plantIdx인 화분을 사용자가 보유중이면 1, 미보유 0
+            int status = plantDao.checkPlantExist(plantIdx, userIdx); //plantIdx인 화분을 사용자가 보유중이면 1, 미보유 0
             return plantDao.getSelectedPlant(plantIdx, status, userIdx);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
