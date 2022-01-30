@@ -2,7 +2,6 @@ package com.umc.btos.src.plant;
 
 import com.umc.btos.config.BaseException;
 import com.umc.btos.config.BaseResponse;
-import com.umc.btos.config.Constant;
 import com.umc.btos.src.plant.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,17 +28,17 @@ public class PlantController {
 
 
     /**
-     * 화분목록조회(Profile) API
+     * 화분목록조회(Profile + 상점) API
      * [GET] /btos/plants/:userIdx/list
      * Path variable : userIdx (mandatory: Y)
-     */
+    */
     @ResponseBody
     @GetMapping("{userIdx}/list")
     public BaseResponse<List<GetPlantRes>> getPlantList(@PathVariable("userIdx") int userIdx) {
         try {
             //조회 성공 시 : List<GetPlantRes> 형태로 결과(화분목록) 반환 - 1000
             //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
-            List<GetPlantRes> getPlantRes = plantProvider.getAllPlant(userIdx); //조회(read) -> Provider
+            List<GetPlantRes> getPlantRes = plantProvider.getPlantList(userIdx); //조회(read) -> Provider
             return new BaseResponse<>(getPlantRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -54,7 +53,7 @@ public class PlantController {
      */
     @ResponseBody
     @GetMapping("")
-    public BaseResponse<GetSpecificPlantRes> getSelectedPlant(@RequestParam("plantIdx") int plantIdx,
+    public BaseResponse<GetPlantRes> getSelectedPlant(@RequestParam("plantIdx") int plantIdx,
                                                               @RequestParam("userIdx") int userIdx) {
         try {
             //조회 성공 시 : GetSpecificPlantRes 형태로 결과 반환 - 1000
