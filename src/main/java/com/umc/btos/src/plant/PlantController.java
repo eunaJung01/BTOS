@@ -29,11 +29,11 @@ public class PlantController {
 
     /**
      * 화분목록조회(Profile + 상점) API
-     * [GET] /plants/:userIdx/list
+     * [GET] /plants/:userIdx
      * Path variable : userIdx (mandatory: Y)
      */
     @ResponseBody
-    @GetMapping("{userIdx}/list")
+    @GetMapping("{userIdx}")
     public BaseResponse<List<GetPlantRes>> getPlantList(@PathVariable("userIdx") int userIdx) {
         try {
             //조회 성공 시 : List<GetPlantRes> 형태로 결과(화분목록) 반환 - 1000
