@@ -23,7 +23,7 @@ public class HistoryController {
     /*
      * History 목록 조회
      * [GET] /histories/list/:userIdx/:pageNum?filtering=&search=
-     * filtering = 1. sender : 발신인 / 2. diary : 일기만 / 3. letter : 편지만
+     * filtering = 1. sender : 발신인 (Diary, Letter, Reply) / 2. diary : 일기만 (Diary) / 3. letter : 편지만 (Letter, Reply)
      * search = 검색할 문자열 ("String")
      * 최신순 정렬 (createdAt 기준 내림차순 정렬)
      * 페이징 처리 (무한 스크롤) - 20개씩 조회
@@ -62,6 +62,25 @@ public class HistoryController {
 
         } catch (BaseException exception) {
             return new BaseResponsePaging<>(exception.getStatus());
+        }
+    }
+
+    /*
+     * History 본문 보기 (일기 or 편지 & 답장 리스트)
+     * [GET] /histories/:userIdx/:mainType/:mainIdx
+     * mainType = 어디서부터 시작된 답장인가? 1. diary : 일기 / 2. letter : 편지
+     * mainIdx = 답장 시작점(일기 또는 편지)의 식별자 (diary - diaryIdx / letter - letterIdx)
+     * 최신순 정렬 (createdAt 기준 내림차순 정렬)
+     */
+    @ResponseBody
+    @GetMapping("/{userIdx}/{mainType}/{mainIdx}")
+    BaseResponse<GetHistoryRes> getHistory_main(@PathVariable("userIdx") int userIdx, @PathVariable("mainType") String mainType, @PathVariable("mainIdx") int mainIdx) {
+        try {
+            GetHistoryRes history = historyProvider.getHistory_main(userIdx, mainType, mainIdx);
+            return new BaseResponse<>(history);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
         }
     }
 
