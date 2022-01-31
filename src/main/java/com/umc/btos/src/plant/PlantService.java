@@ -73,6 +73,17 @@ public class PlantService {
         }
     }
 
+    //유저 화분 초기화 API
+    public BaseResponseStatus initializeUserPlant(int userIdx) throws BaseException {
+        try {
+            if(plantDao.initializeUserPlant(userIdx) == 1)
+                return SUCCESS;
+            else
+                throw new BaseException(INSERT_FAIL_PLANT);
+        } catch(Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
     //화분 점수 증가 (Service)
     /*

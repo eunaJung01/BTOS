@@ -103,8 +103,7 @@ public class PlantDao {
 
     //화분 구매 API
     public int buyPlant(PostBuyPlantReq postBuyPlantReq) {
-        String Query = "INSERT INTO UserPlantList(userIdx, plantIdx, level, score, status, createdAt, updatedAt)" +
-                "VALUES(?, ?, DEFAULT, DEFAULT, DEFAULT, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())";
+        String Query = "INSERT INTO UserPlantList(userIdx, plantIdx) VALUES(?, ?)";
         Object[] Params = new Object[]{postBuyPlantReq.getUserIdx(), postBuyPlantReq.getPlantIdx()};
 
         return this.jdbcTemplate.update(Query, Params);
@@ -140,6 +139,20 @@ public class PlantDao {
         int maxLevelParam = selectedPlantIdx;
 
         return this.jdbcTemplate.queryForObject(maxLevelQuery, int.class, maxLevelParam);
+    }
+
+    //유저 화분 초기화 API
+    public int initializeUserPlant(int userIdx) {
+        String Query = "INSERT INTO UserPlantList (userIdx, plantIdx) VALUES(?, 1)";
+        int Param = userIdx;
+
+        return this.jdbcTemplate.update(Query, Param);
+    }
+
+    //화분 개수 조회 API
+    public int countPlant() {
+        String Query = "SELECT count(*) from Plant";
+        return this.jdbcTemplate.queryForObject(Query, int.class);
     }
 
     /*

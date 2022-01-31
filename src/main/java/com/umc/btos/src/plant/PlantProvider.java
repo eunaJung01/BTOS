@@ -48,11 +48,20 @@ public class PlantProvider {
 
     //모든 화분 조회(Profile + 상점)
     public List<GetPlantRes> getPlantList(int userIdx) throws BaseException {
-        try{
+        try {
             List<Integer> plantIdxList = plantDao.getPlantIdx(); //Plant 테이블에 있는 모든 화분 idx
             List<Integer> userPlantIdxList = plantDao.getUserPlantIdx(userIdx); //해당 user가 가지고 있는 모든 화분 idx
 
             return plantDao.getPlantList(userIdx, plantIdxList, userPlantIdxList);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    //화분 개수 조회 API
+    public int countPlant() throws BaseException {
+        try{
+            return plantDao.countPlant();
         } catch(Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
