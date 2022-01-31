@@ -19,10 +19,11 @@ public class LetterProvider {
 
     @Autowired
     public LetterProvider(LetterDao letterDao) {
+
         this.letterDao = letterDao;
 
     }
-    /**
+
     // 해당 letterIdx를 갖는 Letter 조회
     public GetLetterRes getLetter(int letterIdx) throws BaseException {
         try {
@@ -31,6 +32,6 @@ public class LetterProvider {
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
-    }*/
+    }
 
 }
