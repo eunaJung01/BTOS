@@ -9,7 +9,7 @@ import java.util.List;
 @Setter
 public class GetSenderRes {
     private String senderNickName; // 발신자 이름
-    private List<History> historyList; // 내용
+    private List<History_Sender> historyList; // 내용
 
     public GetSenderRes(String senderNickName) {
         this.senderNickName = senderNickName;
