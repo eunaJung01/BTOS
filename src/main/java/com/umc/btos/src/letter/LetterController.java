@@ -43,7 +43,7 @@ public class LetterController {
     public BaseResponse<PatchModifyScoreRes> createLetter(@RequestBody PostLetterReq postLetterReq) {
 
         try{
-            PostLetterRes postLetterRes = letterService.createLetter(postLetterReq);
+            letterService.createLetter(postLetterReq); // letter, letterSendList에 컬럼 추가
             // 화분 점수 증가
             PatchModifyScoreRes result = plantService.modifyScore_plus(postLetterReq.getUserIdx(), Constant.PLANT_LEVELUP_LETTER,"letter");
             return new BaseResponse<>(result);
@@ -56,7 +56,7 @@ public class LetterController {
     /**
      * 편지 조회 API
      * [GET] /letters/:letterIdx
-
+    */
     // Path-variable - letterIdx를 인수로 받아 해당 인덱스의 letter을 불러온다.
     @ResponseBody
     @GetMapping("/{letterIdx}") // (GET) localhost:9000/btos/letters/:letterIdx
@@ -76,7 +76,7 @@ public class LetterController {
      * 편지 삭제 API
      * [PATCH] /letters/:letterIdx
      */
-    /**
+
     @ResponseBody
     @PatchMapping("/{letterIdx}")
     // Path-variable - letterIdx를 파라미터로 받음 - 해당 letterIdx의 status를 deleted로 변경
@@ -91,7 +91,6 @@ public class LetterController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
-    */
 
 
 }
