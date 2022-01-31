@@ -94,9 +94,12 @@ public enum BaseResponseStatus {
     TEMP3(false, 9000, "conflict 방지용 3"),
 
 //    MODIFY_FAIL_STATUS(false, 7010, "화분 상태 변경에 실패하였습니다."),
+    INSERT_FAIL_PLANT(false,7000,"해당 유저의 화분 초기화에 실패하였습니다."),
+
     MODIFY_FAIL_BUY_PLANT(false,7011, "화분 선택에 실패하였습니다."),
     MODIFY_FAIL_SCORE(false, 7012, "화분 점수 변경에 실패하였습니다."),
     MODIFY_FAIL_LEVEL(false, 7013, "화분 단계 변경에 실패하였습니다."),
+
 
     INVALID_SCORE_PLANT(false,7014, "선택한 화분의 점수가 0점입니다. 점수를 감소시킬 수 없습니다."),
     INVALID_LEVEL_PLANT(false,7015,"동작을 수행할 화분의 단계가 0단계이므로 더 이상 단계와 점수를 감소시킬 수 없습니다."),
