@@ -458,4 +458,34 @@ public class HistoryProvider {
         }
     }
 
+    /*
+     * History 본문 보기 (일기-답장 / 편지-답장)
+     * [GET] /histories/:userIdx/:firstType/:idx
+     * firstType = 어디서부터 시작된 답장인가? 1. diary : 일기 / 2. letter : 편지
+     * idx = 일기 또는 편지 식별자
+     * 최신순 정렬 (createdAt 기준 내림차순 정렬)
+     */
+    public GetHistoryRes getHistory_main(int userIdx, String mainType, int mainIdx) throws BaseException {
+        try {
+            GetHistoryRes history = new GetHistoryRes(mainType);
+
+            if (mainType.compareTo("diary") == 0) {
+                Diary diary = historyDao.getDiary_main(mainIdx);
+                diary.setDoneList(historyDao.getDoneList_main(mainIdx));
+                history.setMainHistory(diary);
+                history.setReplyList(historyDao.getReplyList_diary(mainIdx));
+
+            } else {
+                Letter letter = historyDao.getLetter_main(mainIdx);
+                history.setMainHistory(letter);
+                history.setReplyList(historyDao.getReplyList_letter(mainIdx));
+            }
+
+            return history;
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }

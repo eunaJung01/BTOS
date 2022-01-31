@@ -65,4 +65,23 @@ public class HistoryController {
         }
     }
 
+    /*
+     * History 본문 보기 (일기-답장 / 편지-답장)
+     * [GET] /histories/:userIdx/:mainType/:mainIdx
+     * type = 어디서부터 시작된 답장인가? 1. diary : 일기 / 2. letter : 편지
+     * idx = 일기 또는 편지 식별자
+     * 최신순 정렬 (createdAt 기준 내림차순 정렬)
+     */
+    @ResponseBody
+    @GetMapping("/{userIdx}/{mainType}/{mainIdx}")
+    BaseResponse<GetHistoryRes> getHistory_main(@PathVariable("userIdx") int userIdx, @PathVariable("mainType") String mainType, @PathVariable("mainIdx") int mainIdx) {
+        try {
+            GetHistoryRes history = historyProvider.getHistory_main(userIdx, mainType, mainIdx);
+            return new BaseResponse<>(history);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
 }
