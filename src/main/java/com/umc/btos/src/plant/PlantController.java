@@ -29,9 +29,9 @@ public class PlantController {
 
     /**
      * 화분목록조회(Profile + 상점) API
-     * [GET] /plants/:userIdx/list
+     * [GET] /btos/plants/:userIdx/list
      * Path variable : userIdx (mandatory: Y)
-     */
+    */
     @ResponseBody
     @GetMapping("{userIdx}/list")
     public BaseResponse<List<GetPlantRes>> getPlantList(@PathVariable("userIdx") int userIdx) {
@@ -48,13 +48,13 @@ public class PlantController {
 
     /**
      * 회원이 선택한 화분 조회 API
-     * [GET] /plants?plantIdx=&userIdx=
+     * [GET] /btos/plants?plantIdx=&userIdx=
      * Query String : plantIdx, userIdx (mandatory: Y)
      */
     @ResponseBody
     @GetMapping("")
     public BaseResponse<GetPlantRes> getSelectedPlant(@RequestParam("plantIdx") int plantIdx,
-                                                      @RequestParam("userIdx") int userIdx) {
+                                                              @RequestParam("userIdx") int userIdx) {
         try {
             //조회 성공 시 : GetSpecificPlantRes 형태로 결과 반환 - 1000
             //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
@@ -66,7 +66,7 @@ public class PlantController {
 
     /**
      * 화분 선택 API
-     * [PATCH] /plants/select
+     * [PATCH] /btos/plants/select
      * RequestBody : PatchSelectPlantReq - 필드명 userIdx, futurePlant(=uPlantIdx) (mandatory: Y)
      */
     @ResponseBody
@@ -86,7 +86,7 @@ public class PlantController {
 
     /**
      * 화분 구매(보유) API
-     * [POST] /plants/buy
+     * [POST] /btos/plants/buy
      * RequestBody : PostBuyPlantReq - 필드명 userIdx, plantIdx (mandatory: Y)
      */
     @ResponseBody
@@ -97,41 +97,6 @@ public class PlantController {
             //       실패시 : "화분 상태 변경에 실패하였습니다." - 7011
             //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
             return new BaseResponse<>(plantService.buyPlant(postBuyPlantReq));
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
-
-    /**
-     * 유저 화분 초기화 API
-     * [POST] /plants/:userIdx/initialize
-     * Path Variable : userIdx (mandatory : Y)
-     */
-    @ResponseBody
-    @PostMapping("{userIdx}/initialize")
-    public BaseResponse<String> initializeUserPlant(@PathVariable("userIdx") int userIdx) {
-        try {
-            // 추가(초기화) 성공 시 : "요청에 성공하였습니다." - 1000
-            // 추가(초기화) 실패 시 : "해당 유저의 화분 초기화에 실패하였습니다." - 7000
-            // DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
-            return new BaseResponse<>(plantService.initializeUserPlant(userIdx));
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
-
-    /**
-     * 화분 개수 조회 API
-     * [GET] /plants/count
-     */
-    @ResponseBody
-    @GetMapping("count")
-    public BaseResponse<GetCountPlantRes> countPlant() {
-        try {
-            // 성공 시 : "요청에 성공하였습니다." - 1000
-            // DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
-            GetCountPlantRes getCountPlantRes = new GetCountPlantRes(plantProvider.countPlant());
-            return new BaseResponse<>(getCountPlantRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
