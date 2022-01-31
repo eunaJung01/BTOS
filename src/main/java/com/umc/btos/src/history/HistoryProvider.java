@@ -379,6 +379,9 @@ public class HistoryProvider {
                 if (historyDao.hasHistory_letter(userIdx, senderNickName) != 0) { // null 확인
                     historyList.addAll(historyDao.getLetterList_sender(userIdx, senderNickName)); // 편지
                 }
+                if (historyDao.hasHistory_reply(userIdx, senderNickName) != 0) { // null 확인
+                    historyList.addAll(historyDao.getReplyList_sender(userIdx, senderNickName)); // 답장
+                }
                 Collections.sort(historyList); // createAt 기준 내림차순 정렬
 
                 if (historyList.size() != 0) {
@@ -407,7 +410,7 @@ public class HistoryProvider {
                  * search && (Diary.content || Letter.content) : 띄어쓰기 모두 제거 후 찾기
                  *
                  * filtering = sender(발신인)
-                 *      수신받은 모든 일기와 편지들의 idx를 저장하는 list 각각 생성 (diaryIdxList, letterIdxList)
+                 *      수신받은 모든 일기, 편지, 답장들의 idx를 저장하는 list 각각 생성 (diaryIdxList, letterIdxList, replyIdxList)
                  *      각 list에 저장되어 있는 값을 통해 차례대로 content를 불러와서 문자열 검색 -> 찾는 문자열이 있는 idx들만 따로 저장하여 list 갱신
                  *      list 정보를 통해서 List<History>에 add
                  *      -> createdAt 기준 내림차순 정렬, GetSenderRes.historyList에 저장
@@ -418,6 +421,7 @@ public class HistoryProvider {
 
                 List<Integer> diaryIdxList = new ArrayList<>();
                 List<Integer> letterIdxList = new ArrayList<>();
+                List<Integer> replyIdxList = new ArrayList<>();
 
                 // diaryIdxList
                 if (historyDao.hasHistory_diary(userIdx, senderNickName) != 0) { // null 확인
@@ -449,12 +453,30 @@ public class HistoryProvider {
                     letterIdxList = letterIdxList_searched; // letterIdxList 갱신
                 }
 
-                if (diaryIdxList.size() != 0 || letterIdxList.size() != 0) {
+                // replyIdxList
+                if (historyDao.hasHistory_reply(userIdx, senderNickName) != 0) { // null 확인
+                    replyIdxList.addAll(historyDao.getReplyIdxList(userIdx, senderNickName)); // 수신받은 모든 답장 replyIdx
+
+                    List<Integer> replyIdxList_searched = new ArrayList<>(); // 임시 list
+                    for (int replyIdx : replyIdxList) {
+                        String replyContent = historyDao.getReplyContent(replyIdx);
+
+                        if (searchString(replyContent, search)) { // 문자열 검색 -> 찾는 값이 존재하면 저장
+                            replyIdxList_searched.add(replyIdx);
+                        }
+                    }
+                    replyIdxList = replyIdxList_searched; // replyIdxList 갱신
+                }
+
+                if (diaryIdxList.size() != 0 || letterIdxList.size() != 0 || replyIdxList.size() != 0) {
                     for (int diaryIdx : diaryIdxList) {
                         historyList.add(historyDao.getDiary_sender(userIdx, diaryIdx));
                     }
                     for (int letterIdx : letterIdxList) {
                         historyList.add(historyDao.getLetter_sender(userIdx, letterIdx));
+                    }
+                    for (int replyIdx : replyIdxList) {
+                        historyList.add(historyDao.getReply_sender(userIdx, replyIdx));
                     }
                     Collections.sort(historyList); // createAt 기준 내림차순 정렬
                 }

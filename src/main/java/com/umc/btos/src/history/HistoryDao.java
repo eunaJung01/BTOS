@@ -288,6 +288,25 @@ public class HistoryDao {
                 ), userIdx, senderNickName);
     }
 
+    // 답장 (Reply.receiverIdx = userIdx AND User.nickName = senderNickName)
+    public List<History_Sender> getReplyList_sender(int userIdx, String senderNickName) {
+        String query = "SELECT Reply.replyIdx AS idx, User.nickName AS senderNickName, Reply.content AS content, " +
+                "Reply.createdAt AS sendAt_raw, date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
+                "FROM Reply " +
+                "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
+                "WHERE Reply.receiverIdx = ? AND User.nickName = ? AND Reply.status = 'active' " +
+                "ORDER BY sendAt DESC";
+
+        return this.jdbcTemplate.query(query,
+                (rs, rowNum) -> new History_Sender(
+                        "reply",
+                        rs.getInt("idx"),
+                        rs.getString("content"),
+                        rs.getString("sendAt_raw"),
+                        rs.getString("sendAt")
+                ), userIdx, senderNickName);
+    }
+
     // --------------------------------------- List<History_Sender> size 반환 ---------------------------------------
     // filtering == sender && search == null
 
@@ -501,7 +520,7 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForList(query, int.class, userIdx, senderNickName);
     }
 
-    // letter 리스트 반환 : filtering = sender
+    // letterIdx 리스트 반환 : filtering = sender
     public List<Integer> getLetterIdxList(int userIdx, String senderNickName) {
         String query = "SELECT idx FROM (" +
                 "SELECT Letter.letterIdx AS idx, LetterSendList.createdAt AS sendAt " +
@@ -509,6 +528,18 @@ public class HistoryDao {
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
                 "WHERE LetterSendList.receiverIdx = ? AND User.nickName = ? AND LetterSendList.status = 'active' " +
+                "ORDER BY sendAt DESC) idx";
+
+        return this.jdbcTemplate.queryForList(query, int.class, userIdx, senderNickName);
+    }
+
+    // replyIdx 리스트 반환 : filtering = sender
+    public List<Integer> getReplyIdxList(int userIdx, String senderNickName) {
+        String query = "SELECT idx FROM (" +
+                "SELECT Reply.replyIdx AS idx, Reply.createdAt AS sendAt " +
+                "FROM Reply " +
+                "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
+                "WHERE Reply.receiverIdx = ? AND User.nickName = ? AND Reply.status = 'active' " +
                 "ORDER BY sendAt DESC) idx";
 
         return this.jdbcTemplate.queryForList(query, int.class, userIdx, senderNickName);
