@@ -459,10 +459,10 @@ public class HistoryProvider {
     }
 
     /*
-     * History 본문 보기 (일기-답장 / 편지-답장)
-     * [GET] /histories/:userIdx/:firstType/:idx
-     * firstType = 어디서부터 시작된 답장인가? 1. diary : 일기 / 2. letter : 편지
-     * idx = 일기 또는 편지 식별자
+     * History 본문 보기 (일기 or 편지 & 답장 리스트)
+     * [GET] /histories/:userIdx/:mainType/:mainIdx
+     * mainType = 어디서부터 시작된 답장인가? 1. diary : 일기 / 2. letter : 편지
+     * mainIdx = 답장 시작점(일기 또는 편지)의 식별자 (diary - diaryIdx / letter - letterIdx)
      * 최신순 정렬 (createdAt 기준 내림차순 정렬)
      */
     public GetHistoryRes getHistory_main(int userIdx, String mainType, int mainIdx) throws BaseException {

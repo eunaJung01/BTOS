@@ -19,7 +19,7 @@ public class HistoryDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    // ============================  History 목록 조회 & 발신인 조회 ============================
+    // ===================================  History 목록 조회 & 발신인 조회 ===================================
     // Diary.createdAt AS createdAt, DiarySendList.createdAt AS sendAt
     // Letter.createdAt AS createdAt, LetterSendList.createdAt AS sendAt
 
@@ -461,9 +461,11 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(query, String.class, letterIdx);
     }
 
-    // ============================  History 본문 조회 ============================
+    // ===================================  History 본문 조회 ===================================
 
-    // 본문 - 일기
+    // --------------------------------------- 본문 반환 ---------------------------------------
+
+    // 일기
     public Diary getDiary_main(int diaryIdx) {
         String query = "SELECT Diary.diaryIdx, Diary.emotionIdx, Diary.content, User.nickName AS senderNickName, date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM DiarySendList " +
@@ -481,7 +483,7 @@ public class HistoryDao {
                 ), diaryIdx);
     }
 
-    // 본문 - 일기 done list
+    // 일기 done list
     public List<Done> getDoneList_main(int diaryIdx) {
         String query = "SELECT Done.doneIdx, Done.content " +
                 "FROM DiarySendList " +
@@ -497,7 +499,7 @@ public class HistoryDao {
                 ), diaryIdx);
     }
 
-    // 본문 - 편지
+    // 편지
     public Letter getLetter_main(int diaryIdx) {
         String query = "SELECT Letter.letterIdx AS idx, Letter.content AS content, User.nickName AS senderNickName, date_format(Letter.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM LetterSendList " +
@@ -514,7 +516,9 @@ public class HistoryDao {
                 ), diaryIdx);
     }
 
-    // 일기 답장 List
+    // --------------------------------------- List<Reply> 반환 ---------------------------------------
+
+    // 일기
     public List<Reply> getReplyList_diary(int diaryIdx) {
         String query = "SELECT Reply.replyIdx, User.nickName AS senderNickName, Reply.content, date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM Reply " +
@@ -532,7 +536,7 @@ public class HistoryDao {
                 ), diaryIdx);
     }
 
-    // 편지 답장 List
+    // 편지
     public List<Reply> getReplyList_letter(int letterIdx) {
         String query = "SELECT Reply.replyIdx, User.nickName AS senderNickName, Reply.content, date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM Reply " +
