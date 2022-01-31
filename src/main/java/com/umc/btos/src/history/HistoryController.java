@@ -23,7 +23,7 @@ public class HistoryController {
     /*
      * History 목록 조회
      * [GET] /histories/list/:userIdx/:pageNum?filtering=&search=
-     * filtering = 1. sender : 발신인 / 2. diary : 일기만 / 3. letter : 편지만
+     * filtering = 1. sender : 발신인 (Diary, Letter, Reply) / 2. diary : 일기만 (Diary) / 3. letter : 편지만 (Letter, Reply)
      * search = 검색할 문자열 ("String")
      * 최신순 정렬 (createdAt 기준 내림차순 정렬)
      * 페이징 처리 (무한 스크롤) - 20개씩 조회
