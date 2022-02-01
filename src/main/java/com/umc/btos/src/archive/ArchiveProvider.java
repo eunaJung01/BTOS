@@ -179,7 +179,7 @@ public class ArchiveProvider {
             // content 복호화
             for (Diary diary : diaryList) {
                 if (archiveDao.getIsPublic(diary.getDiaryIdx()) == 0) { // private 일기일 경우 content 복호화
-                    decryptContents(diary, false);
+                    decryptContents(diary);
                 }
             }
 
@@ -224,7 +224,7 @@ public class ArchiveProvider {
     }
 
     // content 복호화 - 일기 리스트 조회
-    public void decryptContents(Diary diary, boolean hasDoneList) throws BaseException {
+    public void decryptContents(Diary diary) throws BaseException {
         try {
             // Diary.content
             String diaryContent = diary.getContent();
@@ -246,7 +246,7 @@ public class ArchiveProvider {
 
             // content 복호화
             if (diary.getIsPublic() == 0) { // private 일기일 경우 content 복호화
-                decryptContents(diary, true);
+                decryptContents(diary);
             }
             return diary;
 
@@ -256,19 +256,17 @@ public class ArchiveProvider {
     }
 
     // content 복호화 - 일기 조회
-    public void decryptContents(GetDiaryRes diary, boolean hasDoneList) throws BaseException {
+    public void decryptContents(GetDiaryRes diary) throws BaseException {
         try {
             // Diary.content
             String diaryContent = diary.getContent();
             diary.setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent));
 
             // Done.content
-            if (hasDoneList) {
-                List<Done> doneList = diary.getDoneList();
-                for (int j = 0; j < doneList.size(); j++) {
-                    String doneContent = diary.getDoneList().get(j).getContent();
-                    diary.getDoneList().get(j).setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
-                }
+            List<Done> doneList = diary.getDoneList();
+            for (int j = 0; j < doneList.size(); j++) {
+                String doneContent = diary.getDoneList().get(j).getContent();
+                diary.getDoneList().get(j).setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
             }
 
         } catch (Exception ignored) {
