@@ -125,10 +125,10 @@ public class ArchiveDao {
     }
 
     // done list 조회
-    public List<GetDoneRes> getDoneList(int diaryIdx) {
+    public List<Done> getDoneList(int diaryIdx) {
         String query = "SELECT * FROM Done WHERE diaryIdx = ? AND status = 'active'";
         return this.jdbcTemplate.query(query,
-                (rs, rowNum) -> new GetDoneRes(
+                (rs, rowNum) -> new Done(
                         rs.getInt("doneIdx"),
                         rs.getString("content")
                 ), diaryIdx);
