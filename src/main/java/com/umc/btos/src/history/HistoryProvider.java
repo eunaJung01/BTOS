@@ -530,40 +530,44 @@ public class HistoryProvider {
         try {
             GetHistoryRes history = new GetHistoryRes(type);
 
-            //
+            // type = diary
             if (type.compareTo("diary") == 0) {
                 Diary diary = historyDao.getDiary_main(idx);
                 diary.setDoneList(historyDao.getDoneList_main(idx));
 
-                history.setMainHistory(diary);
+                history.setFirstHistory(diary);
                 history.setReplyList(historyDao.getReplyList_diary(userIdx, idx));
 
+            // type = letter
             } else if (type.compareTo("letter") == 0) {
                 Letter letter = historyDao.getLetter_main(idx);
 
-                history.setMainHistory(letter);
+                history.setFirstHistory(letter);
                 history.setReplyList(historyDao.getReplyList_letter(userIdx, idx));
 
+            // type = reply
             } else {
-                String firstHistoryType = historyDao.getHistoryType(idx);
+                String firstHistoryType = historyDao.getHistoryType(idx); // 답장의 최초 시작점 (diary / letter)
 
+                // 시작점이 일기인 경우
                 if (firstHistoryType.compareTo("diary") == 0) {
-                    history.setMainType("diary");
+                    history.setFirstType("diary");
 
                     int diaryIdx = historyDao.getDiaryIdx_main(idx);
                     Diary diary = historyDao.getDiary_main(diaryIdx);
                     diary.setDoneList(historyDao.getDoneList_main(diaryIdx));
 
-                    history.setMainHistory(diary);
+                    history.setFirstHistory(diary);
                     history.setReplyList(historyDao.getReplyList_diary(userIdx, diaryIdx));
 
+                // 시작점이 편지인 경우
                 } else if (firstHistoryType.compareTo("letter") == 0) {
-                    history.setMainType("letter");
+                    history.setFirstType("letter");
 
                     int letterIdx = historyDao.getLetterIdx_main(idx);
                     Letter letter = historyDao.getLetter_main(letterIdx);
 
-                    history.setMainHistory(letter);
+                    history.setFirstHistory(letter);
                     history.setReplyList(historyDao.getReplyList_letter(userIdx, letterIdx));
                 }
             }
