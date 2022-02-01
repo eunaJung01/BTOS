@@ -47,7 +47,6 @@ public class UserDao {
         String changeStatusQuery = "";
         Object[] changeStatusParams = new Object[]{patchUserReq.getStatus() ,patchUserReq.getUserIdx()};
 
-        System.out.println("상태값 : "+patchUserReq.getStatus());
         if (patchUserReq.getStatus().equals("active")) // 재 활성화의 경우
             changeStatusQuery = "update User set status = ?, recOthers = 1, recSimilarAge = 1 where userIdx = ?";
 
