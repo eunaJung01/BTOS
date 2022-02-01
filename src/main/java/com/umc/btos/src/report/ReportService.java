@@ -32,16 +32,27 @@ public class ReportService {
     }
     // ******************************************************************************
     // 신고 작성(POST)
-    /**
-    public PostReportRes createReport(PostReportReq postReportReq) throws BaseException {
 
+    public PostReportRes createReport(PostReportReq postReportReq) throws BaseException {
         try {
             int reportIdx = reportDao.createReport(postReportReq);
             return new PostReportRes(reportIdx);
-
         } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
 
             throw new BaseException(DATABASE_ERROR);
         }
-    }*/
+    }
+
+    public int getUserIdx(PostReportReq postReportReq) throws BaseException {
+
+        try {
+            int userIdx = reportDao.getUserIdx(postReportReq);
+            return userIdx;
+
+        } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
+            System.out.println(exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }
