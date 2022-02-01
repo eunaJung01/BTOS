@@ -39,6 +39,12 @@ public class ArchiveDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, diaryDate);
     }
 
+    // 일기 별 done list 개수 반환 : COUNT(Done.diaryIdx)
+    public int setDoneListNum(int diaryIdx) {
+        String query = "SELECT COUNT(*) FROM Done WHERE diaryIdx = (SELECT diaryIdx FROM Diary WHERE diaryIdx = ? AND status = 'active') AND status = 'active'";
+        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
+    }
+
     // 일기 별 감정 이모티콘 식별자 반환 : Diary.emotionIdx
     public int setEmotion(int userIdx, String diaryDate) {
         String query = "SELECT emotionIdx FROM Diary WHERE userIdx = ? AND diaryDate = ? AND status = 'active'";

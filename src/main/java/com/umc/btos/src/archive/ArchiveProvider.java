@@ -198,6 +198,13 @@ public class ArchiveProvider {
                 }
             }
 
+            // set doneListNum
+            for (GetDiaryListRes getDiaryListRes : result) {
+                for (int j = 0; j < getDiaryListRes.getDiaryList().size(); j++) {
+                    getDiaryListRes.getDiaryList().get(j).setDoneListNum(archiveDao.setDoneListNum(getDiaryListRes.getDiaryList().get(j).getDiaryIdx()));
+                }
+            }
+
             return result;
 
         } catch (NullPointerException exception) {
@@ -221,15 +228,6 @@ public class ArchiveProvider {
             // Diary.content
             String diaryContent = diary.getContent();
             diary.setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent));
-
-            // Done.content
-            if (hasDoneList) {
-                List<Done> doneList = diary.getDoneList();
-                for (int j = 0; j < doneList.size(); j++) {
-                    String doneContent = diary.getDoneList().get(j).getContent();
-                    diary.getDoneList().get(j).setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
-                }
-            }
 
         } catch (Exception ignored) {
             throw new BaseException(DIARY_DECRYPTION_ERROR); // 일기 복호화에 실패하였습니다.
