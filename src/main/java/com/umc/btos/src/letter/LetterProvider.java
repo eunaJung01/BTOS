@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.umc.btos.config.BaseResponseStatus.MODIFY_LETTERSENDLIST_ISCHECKED_ERROR;
 
 @Service
 public class LetterProvider {
@@ -25,11 +26,21 @@ public class LetterProvider {
     }
 
     // 해당 letterIdx를 갖는 Letter 조회
-    public GetLetterRes getLetter(int letterIdx) throws BaseException {
+    public GetLetterRes getLetter(int letterIdx,int userIdx) throws BaseException {
+        try{// 열람여부 변경 성공 여부 반환
+            int isSuccess = letterDao.modifyIsChecked(letterIdx,userIdx);// 성공 시 1, 실패 시 0을 반환
+            if (isSuccess==0){
+                throw new BaseException(MODIFY_LETTERSENDLIST_ISCHECKED_ERROR);
+            }
+        }catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
         try {
-            GetLetterRes getLetterRes = letterDao.getLetter(letterIdx);
+            GetLetterRes getLetterRes = letterDao.getLetter(letterIdx,userIdx);
+
             return getLetterRes;
         } catch (Exception exception) {
+
             throw new BaseException(DATABASE_ERROR);
         }
     }
