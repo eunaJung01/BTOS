@@ -532,6 +532,7 @@ public class HistoryProvider {
 
             if (type.compareTo("diary") == 0) { // type = diary
                 Diary diary = historyDao.getDiary_main(idx);
+                diary.setPositioning(true);
                 diary.setDoneList(historyDao.getDoneList_main(idx));
 
                 history.setFirstHistory(diary);
@@ -539,6 +540,8 @@ public class HistoryProvider {
 
             } else if (type.compareTo("letter") == 0) { // type = letter
                 Letter letter = historyDao.getLetter_main(idx);
+                letter.setPositioning(true);
+
 
                 history.setFirstHistory(letter);
                 history.setReplyList(historyDao.getReplyList_letter(userIdx, idx));
@@ -553,8 +556,15 @@ public class HistoryProvider {
                     Diary diary = historyDao.getDiary_main(diaryIdx);
                     diary.setDoneList(historyDao.getDoneList_main(diaryIdx));
 
+                    List<Reply> replyList = historyDao.getReplyList_diary(userIdx, diaryIdx);
+                    for (Reply reply : replyList) {
+                        if (reply.getReplyIdx() == idx) {
+                            reply.setPositioning(true);
+                        }
+                    }
+
                     history.setFirstHistory(diary);
-                    history.setReplyList(historyDao.getReplyList_diary(userIdx, diaryIdx));
+                    history.setReplyList(replyList);
 
                 } else if (firstHistoryType.compareTo("letter") == 0) { // 시작점이 편지인 경우
                     history.setFirstType("letter");
@@ -562,8 +572,15 @@ public class HistoryProvider {
                     int letterIdx = historyDao.getLetterIdx_main(idx);
                     Letter letter = historyDao.getLetter_main(letterIdx);
 
+                    List<Reply> replyList = historyDao.getReplyList_letter(userIdx, letterIdx);
+                    for (Reply reply : replyList) {
+                        if (reply.getReplyIdx() == idx) {
+                            reply.setPositioning(true);
+                        }
+                    }
+
                     history.setFirstHistory(letter);
-                    history.setReplyList(historyDao.getReplyList_letter(userIdx, letterIdx));
+                    history.setReplyList(replyList);
                 }
             }
 
