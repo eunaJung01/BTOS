@@ -11,5 +11,5 @@ import lombok.Setter;
 //화분 선택 시 Body
 public class PatchSelectPlantReq {
     private int userIdx;
-    private int futurePlant; // 사용자가 바꾸기로 선택한 화분(status: active -> selected)
+    private int plantIdx; // 사용자가 바꾸기로 선택한 화분(status: active -> selected)
 }

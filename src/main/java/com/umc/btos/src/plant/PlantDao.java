@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.List;
 
 // ~ DB
@@ -20,39 +21,22 @@ public class PlantDao {
     }
 
 
-    //모든식물조회(상점) API
-    public List<GetPlantRes> getAllPlant(int userIdx) {
-        String Query = "SELECT Plant.plantIdx, Plant.plantName, Plant.plantImgUrl, Plant.plantPrice, Plant.maxLevel, " +
-                "UserPlantList.level, UserPlantList.status " +
-                "FROM Plant INNER JOIN UserPlantList ON Plant.plantIdx=UserPlantList.plantIdx " +
-                "WHERE UserPlantList.userIdx=?";
-        Object[] Params = new Object[]{userIdx};
-
-        return this.jdbcTemplate.query(Query, Params,
-                (rs, rowNum) -> new GetPlantRes(
-                        rs.getInt("Plant.plantIdx"),
-                        rs.getString("Plant.plantName"),
-                        rs.getString("Plant.plantImgUrl"),
-                        rs.getInt("Plant.plantPrice"),
-                        rs.getInt("Plant.maxLevel"),
-                        rs.getInt("UserPlantList.level"),
-                        rs.getString("UserPlantList.status"))
-        );
-    }
-
     //회원에게 plantIdx 화분이 존재하는지 확인
     //결과값이 존재하면 1, 없으면 0
-    public int checkPlantExist(int plantIdx) {
-        String Query = "SELECT EXISTS(SELECT * FROM UserPlantList WHERE plantIdx=?) as success";
-        int Param = plantIdx;
+    public int checkPlantExist(int plantIdx, int userIdx) {
+        String Query = "SELECT EXISTS(SELECT * FROM UserPlantList WHERE plantIdx=? AND userIdx=?) as success";
+        Object[] Params = new Object[] {plantIdx, userIdx};
 
-        return this.jdbcTemplate.queryForObject(Query, int.class, Param);
+        return this.jdbcTemplate.queryForObject(Query, int.class, Params);
     }
 
     //회원이 선택한 화분 조회 API
-    public GetSpecificPlantRes getSelectedPlant(int plantIdx, int status, int userIdx) {
+    public GetPlantRes getSelectedPlant(int plantIdx, int status, int userIdx) {
+
+        GetPlantRes getPlantRes = new GetPlantRes();
+
         //화분 기본 정보 FROM Plant
-        String plantQuery = "SELECT plantIdx, plantName, plantImgUrl, plantInfo, plantPrice, maxLevel " +
+        String plantQuery = "SELECT plantIdx, plantName, plantInfo, plantPrice, maxLevel " +
                 "FROM Plant WHERE plantIdx=? AND status=?";
         Object[] plantParams = new Object[]{plantIdx, "active"};
 
@@ -61,34 +45,37 @@ public class PlantDao {
                 (rs, rowNum) -> new PlantBasicInfo(
                         rs.getInt("plantIdx"),
                         rs.getString("plantName"),
-                        rs.getString("plantImgUrl"),
                         rs.getString("plantInfo"),
                         rs.getInt("plantPrice"),
                         rs.getInt("maxLevel")),
                 plantParams);
 
-        int level = 0; // 현재 레벨 변수, 보유중이면 현재레벨/미보유면 -1
-        if (status == 1) { //보유중이면 화분 현재 레벨 가져오기
-            String currentLevelQuery = "SELECT level FROM UserPlantList WHERE userIdx=? AND plantIdx=?";
-            Object[] currentLevelParams = new Object[]{userIdx, plantIdx};
+        getPlantRes.setPlantIdx(plantBasicInfo.getPlantIdx());
+        getPlantRes.setPlantName(plantBasicInfo.getPlantName());
+        getPlantRes.setPlantInfo(plantBasicInfo.getPlantInfo());
+        getPlantRes.setMaxLevel(plantBasicInfo.getMaxLevel());
 
-            level = jdbcTemplate.queryForObject(currentLevelQuery, int.class, currentLevelParams);
+        if (status == 1) { //보유중이면 화분 현재 레벨, 보유 상태 가져오기
+            String currentLevelQuery = "SELECT level FROM UserPlantList WHERE userIdx=? AND plantIdx=?";
+            Object[] Params = new Object[]{userIdx, plantIdx};
+            int level = jdbcTemplate.queryForObject(currentLevelQuery, int.class, Params);
+
+            String statusQuery = "SELECT status FROM UserPlantList WHERE userIdx=? AND plantIdx=?";
+            String plantStatus = jdbcTemplate.queryForObject(statusQuery, String.class, Params);
+
+            getPlantRes.setCurrentLevel(level); // 현재레벨
+            getPlantRes.setPlantStatus(plantStatus); // "active" OR "selected"
         } else { //미보유
-            level = -1;
+            getPlantRes.setPlantStatus("inactive");
+            getPlantRes.setIsOwn(false);
         }
 
-        //반환 형태
-        GetSpecificPlantRes getSpecificPlantRes = new GetSpecificPlantRes(
-                plantBasicInfo.getPlantIdx(), plantBasicInfo.getPlantName(), plantBasicInfo.getPlantImgUrl(),
-                plantBasicInfo.getPlantInfo(), plantBasicInfo.getPlantPrice(), plantBasicInfo.getMaxLevel(),
-                level, status);
-
-        return getSpecificPlantRes;
+        return getPlantRes;
     }
 
     //화분 선택 API ~ 회원이 futurePlant를 이미 selected된 화분으로 넘겼는지 체크하기 위한 함수
     public int checkPlant(int userIdx) {
-        String Query = "SELECT uPlantIdx FROM UserPlantList WHERE userIdx=? AND status=?";
+        String Query = "SELECT plantIdx FROM UserPlantList WHERE userIdx=? AND status=?";
         Object[] Params = new Object[]{userIdx, "selected"};
 
         return this.jdbcTemplate.queryForObject(Query, int.class, Params);
@@ -96,8 +83,8 @@ public class PlantDao {
 
     //화분 선택 API ~ 기존에 선택되어있던 화분의 status를 active로 바꾸자 (selected -> active)
     public int activePlant(int userIdx) {
-        String queryToActive = "UPDATE UserPlantList SET status=? WHERE userIdx=? AND " +
-                "uPlantIdx=(SELECT Idx FROM (SELECT uPlantIdx AS Idx FROM UserPlantList WHERE status=?) T)";
+        String queryToActive = "UPDATE UserPlantList SET status=? " +
+                "WHERE plantIdx=(SELECT Idx FROM (SELECT plantIdx AS Idx FROM UserPlantList WHERE userIdx=? AND status=?) T)";
         Object[] paramsToActive = new Object[]{"active", userIdx, "selected"};
 
         return this.jdbcTemplate.update(queryToActive, paramsToActive);
@@ -106,16 +93,15 @@ public class PlantDao {
     //화분 선택 API
     public int selectPlant(PatchSelectPlantReq patchSelectPlantReq) {
         //선택된 화분의 status를 selected로 바꾸자 (active -> selected)
-        String Query = "UPDATE UserPlantList SET status=? WHERE userIdx=? AND uPlantIdx=?";
-        Object[] Params = new Object[]{"selected", patchSelectPlantReq.getUserIdx(), patchSelectPlantReq.getFuturePlant()};
+        String Query = "UPDATE UserPlantList SET status=? WHERE userIdx=? AND plantIdx=?";
+        Object[] Params = new Object[]{"selected", patchSelectPlantReq.getUserIdx(), patchSelectPlantReq.getPlantIdx()};
 
         return this.jdbcTemplate.update(Query, Params);
     }
 
     //화분 구매 API
     public int buyPlant(PostBuyPlantReq postBuyPlantReq) {
-        String Query = "INSERT INTO UserPlantList(userIdx, plantIdx, level, score, status, createdAt, updatedAt)" +
-                "VALUES(?, ?, DEFAULT, DEFAULT, DEFAULT, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())";
+        String Query = "INSERT INTO UserPlantList(userIdx, plantIdx) VALUES(?, ?)";
         Object[] Params = new Object[]{postBuyPlantReq.getUserIdx(), postBuyPlantReq.getPlantIdx()};
 
         return this.jdbcTemplate.update(Query, Params);
@@ -151,6 +137,20 @@ public class PlantDao {
         int maxLevelParam = selectedPlantIdx;
 
         return this.jdbcTemplate.queryForObject(maxLevelQuery, int.class, maxLevelParam);
+    }
+
+    //유저 화분 초기화 API
+    public int initializeUserPlant(int userIdx) {
+        String Query = "INSERT INTO UserPlantList (userIdx, plantIdx) VALUES(?, 1)";
+        int Param = userIdx;
+
+        return this.jdbcTemplate.update(Query, Param);
+    }
+
+    //화분 개수 조회 API
+    public int countPlant() {
+        String Query = "SELECT count(*) from Plant";
+        return this.jdbcTemplate.queryForObject(Query, int.class);
     }
 
     /*
@@ -250,5 +250,82 @@ public class PlantDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
+
+    //모든 화분 조회(Profile + 상점)
+    public List<GetPlantRes> getPlantList(int userIdx, List<Integer> plantIdxList, List<Integer> userPlantIdxList) {
+
+        List<GetPlantRes> getPlantResList = new ArrayList<GetPlantRes>();
+
+        for (int i = 0; i < plantIdxList.size(); i++) {
+
+            GetPlantRes getPlantRes = new GetPlantRes();
+
+            String plantQuery = "SELECT plantIdx, plantName, plantInfo, plantPrice, maxLevel " +
+                    "FROM Plant WHERE plantIdx=? AND status=?";
+            Object[] plantParams = new Object[]{plantIdxList.get(i), "active"};
+
+            //화분 기본 정보 FROM Plant
+            PlantBasicInfo plantBasicInfo = jdbcTemplate.queryForObject(
+                    plantQuery,
+                    (rs, rowNum) -> new PlantBasicInfo(
+                            rs.getInt("plantIdx"),
+                            rs.getString("plantName"),
+                            rs.getString("plantInfo"),
+                            rs.getInt("plantPrice"),
+                            rs.getInt("maxLevel")),
+                    plantParams);
+
+            // 화분 기본 정보 set
+            getPlantRes.setPlantIdx(plantBasicInfo.getPlantIdx());
+            getPlantRes.setPlantName(plantBasicInfo.getPlantName());
+            getPlantRes.setPlantInfo(plantBasicInfo.getPlantInfo());
+            getPlantRes.setPlantPrice(plantBasicInfo.getPlantPrice());
+            getPlantRes.setMaxLevel(plantBasicInfo.getMaxLevel());
+
+
+            int Idx = plantIdxList.get(i);
+            int uIdx = userPlantIdxList.indexOf(plantIdxList.get(i)); //보유한 화분인지 idx로 구분
+
+            //사용자가 보유중인 화분인 경우 현재 레벨, 상태(active/selected) set
+            if (uIdx != -1) {
+                String currentLevelQuery = "SELECT level FROM UserPlantList WHERE userIdx=? AND plantIdx=?";
+                Object[] Params = new Object[]{userIdx, userPlantIdxList.get(uIdx)};
+                int level = jdbcTemplate.queryForObject(currentLevelQuery, int.class, Params);
+
+                // 유저의 보유중인 화분 상태(active/selected) 가져오기
+                String plantStatusQuery = "SELECT status FROM UserPlantList WHERE userIdx=? AND plantIdx=?";
+                String status = jdbcTemplate.queryForObject(plantStatusQuery, String.class, Params);
+
+                getPlantRes.setCurrentLevel(level); //현재 레벨
+                getPlantRes.setPlantStatus(status); //보유 상태
+            } else {
+                //사용자가 미보유한 화분인 경우
+                getPlantRes.setPlantStatus("inactive");
+                getPlantRes.setIsOwn(false);
+            }
+            getPlantResList.add(getPlantRes);
+        }
+
+        return getPlantResList;
+    }
+
+
+    //userIdx의 모든 plantIdx 목록
+    public List<Integer> getUserPlantIdx(int userIdx) {
+        String Query = "SELECT plantIdx FROM UserPlantList WHERE userIdx=?";
+        int Param = userIdx;
+
+        return this.jdbcTemplate.query(Query,
+                (rs, rowNum) -> rs.getInt("plantIdx"),
+                Param);
+    }
+
+    //Plant테이블의 모든 plantIdx 목록
+    public List<Integer> getPlantIdx() {
+        String Query = "SELECT plantIdx FROM Plant";
+
+        return this.jdbcTemplate.query(Query,
+                (rs, rowNum) -> rs.getInt("plantIdx"));
+    }
 
 }

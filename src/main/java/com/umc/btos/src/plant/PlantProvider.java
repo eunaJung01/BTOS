@@ -24,33 +24,45 @@ public class PlantProvider {
     }
 
 
-    //모든식물조회(Profile) API
-    public List<GetPlantRes> getAllPlant(int userIdx) throws BaseException {
-        try {
-            return plantDao.getAllPlant(userIdx); // DB에서 목록가져오기
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
     //회원이 선택한 화분 조회 API
-    public GetSpecificPlantRes getSelectedPlant(int plantIdx, int userIdx) throws BaseException {
+    public GetPlantRes getSelectedPlant(int plantIdx, int userIdx) throws BaseException {
         try {
-            int status = plantDao.checkPlantExist(plantIdx); //plantIdx인 화분을 사용자가 보유중이면 1, 미보유 0
+            int status = plantDao.checkPlantExist(plantIdx, userIdx); //plantIdx인 화분을 사용자가 보유중이면 1, 미보유 0
             return plantDao.getSelectedPlant(plantIdx, status, userIdx);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
-    //화분 선택 API ~ 회원이 futurePlant를 이미 selected된 화분으로 넘겼는지 체크하기 위한 함수
+    //화분 선택 API ~ 회원이 plantIdxt를 이미 selected된 화분으로 넘겼는지 체크하기 위한 함수
     public int checkPlant(PatchSelectPlantReq patchSelectPlantReq) throws BaseException {
-        try { //회원이 futurePlant를 이미 selected된 화분으로 넘겼으면
-            if (patchSelectPlantReq.getFuturePlant() == plantDao.checkPlant(patchSelectPlantReq.getUserIdx()))
+        try { //회원이 plantIdx를 이미 selected된 화분으로 넘겼으면
+            if (patchSelectPlantReq.getPlantIdx() == plantDao.checkPlant(patchSelectPlantReq.getUserIdx()))
                 return -1;
             else //아니면 3 반환
                 return 3;
         } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    //모든 화분 조회(Profile + 상점)
+    public List<GetPlantRes> getPlantList(int userIdx) throws BaseException {
+        try {
+            List<Integer> plantIdxList = plantDao.getPlantIdx(); //Plant 테이블에 있는 모든 화분 idx
+            List<Integer> userPlantIdxList = plantDao.getUserPlantIdx(userIdx); //해당 user가 가지고 있는 모든 화분 idx
+
+            return plantDao.getPlantList(userIdx, plantIdxList, userPlantIdxList);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    //화분 개수 조회 API
+    public int countPlant() throws BaseException {
+        try{
+            return plantDao.countPlant();
+        } catch(Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
     }

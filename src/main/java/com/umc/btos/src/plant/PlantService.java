@@ -42,7 +42,7 @@ public class PlantService {
     //화분 선택 API
     public BaseResponseStatus selectPlant(PatchSelectPlantReq patchSelectPlantReq) throws BaseException {
         try {
-            //회원이 futurePlant를 이미 selected된 화분으로 넘겼는지 체크
+            //회원이 plantIdx를 이미 selected된 화분으로 넘겼는지 체크
             int checkRes = plantProvider.checkPlant(patchSelectPlantReq);
             if (checkRes != 3) //넘겼다면
                 throw new BaseException(INVALID_IDX_PLANT);
@@ -73,6 +73,17 @@ public class PlantService {
         }
     }
 
+    //유저 화분 초기화 API
+    public BaseResponseStatus initializeUserPlant(int userIdx) throws BaseException {
+        try {
+            if(plantDao.initializeUserPlant(userIdx) == 1)
+                return SUCCESS;
+            else
+                throw new BaseException(INSERT_FAIL_PLANT);
+        } catch(Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
     //화분 점수 증가 (Service)
     /*

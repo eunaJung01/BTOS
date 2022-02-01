@@ -3,9 +3,11 @@ package com.umc.btos.src.user;
 import com.umc.btos.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.*;
 
 @Repository
 
@@ -42,8 +44,16 @@ public class UserDao {
 
     // 회원 상태 변경
     public int changeStatusOfUser(PatchUserReq patchUserReq) {
-        String changeStatusQuery = "update User set status = ?, updatedAt = CURRENT_TIMESTAMP where userIdx = ?";
+        String changeStatusQuery = "";
         Object[] changeStatusParams = new Object[]{patchUserReq.getStatus() ,patchUserReq.getUserIdx()};
+
+        System.out.println("상태값 : "+patchUserReq.getStatus());
+        if (patchUserReq.getStatus().equals("active")) // 재 활성화의 경우
+            changeStatusQuery = "update User set status = ?, recOthers = 1, recSimilarAge = 1 where userIdx = ?";
+
+        else if (patchUserReq.getStatus().equals("dormant") || patchUserReq.getStatus().equals("deleted")) // 휴면 or 탈퇴의 경우
+            changeStatusQuery = "update User set status = ?, recOthers = 0, recSimilarAge = 0 where userIdx = ?";
+
         return this.jdbcTemplate.update(changeStatusQuery, changeStatusParams);
         // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
     }
@@ -77,7 +87,7 @@ public class UserDao {
 
     // 닉네임 변경
     public int modifyUserNickName(PatchUserNickNameReq patchUserNickNameReq){
-        String modifyUserNickNameQuery = "update User set nickName = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        String modifyUserNickNameQuery = "update User set nickName = ? where userIdx = ?";
         Object[] modifyUserNickNameParams = new Object[]{patchUserNickNameReq.getNickName(), patchUserNickNameReq.getUserIdx()};
         return this.jdbcTemplate.update(modifyUserNickNameQuery, modifyUserNickNameParams);
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
@@ -85,7 +95,7 @@ public class UserDao {
 
     // 생년 변경
     public int modifyUserBirth(PatchUserBirthReq patchUserBirthReq) {
-        String modifyUserBirthQuery = "update User set birth = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        String modifyUserBirthQuery = "update User set birth = ? where userIdx = ?";
         Object[] modifyUserBirthParams = new Object[]{patchUserBirthReq.getBirth(), patchUserBirthReq.getUserIdx()};
         return this.jdbcTemplate.update(modifyUserBirthQuery, modifyUserBirthParams);
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
@@ -93,7 +103,7 @@ public class UserDao {
 
     // 다른 사람 수신 설정
     public int modifyReceiveOthers(PatchUserRecOthersReq patchUserReceiveOthersReq) {
-        String modifyReceiveOthersQuery = "update User set recOthers = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        String modifyReceiveOthersQuery = "update User set recOthers = ? where userIdx = ?";
         Object[] modifyReceiveOthersParams = new Object[]{patchUserReceiveOthersReq.isRecOthers(), patchUserReceiveOthersReq.getUserIdx()};
         return this.jdbcTemplate.update(modifyReceiveOthersQuery, modifyReceiveOthersParams);
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
@@ -101,7 +111,7 @@ public class UserDao {
 
     // 비슷한 연령대 수신 설정
     public int modifyReceiveSimilarAge(PatchUserRecSimilarAgeReq patchUserRecSimilarAgeReq) {
-        String modifyReceiveOthersQuery = "update User set recSimilarAge = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        String modifyReceiveOthersQuery = "update User set recSimilarAge = ? where userIdx = ?";
         Object[] modifyReceiveOthersParams = new Object[]{patchUserRecSimilarAgeReq.isRecSimilarAge(), patchUserRecSimilarAgeReq.getUserIdx()};
         return this.jdbcTemplate.update(modifyReceiveOthersQuery, modifyReceiveOthersParams);
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
@@ -109,7 +119,7 @@ public class UserDao {
 
     // 푸시 알림 수신 변경
     public int modifyPushAlarm(PatchUserPushAlarmReq patchUserPushAlarmReq) {
-        String modifyPushAlarmQuery = "update User set pushAlarm = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        String modifyPushAlarmQuery = "update User set pushAlarm = ? where userIdx = ?";
         Object[] modifyPushAlarmParams = new Object[] {patchUserPushAlarmReq.isPushAlarm(), patchUserPushAlarmReq.getUserIdx()};
         return this.jdbcTemplate.update(modifyPushAlarmQuery, modifyPushAlarmParams);
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
@@ -117,7 +127,7 @@ public class UserDao {
 
     // 폰트 변경
     public int changeFont(PatchUserFontReq patchUserFontReq) {
-        String changeFontQuery = "update User set fontIdx = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        String changeFontQuery = "update User set fontIdx = ? where userIdx = ?";
         Object[] changeFontParams = new Object[] {patchUserFontReq.getFontIdx(), patchUserFontReq.getUserIdx()};
         return this.jdbcTemplate.update(changeFontQuery, changeFontParams);
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
@@ -125,10 +135,25 @@ public class UserDao {
 
     // 시무룩이 상태 변경
     public int changeIsSad(PatchUserIsSadReq patchUserIsSadReq) {
-        String changeIsSadQuery = "update User set isSad = ?, updatedAt=CURRENT_TIMESTAMP where userIdx = ?";
+        String changeIsSadQuery = "update User set isSad = ? where userIdx = ?";
         Object[] changeIsSadParams = new Object[] {patchUserIsSadReq.isIsSad(), patchUserIsSadReq.getUserIdx()};
         return this.jdbcTemplate.update(changeIsSadQuery, changeIsSadParams);
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
+    }
+
+    // 정해진 시간마다 마지막 로그인 기록과 현재 시간과의 차이 계산
+    @Scheduled(cron = "0 0 0 * * *") // 매일 자정에 미접속 기간 체크 하도록 주기 설정
+    public void checkLastConnect() {
+        // 마지막 로그인 시간과 현재 시간이 5일 이상 차이 나는 userIdx 추출
+        String checkLastConnectQuery = "select userIdx from User where TIMESTAMPDIFF(day, lastConnect, CURRENT_TIMESTAMP) >= 5";
+        // 휴면으로 바꿔야할 userIdx 배열에 저장
+        ArrayList<Integer> needToDormantUsers = new ArrayList<>(this.jdbcTemplate.queryForList(checkLastConnectQuery, int.class)); // 쿼리 결과를 배열에 저장하도록함
+
+        // 휴면 처리 -> 수신 차단까지
+        String changeStatusQuery = "update User set status = 'dormant', recOthers = 0, recSimilarAge = 0 where userIdx = ?";
+        for (int userIdx : needToDormantUsers)
+            this.jdbcTemplate.update(changeStatusQuery, userIdx);
+
     }
 
 }
