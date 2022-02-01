@@ -4,6 +4,7 @@ import com.umc.btos.config.BaseException;
 import com.umc.btos.config.secret.Secret;
 import com.umc.btos.src.diary.model.*;
 import com.umc.btos.utils.AES128;
+import org.apache.catalina.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,8 +49,7 @@ public class DiaryService {
 
         try {
             int diaryIdx = diaryDao.saveDiary(postDiaryReq);
-            List doneIdxList = diaryDao.saveDoneList(diaryIdx, postDiaryReq.getDoneList());
-//            return new PostDiaryRes(diaryIdx, doneIdxList);
+            diaryDao.saveDoneList(diaryIdx, postDiaryReq.getDoneList());
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);

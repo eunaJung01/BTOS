@@ -38,22 +38,16 @@ public class DiaryDao {
         return this.jdbcTemplate.queryForObject(get_diaryIdx_query, int.class);
     }
 
-    // Done List 저장 -> doneIdxList 반환
-    public List saveDoneList(int diaryIdx, List doneList) {
-        List doneListIdx = new ArrayList(); // doneIdx를 담는 배열
+    // done list 저장
+    public void saveDoneList(int diaryIdx, List doneList) {
+        String query = "INSERT INTO Done(diaryIdx, content) VALUES(?, ?)";
 
-        String query = "INSERT INTO Done(diaryIdx, content) VALUES(?,?)";
         for (Object doneContent : doneList) {
             Object[] done = new Object[]{
                     diaryIdx, doneContent
             };
             this.jdbcTemplate.update(query, done); // Done Table에 순차적으로 저장
-
-            String get_doneIdx_query = "SELECT last_insert_id()";
-            doneListIdx.add(this.jdbcTemplate.queryForObject(get_doneIdx_query, int.class)); // doneIdxList에 해당 doneIdx 저장
         }
-
-        return doneListIdx;
     }
 
     // =================================== 일기 수정 ===================================

@@ -44,21 +44,38 @@ public class DiaryController {
     }
 
     /*
-     * 일기 저장 및 발송, 화분 점수와 레벨 변경
+     * 일기 저장, 화분 점수와 단계 변경
      * [POST] /diaries
      */
-//    @ResponseBody
-//    @PostMapping("")
-//    public BaseResponse<PatchModifyScoreRes> saveDiary(@RequestBody PostDiaryReq postDiaryReq) {
-//        try {
-//            diaryService.saveDiary(postDiaryReq);
-//            PatchModifyScoreRes result = plantService.modifyScore_plus(postDiaryReq.getUserIdx(), Constant.PLANT_LEVELUP_DIARY, "diary");
-//            return new BaseResponse<>(result);
-//
-//        } catch (BaseException exception) {
-//            return new BaseResponse<>(exception.getStatus());
-//        }
-//    }
+    @ResponseBody
+    @PostMapping("")
+    public BaseResponse<PatchModifyScoreRes> saveDiary(@RequestBody PostDiaryReq postDiaryReq) {
+        try {
+            diaryService.saveDiary(postDiaryReq);
+            PatchModifyScoreRes plantRes = plantService.modifyScore_plus(postDiaryReq.getUserIdx(), Constant.PLANT_LEVELUP_DIARY, "diary");
+
+            return new BaseResponse<>(plantRes);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /*
+     * 일기 발송
+     * [GET] /diaries/diarySendList
+     */
+    @ResponseBody
+    @GetMapping("/diarySendList")
+    public BaseResponse<GetDiarySendListRes> getDiarySendList() {
+        try {
+            GetDiarySendListRes diarySendList = diaryProvider.getDiarySendList();
+            return new BaseResponse<>(diarySendList);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+     }
 
     /*
      * 일기 수정
