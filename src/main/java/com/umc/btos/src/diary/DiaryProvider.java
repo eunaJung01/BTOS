@@ -47,7 +47,7 @@ public class DiaryProvider {
 
             // content 복호화
             if (diary.getIsPublic() == 0) { // private 일기일 경우 content 복호화
-                decryptContents(diary, true);
+                decryptContents(diary);
             }
             return diary;
 
@@ -57,19 +57,17 @@ public class DiaryProvider {
     }
 
     // content 복호화
-    public void decryptContents(GetDiaryRes diary, boolean hasDoneList) throws BaseException {
+    public void decryptContents(GetDiaryRes diary) throws BaseException {
         try {
             // Diary.content
             String diaryContent = diary.getContent();
             diary.setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent));
 
             // Done.content
-            if (hasDoneList) {
-                List<GetDoneRes> doneList = diary.getDoneList();
-                for (int j = 0; j < doneList.size(); j++) {
-                    String doneContent = diary.getDoneList().get(j).getContent();
-                    diary.getDoneList().get(j).setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
-                }
+            List<GetDoneRes> doneList = diary.getDoneList();
+            for (int j = 0; j < doneList.size(); j++) {
+                String doneContent = diary.getDoneList().get(j).getContent();
+                diary.getDoneList().get(j).setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
             }
 
         } catch (Exception ignored) {
