@@ -16,8 +16,8 @@ public class History<T> implements Comparable<History> {
     private int idx; // 식별자 (diary - diaryIdx / letter - letterIdx / reply - replyIdx)
     private String senderNickName; // 발신자 이름
     private T content; // 내용 (diary : History_Diary / letter, reply : String)
-    private String sendAt_raw; // 수신일 (yyyy-MM-dd HH:mm:ss)
-    private String sendAt; // 수신일 - 화면 출력용 (yyyy.MM.dd)
+    private String sendAt_raw; // 발신일(== 수신일) (yyyy-MM-dd HH:mm:ss)
+    private String sendAt; // 발신일 - 화면 출력용 (yyyy.MM.dd)
 
     @SneakyThrows
     @Override

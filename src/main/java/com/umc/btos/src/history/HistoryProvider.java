@@ -522,9 +522,9 @@ public class HistoryProvider {
     /*
      * History 본문 보기 (일기 or 편지 & 답장 리스트)
      * [GET] /histories/:userIdx/:type/:idx
-     * type = 선택한 본문의 type (일기일 경우 diary, 편지일 경우 letter, 답장일 경우 reply)
-     * idx = 선택한 본문의 식별자 (diary - diaryIdx / letter - letterIdx / reply - replyIdx)
-     * 최신순 정렬 (createdAt 기준 내림차순 정렬)
+     * type = 조회하고자 하는 본문의 type (일기일 경우 diary, 편지일 경우 letter, 답장일 경우 reply)
+     * idx = 조회하고자 하는 본문의 식별자 (diary - diaryIdx / letter - letterIdx / reply - replyIdx)
+     * createdAt 기준 오름차순 정렬
      */
     public GetHistoryRes getHistory_main(int userIdx, String type, int idx) throws BaseException {
         try {
@@ -542,7 +542,6 @@ public class HistoryProvider {
                 Letter letter = historyDao.getLetter_main(idx);
                 letter.setPositioning(true);
 
-
                 history.setFirstHistory(letter);
                 history.setReplyList(historyDao.getReplyList_letter(userIdx, idx));
 
@@ -558,7 +557,7 @@ public class HistoryProvider {
 
                     List<Reply> replyList = historyDao.getReplyList_diary(userIdx, diaryIdx);
                     for (Reply reply : replyList) {
-                        if (reply.getReplyIdx() == idx) {
+                        if (reply.getReplyIdx() == idx) { // 사용자가 조회하고자 하는 답장 본문
                             reply.setPositioning(true);
                         }
                     }
@@ -574,7 +573,7 @@ public class HistoryProvider {
 
                     List<Reply> replyList = historyDao.getReplyList_letter(userIdx, letterIdx);
                     for (Reply reply : replyList) {
-                        if (reply.getReplyIdx() == idx) {
+                        if (reply.getReplyIdx() == idx) { // 사용자가 조회하고자 하는 답장 본문
                             reply.setPositioning(true);
                         }
                     }

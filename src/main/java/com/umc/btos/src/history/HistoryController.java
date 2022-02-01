@@ -68,9 +68,9 @@ public class HistoryController {
     /*
      * History 본문 보기 (일기 or 편지 & 답장 리스트)
      * [GET] /histories/:userIdx/:type/:idx
-     * type = 선택한 본문의 type (일기일 경우 diary, 편지일 경우 letter, 답장일 경우 reply)
-     * idx = 선택한 본문의 식별자 (diary - diaryIdx / letter - letterIdx / reply - replyIdx)
-     * 최신순 정렬 (createdAt 기준 내림차순 정렬)
+     * type = 조회하고자 하는 본문의 type (일기일 경우 diary, 편지일 경우 letter, 답장일 경우 reply)
+     * idx = 조회하고자 하는 본문의 식별자 (diary - diaryIdx / letter - letterIdx / reply - replyIdx)
+     * createdAt 기준 오름차순 정렬
      */
     @ResponseBody
     @GetMapping("/{userIdx}/{type}/{idx}")
