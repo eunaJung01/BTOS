@@ -521,25 +521,50 @@ public class HistoryProvider {
 
     /*
      * History 본문 보기 (일기 or 편지 & 답장 리스트)
-     * [GET] /histories/:userIdx/:mainType/:mainIdx
-     * mainType = 어디서부터 시작된 답장인가? 1. diary : 일기 / 2. letter : 편지
-     * mainIdx = 답장 시작점(일기 또는 편지)의 식별자 (diary - diaryIdx / letter - letterIdx)
+     * [GET] /histories/:userIdx/:type/:idx
+     * type = 선택한 본문의 type (일기일 경우 diary, 편지일 경우 letter, 답장일 경우 reply)
+     * idx = 선택한 본문의 식별자 (diary - diaryIdx / letter - letterIdx / reply - replyIdx)
      * 최신순 정렬 (createdAt 기준 내림차순 정렬)
      */
-    public GetHistoryRes getHistory_main(int userIdx, String mainType, int mainIdx) throws BaseException {
+    public GetHistoryRes getHistory_main(int userIdx, String type, int idx) throws BaseException {
         try {
-            GetHistoryRes history = new GetHistoryRes(mainType);
+            GetHistoryRes history = new GetHistoryRes(type);
 
-            if (mainType.compareTo("diary") == 0) {
-                Diary diary = historyDao.getDiary_main(mainIdx);
-                diary.setDoneList(historyDao.getDoneList_main(mainIdx));
-                history.setMainHistory(diary);
-                history.setReplyList(historyDao.getReplyList_diary(mainIdx));
+            if (type.compareTo("diary") == 0) { // type = diary
+                Diary diary = historyDao.getDiary_main(idx);
+                diary.setDoneList(historyDao.getDoneList_main(idx));
 
-            } else {
-                Letter letter = historyDao.getLetter_main(mainIdx);
-                history.setMainHistory(letter);
-                history.setReplyList(historyDao.getReplyList_letter(mainIdx));
+                history.setFirstHistory(diary);
+                history.setReplyList(historyDao.getReplyList_diary(userIdx, idx));
+
+            } else if (type.compareTo("letter") == 0) { // type = letter
+                Letter letter = historyDao.getLetter_main(idx);
+
+                history.setFirstHistory(letter);
+                history.setReplyList(historyDao.getReplyList_letter(userIdx, idx));
+
+            } else { // type = reply
+                String firstHistoryType = historyDao.getHistoryType(idx); // 답장의 최초 시작점 (diary / letter)
+
+                if (firstHistoryType.compareTo("diary") == 0) { // 시작점이 일기인 경우
+                    history.setFirstType("diary");
+
+                    int diaryIdx = historyDao.getDiaryIdx_main(idx);
+                    Diary diary = historyDao.getDiary_main(diaryIdx);
+                    diary.setDoneList(historyDao.getDoneList_main(diaryIdx));
+
+                    history.setFirstHistory(diary);
+                    history.setReplyList(historyDao.getReplyList_diary(userIdx, diaryIdx));
+
+                } else if (firstHistoryType.compareTo("letter") == 0) { // 시작점이 편지인 경우
+                    history.setFirstType("letter");
+
+                    int letterIdx = historyDao.getLetterIdx_main(idx);
+                    Letter letter = historyDao.getLetter_main(letterIdx);
+
+                    history.setFirstHistory(letter);
+                    history.setReplyList(historyDao.getReplyList_letter(userIdx, letterIdx));
+                }
             }
 
             return history;

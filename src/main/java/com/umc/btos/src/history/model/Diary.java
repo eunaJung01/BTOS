@@ -1,6 +1,5 @@
 package com.umc.btos.src.history.model;
 
-import com.umc.btos.src.diary.model.GetDoneRes;
 import lombok.Getter;
 import lombok.Setter;
 
