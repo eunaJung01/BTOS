@@ -9,7 +9,6 @@ import lombok.Setter;
 public class GetPlantRes {
     private int plantIdx; // 화분 식별자
     private String plantName; // 화분 이름
-    private String plantImgUrl; // 화분 이미지
     private String plantInfo; // 화분 정보
     private int plantPrice; // 화분 가격
     private int maxLevel; //최대 레벨

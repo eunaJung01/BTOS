@@ -36,7 +36,7 @@ public class PlantDao {
         GetPlantRes getPlantRes = new GetPlantRes();
 
         //화분 기본 정보 FROM Plant
-        String plantQuery = "SELECT plantIdx, plantName, plantImgUrl, plantInfo, plantPrice, maxLevel " +
+        String plantQuery = "SELECT plantIdx, plantName, plantInfo, plantPrice, maxLevel " +
                 "FROM Plant WHERE plantIdx=? AND status=?";
         Object[] plantParams = new Object[]{plantIdx, "active"};
 
@@ -45,7 +45,6 @@ public class PlantDao {
                 (rs, rowNum) -> new PlantBasicInfo(
                         rs.getInt("plantIdx"),
                         rs.getString("plantName"),
-                        rs.getString("plantImgUrl"),
                         rs.getString("plantInfo"),
                         rs.getInt("plantPrice"),
                         rs.getInt("maxLevel")),
@@ -53,7 +52,6 @@ public class PlantDao {
 
         getPlantRes.setPlantIdx(plantBasicInfo.getPlantIdx());
         getPlantRes.setPlantName(plantBasicInfo.getPlantName());
-        getPlantRes.setPlantImgUrl(plantBasicInfo.getPlantImgUrl());
         getPlantRes.setPlantInfo(plantBasicInfo.getPlantInfo());
         getPlantRes.setMaxLevel(plantBasicInfo.getMaxLevel());
 
@@ -262,7 +260,7 @@ public class PlantDao {
 
             GetPlantRes getPlantRes = new GetPlantRes();
 
-            String plantQuery = "SELECT plantIdx, plantName, plantImgUrl, plantInfo, plantPrice, maxLevel " +
+            String plantQuery = "SELECT plantIdx, plantName, plantInfo, plantPrice, maxLevel " +
                     "FROM Plant WHERE plantIdx=? AND status=?";
             Object[] plantParams = new Object[]{plantIdxList.get(i), "active"};
 
@@ -272,7 +270,6 @@ public class PlantDao {
                     (rs, rowNum) -> new PlantBasicInfo(
                             rs.getInt("plantIdx"),
                             rs.getString("plantName"),
-                            rs.getString("plantImgUrl"),
                             rs.getString("plantInfo"),
                             rs.getInt("plantPrice"),
                             rs.getInt("maxLevel")),
@@ -281,7 +278,6 @@ public class PlantDao {
             // 화분 기본 정보 set
             getPlantRes.setPlantIdx(plantBasicInfo.getPlantIdx());
             getPlantRes.setPlantName(plantBasicInfo.getPlantName());
-            getPlantRes.setPlantImgUrl(plantBasicInfo.getPlantImgUrl());
             getPlantRes.setPlantInfo(plantBasicInfo.getPlantInfo());
             getPlantRes.setPlantPrice(plantBasicInfo.getPlantPrice());
             getPlantRes.setMaxLevel(plantBasicInfo.getMaxLevel());
@@ -314,6 +310,7 @@ public class PlantDao {
     }
 
 
+    //userIdx의 모든 plantIdx 목록
     public List<Integer> getUserPlantIdx(int userIdx) {
         String Query = "SELECT plantIdx FROM UserPlantList WHERE userIdx=?";
         int Param = userIdx;
@@ -323,6 +320,7 @@ public class PlantDao {
                 Param);
     }
 
+    //Plant테이블의 모든 plantIdx 목록
     public List<Integer> getPlantIdx() {
         String Query = "SELECT plantIdx FROM Plant";
 
