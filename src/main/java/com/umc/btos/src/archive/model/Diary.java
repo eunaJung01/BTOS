@@ -15,4 +15,12 @@ public class Diary {
     private String diaryDate; // yyyy.MM.dd
     private String content;
     private List<Done> doneList;
+
+    public Diary(int diaryIdx, int emotionIdx, String diaryDate, String content) {
+        this.diaryIdx = diaryIdx;
+        this.emotionIdx = emotionIdx;
+        this.diaryDate = diaryDate;
+        this.content = content;
+    }
+
 }

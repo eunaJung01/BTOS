@@ -55,12 +55,12 @@ public class ArchiveController {
      */
     @ResponseBody
     @GetMapping("/diaryList/{userIdx}/{pageNum}")
-    public BaseResponsePaging<List<GetDiaryRes>> getDiaryList(@PathVariable("userIdx") String userIdx, @PathVariable("pageNum") int pageNum, @RequestParam(required = false) String search, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
+    public BaseResponsePaging<List<GetDiaryListRes>> getDiaryList(@PathVariable("userIdx") String userIdx, @PathVariable("pageNum") int pageNum, @RequestParam(required = false) String search, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
         try {
             String[] params = new String[]{userIdx, search, startDate, endDate};
             PagingRes pageInfo = new PagingRes(pageNum, Constant.DIARYLIST_DATA_NUM); // 페이징 정보
 
-            List<GetDiaryRes> diaryList = archiveProvider.getDiaryList(params, pageInfo);
+            List<GetDiaryListRes> diaryList = archiveProvider.getDiaryList(params, pageInfo);
             return new BaseResponsePaging<>(diaryList, pageInfo);
 
         } catch (BaseException exception) {

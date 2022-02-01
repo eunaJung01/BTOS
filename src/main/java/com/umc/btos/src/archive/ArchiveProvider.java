@@ -72,7 +72,7 @@ public class ArchiveProvider {
      * 3. 기간 설정 조회 (startDate ~ endDate)
      * 4. 문자열 검색 & 기간 설정 조회 (search, startDate ~ endDate)
      */
-    public List<GetDiaryRes> getDiaryList(String[] params, PagingRes pageInfo) throws BaseException, NullPointerException {
+    public List<GetDiaryListRes> getDiaryList(String[] params, PagingRes pageInfo) throws BaseException, NullPointerException {
         try {
             // String[] params = new String[]{userIdx, search, startDate, lastDate};
             int userIdx = Integer.parseInt(params[0]);
@@ -85,11 +85,15 @@ public class ArchiveProvider {
             double dataNum = 0; // data 총 개수 (후에 Math.ceil 사용하는 연산 때문에 double)
             boolean needsPaging = false;
 
-            List<GetDiaryRes> diaryList = new ArrayList<>(); // 일기 정보 저장 (done list 조회 X, 일기 내용만 조회)
+            List<GetDiaryListRes> result = new ArrayList<>();
+            List<Diary> diaryList = new ArrayList<>(); // 일기 정보 저장 (done list 조회 X, 일기 내용만 조회)
+            List<String> monthList = new ArrayList<>(); // month 배열 (yyyy.MM)
+            List<Integer> idxList = new ArrayList<>(); // 문자열 검색을 할 경우 monthList 생성하게 해주는 장치
 
             // 1. 전체 조회 - default
             if (search == null && startDate == null && endDate == null) {
                 diaryList = archiveDao.getDiaryList(userIdx, pageNum);
+                monthList.addAll(archiveDao.getMonthList(userIdx, pageNum));
                 dataNum = archiveDao.getDiaryList_dataNum(userIdx);
             }
 
@@ -99,16 +103,17 @@ public class ArchiveProvider {
                 search = search.replaceAll("\"", ""); // 따옴표 제거
                 search = search.replaceAll(" ", ""); // 공백 제거
 
-                List<Integer> diaryIdxList = archiveDao.getDiaryIdxList(userIdx); // 특정 회원의 모든 일기 diaryIdx : List 형태로 저장
+                List<Integer> diaryIdxList_all = archiveDao.getDiaryIdxList(userIdx); // 특정 회원의 모든 일기 diaryIdx : List 형태로 저장
 
-                for (int diaryIdx : diaryIdxList) { // 차례대로 문자열 검색 -> 없다면 diaryIdxList에서 제거
+                for (int diaryIdx : diaryIdxList_all) {
                     String diaryContent = archiveDao.getDiaryContent(diaryIdx);
                     if (archiveDao.getIsPublic(diaryIdx) == 0) { // private 일기일 경우 content 복호화
                         diaryContent = new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent);
                     }
 
                     if (searchString(diaryContent, search)) { // 문자열 검색 -> 찾는 값이 존재하는 일기들만 저장
-                        diaryList.add(archiveDao.getDiary(diaryIdx));
+                        diaryList.add(archiveDao.getDiary_diaryList(diaryIdx));
+                        idxList.add(diaryIdx);
                     }
                 }
                 dataNum = diaryList.size();
@@ -119,6 +124,7 @@ public class ArchiveProvider {
             } else {
                 // 3. 기간 설정 조회 (startDate ~ endDate)
                 diaryList = archiveDao.getDiaryListByDate(userIdx, startDate, endDate, pageNum);
+                monthList.addAll(archiveDao.getMonthList(userIdx, startDate, endDate, pageNum));
                 dataNum = archiveDao.getDiaryListByDate_dataNum(userIdx, startDate, endDate);
 
                 // 4. 문자열 검색 & 날짜 기간 설정 조회 (search, startDate ~ endDate)
@@ -126,15 +132,18 @@ public class ArchiveProvider {
                     search = search.replaceAll("\"", ""); // 따옴표 제거
                     search = search.replaceAll(" ", ""); // 공백 제거
 
-                    for (int i = 0; i < diaryList.size(); i++) {
-                        String diaryContent = diaryList.get(i).getContent();
-                        if (diaryList.get(i).getIsPublic() == 0) { // private 일기일 경우 content 복호화
+                    List<Diary> diaryList_searched = new ArrayList<>();
+                    for (Diary diary : diaryList) {
+                        String diaryContent = diary.getContent();
+                        if (archiveDao.getIsPublic(diary.getDiaryIdx()) == 0) { // private 일기일 경우 content 복호화
                             diaryContent = new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent);
                         }
 
-                        if (!searchString(diaryContent, search)) { // 문자열 검색 -> 찾는 값이 존재하지 않는 일기들은 제거
-                            diaryList.remove(i);
+                        if (searchString(diaryContent, search)) { // 문자열 검색 -> 찾는 값이 존재하는 일기들만 저장
+                            diaryList_searched.add(diary);
+                            idxList.add(diary.getDiaryIdx());
                         }
+                        diaryList = diaryList_searched;
                     }
                     dataNum = diaryList.size();
                     if (dataNum > Constant.DIARYLIST_DATA_NUM) { // 페이징 처리 필요
@@ -160,7 +169,7 @@ public class ArchiveProvider {
                 int startDataIdx = (pageNum - 1) * Constant.DIARYLIST_DATA_NUM;
                 int endDataIdx = pageNum * Constant.DIARYLIST_DATA_NUM;
 
-                List<GetDiaryRes> diaryList_paging = new ArrayList<>(); // 일기 정보 저장 (done list 조회 X, 일기 내용만 조회)
+                List<Diary> diaryList_paging = new ArrayList<>(); // 일기 정보 저장 (done list 조회 X, 일기 내용만 조회)
                 for (int i = startDataIdx; i < endDataIdx; i++) {
                     diaryList_paging.add(diaryList.get(i));
                 }
@@ -168,13 +177,28 @@ public class ArchiveProvider {
             }
 
             // content 복호화
-            for (GetDiaryRes diary : diaryList) {
-                if (diary.getIsPublic() == 0) { // private 일기일 경우 content 복호화
+            for (Diary diary : diaryList) {
+                if (archiveDao.getIsPublic(diary.getDiaryIdx()) == 0) { // private 일기일 경우 content 복호화
                     decryptContents(diary, false);
                 }
             }
 
-            return diaryList;
+            if (search != null) {
+                monthList = archiveDao.getMonthList(userIdx, idxList);
+            }
+            for (String month : monthList) {
+                List<Diary> diaryList_month = new ArrayList<>();
+                for (Diary diary : diaryList) {
+                    if (diary.getDiaryDate().contains(month)) {
+                        diaryList_month.add(diary);
+                    }
+                }
+                if (diaryList_month.size() != 0) {
+                    result.add(new GetDiaryListRes(month, diaryList_month));
+                }
+            }
+
+            return result;
 
         } catch (NullPointerException exception) {
             throw new BaseException(EMPTY_RESULT); // 검색 결과 없음
@@ -189,6 +213,27 @@ public class ArchiveProvider {
     public boolean searchString(String diaryContent, String search) {
         String content_spaceDeleted = diaryContent.replaceAll(" ", ""); // 공백 제거
         return content_spaceDeleted.contains(search); // 문자열 검색 (존재 : true, 미존재 : false)
+    }
+
+    // content 복호화
+    public void decryptContents(Diary diary, boolean hasDoneList) throws BaseException {
+        try {
+            // Diary.content
+            String diaryContent = diary.getContent();
+            diary.setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent));
+
+            // Done.content
+            if (hasDoneList) {
+                List<Done> doneList = diary.getDoneList();
+                for (int j = 0; j < doneList.size(); j++) {
+                    String doneContent = diary.getDoneList().get(j).getContent();
+                    diary.getDoneList().get(j).setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
+                }
+            }
+
+        } catch (Exception ignored) {
+            throw new BaseException(DIARY_DECRYPTION_ERROR); // 일기 복호화에 실패하였습니다.
+        }
     }
 
     // content 복호화
