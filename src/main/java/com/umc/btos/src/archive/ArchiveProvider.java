@@ -48,7 +48,7 @@ public class ArchiveProvider {
                 }
             } else { // emotion으로 조회 -> 일기 별 감정 이모티콘 정보 저장 (set emotionIdx)
                 for (GetCalendarRes dateInfo : calendar) {
-                    dateInfo.setEmotionIdx(archiveDao.setEmotion(userIdx, dateInfo.getDiaryDate()));
+                    dateInfo.setEmotionIdx(archiveDao.getEmotion(userIdx, dateInfo.getDiaryDate()));
                 }
             }
             return calendar;
