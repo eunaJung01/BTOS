@@ -794,13 +794,9 @@ public class HistoryDao {
                 ), userIdx, userIdx, letterIdx);
     }
 
-    // firstHistoryType 반환
-    public String getHistoryType(int replyIdx) {
-        String query = "SELECT firstHistoryType FROM Reply WHERE Reply.replyIdx = ?";
-        return this.jdbcTemplate.queryForObject(query, String.class, replyIdx);
-    }
+    // --------------------------------------- idx 반환 ---------------------------------------
 
-    // diaryIdx 반환
+    // diaryIdx
     public int getDiaryIdx_main(int replyIdx) {
         String query = "SELECT DISTINCT Diary.diaryIdx " +
                 "FROM DiarySendList " +
@@ -811,7 +807,7 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, replyIdx);
     }
 
-    // letterIdx 반환
+    // letterIdx
     public int getLetterIdx_main(int replyIdx) {
         String query = "SELECT DISTINCT Letter.letterIdx " +
                 "FROM LetterSendList " +
@@ -820,6 +816,13 @@ public class HistoryDao {
                 "WHERE Reply.sendIdx = (SELECT sendIdx FROM Reply WHERE replyIdx = ?)";
 
         return this.jdbcTemplate.queryForObject(query, int.class, replyIdx);
+    }
+
+    // --------------------------------------- firstHistoryType 반환 ---------------------------------------
+
+    public String getHistoryType(int replyIdx) {
+        String query = "SELECT firstHistoryType FROM Reply WHERE Reply.replyIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, String.class, replyIdx);
     }
 
 }

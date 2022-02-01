@@ -530,27 +530,23 @@ public class HistoryProvider {
         try {
             GetHistoryRes history = new GetHistoryRes(type);
 
-            // type = diary
-            if (type.compareTo("diary") == 0) {
+            if (type.compareTo("diary") == 0) { // type = diary
                 Diary diary = historyDao.getDiary_main(idx);
                 diary.setDoneList(historyDao.getDoneList_main(idx));
 
                 history.setFirstHistory(diary);
                 history.setReplyList(historyDao.getReplyList_diary(userIdx, idx));
 
-            // type = letter
-            } else if (type.compareTo("letter") == 0) {
+            } else if (type.compareTo("letter") == 0) { // type = letter
                 Letter letter = historyDao.getLetter_main(idx);
 
                 history.setFirstHistory(letter);
                 history.setReplyList(historyDao.getReplyList_letter(userIdx, idx));
 
-            // type = reply
-            } else {
+            } else { // type = reply
                 String firstHistoryType = historyDao.getHistoryType(idx); // 답장의 최초 시작점 (diary / letter)
 
-                // 시작점이 일기인 경우
-                if (firstHistoryType.compareTo("diary") == 0) {
+                if (firstHistoryType.compareTo("diary") == 0) { // 시작점이 일기인 경우
                     history.setFirstType("diary");
 
                     int diaryIdx = historyDao.getDiaryIdx_main(idx);
@@ -560,8 +556,7 @@ public class HistoryProvider {
                     history.setFirstHistory(diary);
                     history.setReplyList(historyDao.getReplyList_diary(userIdx, diaryIdx));
 
-                // 시작점이 편지인 경우
-                } else if (firstHistoryType.compareTo("letter") == 0) {
+                } else if (firstHistoryType.compareTo("letter") == 0) { // 시작점이 편지인 경우
                     history.setFirstType("letter");
 
                     int letterIdx = historyDao.getLetterIdx_main(idx);
