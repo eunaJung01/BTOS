@@ -87,8 +87,8 @@ public class ArchiveProvider {
 
             List<GetDiaryListRes> result = new ArrayList<>();
             List<Diary> diaryList = new ArrayList<>(); // 일기 정보 저장 (done list 조회 X, 일기 내용만 조회)
-            List<String> monthList = new ArrayList<>(); // month 배열 (yyyy.MM)
-            List<Integer> idxList = new ArrayList<>(); // 문자열 검색을 할 경우 monthList 생성하게 해주는 장치
+            List<String> monthList = new ArrayList<>(); // response에 들어가게 되는 날짜들 저장 (yyyy.MM)
+            List<Integer> idxList = new ArrayList<>(); // 문자열 검색을 할 경우 monthList 생성하게 해주는 장치 (찾는 값이 존재하는 일기의 인덱스만 저장)
 
             // 1. 전체 조회 - default
             if (search == null && startDate == null && endDate == null) {
@@ -183,25 +183,26 @@ public class ArchiveProvider {
                 }
             }
 
-            if (search != null) {
-                monthList = archiveDao.getMonthList(userIdx, idxList);
+            if (search != null) { // 문자열 검색이 들어간 경우
+                monthList = archiveDao.getMonthList(userIdx, idxList); // diaryIdx 리스트로 날짜(yyyy.MM) 리스트 반환 (중복 제거)
             }
             for (String month : monthList) {
-                List<Diary> diaryList_month = new ArrayList<>();
+                List<Diary> diaryList_month = new ArrayList<>(); // 같은 '년도-달'인 일기들을 묶는 리스트
                 for (Diary diary : diaryList) {
-                    if (diary.getDiaryDate().contains(month)) {
+                    if (diary.getDiaryDate().contains(month)) { //
                         diaryList_month.add(diary);
                     }
                 }
                 if (diaryList_month.size() != 0) {
-                    result.add(new GetDiaryListRes(month, diaryList_month));
+                    result.add(new GetDiaryListRes(month, diaryList_month)); // GetDiaryListRes 객체 생성
                 }
             }
 
             // set doneListNum
             for (GetDiaryListRes getDiaryListRes : result) {
                 for (int j = 0; j < getDiaryListRes.getDiaryList().size(); j++) {
-                    getDiaryListRes.getDiaryList().get(j).setDoneListNum(archiveDao.setDoneListNum(getDiaryListRes.getDiaryList().get(j).getDiaryIdx()));
+                    Diary diary = getDiaryListRes.getDiaryList().get(j);
+                    diary.setDoneListNum(archiveDao.setDoneListNum(diary.getDiaryIdx()));
                 }
             }
 
@@ -222,33 +223,12 @@ public class ArchiveProvider {
         return content_spaceDeleted.contains(search); // 문자열 검색 (존재 : true, 미존재 : false)
     }
 
-    // content 복호화
+    // content 복호화 - 일기 리스트 조회
     public void decryptContents(Diary diary, boolean hasDoneList) throws BaseException {
         try {
             // Diary.content
             String diaryContent = diary.getContent();
             diary.setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent));
-
-        } catch (Exception ignored) {
-            throw new BaseException(DIARY_DECRYPTION_ERROR); // 일기 복호화에 실패하였습니다.
-        }
-    }
-
-    // content 복호화
-    public void decryptContents(GetDiaryRes diary, boolean hasDoneList) throws BaseException {
-        try {
-            // Diary.content
-            String diaryContent = diary.getContent();
-            diary.setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent));
-
-            // Done.content
-            if (hasDoneList) {
-                List<Done> doneList = diary.getDoneList();
-                for (int j = 0; j < doneList.size(); j++) {
-                    String doneContent = diary.getDoneList().get(j).getContent();
-                    diary.getDoneList().get(j).setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
-                }
-            }
 
         } catch (Exception ignored) {
             throw new BaseException(DIARY_DECRYPTION_ERROR); // 일기 복호화에 실패하였습니다.
@@ -272,6 +252,27 @@ public class ArchiveProvider {
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // content 복호화 - 일기 조회
+    public void decryptContents(GetDiaryRes diary, boolean hasDoneList) throws BaseException {
+        try {
+            // Diary.content
+            String diaryContent = diary.getContent();
+            diary.setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent));
+
+            // Done.content
+            if (hasDoneList) {
+                List<Done> doneList = diary.getDoneList();
+                for (int j = 0; j < doneList.size(); j++) {
+                    String doneContent = diary.getDoneList().get(j).getContent();
+                    diary.getDoneList().get(j).setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
+                }
+            }
+
+        } catch (Exception ignored) {
+            throw new BaseException(DIARY_DECRYPTION_ERROR); // 일기 복호화에 실패하였습니다.
         }
     }
 
