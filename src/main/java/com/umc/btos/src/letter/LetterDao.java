@@ -83,18 +83,24 @@ public class LetterDao {
     }
 
     // 해당 letterIdx를 갖는 편지조회
-    public GetLetterRes getLetter(int letterIdx) {
-        String getLetterQuery = "select * from Letter where letterIdx = ?"; // 해당 letterIdx를 만족하는 편지를 조회하는 쿼리문
-        int getLetterParams = letterIdx;
+    public GetLetterRes getLetter(int letterIdx,int userIdx) {
+        String getLetterQuery = "select L.letterIdx, L.userIdx,LS.receiverIdx,L.content from Letter L, LetterSendList LS where L.letterIdx = ? and LS.letterIdx = ? and LS.receiverIdx = ?; "; // 해당 letterIdx를 만족하는 편지를 조회하는 쿼리문
         return this.jdbcTemplate.queryForObject(getLetterQuery,
                 (rs, rowNum) -> new GetLetterRes(
                         rs.getInt("letterIdx"),
-                        rs.getInt("replierIdx"),
+                        rs.getInt("userIdx"),
                         rs.getInt("receiverIdx"),
                         rs.getString("content")),
-                getLetterParams); // 한 개의 편지정보를 얻기 위한 jdbcTemplate 함수(Query, 객체 매핑 정보, Params)의 결과 반환
+                letterIdx,letterIdx,userIdx); // 한 개의 편지정보를 얻기 위한 jdbcTemplate 함수(Query, 객체 매핑 정보, Params)의 결과 반환
     }
 
+    //해당 letterIdx를 갖는 편지의 isChecked를 1로 update // isChecked가 0이면 열람 X, 1이면 열람 O
+    public int modifyIsChecked(int letterIdx, int userIdx) {
+        String getReplyQuery = "update LetterSendList set isChecked=1 where letterIdx = ? and receiverIdx = ?"; // 해당 replyIdx를 만족하는 답장의 열람 여부를 변경하는 쿼리문
+        Object[] modifyReplyStatusParams = new Object[]{letterIdx, userIdx}; // 주입될 값 (replyIdx)
+
+        return this.jdbcTemplate.update(getReplyQuery, modifyReplyStatusParams); // 대응시켜 매핑시켜 쿼리 요청(선공했으면 1, 실패했으면 0)
+    }
 
 
     //편지 삭제 // 해당 letterIdx의 편지 status를 deleted로 변경
