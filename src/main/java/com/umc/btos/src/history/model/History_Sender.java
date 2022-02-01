@@ -15,8 +15,8 @@ public class History_Sender<T> implements Comparable<History_Sender> {
     private String type; // diary : 일기 / letter : 편지 / reply : 답장
     private int idx; // 식별자 (diary - diaryIdx / letter - letterIdx / reply - replyIdx)
     private T content; // 내용 - createdAt 기준 내림차순 정렬 시 첫 항목 (diary : History_Diary / letter, reply : String)
-    private String sendAt_raw; // 수신일 (yyyy-MM-dd HH:mm:ss) == 발신일
-    private String sendAt; // 수신일 - 화면 출력용 (yyyy.MM.dd)
+    private String sendAt_raw; // 발신일(== 수신일) (yyyy-MM-dd HH:mm:ss)
+    private String sendAt; // 발신일 - 화면 출력용 (yyyy.MM.dd)
 
     @SneakyThrows
     @Override

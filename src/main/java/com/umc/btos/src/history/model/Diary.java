@@ -14,6 +14,7 @@ public class Diary {
     private List<Done> doneList;
     private String senderNickName;
     private String sendAt; // yyyy.MM.dd
+    private boolean positioning = false;
 
     public Diary(int diaryIdx, int emotionIdx, String content, String senderNickName, String sendAt) {
         this.diaryIdx = diaryIdx;
