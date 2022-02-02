@@ -1,5 +1,6 @@
 package com.umc.btos.src.auth;
 
+import com.umc.btos.config.BaseException;
 import com.umc.btos.src.auth.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,6 +10,8 @@ import javax.sound.midi.Patch;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.umc.btos.config.BaseResponseStatus.*;
 
 @Repository
 
@@ -38,13 +41,15 @@ public class AuthDao {
         return this.jdbcTemplate.queryForObject(checkStatusOfUserQuery, String.class, checkStatusOfUserParam);
     }
 
-    // 해당 userIdx을 가진 유저가 휴면 상태면 재활성화
-    public void checkStatusOfUser(int userIdx){
+    // 해당 userIdx을 가진 유저 상태 체크 -> 휴면이면 재활성화, 탈퇴면 예외 메시지
+    public void checkStatusOfUser(int userIdx) throws BaseException {
         String statusOfUserQuery = "select status from User where userIdx = ?";
 
         if (this.jdbcTemplate.queryForObject(statusOfUserQuery, String.class, userIdx).equals("dormant")) // 휴면 상태면 재활성화
             jdbcTemplate.update("update User set status = 'active', recOthers = 1, recSimilarAge = 1 where userIdx = ?", userIdx);
 
+        else if (this.jdbcTemplate.queryForObject(statusOfUserQuery, String.class, userIdx).equals("deleted")) // 탈퇴 상태면 throw exception
+            throw new BaseException(INVALID_JWT);
     }
 
     // 해당 이메일을 가진 유저의 식별자 반환
