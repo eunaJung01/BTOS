@@ -10,6 +10,6 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class GetDiaryListRes {
-    private String month;
+    private String month; // yyyy.MM
     private List<Diary> diaryList;
 }

@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -24,6 +23,8 @@ public class DiaryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, date);
     }
 
+    // =================================== 일기 저장 ===================================
+
     // 일기 저장 -> diaryIdx 반환
     public int saveDiary(PostDiaryReq postDiaryReq) {
         String query = "INSERT INTO Diary(userIdx, emotionIdx, diaryDate, isPublic, content) VALUES(?,?,?,?,?)";
@@ -36,22 +37,24 @@ public class DiaryDao {
         return this.jdbcTemplate.queryForObject(get_diaryIdx_query, int.class);
     }
 
-    // Done List 저장 -> doneIdxList 반환
-    public List saveDoneList(int diaryIdx, List doneList) {
-        List doneListIdx = new ArrayList(); // doneIdx를 담는 배열
-
+    // done list 저장
+    public void saveDoneList(int diaryIdx, List doneList) {
         String query = "INSERT INTO Done(diaryIdx, content) VALUES(?,?)";
+
         for (Object doneContent : doneList) {
             Object[] done = new Object[]{
                     diaryIdx, doneContent
             };
             this.jdbcTemplate.update(query, done); // Done Table에 순차적으로 저장
-
-            String get_doneIdx_query = "SELECT last_insert_id()";
-            doneListIdx.add(this.jdbcTemplate.queryForObject(get_doneIdx_query, int.class)); // doneIdxList에 해당 doneIdx 저장
         }
+    }
 
-        return doneListIdx;
+    // =================================== 일기 수정 ===================================
+
+    // diaryDate 반환
+    public String getDiaryDate(int diaryIdx) {
+        String query = "SELECT diaryDate FROM Diary WHERE diaryIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, String.class, diaryIdx);
     }
 
     // 일기 수정
@@ -80,6 +83,8 @@ public class DiaryDao {
         return 1;
     }
 
+    // =================================== 일기 삭제 ===================================
+
     // 일기 삭제 - Diary.status : active -> deleted
     public int deleteDiary(int diaryIdx) {
         String query = "UPDATE Diary SET status = ? WHERE diaryIdx = ?";
@@ -94,7 +99,9 @@ public class DiaryDao {
         return this.jdbcTemplate.update(query, params);
     }
 
-    // 일기 조회
+    // =================================== 일기 조회 ===================================
+
+    // Diary
     public GetDiaryRes getDiary(int diaryIdx) {
         String query = "SELECT * FROM Diary WHERE diaryIdx = ? AND status = 'active'";
         return this.jdbcTemplate.queryForObject(query,
@@ -107,7 +114,7 @@ public class DiaryDao {
                 ), diaryIdx);
     }
 
-    // done list 조회
+    // Done
     public List<GetDoneRes> getDoneList(int diaryIdx) {
         String query = "SELECT * FROM Done WHERE diaryIdx = ? AND status = 'active'";
         return this.jdbcTemplate.query(query,

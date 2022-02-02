@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import static com.umc.btos.config.BaseResponseStatus.UNPRIVATE_DATE;
+
 @RestController
 @RequestMapping("/diaries")
 public class DiaryController {
@@ -44,39 +46,56 @@ public class DiaryController {
     }
 
     /*
-     * 일기 저장 및 발송, 화분 점수와 레벨 변경
+     * 일기 저장, 화분 점수와 단계 변경
      * [POST] /diaries
      */
+    @ResponseBody
+    @PostMapping("")
+    public BaseResponse<PatchModifyScoreRes> saveDiary(@RequestBody PostDiaryReq postDiaryReq) {
+        try {
+            diaryService.saveDiary(postDiaryReq);
+            PatchModifyScoreRes plantRes = plantService.modifyScore_plus(postDiaryReq.getUserIdx(), Constant.PLANT_LEVELUP_DIARY, "diary");
+
+            return new BaseResponse<>(plantRes);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /*
+     * 일기 발송
+     * [GET] /diaries/diarySendList
+     */
 //    @ResponseBody
-//    @PostMapping("")
-//    public BaseResponse<PatchModifyScoreRes> saveDiary(@RequestBody PostDiaryReq postDiaryReq) {
+//    @GetMapping("/diarySendList")
+//    public BaseResponse<GetDiarySendListRes> getDiarySendList() {
 //        try {
-//            diaryService.saveDiary(postDiaryReq);
-//            PatchModifyScoreRes result = plantService.modifyScore_plus(postDiaryReq.getUserIdx(), Constant.PLANT_LEVELUP_DIARY, "diary");
-//            return new BaseResponse<>(result);
+//            GetDiarySendListRes diarySendList = diaryProvider.getDiarySendList();
+//            return new BaseResponse<>(diarySendList);
 //
 //        } catch (BaseException exception) {
 //            return new BaseResponse<>(exception.getStatus());
 //        }
-//    }
+//     }
 
     /*
      * 일기 수정
      * [PUT] /diaries
      */
-//    @ResponseBody
-//    @PutMapping("")
-//    public BaseResponse<String> modifyDiary(@RequestBody PutDiaryReq putDiaryReq) {
-//        try {
-//            diaryService.modifyDiary(putDiaryReq);
-//
-//            String result = "일기(diaryIdx=" + putDiaryReq.getDiaryIdx() + ") 수정 완료";
-//            return new BaseResponse<>(result);
-//
-//        } catch (BaseException exception) {
-//            return new BaseResponse<>(exception.getStatus());
-//        }
-//    }
+    @ResponseBody
+    @PutMapping("")
+    public BaseResponse<String> modifyDiary(@RequestBody PutDiaryReq putDiaryReq) {
+        try {
+            diaryService.modifyDiary(putDiaryReq);
+
+            String result = "일기(diaryIdx=" + putDiaryReq.getDiaryIdx() + ") 수정 완료";
+            return new BaseResponse<>(result);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 
     /*
      * 일기 삭제

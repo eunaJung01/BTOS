@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.umc.btos.config.BaseResponseStatus.*;
@@ -47,7 +48,7 @@ public class DiaryProvider {
 
             // content 복호화
             if (diary.getIsPublic() == 0) { // private 일기일 경우 content 복호화
-                decryptContents(diary, true);
+                decryptContents(diary);
             }
             return diary;
 
@@ -57,19 +58,17 @@ public class DiaryProvider {
     }
 
     // content 복호화
-    public void decryptContents(GetDiaryRes diary, boolean hasDoneList) throws BaseException {
+    public void decryptContents(GetDiaryRes diary) throws BaseException {
         try {
             // Diary.content
             String diaryContent = diary.getContent();
             diary.setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent));
 
             // Done.content
-            if (hasDoneList) {
-                List<GetDoneRes> doneList = diary.getDoneList();
-                for (int j = 0; j < doneList.size(); j++) {
-                    String doneContent = diary.getDoneList().get(j).getContent();
-                    diary.getDoneList().get(j).setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
-                }
+            List<GetDoneRes> doneList = diary.getDoneList();
+            for (int j = 0; j < doneList.size(); j++) {
+                String doneContent = diary.getDoneList().get(j).getContent();
+                diary.getDoneList().get(j).setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
             }
 
         } catch (Exception ignored) {
@@ -77,4 +76,16 @@ public class DiaryProvider {
         }
     }
 
+    /*
+     * 일기 발송
+     * [GET] /diaries/diarySendList
+     */
+    public GetDiarySendListRes getDiarySendList() {
+        // 발송 구현
+        List<DiarySendList> diarySendList = new ArrayList<>();
+
+        // 발송 가능한 유저 나열 userIdx
+        // recOthers 다른 사람의 편지 수신 여부 -> 1
+        // recSimilarAge 비슷한 나이대 수신 여부 -> 1 : birth -5 ~ +5 까지
+    }
 }
