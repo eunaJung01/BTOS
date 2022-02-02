@@ -4,14 +4,16 @@ import com.umc.btos.config.BaseException;
 import com.umc.btos.config.secret.Secret;
 import com.umc.btos.src.diary.model.*;
 import com.umc.btos.utils.AES128;
-import org.apache.catalina.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.umc.btos.config.BaseResponseStatus.*;
@@ -65,12 +67,11 @@ public class DiaryService {
 
     // 일기 작성 또는 수정 시 의미적 validaion - 당일에 작성한 일기가 아니라면 발송 불가
     public void checkPublicDate(String diaryDate, int isPublic) throws BaseException {
-        LocalDate now = LocalDate.now(); // 오늘 날짜 (YYYY-MM-DD) -> .으로 바꿔야함
-//        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd"); // ex. 2022-01-20 14:03:23
-//        Date now_formatted = format.parse(now.toString());
+        LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
+        String now_formatted = now.toString().replaceAll("-", "."); // ex) 2022-02-02 -> 2022.02.02
 
         // 작성일과 일기의 해당 날짜가 다를 경우 발송(isPublic == 1) 불가
-        if (diaryDate.compareTo(now.toString()) != 0 && isPublic == 1) {
+        if (diaryDate.compareTo(now_formatted) != 0 && isPublic == 1) {
             throw new BaseException(UNPRIVATE_DATE); // 당일에 작성한 일기만 발송 가능합니다!
         }
     }

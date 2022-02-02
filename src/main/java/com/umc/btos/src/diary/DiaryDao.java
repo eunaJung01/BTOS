@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -40,7 +39,7 @@ public class DiaryDao {
 
     // done list 저장
     public void saveDoneList(int diaryIdx, List doneList) {
-        String query = "INSERT INTO Done(diaryIdx, content) VALUES(?, ?)";
+        String query = "INSERT INTO Done(diaryIdx, content) VALUES(?,?)";
 
         for (Object doneContent : doneList) {
             Object[] done = new Object[]{
