@@ -50,7 +50,7 @@ public class TestController {
         logger.warn("Warn Level 테스트");
         logger.error("ERROR Level 테스트");
 
-        return "Success GitHub Actions Test";
+        return "Success GitHub Actions Test (yeah?)";
     }
 
 }

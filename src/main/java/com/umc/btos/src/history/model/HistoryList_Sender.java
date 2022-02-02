@@ -4,19 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
 public class HistoryList_Sender {
     private String senderNickName; // 발신자 이름
-    private int historyListNum; // 개수
-    private List<History> historyList; // 내용
-
-    public HistoryList_Sender(String senderNickName, List<History> historyList) {
-        this.senderNickName = senderNickName;
-        this.historyList = historyList;
-    }
-
+    private int historyListNum; // 수신한 일기, 편지, 답장의 전체 개수
+    private History_Sender firstContent; // 내용 - createdAt 기준 내림차순 정렬 시 상위 1번째 항목
 }

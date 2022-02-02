@@ -1,4 +1,4 @@
-package com.umc.btos.src.diary.model;
+package com.umc.btos.src.archive.model;
 
 import lombok.Getter;
 import lombok.Setter;

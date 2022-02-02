@@ -9,7 +9,7 @@ import java.util.List;
 @Setter
 public class GetHistoryListRes<T> {
     private String filtering;
-    private List<T> list; // filtering 1. sender -> List<HistoryList_Sender> / 2. diary, letter -> List<History>
+    private List<T> list; // filtering = 1. sender -> List<HistoryList_Sender> / 2. diary, letter -> List<History>
 
     public GetHistoryListRes(String filtering) {
         this.filtering = filtering;

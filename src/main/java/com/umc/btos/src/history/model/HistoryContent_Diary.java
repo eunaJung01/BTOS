@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class History_Diary {
+public class HistoryContent_Diary {
     private String diaryContent;
     private int emotionIdx;
     private int doneListNum;

@@ -88,15 +88,19 @@ public enum BaseResponseStatus {
     DIARY_DECRYPTION_ERROR(false, 6005, "일기 복호화에 실패하였습니다."),
     EMPTY_RESULT(false, 6006, "검색 결과 없음"),
     PAGENUM_ERROR(false, 6006, "잘못된 페이지 요청입니다."),
+    MAIN_HISTORY_WRONG_REQ(false, 6007, "잘못된 userIdx 또는 idx 요청입니다."),
 
 
     // 7000 : 자몽
     TEMP3(false, 9000, "conflict 방지용 3"),
 
 //    MODIFY_FAIL_STATUS(false, 7010, "화분 상태 변경에 실패하였습니다."),
+    INSERT_FAIL_PLANT(false,7000,"해당 유저의 화분 초기화에 실패하였습니다."),
+
     MODIFY_FAIL_BUY_PLANT(false,7011, "화분 선택에 실패하였습니다."),
     MODIFY_FAIL_SCORE(false, 7012, "화분 점수 변경에 실패하였습니다."),
     MODIFY_FAIL_LEVEL(false, 7013, "화분 단계 변경에 실패하였습니다."),
+
 
     INVALID_SCORE_PLANT(false,7014, "선택한 화분의 점수가 0점입니다. 점수를 감소시킬 수 없습니다."),
     INVALID_LEVEL_PLANT(false,7015,"동작을 수행할 화분의 단계가 0단계이므로 더 이상 단계와 점수를 감소시킬 수 없습니다."),
@@ -119,6 +123,7 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_REPLY_STATUS(false, 8005,"답장 삭제 실패"),
     MODIFY_REPLY_ISCHECKED_ERROR(false, 8007,"답장의 열람여부 변경 실패"),
     NOTICE_DATABASE_ERROR(false, 8006,"공지 조회 실패"),
+    MODIFY_LETTERSENDLIST_ISCHECKED_ERROR(false,8008,"편지 열람여부 변경 실패"),
     TEMP4(false, 9000, "conflict 방지용 4");
 
 

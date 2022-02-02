@@ -2,7 +2,6 @@ package com.umc.btos.src.plant;
 
 import com.umc.btos.config.BaseException;
 import com.umc.btos.config.BaseResponse;
-import com.umc.btos.config.Constant;
 import com.umc.btos.src.plant.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,17 +28,17 @@ public class PlantController {
 
 
     /**
-     * 화분목록조회(Profile) API
-     * [GET] /btos/plants/:userIdx/list
+     * 화분목록조회(Profile + 상점) API
+     * [GET] /plants/:userIdx
      * Path variable : userIdx (mandatory: Y)
      */
     @ResponseBody
-    @GetMapping("{userIdx}/list")
+    @GetMapping("{userIdx}")
     public BaseResponse<List<GetPlantRes>> getPlantList(@PathVariable("userIdx") int userIdx) {
         try {
             //조회 성공 시 : List<GetPlantRes> 형태로 결과(화분목록) 반환 - 1000
             //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
-            List<GetPlantRes> getPlantRes = plantProvider.getAllPlant(userIdx); //조회(read) -> Provider
+            List<GetPlantRes> getPlantRes = plantProvider.getPlantList(userIdx); //조회(read) -> Provider
             return new BaseResponse<>(getPlantRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -49,13 +48,13 @@ public class PlantController {
 
     /**
      * 회원이 선택한 화분 조회 API
-     * [GET] /btos/plants?plantIdx=&userIdx=
+     * [GET] /plants?plantIdx=&userIdx=
      * Query String : plantIdx, userIdx (mandatory: Y)
      */
     @ResponseBody
     @GetMapping("")
-    public BaseResponse<GetSpecificPlantRes> getSelectedPlant(@RequestParam("plantIdx") int plantIdx,
-                                                              @RequestParam("userIdx") int userIdx) {
+    public BaseResponse<GetPlantRes> getSelectedPlant(@RequestParam("plantIdx") int plantIdx,
+                                                      @RequestParam("userIdx") int userIdx) {
         try {
             //조회 성공 시 : GetSpecificPlantRes 형태로 결과 반환 - 1000
             //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
@@ -67,7 +66,7 @@ public class PlantController {
 
     /**
      * 화분 선택 API
-     * [PATCH] /btos/plants/select
+     * [PATCH] /plants/select
      * RequestBody : PatchSelectPlantReq - 필드명 userIdx, futurePlant(=uPlantIdx) (mandatory: Y)
      */
     @ResponseBody
@@ -87,7 +86,7 @@ public class PlantController {
 
     /**
      * 화분 구매(보유) API
-     * [POST] /btos/plants/buy
+     * [POST] /plants/buy
      * RequestBody : PostBuyPlantReq - 필드명 userIdx, plantIdx (mandatory: Y)
      */
     @ResponseBody
@@ -98,6 +97,41 @@ public class PlantController {
             //       실패시 : "화분 상태 변경에 실패하였습니다." - 7011
             //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
             return new BaseResponse<>(plantService.buyPlant(postBuyPlantReq));
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 유저 화분 초기화 API
+     * [POST] /plants/:userIdx/initialize
+     * Path Variable : userIdx (mandatory : Y)
+     */
+    @ResponseBody
+    @PostMapping("{userIdx}/initialize")
+    public BaseResponse<String> initializeUserPlant(@PathVariable("userIdx") int userIdx) {
+        try {
+            // 추가(초기화) 성공 시 : "요청에 성공하였습니다." - 1000
+            // 추가(초기화) 실패 시 : "해당 유저의 화분 초기화에 실패하였습니다." - 7000
+            // DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
+            return new BaseResponse<>(plantService.initializeUserPlant(userIdx));
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 화분 개수 조회 API
+     * [GET] /plants/count
+     */
+    @ResponseBody
+    @GetMapping("count")
+    public BaseResponse<GetCountPlantRes> countPlant() {
+        try {
+            // 성공 시 : "요청에 성공하였습니다." - 1000
+            // DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
+            GetCountPlantRes getCountPlantRes = new GetCountPlantRes(plantProvider.countPlant());
+            return new BaseResponse<>(getCountPlantRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
