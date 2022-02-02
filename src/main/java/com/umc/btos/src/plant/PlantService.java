@@ -76,70 +76,18 @@ public class PlantService {
     //유저 화분 초기화 API
     public BaseResponseStatus initializeUserPlant(int userIdx) throws BaseException {
         try {
-            if(plantDao.initializeUserPlant(userIdx) == 1)
+            if (plantDao.initializeUserPlant(userIdx) == 1)
                 return SUCCESS;
             else
                 throw new BaseException(INSERT_FAIL_PLANT);
-        } catch(Exception exception) {
+        } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
-    //화분 점수 증가 (Service)
-    /*
-    public PatchUpDownScoreRes upScore(int userIdx, PatchUpDownScoreReq patchUpDownScoreReq) throws BaseException {
-        int addScore = patchUpDownScoreReq.getAddScore();
-        try {
-            //화분이 시무룩 상태면 성장치 오르지 않음
-            if(plantProvider.checkSad(userIdx) == true)
-                throw new BaseException(SAD_STATUS_PLANT); //화분이 시무룩 상태입니다. 화분의 성장치를 증가시킬 수 없습니다.
+    // =================================== 화분 점수 및 단계 변경 ===================================
 
-            //점수 변경
-            if (plantDao.plusScore(userIdx, addScore) == 1) { //점수 변경 성공
-                //TODO: 1. 점수 증가 후의 score 가져오기
-                //      2. 가져온 점수가 단계 증가 조건에 충족되면 "화분 단계 변경 (Service)" 호출
-
-                //점수에 따라서 patchUpDownScoreReq 필드 1로 Set
-                PatchUpDownScoreRes patchUpDownScoreRes = new PatchUpDownScoreRes();
-                if (addScore == 5) //PLANT_LEVELUP_DIARY
-                    patchUpDownScoreRes.setDiary_upScore(1);
-                else if (addScore == 3) //PLANT_LEVELUP_LETTER
-                    patchUpDownScoreRes.setLetter_upScore(1);
-
-                //1번
-                int currentScore = plantProvider.selectScore(userIdx); //증가 후의 score 가져오기
-                int currentLevel = plantProvider.selectLevel(userIdx); //level 가져오기(점수가 증가는 됐지만 그에 따른 영향은 아직 안받은 상태)
-
-                // 2번
-                Boolean condFor0 = (currentScore == PLANT_LEVEL_0 && currentLevel == 0); //현재 score = 15 && 현재 레벨 0
-                Boolean condFor1 = (currentScore == PLANT_LEVEL_1 && currentLevel == 1); //현재 score = 30 && 현재 레벨 1
-                Boolean condFor2 = (currentScore == PLANT_LEVEL_2 && currentLevel == 2); //현재 score = 30 && 현재 레벨 2
-                Boolean condFor3 = (currentScore == PLANT_LEVEL_3 && currentLevel == 3); //현재 score = 50 && 현재 레벨 3
-                Boolean condFor4 = (currentScore == PLANT_LEVEL_4 && currentLevel == 4); //현재 score = 70 && 현재 레벨 4
-                Boolean condFor5 = (currentScore == PLANT_LEVEL_5 && currentLevel == 5); //현재 score = 70 && 현재 레벨 5
-                if (condFor0 || condFor1 || condFor2 || condFor3 || condFor4 || condFor5) { //점수 충족 -> 화분 단계 변경 (Service) 호출
-
-                    if (upLevel(userIdx) == 1) { //점수 up && 레벨 up --> return 1
-                        patchUpDownScoreRes.setUpLevel(1);
-                        return patchUpDownScoreRes; //변경 성공
-                    } else {
-                        throw new BaseException(MODIFY_FAIL_LEVEL); //변경 실패
-                    }
-
-                } else { //점수만 up (점수 충족 X)
-                    return patchUpDownScoreRes;
-                }
-
-            } else { //점수 변경 실패
-                throw new BaseException(MODIFY_FAIL_SCORE);
-            }
-        } catch (Exception exception) {
-            throw exception;
-        }
-    }
-     */
-
-    // 화분 점수 변경 (증가)
+    // 화분 점수 증가
     public PatchModifyScoreRes modifyScore_plus(int userIdx, int score, String type) throws BaseException {
         // score : 변경할 점수
 
@@ -167,12 +115,17 @@ public class PlantService {
                 plantLevel++; // 단계 + 1
                 plantScore -= plantMaxScore; // 점수 = 변경된 점수 - 성장치
 
-                plantDao.setLevel(userIdx, plantLevel); // 변경된 단계 반영
+                if (plantDao.setLevel(userIdx, plantLevel) == 0) { // 변경된 단계 반영
+                    throw new BaseException(MODIFY_FAIL_LEVEL); // 화분 단계 변경에 실패하였습니다.
+                }
                 result.setLevelChanged(true); // 단계가 변경되었다는 정보를 response에 넣기
             }
 
-            plantDao.setScore(userIdx, plantScore); // 변경된 점수 반영
+            if (plantDao.setScore(userIdx, plantScore) == 0) { // 변경된 점수 반영
+                throw new BaseException(MODIFY_FAIL_SCORE); // 화분 점수 변경에 실패하였습니다.
+            }
             result.setStatus("levelUp");
+
             return result;
 
         } catch (Exception exception) {
@@ -180,7 +133,7 @@ public class PlantService {
         }
     }
 
-    // 화분 점수 변경 (감소)
+    // 화분 점수 감소
     public PatchModifyScoreRes modifyScore_minus(int userIdx, int score, String type) throws BaseException {
         // score : 변경할 점수
         try {
@@ -259,6 +212,60 @@ public class PlantService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    //화분 점수 증가 (Service)
+    /*
+    public PatchUpDownScoreRes upScore(int userIdx, PatchUpDownScoreReq patchUpDownScoreReq) throws BaseException {
+        int addScore = patchUpDownScoreReq.getAddScore();
+        try {
+            //화분이 시무룩 상태면 성장치 오르지 않음
+            if(plantProvider.checkSad(userIdx) == true)
+                throw new BaseException(SAD_STATUS_PLANT); //화분이 시무룩 상태입니다. 화분의 성장치를 증가시킬 수 없습니다.
+
+            //점수 변경
+            if (plantDao.plusScore(userIdx, addScore) == 1) { //점수 변경 성공
+                //TODO: 1. 점수 증가 후의 score 가져오기
+                //      2. 가져온 점수가 단계 증가 조건에 충족되면 "화분 단계 변경 (Service)" 호출
+
+                //점수에 따라서 patchUpDownScoreReq 필드 1로 Set
+                PatchUpDownScoreRes patchUpDownScoreRes = new PatchUpDownScoreRes();
+                if (addScore == 5) //PLANT_LEVELUP_DIARY
+                    patchUpDownScoreRes.setDiary_upScore(1);
+                else if (addScore == 3) //PLANT_LEVELUP_LETTER
+                    patchUpDownScoreRes.setLetter_upScore(1);
+
+                //1번
+                int currentScore = plantProvider.selectScore(userIdx); //증가 후의 score 가져오기
+                int currentLevel = plantProvider.selectLevel(userIdx); //level 가져오기(점수가 증가는 됐지만 그에 따른 영향은 아직 안받은 상태)
+
+                // 2번
+                Boolean condFor0 = (currentScore == PLANT_LEVEL_0 && currentLevel == 0); //현재 score = 15 && 현재 레벨 0
+                Boolean condFor1 = (currentScore == PLANT_LEVEL_1 && currentLevel == 1); //현재 score = 30 && 현재 레벨 1
+                Boolean condFor2 = (currentScore == PLANT_LEVEL_2 && currentLevel == 2); //현재 score = 30 && 현재 레벨 2
+                Boolean condFor3 = (currentScore == PLANT_LEVEL_3 && currentLevel == 3); //현재 score = 50 && 현재 레벨 3
+                Boolean condFor4 = (currentScore == PLANT_LEVEL_4 && currentLevel == 4); //현재 score = 70 && 현재 레벨 4
+                Boolean condFor5 = (currentScore == PLANT_LEVEL_5 && currentLevel == 5); //현재 score = 70 && 현재 레벨 5
+                if (condFor0 || condFor1 || condFor2 || condFor3 || condFor4 || condFor5) { //점수 충족 -> 화분 단계 변경 (Service) 호출
+
+                    if (upLevel(userIdx) == 1) { //점수 up && 레벨 up --> return 1
+                        patchUpDownScoreRes.setUpLevel(1);
+                        return patchUpDownScoreRes; //변경 성공
+                    } else {
+                        throw new BaseException(MODIFY_FAIL_LEVEL); //변경 실패
+                    }
+
+                } else { //점수만 up (점수 충족 X)
+                    return patchUpDownScoreRes;
+                }
+
+            } else { //점수 변경 실패
+                throw new BaseException(MODIFY_FAIL_SCORE);
+            }
+        } catch (Exception exception) {
+            throw exception;
+        }
+    }
+     */
 
     //화분 단계 증가 (Service)
     /*
