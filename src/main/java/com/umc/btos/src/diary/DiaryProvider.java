@@ -80,12 +80,12 @@ public class DiaryProvider {
      * 일기 발송
      * [GET] /diaries/diarySendList
      */
-    public GetDiarySendListRes getDiarySendList() {
-        // 발송 구현
-        List<DiarySendList> diarySendList = new ArrayList<>();
+//     public GetDiarySendListRes getDiarySendList() {
+//         // 발송 구현
+//         List<DiarySendList> diarySendList = new ArrayList<>();
 
-        // 발송 가능한 유저 나열 userIdx
-        // recOthers 다른 사람의 편지 수신 여부 -> 1
-        // recSimilarAge 비슷한 나이대 수신 여부 -> 1 : birth -5 ~ +5 까지
-    }
+//         // 발송 가능한 유저 나열 userIdx
+//         // recOthers 다른 사람의 편지 수신 여부 -> 1
+//         // recSimilarAge 비슷한 나이대 수신 여부 -> 1 : birth -5 ~ +5 까지
+//     }
 }
