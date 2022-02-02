@@ -51,6 +51,12 @@ public class DiaryDao {
 
     // =================================== 일기 수정 ===================================
 
+    // diaryDate 반환
+    public String getDiaryDate(int diaryIdx) {
+        String query = "SELECT diaryDate FROM Diary WHERE diaryIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, String.class, diaryIdx);
+    }
+
     // 일기 수정
     public int modifyDiary(PutDiaryReq putDiaryReq) {
         String query = "UPDATE Diary SET emotionIdx = ?, diaryDate = ?, isPublic = ?, content = ? WHERE diaryIdx = ?";

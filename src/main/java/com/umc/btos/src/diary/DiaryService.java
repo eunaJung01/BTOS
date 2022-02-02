@@ -107,7 +107,9 @@ public class DiaryService {
     public void modifyDiary(PutDiaryReq putDiaryReq) throws BaseException {
         // TODO : 의미적 validation - 일기는 하루에 하나만 작성 가능, 당일에 작성한 일기가 아니라면 발송 불가
         // 1. 일기는 하루에 하나씩만 작성 가능
-        checkDiaryDate(putDiaryReq.getUserIdx(), putDiaryReq.getDiaryDate());
+        if (putDiaryReq.getDiaryDate().compareTo(diaryDao.getDiaryDate(putDiaryReq.getDiaryIdx())) != 0) { // 수정된 날짜가 원래 작성했던 날짜와 다를 경우
+            checkDiaryDate(putDiaryReq.getUserIdx(), putDiaryReq.getDiaryDate());
+        }
         // 2. 당일에 작성한 일기가 아니라면 발송 불가
         checkPublicDate(putDiaryReq.getDiaryDate(), putDiaryReq.getIsPublic());
 
