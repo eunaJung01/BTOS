@@ -124,6 +124,7 @@ public enum BaseResponseStatus {
     MODIFY_REPLY_ISCHECKED_ERROR(false, 8007,"답장의 열람여부 변경 실패"),
     NOTICE_DATABASE_ERROR(false, 8006,"공지 조회 실패"),
     MODIFY_LETTERSENDLIST_ISCHECKED_ERROR(false,8008,"편지 열람여부 변경 실패"),
+    POST_REPORT_REASON(false,8009,"신고의 사유가 정해진 사유를 벗어납니다."),
     TEMP4(false, 9000, "conflict 방지용 4");
 
 
