@@ -2,6 +2,7 @@ package com.umc.btos.src.plant;
 
 import com.umc.btos.config.BaseException;
 import com.umc.btos.config.BaseResponse;
+import com.umc.btos.config.Constant;
 import com.umc.btos.src.plant.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,26 +138,28 @@ public class PlantController {
         }
     }
 
-//    @ResponseBody
-//    @GetMapping("/test/plus")
-//    public BaseResponse<PatchModifyScoreRes> modifyScore_plus(@RequestParam("userIdx") int userIdx) {
-//        try {
-//            PatchModifyScoreRes result = plantService.modifyScore_plus(userIdx, Constant.PLANT_LEVELUP_DIARY, "diary");
-//            return new BaseResponse<>(result);
-//        } catch (BaseException exception) {
-//            return new BaseResponse<>((exception.getStatus()));
-//        }
-//    }
-//
-//    @ResponseBody
-//    @GetMapping("/test/minus")
-//    public BaseResponse<PatchModifyScoreRes> modifyScore_minus(@RequestParam("userIdx") int userIdx) {
-//        try {
-//            PatchModifyScoreRes result = plantService.modifyScore_minus(userIdx, Constant.PLANT_LEVELDOWN_REPORT_SPAM_DISLIKE, "report_spam_dislike");
-//            return new BaseResponse<>(result);
-//        } catch (BaseException exception) {
-//            return new BaseResponse<>((exception.getStatus()));
-//        }
-//    }
+    // =================================== 화분 점수 및 단계 변경 테스트 ===================================
+
+    @ResponseBody
+    @GetMapping("/test/plus")
+    public BaseResponse<PatchModifyScoreRes> modifyScore_plus(@RequestParam("userIdx") int userIdx) {
+        try {
+            PatchModifyScoreRes result = plantService.modifyScore_plus(userIdx, Constant.PLANT_LEVELUP_DIARY, "diary");
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @GetMapping("/test/minus")
+    public BaseResponse<PatchModifyScoreRes> modifyScore_minus(@RequestParam("userIdx") int userIdx) {
+        try {
+            PatchModifyScoreRes result = plantService.modifyScore_minus(userIdx, Constant.PLANT_LEVELDOWN_REPORT_SPAM_DISLIKE, "report_spam_dislike");
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 
 }

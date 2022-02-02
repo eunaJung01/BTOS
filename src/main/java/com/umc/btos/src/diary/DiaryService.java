@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -50,8 +51,7 @@ public class DiaryService {
 
         try {
             int diaryIdx = diaryDao.saveDiary(postDiaryReq);
-            List doneIdxList = diaryDao.saveDoneList(diaryIdx, postDiaryReq.getDoneList());
-//            return new PostDiaryRes(diaryIdx, doneIdxList);
+            diaryDao.saveDoneList(diaryIdx, postDiaryReq.getDoneList());
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
@@ -67,12 +67,11 @@ public class DiaryService {
 
     // 일기 작성 또는 수정 시 의미적 validaion - 당일에 작성한 일기가 아니라면 발송 불가
     public void checkPublicDate(String diaryDate, int isPublic) throws BaseException {
-        LocalDate now = LocalDate.now(); // 오늘 날짜 (YYYY-MM-DD) -> .으로 바꿔야함
-//        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd"); // ex. 2022-01-20 14:03:23
-//        Date now_formatted = format.parse(now.toString());
+        LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
+        String now_formatted = now.toString().replaceAll("-", "."); // ex) 2022-02-02 -> 2022.02.02
 
         // 작성일과 일기의 해당 날짜가 다를 경우 발송(isPublic == 1) 불가
-        if (diaryDate.compareTo(now.toString()) != 0 && isPublic == 1) {
+        if (diaryDate.compareTo(now_formatted) != 0 && isPublic == 1) {
             throw new BaseException(UNPRIVATE_DATE); // 당일에 작성한 일기만 발송 가능합니다!
         }
     }
@@ -108,7 +107,9 @@ public class DiaryService {
     public void modifyDiary(PutDiaryReq putDiaryReq) throws BaseException {
         // TODO : 의미적 validation - 일기는 하루에 하나만 작성 가능, 당일에 작성한 일기가 아니라면 발송 불가
         // 1. 일기는 하루에 하나씩만 작성 가능
-        checkDiaryDate(putDiaryReq.getUserIdx(), putDiaryReq.getDiaryDate());
+        if (putDiaryReq.getDiaryDate().compareTo(diaryDao.getDiaryDate(putDiaryReq.getDiaryIdx())) != 0) { // 수정된 날짜가 원래 작성했던 날짜와 다를 경우
+            checkDiaryDate(putDiaryReq.getUserIdx(), putDiaryReq.getDiaryDate());
+        }
         // 2. 당일에 작성한 일기가 아니라면 발송 불가
         checkPublicDate(putDiaryReq.getDiaryDate(), putDiaryReq.getIsPublic());
 

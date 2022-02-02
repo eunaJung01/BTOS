@@ -48,7 +48,7 @@ public class AuthProvider {
     // 자동 로그인
     public GetAuthLoginRes authLogIn() throws BaseException {
         try {
-            authDao.checkStatusOfUser(jwtService.getUserIdx()); // 휴면 상태 로그인 시 상태 재 활성화
+            authDao.checkStatusOfUser(jwtService.getUserIdx()); // 휴면 상태 로그인 시 상태 재 활성화, 탈퇴 유저면 오류 메시지
             authDao.updateLastConnect(jwtService.getUserIdx()); // 로그인 기록 갱신
             return new GetAuthLoginRes(jwtService.getUserIdx()); // 유저 idx
         } catch(Exception exception) {

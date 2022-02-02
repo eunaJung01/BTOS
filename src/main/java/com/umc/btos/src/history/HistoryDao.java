@@ -113,7 +113,7 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
-    // --------------------------------------- History_Sender 반환 ---------------------------------------
+    // --------------------------------------- History_Sender ---------------------------------------
     // filtering == sender && search == null
     // createAt 기준 내림차순 정렬 시 상위 1번째 항목 반환
 
@@ -181,7 +181,7 @@ public class HistoryDao {
                 ), userIdx, senderNickName);
     }
 
-    // --------------------------------------- History_Sender 반환 ---------------------------------------
+    // --------------------------------------- History_Sender ---------------------------------------
     // filtering = sender && search != null
 
     // 일기
@@ -242,7 +242,7 @@ public class HistoryDao {
                 ), userIdx, replyIdx);
     }
 
-    // --------------------------------------- List<History_Sender> 반환 ---------------------------------------
+    // --------------------------------------- List<History_Sender> ---------------------------------------
     // filtering == sender
     // provider 단에서의 연산을 줄이기 위해서 sendAt 기준 내림차순 정렬로 반환
 
@@ -307,7 +307,7 @@ public class HistoryDao {
                 ), userIdx, senderNickName);
     }
 
-    // --------------------------------------- List<History_Sender> size 반환 ---------------------------------------
+    // --------------------------------------- List<History_Sender> size ---------------------------------------
     // filtering == sender && search == null
 
     // 일기 (DiarySendList.receiverIdx = userIdx AND User.nickName = senderNickName)
@@ -341,7 +341,7 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, senderNickName);
     }
 
-    // --------------------------------------- List<History> 반환 ---------------------------------------
+    // --------------------------------------- List<History> ---------------------------------------
     // filtering == diary || letter (paging)
 
     // 일기 (DiarySendList.receiverIdx = userIdx)
@@ -420,7 +420,7 @@ public class HistoryDao {
                 ), userIdx, startData, endData);
     }
 
-    // --------------------------------------- List<History> size 반환 ---------------------------------------
+    // --------------------------------------- List<History> size ---------------------------------------
 
     // 일기 (filtering = diary)
     public int getDiaryList_dataNum(int userIdx) {
@@ -441,7 +441,7 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
-    // --------------------------------------- History 반환 ---------------------------------------
+    // --------------------------------------- History ---------------------------------------
 
     // 일기
     public History getDiary(int userIdx, int diaryIdx) {
@@ -504,7 +504,7 @@ public class HistoryDao {
                 ), userIdx, replyIdx);
     }
 
-    // --------------------------------------- 인덱스 리스트 반환 ---------------------------------------
+    // --------------------------------------- idxList ---------------------------------------
     // search != null
 
     // diaryIdx 리스트 반환 : filtering = sender
@@ -595,7 +595,7 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForList(query, int.class, userIdx, startData, endData);
     }
 
-    // --------------------------------------- 인덱스 리스트 size 반환 ---------------------------------------
+    // --------------------------------------- idxList size ---------------------------------------
 
     // diaryIdx 리스트 반환 시 (filtering = diary) data 개수 반환
     public int getDiaryIdxList_dataNum(int userIdx) {
@@ -615,7 +615,7 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
-    // --------------------------------------- 인덱스 반환 ---------------------------------------
+    // --------------------------------------- idx ---------------------------------------
     // filtering = sender && search != null
 
     // diaryIdx (createAt 기준 내림차순 정렬 시 상위 1번째 항목)
@@ -659,7 +659,7 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, senderNickName);
     }
 
-    // --------------------------------------- content 반환 ---------------------------------------
+    // --------------------------------------- content ---------------------------------------
 
     // Diary.content 반환
     public String getDiaryContent(int diaryIdx) {
@@ -681,7 +681,7 @@ public class HistoryDao {
 
     // ===================================  History 본문 조회 ===================================
 
-    // --------------------------------------- 본문 반환 ---------------------------------------
+    // --------------------------------------- 본문 ---------------------------------------
 
     // 일기
     public Diary getDiary_main(int diaryIdx) {
@@ -739,7 +739,7 @@ public class HistoryDao {
                 ), letterIdx);
     }
 
-    // --------------------------------------- List<Reply> 반환 ---------------------------------------
+    // --------------------------------------- List<Reply> ---------------------------------------
 
     // 일기
     public List<Reply> getReplyList_diary(int userIdx, int diaryIdx) {
@@ -794,7 +794,7 @@ public class HistoryDao {
                 ), userIdx, userIdx, letterIdx);
     }
 
-    // --------------------------------------- idx 반환 ---------------------------------------
+    // --------------------------------------- idx ---------------------------------------
 
     // diaryIdx
     public int getDiaryIdx_main(int replyIdx) {
@@ -818,7 +818,7 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, replyIdx);
     }
 
-    // --------------------------------------- firstHistoryType 반환 ---------------------------------------
+    // --------------------------------------- firstHistoryType ---------------------------------------
 
     public String getHistoryType(int replyIdx) {
         String query = "SELECT firstHistoryType FROM Reply WHERE Reply.replyIdx = ?";
