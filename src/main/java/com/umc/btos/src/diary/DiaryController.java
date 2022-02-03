@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import static com.umc.btos.config.BaseResponseStatus.UNPRIVATE_DATE;
-
 @RestController
 @RequestMapping("/diaries")
 public class DiaryController {
@@ -46,7 +44,7 @@ public class DiaryController {
     }
 
     /*
-     * 일기 저장, 화분 점수와 단계 변경
+     * 일기 저장 및 화분 점수와 단계 변경
      * [POST] /diaries
      */
     @ResponseBody
@@ -62,22 +60,6 @@ public class DiaryController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
-
-    /*
-     * 일기 발송
-     * [GET] /diaries/diarySendList
-     */
-//    @ResponseBody
-//    @GetMapping("/diarySendList")
-//    public BaseResponse<GetDiarySendListRes> getDiarySendList() {
-//        try {
-//            GetDiarySendListRes diarySendList = diaryProvider.getDiarySendList();
-//            return new BaseResponse<>(diarySendList);
-//
-//        } catch (BaseException exception) {
-//            return new BaseResponse<>(exception.getStatus());
-//        }
-//     }
 
     /*
      * 일기 수정
@@ -114,6 +96,22 @@ public class DiaryController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+    /*
+     * 일기 발송
+     * [GET] /diaries/diarySendList
+     */
+    @ResponseBody
+    @GetMapping("/diarySendList")
+    public BaseResponse<GetDiarySendListRes> getDiarySendList() {
+        try {
+            GetDiarySendListRes diarySendList = diaryProvider.getDiarySendList();
+            return new BaseResponse<>(diarySendList);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+     }
 
     /*
      * 일기 조회

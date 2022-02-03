@@ -124,4 +124,63 @@ public class DiaryDao {
                 ), diaryIdx);
     }
 
+    // =================================== 일기 발송 ===================================
+
+    // diaryIdxList
+    public List<Integer> getDiaryIdxList(String date) {
+        String query = "SELECT diaryIdx FROM Diary WHERE left(createdAt, 10) = ? AND isPublic = 1 AND status = 'active'";
+        return this.jdbcTemplate.queryForList(query, int.class, date);
+    }
+
+    // 일기를 발송받을 모든 userIdx 반환
+    public List<Integer> getUserIdxList_total() {
+        String query = "SELECT userIdx FROM User WHERE recOthers = 1 AND status = 'active'";
+        return this.jdbcTemplate.queryForList(query, int.class);
+    }
+
+    // 일기 작성자의 userIdx 반환
+    public int getSenderUserIdx(int diaryIdx) {
+        String query = "SELECT User.userIdx FROM User " +
+                "INNER JOIN Diary ON User.userIdx = Diary.userIdx " +
+                "WHERE diaryIdx = ?";
+
+        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
+    }
+
+    // 일기 작성자의 User.birth 반환
+    public int getSenderBirth(int diaryIdx) {
+        String query = "SELECT birth FROM User " +
+                "INNER JOIN Diary ON User.userIdx = Diary.userIdx " +
+                "WHERE diaryIdx = ?";
+
+        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
+    }
+
+    // 발송 가능한 & 비슷한 나이대를 갖는(senderBirth -5 ~ +5) 모든 userIdx 반환
+    public List<Integer> getUserIdxList_similarAge(int userIdx, int senderBirth) {
+        String query = "SELECT userIdx FROM User " +
+                "WHERE userIdx != ? " +
+                "AND recOthers = 1 AND recSimilarAge = 1 " +
+                "AND (birth >= ? OR birth <= ?)" +
+                "AND status = 'active'";
+
+        return this.jdbcTemplate.queryForList(query, int.class, userIdx, senderBirth - 5, senderBirth + 5);
+    }
+
+    // recSimilarAge = 1인 회원수 반환
+    public int getUserIdxNum_similarAge() {
+        String query = "SELECT COUNT(*) FROM User WHERE recSimilarAge = 1 AND status = 'active'";
+        return this.jdbcTemplate.queryForObject(query, int.class);
+    }
+
+    // DiarySendList
+    public void setDiarySendList(int diaryIdx, int receiverIdx) {
+        String query = "INSERT INTO DiarySendList(diaryIdx, receiverIdx) VALUES(?,?)";
+
+        Object[] diarySendList = new Object[]{
+                diaryIdx, receiverIdx
+        };
+        this.jdbcTemplate.update(query, diarySendList);
+    }
+
 }
