@@ -132,7 +132,7 @@ public class DiaryProvider {
 
         // --------------------------------------- 3. 당일 발송해야 할 일기의 개수가 2개 이상인 경우 ---------------------------------------
 
-        // 비슷한 나이대 발송 처리
+        // TODO : 비슷한 나이대 발송 처리
 
         // 2차원 가변 배열
         // [diaryIdxList 인덱스 값][해당 일기 발신인과 비슷한 나이대를 갖는 userIdx]
@@ -188,7 +188,7 @@ public class DiaryProvider {
             }
 
 
-            // 일반 발송 처리
+            // TODO : 일반 발송 처리
             // (총 회원 수 / 총 일기 개수)의 몫만큼 발송
 
             // List<Integer> userIdxList_total = diaryDao.getUserIdxList_total(); // 수신 동의한 모든 userIdx (User.recOthers = 1)
@@ -220,7 +220,7 @@ public class DiaryProvider {
             }
 
 
-            // 일반 발송 처리 (나머지)
+            // TODO : 일반 발송 처리 (나머지)
             // (총 회원 수 / 총 일기 개수)의 나머지 부분 발송
 
             userIdxList_total_updated = new ArrayList<>(); // 일기를 발송 받아야 하는 모든 userIdx
