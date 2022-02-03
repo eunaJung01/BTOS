@@ -15,4 +15,8 @@ public class Constant {
     // 화분 - 단계 별 성장치 [LEVEL_0, LEVEL_1, LEVEL_2, LEVEL_3]
     public static final int[] PLANT_LEVEL = new int[] {15, 30, 50, 50};
 
+
+    // 일기 - 비슷한 나이대로 수신할 수 있는 회원의 최대 비율 (%)
+    public static final int DIARY_REC_SIMILAR_AGE_RATIO = 80;
+
 }

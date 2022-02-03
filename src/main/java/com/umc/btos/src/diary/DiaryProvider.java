@@ -136,11 +136,11 @@ public class DiaryProvider {
                 i++;
             }
 
-            // 일기 발송받을 전체 회원들 중 몇명이 같은 나이로 수신 == 1일까? -> 그 사람들의 60~70퍼는 같은 나이로 수신받았으면 좋겠음
+            // 일기 발송받을 전체 회원들 중 몇명이 같은 나이로 수신 == 1일까? -> 그 사람들의 70~80퍼는 같은 나이로 수신받았으면 좋겠음
             int userIdxNum_similarAge = diaryDao.getUserIdxNum_similarAge();
 
             // 일기마다 비슷한 나이대로 보낼 횟수 : '비슷한 나이대로 보낼 총 회원 수 / 일기 개수(일기마다 동일한 숫자로 보내주기 위해서)'
-            int sendNum_similarAge = (int) (userIdxNum_similarAge * 0.65 / diaryIdxList.size());
+            int sendNum_similarAge = (int) (userIdxNum_similarAge * Constant.DIARY_REC_SIMILAR_AGE_RATIO / 100 / diaryIdxList.size());
             System.out.println("sendNum_similarAge = " + sendNum_similarAge);
 
             int j = 0;
