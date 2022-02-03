@@ -83,7 +83,7 @@ public class DiaryProvider {
     // ============================================ 일기 발송 ============================================
 
     // Diary - Send Algorithm
-    @Scheduled(cron = "58 59 18 * * *") // 매일 18:59:58에 DiarySendList 생성
+    @Scheduled(cron = "55 59 18 * * *") // 매일 18:59:55에 DiarySendList 생성
 //    @Scheduled(cron = "30 50 15 * * *") // test
     public void sendDiary() {
 
