@@ -1,5 +1,6 @@
 package com.umc.btos.src.mailbox;
 
+import com.umc.btos.src.diary.model.GetDiaryRes;
 import com.umc.btos.src.mailbox.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,7 +20,11 @@ public class MailboxDao {
 
     // 우편함 조회 - 일기 수신 목록
     public List<GetMailboxRes> getMailbox_diary(int userIdx) {
-        String query = "SELECT Diary.diaryIdx AS idx, User.nickName AS senderNickName, Diary.updatedAt AS sendAt FROM Diary INNER JOIN User ON Diary.userIdx = User.userIdx INNER JOIN DiarySendList ON Diary.diaryIdx = DiarySendList.diaryIdx WHERE DiarySendList.receiverIdx = ? AND DiarySendList.isChecked = 0";
+        String query = "SELECT Diary.diaryIdx AS idx, User.nickName AS senderNickName, Diary.updatedAt AS sendAt " +
+                "FROM Diary " +
+                "INNER JOIN User ON Diary.userIdx = User.userIdx INNER JOIN DiarySendList ON Diary.diaryIdx = DiarySendList.diaryIdx " +
+                "WHERE DiarySendList.receiverIdx = ? AND DiarySendList.isChecked = 0";
+
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetMailboxRes(
                         "diary",
@@ -32,7 +37,11 @@ public class MailboxDao {
 
     // 우편함 조회 - 편지 수신 목록
     public List<GetMailboxRes> getMailbox_letter(int userIdx) {
-        String query = "SELECT Letter.letterIdx AS idx, User.nickName AS senderNickName, Letter.updatedAt AS sendAt FROM Letter INNER JOIN User ON Letter.userIdx = User.userIdx INNER JOIN LetterSendList ON Letter.letterIdx = LetterSendList.letterIdx WHERE LetterSendList.receiverIdx = ? AND LetterSendList.isChecked = 0";
+        String query = "SELECT Letter.letterIdx AS idx, User.nickName AS senderNickName, Letter.updatedAt AS sendAt FROM Letter " +
+                "INNER JOIN User ON Letter.userIdx = User.userIdx " +
+                "INNER JOIN LetterSendList ON Letter.letterIdx = LetterSendList.letterIdx WHERE LetterSendList.receiverIdx = ?" +
+                " AND LetterSendList.isChecked = 0";
+
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetMailboxRes(
                         "letter",
@@ -45,7 +54,11 @@ public class MailboxDao {
 
     // 우편함 조회 - 답장 수신 목록
     public List<GetMailboxRes> getMailbox_reply(int userIdx) {
-        String query = "SELECT Reply.replyIdx AS idx, User.nickName AS senderNickName, Reply.createdAt AS sendAt FROM Reply INNER JOIN User ON Reply.replierIdx = User.userIdx WHERE Reply.receiverIdx = ? AND Reply.isChecked = 0";
+        String query = "SELECT Reply.replyIdx AS idx, User.nickName AS senderNickName, Reply.createdAt AS sendAt " +
+                "FROM Reply " +
+                "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
+                "WHERE Reply.receiverIdx = ? AND Reply.isChecked = 0";
+
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetMailboxRes(
                         "reply",
@@ -62,7 +75,9 @@ public class MailboxDao {
                 "FROM Letter " +
                 "INNER JOIN LetterSendList ON Letter.letterIdx = LetterSendList.letterIdx " +
                 "WHERE Letter.letterIdx = ? " +
-                "AND Letter.status = 'active'";
+                "AND Letter.status = 'active' " +
+                "GROUP BY letterIdx";
+
         return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new GetLetterRes(
                         rs.getInt("letterIdx"),
@@ -70,6 +85,18 @@ public class MailboxDao {
                         rs.getInt("receiverIdx"),
                         rs.getString("content")
                 ), letterIdx);
+    }
+
+    // 편지 존재 확인
+    public int getLetterIdx(int letterIdx) {
+        String query = "SELECT COUNT(*) " +
+                "FROM Letter " +
+                "INNER JOIN LetterSendList ON Letter.letterIdx = LetterSendList.letterIdx " +
+                "WHERE Letter.letterIdx = ? " +
+                "AND Letter.status = 'active' " +
+                "GROUP BY Letter.letterIdx";
+
+        return this.jdbcTemplate.queryForObject(query, int.class, letterIdx);
     }
 
     // 답장 조회
@@ -82,6 +109,12 @@ public class MailboxDao {
                         rs.getInt("receiverIdx"),
                         rs.getString("content")
                 ), replyIdx);
+    }
+
+    // 답장 존재 확인
+    public int getReplyIdx(int replyIdx) {
+        String query = "SELECT COUNT(*) FROM Reply WHERE replyIdx = ? AND status = 'active'";
+        return this.jdbcTemplate.queryForObject(query, int.class, replyIdx);
     }
 
     // User.fontIdx 반환
@@ -99,9 +132,19 @@ public class MailboxDao {
             columnName_sender = "replierIdx";
         }
 
-        String query = "SELECT fontIdx FROM User WHERE userIdx = (SELECT " + columnName_sender + " FROM " + type + " WHERE " + typeIdx + " = ? AND status = 'active') AND status = 'active'";
+        String query = "SELECT fontIdx FROM User WHERE userIdx = " +
+                "(SELECT " + columnName_sender + " FROM " + type + " WHERE " + typeIdx + " = ? AND status = 'active') " +
+                "AND status = 'active'";
+
         // ex. SELECT fontIdx FROM User WHERE userIdx = (SELECT replierIdx FROM Reply WHERE replierIdx = ? AND status = 'active') AND status = 'active'
         return this.jdbcTemplate.queryForObject(query, int.class, idx);
+    }
+
+
+    // 일기 인덱스 조회
+    public int getDiaryIdx(int diaryIdx) {
+        String query = "SELECT COUNT(*) FROM Diary WHERE diaryIdx = ? AND status = 'active'";
+        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
     }
 
 }
