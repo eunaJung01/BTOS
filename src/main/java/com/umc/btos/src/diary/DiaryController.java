@@ -98,7 +98,7 @@ public class DiaryController {
     }
 
     /*
-     * 일기 발송
+     * 일기 발송 리스트 조회
      * [GET] /diaries/diarySendList
      */
     @ResponseBody
