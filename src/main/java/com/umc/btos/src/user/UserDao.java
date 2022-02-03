@@ -30,12 +30,17 @@ public class UserDao {
         this.jdbcTemplate.update(createUserQuery, createUserParams);
 
         String lastInsertIdQuery = "select last_insert_id()";
-        return this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class);
+        String selectDefaultPlantQuery = "insert into UserPlantList (userIdx, plantIdx) VALUES (?, 1)";
+        // 회원 가입 시 기본 식물 알로카시아로 선택되게 함
+        int userIdx = this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class);
+        this.jdbcTemplate.update(selectDefaultPlantQuery, userIdx);
+
+        return userIdx;
     }
 
     // 이메일 확인
     public int checkEmail(String email) {
-        String checkEmailQuery = "select exists(select email from User where email = ? and status in ('active', 'dormant'))"; // 이메일 중복되는 지 확인(탈퇴 후 재가입 고려하여 active인 유저 중에서만 고려)
+        String checkEmailQuery = "select exists(select email from User where email = ? and status IN ('active', 'dormant'))"; // 이메일 중복되는 지 확인(탈퇴 후 재가입 고려하여 active인 유저 중에서만 고려)
         String checkEmailParams = email;
         return this.jdbcTemplate.queryForObject(checkEmailQuery,
                 int.class,
@@ -78,7 +83,7 @@ public class UserDao {
 
     // 닉네임 확인
     public int checkNickName(String nickName) {
-        String checkNickNameQuery = "select exists(select nickName from User where nickName = ? and status in ('active', 'dormant'))";
+        String checkNickNameQuery = "select exists(select nickName from User where nickName = ? and status IN ('active', 'dormant'))";
         String checkNickNameParams = nickName;
         return this.jdbcTemplate.queryForObject(checkNickNameQuery, int.class, checkNickNameParams);
         //결과(존재하지 않음(False,0),존재함(True, 1))를 int형(0,1)으로 반환
