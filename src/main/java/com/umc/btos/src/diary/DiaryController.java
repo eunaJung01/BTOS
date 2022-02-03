@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/diaries")
 public class DiaryController {
@@ -99,13 +101,14 @@ public class DiaryController {
 
     /*
      * 일기 발송 리스트 조회
+     * 매일 18:59:59 Firebase에서 호출
      * [GET] /diaries/diarySendList
      */
     @ResponseBody
     @GetMapping("/diarySendList")
-    public BaseResponse<GetDiarySendListRes> getDiarySendList() {
+    public BaseResponse<List<GetSendListRes>> getDiarySendList() {
         try {
-            GetDiarySendListRes diarySendList = diaryProvider.getDiarySendList();
+            List<GetSendListRes> diarySendList = diaryProvider.getDiarySendList();
             return new BaseResponse<>(diarySendList);
 
         } catch (BaseException exception) {

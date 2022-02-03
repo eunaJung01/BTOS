@@ -183,4 +183,13 @@ public class DiaryDao {
         this.jdbcTemplate.update(query, diarySendList);
     }
 
+    // 일기 발송 리스트 반환
+    public List<Integer> getReceiverIdxList(int diaryIdx, String date) {
+        String query  = "SELECT receiverIdx FROM DiarySendList " +
+                "WHERE diaryIdx = ? AND left(createdAt, 10) = ? AND status = 'active' " +
+                "ORDER BY receiverIdx";
+
+        return this.jdbcTemplate.queryForList(query, int.class, diaryIdx, date);
+    }
+
 }

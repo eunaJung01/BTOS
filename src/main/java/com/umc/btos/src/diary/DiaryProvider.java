@@ -278,12 +278,28 @@ public class DiaryProvider {
 
     /*
      * 일기 발송 리스트 조회
+     * 매일 18:59:59 Firebase에서 호출
      * [GET] /diaries/diarySendList
      */
-    public GetDiarySendListRes getDiarySendList() throws BaseException {
+    public List<GetSendListRes> getDiarySendList() throws BaseException {
         try {
-            GetDiarySendListRes result = new GetDiarySendListRes();
-            List<DiarySendList> diarySendList = new ArrayList<>();
+            List<GetSendListRes> result = new ArrayList<>();
+
+            LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
+            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(now.toString()); // 당일 발송해야 하는 모든 diaryIdx
+//            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-02-01"); // test
+
+            if (diaryIdxList.size() == 0) {
+                throw new BaseException(NO_DIARY_SEND); // 오늘 발송되는 일기는 없습니다.
+            }
+
+            // 일기에 따른 발송 리스트 조회
+            List<Integer> diarySendList = new ArrayList<>();
+            for (int diaryIdx : diaryIdxList) {
+                GetSendListRes diary = new GetSendListRes(diaryIdx);
+                diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, now.toString()));
+                result.add(diary);
+            }
 
             return result;
 

@@ -7,7 +7,12 @@ import java.util.List;
 
 @Getter
 @Setter
-public class DiarySendList {
+public class GetSendListRes {
     private int diaryIdx;
     private List<Integer> receiverIdxList;
+
+    public GetSendListRes(int diaryIdx) {
+        this.diaryIdx = diaryIdx;
+    }
+
 }
