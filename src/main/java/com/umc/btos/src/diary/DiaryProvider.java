@@ -252,6 +252,11 @@ public class DiaryProvider {
             }
         }
 
+        /*
+         * TODO : 매일 19:00:00에 당일 발송되는 일기의 Diary.isSend = 1로 변경
+         * diaryDao.modifyIsSend();
+         */
+
     }
 
     // 일기 발송 (비슷한 나이대 발송 후 일반 발송 처리)
@@ -294,7 +299,6 @@ public class DiaryProvider {
             }
 
             // 일기에 따른 발송 리스트 조회
-            List<Integer> diarySendList = new ArrayList<>();
             for (int diaryIdx : diaryIdxList) {
                 GetSendListRes diary = new GetSendListRes(diaryIdx);
                 diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, now.toString()));
