@@ -141,7 +141,7 @@ public class PlantDao {
 
     //유저 화분 초기화 API
     public int initializeUserPlant(int userIdx) {
-        String Query = "INSERT INTO UserPlantList (userIdx, plantIdx) VALUES(?, 1)";
+        String Query = "INSERT INTO UserPlantList (userIdx, plantIdx, status) VALUES(?, 1, 'selected')";
         int Param = userIdx;
 
         return this.jdbcTemplate.update(Query, Param);

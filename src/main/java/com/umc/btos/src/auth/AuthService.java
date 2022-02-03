@@ -36,11 +36,12 @@ public class AuthService {
         if (authProvider.checkEmail(authGoogleReq.getEmail()) == 0) {
             throw new BaseException(AUTH_REQ_SIGNUP); // 회원가입 필요 메시지
         }
-        //삭제 일 경우
+        // 탈퇴일 경우
         if (authProvider.checkStatusOfUser(authGoogleReq.getEmail()).equals("deleted")) {
             throw new BaseException(AUTH_REQ_SIGNUP); // 회원가입 필요 메시지
         }
-        else if (authProvider.checkStatusOfUser(authGoogleReq.getEmail()).equals("dormant")) { // 휴면일 경우 메시지 출력
+        // 휴면일 경우
+        else if (authProvider.checkStatusOfUser(authGoogleReq.getEmail()).equals("dormant")) {
             throw new BaseException(POST_USERS_DORMANT); // 회원 상태 변경 필요 메시지
         }
 
