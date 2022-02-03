@@ -126,19 +126,25 @@ public class DiaryDao {
 
     // =================================== 일기 발송 ===================================
 
-    // diaryIdxList
+    // 당일 발송해야 하는 모든 diaryIdx 반환
     public List<Integer> getDiaryIdxList(String date) {
         String query = "SELECT diaryIdx FROM Diary WHERE left(createdAt, 10) = ? AND isPublic = 1 AND status = 'active'";
         return this.jdbcTemplate.queryForList(query, int.class, date);
     }
 
-    // 일기를 발송받을 모든 userIdx 반환
+    // 수신 동의한 모든 userIdx 반환 (User.recOthers = 1)
     public List<Integer> getUserIdxList_total() {
         String query = "SELECT userIdx FROM User WHERE recOthers = 1 AND status = 'active'";
         return this.jdbcTemplate.queryForList(query, int.class);
     }
 
-    // 일기 작성자의 userIdx 반환
+    // 비슷한 나이대 수신 동의한 회원 수 반환 (recSimilarAge = 1)
+    public int getUserIdxNum_similarAge() {
+        String query = "SELECT COUNT(*) FROM User WHERE recSimilarAge = 1 AND status = 'active'";
+        return this.jdbcTemplate.queryForObject(query, int.class);
+    }
+
+    // 발신인 userIdx 반환
     public int getSenderUserIdx(int diaryIdx) {
         String query = "SELECT User.userIdx FROM User " +
                 "INNER JOIN Diary ON User.userIdx = Diary.userIdx " +
@@ -147,7 +153,7 @@ public class DiaryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
     }
 
-    // 일기 작성자의 User.birth 반환
+    // 발신인 생년 반환 (User.birth)
     public int getSenderBirth(int diaryIdx) {
         String query = "SELECT birth FROM User " +
                 "INNER JOIN Diary ON User.userIdx = Diary.userIdx " +
@@ -159,7 +165,7 @@ public class DiaryDao {
     // 발송 가능한 & 비슷한 나이대를 갖는(senderBirth -5 ~ +5) 모든 userIdx 반환
     public List<Integer> getUserIdxList_similarAge(int userIdx, int senderBirth) {
         String query = "SELECT userIdx FROM User " +
-                "WHERE userIdx != ? " +
+                "WHERE userIdx != ? " + // 발신인 userIdx 제외
                 "AND recOthers = 1 AND recSimilarAge = 1 " +
                 "AND (birth >= ? OR birth <= ?)" +
                 "AND status = 'active'";
@@ -167,13 +173,7 @@ public class DiaryDao {
         return this.jdbcTemplate.queryForList(query, int.class, userIdx, senderBirth - 5, senderBirth + 5);
     }
 
-    // recSimilarAge = 1인 회원수 반환
-    public int getUserIdxNum_similarAge() {
-        String query = "SELECT COUNT(*) FROM User WHERE recSimilarAge = 1 AND status = 'active'";
-        return this.jdbcTemplate.queryForObject(query, int.class);
-    }
-
-    // DiarySendList
+    // 일기 발송 (DiarySendList)
     public void setDiarySendList(int diaryIdx, int receiverIdx) {
         String query = "INSERT INTO DiarySendList(diaryIdx, receiverIdx) VALUES(?,?)";
 
