@@ -93,7 +93,7 @@ public class DiaryProvider {
 
             LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
 //            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(now.toString()); // 당일 발송해야 하는 모든 diaryIdx
-            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-02-01"); // test
+            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-01-17"); // test
             System.out.println(diaryIdxList);
             if (diaryIdxList.size() == 0) {
 //                return false; // 알고리즘 종료
@@ -180,7 +180,7 @@ public class DiaryProvider {
             System.out.println();
 
             // --------------------------------------- 일반 발송 처리 (나머지) ---------------------------------------
-            
+
             // userIdxList_similarAge에서 map value = true인 것들 지우기 -> 갱신
             List<Integer> userIdxList_total_updated = new ArrayList<>(); // 이 사람들 내에서 기존 일기 발송 알고리즘 구현
             for (int userIdx : userIdxList_total) {
@@ -199,8 +199,14 @@ public class DiaryProvider {
                 }
 
                 if (diaryIdxList_updated.size() != 0) { // 나머지가 있는 경우 제외
-                    sendDiary(diaryIdxList_updated, diaryIdx_sendNumMap, userIdx_sendMap, userIdx, diaryIdxList_updated);
+                    // userIdx == senderUserIdx인 경우 -> 일기를 수신할 때까지 다시 실행
+                    boolean isSend = false;
+                    do {
+                        isSend = sendDiary(diaryIdxList, diaryIdx_sendNumMap, userIdx_sendMap, userIdx, diaryIdxList_updated);
+                    }
+                    while (!isSend);
                 }
+                System.out.println("diaryIdxList_updated = " + diaryIdxList_updated);
             }
 
             System.out.println();
@@ -220,13 +226,18 @@ public class DiaryProvider {
                 for (int userIdx : userIdxList_total) {
                     List<Integer> diaryIdxList_updated = new ArrayList<>(); // 발송해야 하는 일기 목록
                     for (int diaryIdx : diaryIdxList) {
-                        if (diaryIdx_sendNumMap.get(diaryIdx) == sendNum) { // Map.value = false -> add
+                        if (diaryIdx_sendNumMap.get(diaryIdx) <= sendNum) { // Map.value = false -> add / < : 보내야하는 일기가 한 개인 경우
                             diaryIdxList_updated.add(diaryIdx);
                         }
                     }
                     System.out.println("diaryIdxList_updated = " + diaryIdxList_updated);
 
-                    sendDiary(diaryIdxList, diaryIdx_sendNumMap, userIdx_sendMap, userIdx, diaryIdxList_updated);
+                    // userIdx == senderUserIdx인 경우 -> 일기를 수신할 때까지 다시 실행
+                    boolean isSend = false;
+                    do {
+                        isSend = sendDiary(diaryIdxList, diaryIdx_sendNumMap, userIdx_sendMap, userIdx, diaryIdxList_updated);
+                    }
+                    while (!isSend);
                 }
             }
 
@@ -239,12 +250,17 @@ public class DiaryProvider {
     }
 
     // 일기 발송 (비슷한 나이대로 수신한 이후)
-    private void sendDiary(List<Integer> diaryIdxList, Map<Integer, Integer> diaryIdx_sendNumMap, Map<Integer, Boolean> userIdx_sendMap, int userIdx, List<Integer> diaryIdxList_updated) {
-        int diaryIdx = diaryIdxList_updated.get((int) (Math.random() * diaryIdxList.size())); // 0 ~ 마지막 인덱스 랜덤으로 반환
+    private boolean sendDiary(List<Integer> diaryIdxList, Map<Integer, Integer> diaryIdx_sendNumMap, Map<Integer, Boolean> userIdx_sendMap, int userIdx, List<Integer> diaryIdxList_updated) {
+        int diaryIdx = 0;
+        if (diaryIdxList_updated.size() != 0) {
+            diaryIdx = diaryIdxList_updated.get((int) (Math.random() * diaryIdxList_updated.size())); // 0 ~ 마지막 인덱스 랜덤으로 반환
+        }
         System.out.println("diaryIdx = " + diaryIdx);
 
         int senderUserIdx = diaryDao.getSenderUserIdx(diaryIdx); // 발신인 userIdx
         System.out.println("receiverIdx = " + userIdx);
+
+        if (diaryIdxList_updated.size() != 0 && userIdx == senderUserIdx) return true;
 
         if (userIdx != senderUserIdx) {
             diaryDao.setDiarySendList(diaryIdx, userIdx); // INSERT INTO DiarySendList Table
@@ -252,7 +268,10 @@ public class DiaryProvider {
 
             int sendNum_diary = diaryIdx_sendNumMap.get(diaryIdx); // 일기 보내진 횟수
             diaryIdx_sendNumMap.put(diaryIdx, ++sendNum_diary); // 일기 보내진 횟수 갱신
-        }
+
+            return true;
+
+        } else return false; // userIdx == senderUserIdx인 경우 -> return false
     }
 
 }
