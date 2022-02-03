@@ -89,6 +89,7 @@ public enum BaseResponseStatus {
     EMPTY_RESULT(false, 6006, "검색 결과 없음"),
     PAGENUM_ERROR(false, 6006, "잘못된 페이지 요청입니다."),
     MAIN_HISTORY_WRONG_REQ(false, 6007, "잘못된 userIdx 또는 idx 요청입니다."),
+    NO_DIARY_SENT_TODAY(false, 6008, "오늘 발송되는 일기는 없습니다."),
 
 
     // 7000 : 자몽

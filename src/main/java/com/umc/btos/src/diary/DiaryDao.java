@@ -3,9 +3,11 @@ package com.umc.btos.src.diary;
 import com.umc.btos.src.diary.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -122,6 +124,88 @@ public class DiaryDao {
                         rs.getInt("doneIdx"),
                         rs.getString("content")
                 ), diaryIdx);
+    }
+
+    // =================================== 일기 발송 ===================================
+
+    // 당일 발송해야 하는 모든 diaryIdx 반환
+    public List<Integer> getDiaryIdxList(String date) {
+        String query = "SELECT diaryIdx FROM Diary WHERE left(createdAt, 10) = ? AND isPublic = 1 AND status = 'active'";
+        return this.jdbcTemplate.queryForList(query, int.class, date);
+    }
+
+    // 수신 동의한 모든 userIdx 반환 (User.recOthers = 1)
+    public List<Integer> getUserIdxList_total() {
+        String query = "SELECT userIdx FROM User WHERE recOthers = 1 AND status = 'active'";
+        return this.jdbcTemplate.queryForList(query, int.class);
+    }
+
+    // 비슷한 나이대 수신 동의한 회원 수 반환 (recSimilarAge = 1)
+    public int getUserIdxNum_similarAge() {
+        String query = "SELECT COUNT(*) FROM User WHERE recSimilarAge = 1 AND status = 'active'";
+        return this.jdbcTemplate.queryForObject(query, int.class);
+    }
+
+    // 발신인 userIdx 반환
+    public int getSenderUserIdx(int diaryIdx) {
+        String query = "SELECT User.userIdx FROM User " +
+                "INNER JOIN Diary ON User.userIdx = Diary.userIdx " +
+                "WHERE diaryIdx = ?";
+
+        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
+    }
+
+    // 발신인 생년 반환 (User.birth)
+    public int getSenderBirth(int diaryIdx) {
+        String query = "SELECT birth FROM User " +
+                "INNER JOIN Diary ON User.userIdx = Diary.userIdx " +
+                "WHERE diaryIdx = ?";
+
+        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
+    }
+
+    // 발송 가능한 & 비슷한 나이대를 갖는(senderBirth -5 ~ +5) 모든 userIdx 반환
+    public List<Integer> getUserIdxList_similarAge(int userIdx, int senderBirth) {
+        String query = "SELECT userIdx FROM User " +
+                "WHERE userIdx != ? " + // 발신인 userIdx 제외
+                "AND recOthers = 1 AND recSimilarAge = 1 " +
+                "AND (birth >= ? OR birth <= ?)" +
+                "AND status = 'active'";
+
+        return this.jdbcTemplate.queryForList(query, int.class, userIdx, senderBirth - 5, senderBirth + 5);
+    }
+
+    // 일기 발송 (DiarySendList)
+    public void setDiarySendList(int diaryIdx, int receiverIdx) {
+        String query = "INSERT INTO DiarySendList(diaryIdx, receiverIdx) VALUES(?,?)";
+
+        Object[] diarySendList = new Object[]{
+                diaryIdx, receiverIdx
+        };
+        this.jdbcTemplate.update(query, diarySendList);
+    }
+
+    // 일기 발송 리스트 반환
+    public List<Integer> getReceiverIdxList(int diaryIdx, String date) {
+        String query  = "SELECT receiverIdx FROM DiarySendList " +
+                "WHERE diaryIdx = ? AND left(createdAt, 10) = ? AND status = 'active' " +
+                "ORDER BY receiverIdx";
+
+        return this.jdbcTemplate.queryForList(query, int.class, diaryIdx, date);
+    }
+
+    // ================================================================================
+
+    // TODO : 매일 19:00:00에 당일 발송되는 일기의 Diary.isSend = 1로 변경
+    @Scheduled(cron = "00 00 19 * * *")
+//    @Scheduled(cron = "30 23 19 * * *") // test
+    public void modifyIsSend() {
+        LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
+
+        String query = "UPDATE Diary SET isSend = 1 " +
+                "WHERE left(createdAt, 10) = ? AND isPublic = 1 AND status = 'active'";
+
+        this.jdbcTemplate.update(query, now.toString());
     }
 
 }
