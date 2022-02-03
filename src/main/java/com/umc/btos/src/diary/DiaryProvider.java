@@ -290,7 +290,7 @@ public class DiaryProvider {
 //            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-02-01"); // test
 
             if (diaryIdxList.size() == 0) {
-                throw new BaseException(NO_DIARY_SEND); // 오늘 발송되는 일기는 없습니다.
+                throw new BaseException(NO_DIARY_SENT_TODAY); // 오늘 발송되는 일기는 없습니다.
             }
 
             // 일기에 따른 발송 리스트 조회
