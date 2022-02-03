@@ -93,8 +93,13 @@ public class DiaryProvider {
 
             LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
 //            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(now.toString()); // 당일 발송해야 하는 모든 diaryIdx
-            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-02-02"); // test
+            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-02-01"); // test
             System.out.println(diaryIdxList);
+            if (diaryIdxList.size() == 0) {
+//                return false; // 알고리즘 종료
+                return result;
+            }
+
             Map<Integer, Integer> diaryIdx_sendNumMap = new HashMap<>(); // <diaryIdx, 해당 일기가 발송된 횟수> 일기마다 현재까지 몇명에게 보내졌는가?
             for (int diaryIdx : diaryIdxList) {
                 diaryIdx_sendNumMap.put(diaryIdx, 0);
