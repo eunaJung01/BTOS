@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.sound.midi.Patch;
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static com.umc.btos.config.BaseResponseStatus.*;
 
@@ -27,17 +25,30 @@ public class AuthDao {
 
     // 이메일 확인
     public int checkEmail(String email) {
-        String checkEmailQuery = "select exists(select userIdx from User where email = ?)"; // 이메일 중복되는 지 확인
+        String checkEmailQuery =
+                "select exists(select userIdx from User where email = ? and status IN ('active', 'dormant'))"; // 이메일 중복되는 지 확인
         String checkEmailParam = email;
         return this.jdbcTemplate.queryForObject(checkEmailQuery,
                 int.class,
                 checkEmailParam); //결과(존재하지 않음(False,0),존재함(True, 1))를 int형(0,1)으로 반환
     }
 
-    // 해당 이메일을 가진 유저가 있을 때 상태 확인
-    public String checkStatusOfUser(String email){
+    // 해당 이메일을 가진 유저가 있을 때 상태 확인 -> 탈퇴 후 신규 가입 시 email이 중복되는 값이 되버림
+    public String checkStatusOfUser(String email) {
         String checkStatusOfUserQuery = "select status from User where email = ?";
         String checkStatusOfUserParam = email;
+
+        List<String> statusOfUsers =
+                this.jdbcTemplate.queryForList(checkStatusOfUserQuery, String.class, checkStatusOfUserParam);
+
+        // 만약 탈퇴회원이 다시 로그인한다 했을 때 active가 존재하면 로그인이고 아니면 회원가입 필요 메시지 날리도록
+        for (String status : statusOfUsers) {
+            if (status.equals("active") || status.equals("dormant")) {
+                return status; // active dormant 검사를 먼저 해야함
+            }
+        } // 이 반복문을 통과하면 탈퇴회원임
+
+        // 재가입 안 한 탈퇴회원이면 아래 리턴식으로 반환
         return this.jdbcTemplate.queryForObject(checkStatusOfUserQuery, String.class, checkStatusOfUserParam);
     }
 
@@ -54,7 +65,7 @@ public class AuthDao {
 
     // 해당 이메일을 가진 유저의 식별자 반환
     public int idxOfUserWithEmail(String email) {
-        String idxOfUserWithEmailQuery = "select userIdx from User where email = ?";
+        String idxOfUserWithEmailQuery = "select userIdx from User where email = ? and status = 'active'";
         String idxOfUserWithEmailParam = email;
         return this.jdbcTemplate.queryForObject(idxOfUserWithEmailQuery, int.class, idxOfUserWithEmailParam);
     }
