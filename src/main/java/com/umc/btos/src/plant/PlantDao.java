@@ -141,11 +141,10 @@ public class PlantDao {
 
     //유저 화분 초기화 API
     public int initializeUserPlant(int userIdx) {
-//        String Query = "INSERT INTO UserPlantList (userIdx, plantIdx, status) VALUES(?, 1, 'selected')";
-        String Query = "UPDATE UserPlantList SET plantIdx = 1 AND status = 'selected' WHERE userIdx = ?";
-//        int Param = userIdx;
+        String Query = "INSERT INTO UserPlantList (userIdx, plantIdx, status) VALUES(?, 1, 'selected')";
+        int Param = userIdx;
 
-        return this.jdbcTemplate.update(Query, userIdx);
+        return this.jdbcTemplate.update(Query, Param);
     }
 
     //화분 개수 조회 API
