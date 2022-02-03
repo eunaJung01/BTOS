@@ -34,7 +34,7 @@ public class ReplyService {
 
 // ******************************************************************************
     // 답장 작성(POST)
-    /**
+
     public PostReplyRes createReply(PostReplyReq postReplyReq) throws BaseException {
 
         try {
@@ -46,8 +46,8 @@ public class ReplyService {
             throw new BaseException(REPLY_DATABASE_ERROR);
         }
     }
-     */
-    /**
+
+
     // 답장삭제 - status를 deleted로 변경 (Patch)
     public void modifyReplyStatus(PatchReplyReq patchReplyReq) throws BaseException {
         try {
@@ -59,6 +59,6 @@ public class ReplyService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-    */
+
 
 }
