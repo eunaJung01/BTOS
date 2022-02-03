@@ -31,7 +31,7 @@ public class ReplyController {
      * 답장 작성 API
      * [POST] /replies
      */
-    /**
+
     // Body
     @ResponseBody
     @PostMapping("")    // POST 방식의 요청을 매핑하기 위한 어노테이션
@@ -50,7 +50,7 @@ public class ReplyController {
      * [GET] /replies/:replyIdx
      */
     // Path-variable
-    /**
+
     @ResponseBody
     @GetMapping("/{replyIdx}") // (GET) localhost:9000/replies/:replyIdx
     public BaseResponse<GetReplyRes> getReply(@PathVariable("replyIdx") int replyIdx) {
@@ -64,11 +64,12 @@ public class ReplyController {
         }
 
     }
+
     /**
      * 답장 삭제 API
      * [PATCH] /replies/:replyIdx
      */
-    /**
+
     @ResponseBody
     @PatchMapping("/{replyIdx}")
     // Path-variable
@@ -83,6 +84,6 @@ public class ReplyController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
-    */
+
 
 }

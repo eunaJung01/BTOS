@@ -22,11 +22,11 @@ public class ReplyDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    /**
+
     // 답장 생성
     public int createReply(PostReplyReq postReplyReq) {
-        String createReplyQuery = "insert into Reply (replierIdx,receiverIdx,firstType,content) VALUES (?,?,?,?)"; // 실행될 동적 쿼리문
-        Object[] createReplyParams = new Object[]{postReplyReq.getReplierIdx(),postReplyReq.getReceiverIdx(),postReplyReq.getFirstType(),postReplyReq.getContent()}; // 동적 쿼리의 ?부분에 주입될 값
+        String createReplyQuery = "insert into Reply (replierIdx,receiverIdx,firstHistoryType,sendIdx,content) VALUES (?,?,?,?,?)"; // 실행될 동적 쿼리문
+        Object[] createReplyParams = new Object[]{postReplyReq.getReplierIdx(),postReplyReq.getReceiverIdx(),postReplyReq.getFirstHistoryType(),postReplyReq.getSendIdx(),postReplyReq.getContent()}; // 동적 쿼리의 ?부분에 주입될 값
         this.jdbcTemplate.update(createReplyQuery, createReplyParams);
 
         // 즉 DB의 Letter Table에 (replier,receiver,content)값을 가지는 편지 데이터를 삽입(생성)한다.
@@ -51,11 +51,12 @@ public class ReplyDao {
                         rs.getInt("replierIdx"),
                         rs.getInt("receiverIdx"),
                         rs.getInt("isChecked"),
-                        rs.getString("firstType"),
+                        rs.getString("firstHistoryType"),
+                        rs.getInt("sendIdx"),
                         rs.getString("content")), // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
                 getReplyParams); // 한 개의 편지정보를 얻기 위한 jdbcTemplate 함수(Query, 객체 매핑 정보, Params)의 결과 반환
-    }*/
-    /**
+    }
+
     // 답장 status 변경
     public int modifyReplyStatus(PatchReplyReq patchReplyReq) {
         String modifyReplyStatusQuery = "update Reply set status = ? where replyIdx = ? "; // 해당 userIdx를 만족하는 User를 해당 nickname으로 변경한다.
@@ -63,5 +64,5 @@ public class ReplyDao {
 
         return this.jdbcTemplate.update(modifyReplyStatusQuery, modifyReplyStatusParams); // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
     }
-     */
+
 }
