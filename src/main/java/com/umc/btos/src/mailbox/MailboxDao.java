@@ -72,25 +72,7 @@ public class MailboxDao {
                 ), userIdx);
     }
 
-    // =================================== 우편 조회 ===================================
-
-    // 편지 조회
-    public GetLetterRes getLetter(int letterIdx) {
-        String query = "SELECT Letter.letterIdx, Letter.userIdx AS replierIdx, LetterSendList.receiverIdx, Letter.content " +
-                "FROM Letter " +
-                "INNER JOIN LetterSendList ON Letter.letterIdx = LetterSendList.letterIdx " +
-                "WHERE Letter.letterIdx = ? " +
-                "AND Letter.status = 'active' " +
-                "GROUP BY letterIdx";
-
-        return this.jdbcTemplate.queryForObject(query,
-                (rs, rowNum) -> new GetLetterRes(
-                        rs.getInt("letterIdx"),
-                        rs.getInt("replierIdx"),
-                        rs.getInt("receiverIdx"),
-                        rs.getString("content")
-                ), letterIdx);
-    }
+    // ======================================== 우편 조회 ========================================
 
     // 답장 조회
     public GetReplyRes getReply(int replyIdx) {

@@ -2,10 +2,7 @@ package com.umc.btos.src.mailbox;
 
 import com.umc.btos.config.BaseException;
 import com.umc.btos.src.diary.DiaryProvider;
-import com.umc.btos.src.diary.DiaryDao;
-import com.umc.btos.src.diary.model.GetDiaryRes;
 import com.umc.btos.src.letter.LetterProvider;
-import com.umc.btos.src.mailbox.model.GetLetterRes;
 import com.umc.btos.src.mailbox.model.GetMailRes;
 import com.umc.btos.src.mailbox.model.GetMailboxRes;
 import org.slf4j.Logger;
@@ -67,8 +64,7 @@ public class MailboxProvider {
                 mail = diaryProvider.getDiary(userIdx, idx); // 일기 정보 저장
 
             } else if (type.compareTo("letter") == 0) {
-                mail = mailboxDao.getLetter(idx); // 편지 정보 저장
-//                mail = letterProvider.getLetter(userIdx, idx); // 편지 정보 저장
+                mail = letterProvider.getLetter(userIdx, idx); // 편지 정보 저장
 
             } else {
                 mail = mailboxDao.getReply(idx); // 답장 정보 저장
