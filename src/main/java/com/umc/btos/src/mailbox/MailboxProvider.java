@@ -5,6 +5,7 @@ import com.umc.btos.src.diary.DiaryProvider;
 import com.umc.btos.src.letter.LetterProvider;
 import com.umc.btos.src.mailbox.model.GetMailRes;
 import com.umc.btos.src.mailbox.model.GetMailboxRes;
+import com.umc.btos.src.reply.ReplyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +24,14 @@ public class MailboxProvider {
     private final MailboxDao mailboxDao;
     private final DiaryProvider diaryProvider;
     private final LetterProvider letterProvider;
+    private final ReplyProvider replyProvider;
 
     @Autowired
-    public MailboxProvider(MailboxDao mailboxDao, DiaryProvider diaryProvider, LetterProvider letterProvider) {
+    public MailboxProvider(MailboxDao mailboxDao, DiaryProvider diaryProvider, LetterProvider letterProvider, ReplyProvider replyProvider) {
         this.mailboxDao = mailboxDao;
         this.diaryProvider = diaryProvider;
         this.letterProvider = letterProvider;
+        this.replyProvider = replyProvider;
     }
 
     /*
@@ -67,7 +70,7 @@ public class MailboxProvider {
                 mail = letterProvider.getLetter(userIdx, idx); // 편지 정보 저장
 
             } else {
-                mail = mailboxDao.getReply(idx); // 답장 정보 저장
+                mail = replyProvider.getReply(idx); // 답장 정보 저장
             }
             return mail;
 
