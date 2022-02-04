@@ -91,7 +91,7 @@ public class LetterDao {
         return this.jdbcTemplate.update(modifyLetterStatusQuery, modifyLetterStatusParams); // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
     }
 
-    // =================================== 우편 조회 - 답장 ===================================
+    // =================================== 우편 조회 - 편지 ===================================
 
     // 해당 letterIdx를 갖는 편지조회
     public GetLetterRes getLetter(int letterIdx, int receiverIdx) {
