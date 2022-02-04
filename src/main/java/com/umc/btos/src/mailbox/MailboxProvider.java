@@ -2,10 +2,10 @@ package com.umc.btos.src.mailbox;
 
 import com.umc.btos.config.BaseException;
 import com.umc.btos.src.diary.DiaryProvider;
-import com.umc.btos.src.diary.DiaryDao;
-import com.umc.btos.src.diary.model.GetDiaryRes;
-import com.umc.btos.src.mailbox.model.GetLetterRes;
+import com.umc.btos.src.letter.LetterProvider;
+import com.umc.btos.src.mailbox.model.GetMailRes;
 import com.umc.btos.src.mailbox.model.GetMailboxRes;
+import com.umc.btos.src.reply.ReplyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +23,15 @@ public class MailboxProvider {
 
     private final MailboxDao mailboxDao;
     private final DiaryProvider diaryProvider;
-    private final DiaryDao diaryDao;
+    private final LetterProvider letterProvider;
+    private final ReplyProvider replyProvider;
 
     @Autowired
-    public MailboxProvider(MailboxDao mailboxDao, DiaryProvider diaryProvider, DiaryDao diaryDao) {
+    public MailboxProvider(MailboxDao mailboxDao, DiaryProvider diaryProvider, LetterProvider letterProvider, ReplyProvider replyProvider) {
         this.mailboxDao = mailboxDao;
         this.diaryProvider = diaryProvider;
-        this.diaryDao = diaryDao;
+        this.letterProvider = letterProvider;
+        this.replyProvider = replyProvider;
     }
 
     /*
@@ -53,27 +55,22 @@ public class MailboxProvider {
 
     /*
      * 우편함 - 일기 / 편지 / 답장 조회
-     * [GET] /mailboxes/mail?type=&idx=
+     * [GET] /mailboxes/mail/:userIdx?type=&idx=
+     * userIdx = 해당 우편을 조회하는 회원 식별자
      * type = 일기, 편지, 답장 구분 (diary / letter / reply)
      * idx = 식별자 정보 (type-idx : diary-diaryIdx / letter-letterIdx / reply-replyIdx)
      */
-    public Object setMailContent(String type, int idx) throws BaseException {
+    public Object setMailContent(int userIdx, String type, int idx) throws BaseException {
         try {
             Object mail;
             if (type.compareTo("diary") == 0) {
-                mail = diaryDao.getDiary(idx); // 일기 정보 저장
-                ((GetDiaryRes) mail).setDoneList(diaryDao.getDoneList(idx)); // done list 정보 저장
-
-                // content 복호화
-                if (((GetDiaryRes) mail).getIsPublic() == 0) { // private일 경우 (isPublic == 0)
-                    diaryProvider.decryptContents((GetDiaryRes) mail);
-                }
+                mail = diaryProvider.getDiary(userIdx, idx); // 일기 정보 저장
 
             } else if (type.compareTo("letter") == 0) {
-                mail = mailboxDao.getLetter(idx); // 편지 정보 저장
+                mail = letterProvider.getLetter(userIdx, idx); // 편지 정보 저장
 
             } else {
-                mail = mailboxDao.getReply(idx); // 답장 정보 저장
+                mail = replyProvider.getReply(idx); // 답장 정보 저장
             }
             return mail;
 
@@ -82,10 +79,27 @@ public class MailboxProvider {
         }
     }
 
-    // 발송자 폰트 정보 저장
-    public int setSenderFontIdx(String type, int idx) throws BaseException {
+    // 발신인 정보 (User.nickName, User.fontIdx) 저장
+    public void setMailRes_sender(GetMailRes mail, String type, int idx) throws BaseException {
         try {
-            return mailboxDao.getFontIdx(type, idx);
+            int senderFontIdx = 0;
+            String senderNickName = "";
+
+            if (type.compareTo("diary") == 0) { // 일기
+                senderNickName = mailboxDao.getSenderNickName_diary(idx);
+                senderFontIdx = mailboxDao.getFontIdx_diary(idx);
+
+            } else if (type.compareTo("letter") == 0) { // 편지
+                senderNickName = mailboxDao.getSenderNickName_letter(idx);
+                senderFontIdx = mailboxDao.getFontIdx_letter(idx);
+
+            } else { // 답장
+                senderNickName = mailboxDao.getSenderNickName_reply(idx);
+                senderFontIdx = mailboxDao.getFontIdx_reply(idx);
+            }
+
+            mail.setSenderNickName(senderNickName);
+            mail.setSenderFontIdx(senderFontIdx);
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);

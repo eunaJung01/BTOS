@@ -34,28 +34,6 @@ public class ReplyDao {
         String lastInsertIdQuery = "select last_insert_id()"; // 가장 마지막에 삽입된(생성된) id값은 가져온다.
         return this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class); // 해당 쿼리문의 결과 마지막으로 삽인된 유저의 userIdx번호를 반환한다.
     }
-    //해당 replyIdx를 갖는 답장의 isChecked를 1로 update // isChecked가 0이면 열람 X, 1이면 열람 O
-    public int modifyIsChecked(int replyIdx) {
-        String getReplyQuery = "update Reply set isChecked=1 where replyIdx = ? "; // 해당 replyIdx를 만족하는 답장의 열람 여부를 변경하는 쿼리문
-        Object[] modifyReplyStatusParams = new Object[]{replyIdx}; // 주입될 값 (replyIdx)
-
-        return this.jdbcTemplate.update(getReplyQuery, modifyReplyStatusParams); // 대응시켜 매핑시켜 쿼리 요청(선공했으면 1, 실패했으면 0)
-    }
-    // 해당 replyIdx를 갖는 답장 조회 // 조회한 답장의 isChecked를 1로 update
-    public GetReplyRes getReply(int replyIdx) {
-        String getReplyQuery = "select * from Reply where replyIdx = ?"; // 해당 letterIdx를 만족하는 편지를 조회하는 쿼리문
-        int getReplyParams = replyIdx;
-        return this.jdbcTemplate.queryForObject(getReplyQuery,
-                (rs, rowNum) -> new GetReplyRes(
-                        rs.getInt("replyIdx"),
-                        rs.getInt("replierIdx"),
-                        rs.getInt("receiverIdx"),
-                        rs.getInt("isChecked"),
-                        rs.getString("firstHistoryType"),
-                        rs.getInt("sendIdx"),
-                        rs.getString("content")), // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
-                getReplyParams); // 한 개의 편지정보를 얻기 위한 jdbcTemplate 함수(Query, 객체 매핑 정보, Params)의 결과 반환
-    }
 
     // 답장 status 변경
     public int modifyReplyStatus(PatchReplyReq patchReplyReq) {
@@ -63,6 +41,25 @@ public class ReplyDao {
         Object[] modifyReplyStatusParams = new Object[]{"deleted", patchReplyReq.getReplyIdx()}; // 주입될 값들(status, letterIdx) 순
 
         return this.jdbcTemplate.update(modifyReplyStatusQuery, modifyReplyStatusParams); // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
+    }
+
+    // =================================== 우편 조회 - 답장 ===================================
+
+    // 해당 replyIdx를 갖는 답장 조회
+    public GetReplyRes getReply(int replyIdx) {
+        String getReplyQuery = "SELECT replyIdx, content FROM Reply WHERE replyIdx = ?";
+
+        return this.jdbcTemplate.queryForObject(getReplyQuery,
+                (rs, rowNum) -> new GetReplyRes(
+                        rs.getInt("replyIdx"),
+                        rs.getString("content")),
+                replyIdx);
+    }
+
+    // 해당 replyIdx를 갖는 답장의 isChecked를 1로 update
+    public int modifyIsChecked(int replyIdx) {
+        String getReplyQuery = "UPDATE Reply SET isChecked = 1 WHERE replyIdx = ? "; // 해당 replyIdx를 만족하는 답장의 열람 여부를 변경하는 쿼리문
+        return this.jdbcTemplate.update(getReplyQuery, replyIdx); // 대응시켜 매핑시켜 쿼리 요청(선공했으면 1, 실패했으면 0)
     }
 
 }

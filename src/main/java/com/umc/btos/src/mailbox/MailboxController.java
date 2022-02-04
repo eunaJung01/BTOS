@@ -40,17 +40,19 @@ public class MailboxController {
 
     /*
      * 우편함 - 일기 / 편지 / 답장 조회
-     * [GET] /mailboxes/mail?type=&idx=
+     * [GET] /mailboxes/mail/:userIdx?type=&idx=
+     * userIdx = 해당 우편을 조회하는 회원 식별자
      * type = 일기, 편지, 답장 구분 (diary / letter / reply)
      * idx = 식별자 정보 (type-idx : diary-diaryIdx / letter-letterIdx / reply-replyIdx)
      */
     @ResponseBody
-    @GetMapping("/mail")
-    public BaseResponse<GetMailRes> getMail(@RequestParam("type") String type, @RequestParam("idx") int idx) {
+    @GetMapping("/mail/{userIdx}")
+    public BaseResponse<GetMailRes> getMail(@PathVariable("userIdx") int userIdx, @RequestParam("type") String type, @RequestParam("idx") int idx) {
         try {
             GetMailRes mail = new GetMailRes(type);
-            mail.setContent(mailboxProvider.setMailContent(type, idx));
-            mail.setSenderFontIdx(mailboxProvider.setSenderFontIdx(type, idx));
+            mailboxProvider.setMailRes_sender(mail, type, idx); // 발신인 정보 저장
+            mail.setContent(mailboxProvider.setMailContent(userIdx, type, idx));
+
             return new BaseResponse<>(mail);
 
         } catch (BaseException exception) {

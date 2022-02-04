@@ -53,13 +53,13 @@ public class DiaryProvider {
         try {
             GetDiaryRes diary = diaryDao.getDiary(diaryIdx); // 일기의 정보
             diary.setDoneList(diaryDao.getDoneList(diaryIdx)); // done list 정보
+            diaryDao.modifyIsChecked(userIdx, diaryIdx); // DiarySendList.isChecked = 1로 변환
 
             // content 복호화
             if (diary.getIsPublic() == 0) { // private 일기일 경우 content 복호화
                 decryptContents(diary);
             }
 
-            diaryDao.modifyIsChecked(diaryIdx); // DiarySendList.isChecked = 1로 변환
             return diary;
 
         } catch (Exception exception) {
