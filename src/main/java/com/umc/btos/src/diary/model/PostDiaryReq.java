@@ -14,6 +14,15 @@ public class PostDiaryReq {
     private int emotionIdx;
     private String diaryDate; // YYYY.MM.DD
     private String diaryContent;
-    private int isPublic;
+    private boolean isPublic;
     private List doneList;
+
+    public int getIsPublic_int() { // https://projectlombok.org/features/GetterSetter
+        if (this.isPublic) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
 }

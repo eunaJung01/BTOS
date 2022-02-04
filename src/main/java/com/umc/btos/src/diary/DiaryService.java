@@ -38,10 +38,10 @@ public class DiaryService {
         // 1. 일기는 하루에 하나씩만 작성 가능
         checkDiaryDate(postDiaryReq.getUserIdx(), postDiaryReq.getDiaryDate());
         // 2. 당일에 작성한 일기가 아니라면 발송 불가
-        checkPublicDate(postDiaryReq.getDiaryDate(), postDiaryReq.getIsPublic());
+        checkPublicDate(postDiaryReq.getDiaryDate(), postDiaryReq.getIsPublic_int());
 
         // isPublic == 0(private)인 경우 -> Diary.content & Done.content 부분 암호화하여 저장
-        if (postDiaryReq.getIsPublic() == 0) {
+        if (postDiaryReq.getIsPublic_int() == 0) {
             String diaryContent_encrypted = encryptDiaryContent(postDiaryReq.getDiaryContent()); // Diary.content 암호화
             postDiaryReq.setDiaryContent(diaryContent_encrypted);
 

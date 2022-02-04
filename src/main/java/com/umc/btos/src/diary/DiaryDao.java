@@ -31,7 +31,7 @@ public class DiaryDao {
     public int saveDiary(PostDiaryReq postDiaryReq) {
         String query = "INSERT INTO Diary(userIdx, emotionIdx, diaryDate, isPublic, content) VALUES(?,?,?,?,?)";
         Object[] diary = new Object[]{
-                postDiaryReq.getUserIdx(), postDiaryReq.getEmotionIdx(), postDiaryReq.getDiaryDate(), postDiaryReq.getIsPublic(), postDiaryReq.getDiaryContent()
+                postDiaryReq.getUserIdx(), postDiaryReq.getEmotionIdx(), postDiaryReq.getDiaryDate(), postDiaryReq.getIsPublic_int(), postDiaryReq.getDiaryContent()
         };
         this.jdbcTemplate.update(query, diary);
 
