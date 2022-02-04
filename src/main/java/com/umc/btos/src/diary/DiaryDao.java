@@ -127,9 +127,9 @@ public class DiaryDao {
     }
 
     // DiarySendList.isChecked = 1로 변환
-    public void modifyIsChecked(int diaryIdx) {
-        String query = "UPDATE DiarySendList SET isChecked = 1 WHERE diaryIdx = ?";
-        this.jdbcTemplate.update(query, diaryIdx);
+    public void modifyIsChecked(int userIdx, int diaryIdx) {
+        String query = "UPDATE DiarySendList SET isChecked = 1 WHERE receiverIdx = ? AND diaryIdx = ?";
+        this.jdbcTemplate.update(query, userIdx, diaryIdx);
     }
 
     // =================================== 일기 발송 ===================================

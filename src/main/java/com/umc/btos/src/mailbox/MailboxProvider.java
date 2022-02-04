@@ -53,21 +53,16 @@ public class MailboxProvider {
 
     /*
      * 우편함 - 일기 / 편지 / 답장 조회
-     * [GET] /mailboxes/mail?type=&idx=
+     * [GET] /mailboxes/mail/:userIdx?type=&idx=
+     * userIdx = 해당 우편을 조회하는 회원 식별자
      * type = 일기, 편지, 답장 구분 (diary / letter / reply)
      * idx = 식별자 정보 (type-idx : diary-diaryIdx / letter-letterIdx / reply-replyIdx)
      */
-    public Object setMailContent(String type, int idx) throws BaseException {
+    public Object setMailContent(int userIdx, String type, int idx) throws BaseException {
         try {
             Object mail;
             if (type.compareTo("diary") == 0) {
-                mail = diaryDao.getDiary(idx); // 일기 정보 저장
-                ((GetDiaryRes) mail).setDoneList(diaryDao.getDoneList(idx)); // done list 정보 저장
-
-                // content 복호화
-                if (((GetDiaryRes) mail).getIsPublic() == 0) { // private일 경우 (isPublic == 0)
-                    diaryProvider.decryptContents((GetDiaryRes) mail);
-                }
+                mail = diaryProvider.getDiary(userIdx, idx); // 일기 정보 저장
 
             } else if (type.compareTo("letter") == 0) {
                 mail = mailboxDao.getLetter(idx); // 편지 정보 저장
