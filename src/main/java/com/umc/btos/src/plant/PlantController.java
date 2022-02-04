@@ -103,23 +103,6 @@ public class PlantController {
         }
     }
 
-    /**
-     * 유저 화분 초기화 API
-     * [POST] /plants/:userIdx/initialize
-     * Path Variable : userIdx (mandatory : Y)
-     */
-    @ResponseBody
-    @PostMapping("{userIdx}/initialize")
-    public BaseResponse<String> initializeUserPlant(@PathVariable("userIdx") int userIdx) {
-        try {
-            // 추가(초기화) 성공 시 : "요청에 성공하였습니다." - 1000
-            // 추가(초기화) 실패 시 : "해당 유저의 화분 초기화에 실패하였습니다." - 7000
-            // DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
-            return new BaseResponse<>(plantService.initializeUserPlant(userIdx));
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
 
     /**
      * 화분 개수 조회 API
