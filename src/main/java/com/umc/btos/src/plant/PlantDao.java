@@ -139,14 +139,6 @@ public class PlantDao {
         return this.jdbcTemplate.queryForObject(maxLevelQuery, int.class, maxLevelParam);
     }
 
-    //유저 화분 초기화 API
-    public int initializeUserPlant(int userIdx) {
-        String Query = "UPDATE UserPlantList SET status = 'selected' WHERE userIdx = ? AND plantIdx = 1";
-        int Param = userIdx;
-
-        return this.jdbcTemplate.update(Query, Param);
-    }
-
     //화분 개수 조회 API
     public int countPlant() {
         String Query = "SELECT count(*) from Plant";
