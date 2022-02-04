@@ -2,8 +2,6 @@ package com.umc.btos.src.letter;
 
 import com.umc.btos.config.BaseException;
 import com.umc.btos.src.letter.model.*;
-import com.umc.btos.src.report.ReportDao;
-import com.umc.btos.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +18,7 @@ public class LetterProvider {
 
     @Autowired
     public LetterProvider(LetterDao letterDao) {
-
         this.letterDao = letterDao;
-
     }
 
     // 해당 letterIdx를 갖는 Letter 조회
