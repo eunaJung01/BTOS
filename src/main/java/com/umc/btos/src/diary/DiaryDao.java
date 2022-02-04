@@ -31,7 +31,7 @@ public class DiaryDao {
     public int saveDiary(PostDiaryReq postDiaryReq) {
         String query = "INSERT INTO Diary(userIdx, emotionIdx, diaryDate, isPublic, content) VALUES(?,?,?,?,?)";
         Object[] diary = new Object[]{
-                postDiaryReq.getUserIdx(), postDiaryReq.getEmotionIdx(), postDiaryReq.getDiaryDate(), postDiaryReq.getIsPublic(), postDiaryReq.getDiaryContent()
+                postDiaryReq.getUserIdx(), postDiaryReq.getEmotionIdx(), postDiaryReq.getDiaryDate(), postDiaryReq.getIsPublic_int(), postDiaryReq.getDiaryContent()
         };
         this.jdbcTemplate.update(query, diary);
 
@@ -124,6 +124,12 @@ public class DiaryDao {
                         rs.getInt("doneIdx"),
                         rs.getString("content")
                 ), diaryIdx);
+    }
+
+    // DiarySendList.isChecked = 1로 변환
+    public void modifyIsChecked(int diaryIdx) {
+        String query = "UPDATE DiarySendList SET isChecked = 1 WHERE diaryIdx = ?";
+        this.jdbcTemplate.update(query, diaryIdx);
     }
 
     // =================================== 일기 발송 ===================================
