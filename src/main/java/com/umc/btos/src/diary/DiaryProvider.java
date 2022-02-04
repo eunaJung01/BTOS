@@ -7,6 +7,7 @@ import com.umc.btos.utils.AES128;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,9 @@ public class DiaryProvider {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final DiaryDao diaryDao;
+
+//    @Value("${secret.private-diary-key}")
+//    String PRIVATE_DIARY_KEY;
 
     @Autowired
     public DiaryProvider(DiaryDao diaryDao) {
@@ -43,9 +47,9 @@ public class DiaryProvider {
     }
 
     /*
-     * 일기 조회
+     * 일기 조회 - 우편함
      */
-    public GetDiaryRes getDiary(int diaryIdx) throws BaseException {
+    public GetDiaryRes getDiary(int userIdx, int diaryIdx) throws BaseException {
         try {
             GetDiaryRes diary = diaryDao.getDiary(diaryIdx); // 일기의 정보
             diary.setDoneList(diaryDao.getDoneList(diaryIdx)); // done list 정보
@@ -54,6 +58,8 @@ public class DiaryProvider {
             if (diary.getIsPublic() == 0) { // private 일기일 경우 content 복호화
                 decryptContents(diary);
             }
+
+            diaryDao.modifyIsChecked(diaryIdx); // DiarySendList.isChecked = 1로 변환
             return diary;
 
         } catch (Exception exception) {
@@ -73,6 +79,7 @@ public class DiaryProvider {
             for (int j = 0; j < doneList.size(); j++) {
                 String doneContent = diary.getDoneList().get(j).getContent();
                 diary.getDoneList().get(j).setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
+//                diary.getDoneList().get(j).setContent(new AES128(PRIVATE_DIARY_KEY).decrypt(doneContent));
             }
 
         } catch (Exception ignored) {

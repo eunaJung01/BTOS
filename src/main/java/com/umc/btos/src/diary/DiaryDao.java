@@ -126,6 +126,12 @@ public class DiaryDao {
                 ), diaryIdx);
     }
 
+    // DiarySendList.isChecked = 1로 변환
+    public void modifyIsChecked(int diaryIdx) {
+        String query = "UPDATE DiarySendList SET isChecked = 1 WHERE diaryIdx = ?";
+        this.jdbcTemplate.update(query, diaryIdx);
+    }
+
     // =================================== 일기 발송 ===================================
 
     // 당일 발송해야 하는 모든 diaryIdx 반환
