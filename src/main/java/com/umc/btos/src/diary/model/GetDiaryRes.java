@@ -10,7 +10,7 @@ import java.util.List;
 public class GetDiaryRes {
     private int diaryIdx;
     private int emotionIdx;
-    private String diaryDate;
+    private String diaryDate; // yyyy.MM.dd
     private int isPublic;
     private String content;
     private List<GetDoneRes> doneList;

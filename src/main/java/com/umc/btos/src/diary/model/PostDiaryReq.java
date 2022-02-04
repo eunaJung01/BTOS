@@ -12,16 +12,16 @@ import java.util.List;
 public class PostDiaryReq {
     private int userIdx;
     private int emotionIdx;
-    private String diaryDate; // YYYY.MM.DD
+    private String diaryDate; // yyyy.MM.dd
     private String diaryContent;
     private boolean isPublic;
     private List doneList;
 
     public int getIsPublic_int() { // https://projectlombok.org/features/GetterSetter
         if (this.isPublic) {
-            return 1;
+            return 1; // isPublic = true -> 당일 발송
         } else {
-            return 0;
+            return 0; // isPublic = false
         }
     }
 
