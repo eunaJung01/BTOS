@@ -1,6 +1,5 @@
 package com.umc.btos.src.mailbox;
 
-import com.umc.btos.src.diary.model.GetDiaryRes;
 import com.umc.btos.src.mailbox.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,11 +17,14 @@ public class MailboxDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    // =================================== 우편함 조회 ===================================
+
     // 우편함 조회 - 일기 수신 목록
     public List<GetMailboxRes> getMailbox_diary(int userIdx) {
         String query = "SELECT Diary.diaryIdx AS idx, User.nickName AS senderNickName, Diary.updatedAt AS sendAt " +
                 "FROM Diary " +
-                "INNER JOIN User ON Diary.userIdx = User.userIdx INNER JOIN DiarySendList ON Diary.diaryIdx = DiarySendList.diaryIdx " +
+                "INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                "INNER JOIN DiarySendList ON Diary.diaryIdx = DiarySendList.diaryIdx " +
                 "WHERE DiarySendList.receiverIdx = ? AND DiarySendList.isChecked = 0";
 
         return this.jdbcTemplate.query(query,
@@ -37,10 +39,11 @@ public class MailboxDao {
 
     // 우편함 조회 - 편지 수신 목록
     public List<GetMailboxRes> getMailbox_letter(int userIdx) {
-        String query = "SELECT Letter.letterIdx AS idx, User.nickName AS senderNickName, Letter.updatedAt AS sendAt FROM Letter " +
+        String query = "SELECT Letter.letterIdx AS idx, User.nickName AS senderNickName, Letter.updatedAt AS sendAt " +
+                "FROM Letter " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                "INNER JOIN LetterSendList ON Letter.letterIdx = LetterSendList.letterIdx WHERE LetterSendList.receiverIdx = ?" +
-                " AND LetterSendList.isChecked = 0";
+                "INNER JOIN LetterSendList ON Letter.letterIdx = LetterSendList.letterIdx " +
+                "WHERE LetterSendList.receiverIdx = ? AND LetterSendList.isChecked = 0";
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetMailboxRes(
@@ -69,6 +72,8 @@ public class MailboxDao {
                 ), userIdx);
     }
 
+    // =================================== 우편 조회 ===================================
+
     // 편지 조회
     public GetLetterRes getLetter(int letterIdx) {
         String query = "SELECT Letter.letterIdx, Letter.userIdx AS replierIdx, LetterSendList.receiverIdx, Letter.content " +
@@ -87,18 +92,6 @@ public class MailboxDao {
                 ), letterIdx);
     }
 
-    // 편지 존재 확인
-    public int getLetterIdx(int letterIdx) {
-        String query = "SELECT COUNT(*) " +
-                "FROM Letter " +
-                "INNER JOIN LetterSendList ON Letter.letterIdx = LetterSendList.letterIdx " +
-                "WHERE Letter.letterIdx = ? " +
-                "AND Letter.status = 'active' " +
-                "GROUP BY Letter.letterIdx";
-
-        return this.jdbcTemplate.queryForObject(query, int.class, letterIdx);
-    }
-
     // 답장 조회
     public GetReplyRes getReply(int replyIdx) {
         String query = "SELECT * FROM Reply WHERE replyIdx = ? AND status = 'active'";
@@ -111,11 +104,7 @@ public class MailboxDao {
                 ), replyIdx);
     }
 
-    // 답장 존재 확인
-    public int getReplyIdx(int replyIdx) {
-        String query = "SELECT COUNT(*) FROM Reply WHERE replyIdx = ? AND status = 'active'";
-        return this.jdbcTemplate.queryForObject(query, int.class, replyIdx);
-    }
+    // ==============================================================================
 
     // User.fontIdx 반환
     public int getFontIdx(String type, int idx) {
@@ -138,13 +127,6 @@ public class MailboxDao {
 
         // ex. SELECT fontIdx FROM User WHERE userIdx = (SELECT replierIdx FROM Reply WHERE replierIdx = ? AND status = 'active') AND status = 'active'
         return this.jdbcTemplate.queryForObject(query, int.class, idx);
-    }
-
-
-    // 일기 인덱스 조회
-    public int getDiaryIdx(int diaryIdx) {
-        String query = "SELECT COUNT(*) FROM Diary WHERE diaryIdx = ? AND status = 'active'";
-        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
     }
 
 }
