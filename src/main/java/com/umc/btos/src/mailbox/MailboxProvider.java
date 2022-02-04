@@ -4,7 +4,9 @@ import com.umc.btos.config.BaseException;
 import com.umc.btos.src.diary.DiaryProvider;
 import com.umc.btos.src.diary.DiaryDao;
 import com.umc.btos.src.diary.model.GetDiaryRes;
+import com.umc.btos.src.letter.LetterProvider;
 import com.umc.btos.src.mailbox.model.GetLetterRes;
+import com.umc.btos.src.mailbox.model.GetMailRes;
 import com.umc.btos.src.mailbox.model.GetMailboxRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,13 +25,13 @@ public class MailboxProvider {
 
     private final MailboxDao mailboxDao;
     private final DiaryProvider diaryProvider;
-    private final DiaryDao diaryDao;
+    private final LetterProvider letterProvider;
 
     @Autowired
-    public MailboxProvider(MailboxDao mailboxDao, DiaryProvider diaryProvider, DiaryDao diaryDao) {
+    public MailboxProvider(MailboxDao mailboxDao, DiaryProvider diaryProvider, LetterProvider letterProvider) {
         this.mailboxDao = mailboxDao;
         this.diaryProvider = diaryProvider;
-        this.diaryDao = diaryDao;
+        this.letterProvider = letterProvider;
     }
 
     /*
@@ -66,6 +68,7 @@ public class MailboxProvider {
 
             } else if (type.compareTo("letter") == 0) {
                 mail = mailboxDao.getLetter(idx); // 편지 정보 저장
+//                mail = letterProvider.getLetter(userIdx, idx); // 편지 정보 저장
 
             } else {
                 mail = mailboxDao.getReply(idx); // 답장 정보 저장
@@ -77,10 +80,27 @@ public class MailboxProvider {
         }
     }
 
-    // 발송자 폰트 정보 저장
-    public int setSenderFontIdx(String type, int idx) throws BaseException {
+    // 발신인 정보 (User.nickName, User.fontIdx) 저장
+    public void setMailRes_sender(GetMailRes mail, String type, int idx) throws BaseException {
         try {
-            return mailboxDao.getFontIdx(type, idx);
+            int senderFontIdx = 0;
+            String senderNickName = "";
+
+            if (type.compareTo("diary") == 0) { // 일기
+                senderNickName = mailboxDao.getSenderNickName_diary(idx);
+                senderFontIdx = mailboxDao.getFontIdx_diary(idx);
+
+            } else if (type.compareTo("letter") == 0) { // 편지
+                senderNickName = mailboxDao.getSenderNickName_letter(idx);
+                senderFontIdx = mailboxDao.getFontIdx_letter(idx);
+
+            } else { // 답장
+                senderNickName = mailboxDao.getSenderNickName_reply(idx);
+                senderFontIdx = mailboxDao.getFontIdx_reply(idx);
+            }
+
+            mail.setSenderNickName(senderNickName);
+            mail.setSenderFontIdx(senderFontIdx);
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);

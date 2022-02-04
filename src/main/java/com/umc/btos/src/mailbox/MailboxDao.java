@@ -104,29 +104,68 @@ public class MailboxDao {
                 ), replyIdx);
     }
 
-    // ==============================================================================
+    // --------------------------------------- User.fontIdx ---------------------------------------
 
-    // User.fontIdx 반환
-    public int getFontIdx(String type, int idx) {
-        // type : Table 명 (Diary / Letter / Reply)
-        String typeIdx = type + "Idx"; // 해당 Table의 식별자 명 (Diary : diaryIdx / Letter : letterIdx / Reply : replyIdx)
-        String columnName_sender = "userIdx"; // 발신자 Column 명 (Diary & Letter : userIdx / & Reply : replierIdx)
+    // 일기
+    public int getFontIdx_diary(int diaryIdx) {
+        String query = "SELECT User.fontIdx " +
+                "FROM Diary " +
+                "INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                "WHERE diaryIdx = ?";
 
-        if (type.compareTo("diary") == 0) { // 일기
-            type = "Diary";
-        } else if (type.compareTo("letter") == 0) { // 편지
-            type = "Letter";
-        } else { // 답장
-            type = "Reply";
-            columnName_sender = "replierIdx";
-        }
+        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
+    }
 
-        String query = "SELECT fontIdx FROM User WHERE userIdx = " +
-                "(SELECT " + columnName_sender + " FROM " + type + " WHERE " + typeIdx + " = ? AND status = 'active') " +
-                "AND status = 'active'";
+    // 편지
+    public int getFontIdx_letter(int letterIdx) {
+        String query = "SELECT User.fontIdx " +
+                "FROM Letter " +
+                "INNER JOIN User ON Letter.userIdx = User.userIdx " +
+                "WHERE letterIdx = ?";
 
-        // ex. SELECT fontIdx FROM User WHERE userIdx = (SELECT replierIdx FROM Reply WHERE replierIdx = ? AND status = 'active') AND status = 'active'
-        return this.jdbcTemplate.queryForObject(query, int.class, idx);
+        return this.jdbcTemplate.queryForObject(query, int.class, letterIdx);
+    }
+
+    // 답장
+    public int getFontIdx_reply(int replyIdx) {
+        String query = "SELECT User.fontIdx " +
+                "FROM Reply " +
+                "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
+                "WHERE replyIdx = ?";
+
+        return this.jdbcTemplate.queryForObject(query, int.class, replyIdx);
+    }
+
+    // --------------------------------------- User.nickName ---------------------------------------
+
+    // 일기
+    public String getSenderNickName_diary(int diaryIdx) {
+        String query = "SELECT User.nickName " +
+                "FROM Diary " +
+                "INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                "WHERE diaryIdx = ?";
+
+        return this.jdbcTemplate.queryForObject(query, String.class, diaryIdx);
+    }
+
+    // 편지
+    public String getSenderNickName_letter(int letterIdx) {
+        String query = "SELECT User.nickName " +
+                "FROM Letter " +
+                "INNER JOIN User ON Letter.userIdx = User.userIdx " +
+                "WHERE letterIdx = ?";
+
+        return this.jdbcTemplate.queryForObject(query, String.class, letterIdx);
+    }
+
+    // 답장
+    public String getSenderNickName_reply(int replyIdx) {
+        String query = "SELECT User.nickName " +
+                "FROM Reply " +
+                "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
+                "WHERE replyIdx = ?";
+
+        return this.jdbcTemplate.queryForObject(query, String.class, replyIdx);
     }
 
 }

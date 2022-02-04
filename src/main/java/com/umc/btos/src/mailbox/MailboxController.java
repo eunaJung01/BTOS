@@ -50,8 +50,9 @@ public class MailboxController {
     public BaseResponse<GetMailRes> getMail(@PathVariable("userIdx") int userIdx, @RequestParam("type") String type, @RequestParam("idx") int idx) {
         try {
             GetMailRes mail = new GetMailRes(type);
+            mailboxProvider.setMailRes_sender(mail, type, idx); // 발신인 정보 저장
             mail.setContent(mailboxProvider.setMailContent(userIdx, type, idx));
-            mail.setSenderFontIdx(mailboxProvider.setSenderFontIdx(type, idx));
+
             return new BaseResponse<>(mail);
 
         } catch (BaseException exception) {
