@@ -27,15 +27,20 @@ public class UserDao {
                 postUserReq.getEmail(),
                 postUserReq.getBirth(),
                 postUserReq.getNickName()};
-        this.jdbcTemplate.update(createUserQuery, createUserParams);
+        this.jdbcTemplate.update(createUserQuery, createUserParams); // User 에 회원정보 삽입
 
-        String lastInsertIdQuery = "select last_insert_id()";
-        String selectDefaultPlantQuery = "insert into UserPlantList (userIdx, plantIdx) VALUES (?, 1)";
+        String lastInsertIdQuery = "select last_insert_id()"; // 회원 가입한 유저 식별자 가져옴
+        // UserPlantList에 유저 화분 정보 삽입(유저 식별자, 기본 식물 식별자, 선택 상태)
+        String selectDefaultPlantQuery = "insert into UserPlantList (userIdx, plantIdx, status) VALUES (?, 1, 'selected')";
+        
+        
         // 회원 가입 시 기본 식물 알로카시아로 선택되게 함
+        // 회원가입시 유저 식별자 반환 필요하므로 저장해둠 -> UserPlantList 식별자를 가져오지 않기 하기 위해서 먼저 저장해둠
         int userIdx = this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class);
-        this.jdbcTemplate.update(selectDefaultPlantQuery, userIdx);
 
-        return userIdx;
+        this.jdbcTemplate.update(selectDefaultPlantQuery, userIdx); // 기본 식물 선택
+
+        return userIdx; // 유저 식별자 반환
     }
 
     // 이메일 확인
