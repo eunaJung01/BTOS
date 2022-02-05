@@ -56,13 +56,14 @@ public class DiaryProvider {
             diaryDao.modifyIsChecked(userIdx, diaryIdx); // DiarySendList.isChecked = 1로 변환
 
             // content 복호화
-            if (diary.getIsPublic() == 0) { // private 일기일 경우 content 복호화
+            if (diaryDao.getIsPublic(diaryIdx) == 0) { // private 일기일 경우 content 복호화
                 decryptContents(diary);
             }
 
             return diary;
 
         } catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }

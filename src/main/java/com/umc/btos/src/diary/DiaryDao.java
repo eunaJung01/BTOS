@@ -111,7 +111,6 @@ public class DiaryDao {
                         rs.getInt("diaryIdx"),
                         rs.getInt("emotionIdx"),
                         rs.getString("diaryDate"),
-                        rs.getInt("isPublic"),
                         rs.getString("content")
                 ), diaryIdx);
     }
@@ -124,6 +123,12 @@ public class DiaryDao {
                         rs.getInt("doneIdx"),
                         rs.getString("content")
                 ), diaryIdx);
+    }
+
+    // Diary.isPublic 반환
+    public int getIsPublic(int diaryIdx) {
+        String query = "SELECT isPublic FROM Diary WHERE diaryIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
     }
 
     // DiarySendList.isChecked = 1로 변환
