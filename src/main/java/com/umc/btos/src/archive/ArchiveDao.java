@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -23,9 +24,19 @@ public class ArchiveDao {
     // 달력 조회 (diaryDate(일기의 해당 날짜) 기준 오름차순 정렬)
     public List<GetCalendarRes> getCalendarList(int userIdx, String date) {
         String startDate = date + ".01";
-        String endDate = date + ".31";
 
-        String query = "SELECT diaryDate FROM Diary WHERE userIdx = ? AND DATE_FORMAT(diaryDate, '%Y.%m.%d') >= DATE_FORMAT(?, '%Y.%m.%d') AND DATE_FORMAT(diaryDate, '%Y.%m.%d') <= DATE_FORMAT(?, '%Y.%m.%d') AND status = 'active' ORDER BY diaryDate ASC";
+        int year = Integer.parseInt(String.valueOf(date.charAt(0))) * 1000 + Integer.parseInt(String.valueOf(date.charAt(1))) * 100 + Integer.parseInt(String.valueOf(date.charAt(2))) * 10 + Integer.parseInt(String.valueOf(date.charAt(3)));
+        int month = Integer.parseInt(String.valueOf(date.charAt(5))) * 10 + Integer.parseInt(String.valueOf(date.charAt(6)));
+        LocalDate initial = LocalDate.of(year, month, 1);
+        LocalDate endDate = initial.withDayOfMonth(initial.lengthOfMonth());
+
+        String query = "SELECT diaryDate " +
+                "FROM Diary " +
+                "WHERE userIdx = ? " +
+                "AND DATE_FORMAT(diaryDate, '%Y.%m.%d') >= DATE_FORMAT(?, '%Y.%m.%d') " +
+                "AND DATE_FORMAT(diaryDate, '%Y.%m.%d') <= DATE_FORMAT(?, '%Y.%m.%d') " +
+                "AND status = 'active' " +
+                "ORDER BY diaryDate ASC";
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetCalendarRes(
@@ -36,7 +47,7 @@ public class ArchiveDao {
     // -------------------------------------------------------------------------------------------
 
     // Diary.emotionIdx 반환
-    public int getEmotion(int userIdx, String diaryDate) {
+    public int getEmotionIdx(int userIdx, String diaryDate) {
         String query = "SELECT emotionIdx FROM Diary WHERE userIdx = ? AND diaryDate = ? AND status = 'active'";
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, diaryDate);
     }
