@@ -92,11 +92,11 @@ public class DiaryProvider {
 
     // Diary - Send Algorithm
     @Scheduled(cron = "55 59 18 * * *") // 매일 18:59:55에 DiarySendList 생성
-//    @Scheduled(cron = "30 50 15 * * *") // test
+//    @Scheduled(cron = "00 23 21 * * *") // test
     public void sendDiary() {
 
-        LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
-        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(now.toString()); // 당일 발송해야 하는 모든 diaryIdx
+        LocalDate yesterday = LocalDate.now().minusDays(1); // 어제 날짜 (yyyy-MM-dd)
+        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(yesterday.toString()); // 당일 발송해야 하는 모든 diaryIdx
 //        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-02-01"); // test
 
         /*
@@ -298,8 +298,8 @@ public class DiaryProvider {
         try {
             List<GetSendListRes> result = new ArrayList<>();
 
-            LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
-            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(now.toString()); // 당일 발송해야 하는 모든 diaryIdx
+            LocalDate yesterday = LocalDate.now().minusDays(1); // 어제 날짜 (yyyy-MM-dd)
+            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(yesterday.toString()); // 당일 발송해야 하는 모든 diaryIdx
 //            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-02-01"); // test
 
             if (diaryIdxList.size() == 0) {
@@ -309,7 +309,7 @@ public class DiaryProvider {
             // 일기에 따른 발송 리스트 조회
             for (int diaryIdx : diaryIdxList) {
                 GetSendListRes diary = new GetSendListRes(diaryIdx);
-                diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, now.toString()));
+                diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, yesterday.toString()));
                 result.add(diary);
             }
 
