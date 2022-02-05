@@ -81,6 +81,13 @@ public class PlantService {
         // score : 변경할 점수
 
         try {
+            PatchModifyScoreRes result = new PatchModifyScoreRes(false, type); // response 객체
+
+            // 시무룩 상태인가? -> 시무룩 상태라면 성장치 증가 X (바로 response 반환)
+            if (plantDao.checkSad(userIdx) == 1) {
+                return result;
+            }
+
             // 식물 점수 (score) 가져오기
             int plantScore = plantDao.getScore(userIdx);
 
@@ -89,8 +96,6 @@ public class PlantService {
 
             // 해당 단계의 성장치 불러오기
             int plantMaxScore = Constant.PLANT_LEVEL[plantLevel]; // 성장치
-
-            PatchModifyScoreRes result = new PatchModifyScoreRes(false, type); // response 객체
 
             // 최대 단계 & 최대 점수인 경우
             if (plantLevel == plantDao.getMaxLevel(userIdx) && plantScore == plantMaxScore) {
