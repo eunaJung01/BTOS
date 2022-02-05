@@ -91,8 +91,8 @@ public class DiaryProvider {
     // ============================================ 일기 발송 ============================================
 
     // Diary - Send Algorithm
-    @Scheduled(cron = "55 59 18 * * *") // 매일 18:59:55에 DiarySendList 생성
-//    @Scheduled(cron = "00 23 21 * * *") // test
+//     @Scheduled(cron = "55 59 18 * * *") // 매일 18:59:55에 DiarySendList 생성
+    @Scheduled(cron = "00 45 22 * * *") // test
     public void sendDiary() {
 
         LocalDate yesterday = LocalDate.now().minusDays(1); // 어제 날짜 (yyyy-MM-dd)
