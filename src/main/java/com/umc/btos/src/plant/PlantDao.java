@@ -146,11 +146,11 @@ public class PlantDao {
     }
 
     //화분이 시무룩 상태인지 확인
-    public boolean checkSad(int userIdx) {
+    public int checkSad(int userIdx) {
         String Query = "SELECT isSad FROM User WHERE userIdx=?";
         int Param = userIdx;
 
-        return this.jdbcTemplate.queryForObject(Query, boolean.class, Param);
+        return this.jdbcTemplate.queryForObject(Query, int.class, Param);
     }
 
     //모든 화분 조회(Profile + 상점)
