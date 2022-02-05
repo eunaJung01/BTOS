@@ -46,7 +46,7 @@ public class UserController {
         try {
             // ***형식적 validation***
             // email 값 존재 검사
-            if (postUserReq.getEmail() == null) { // null 값 시 오류 메시지
+            if (postUserReq.getEmail().equals(null) || postUserReq.getEmail().equals("")) { // null 값 시 오류 메시지
                 return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
             }
             // email 형식 검사
@@ -55,7 +55,7 @@ public class UserController {
             }
 
             // nickname 값 존재 검사
-            if (postUserReq.getNickName() == null) { // null 값 시 오류 메시지
+            if (postUserReq.getNickName().equals("") || postUserReq.getNickName().equals("")) { // null 값 시 오류 메시지
                 return new BaseResponse<>(POST_USERS_EMPTY_NICKNAME);
             }
             // nickname 형식 검사
@@ -63,7 +63,8 @@ public class UserController {
                 return new BaseResponse<>(USERS_INVALID_NICKNAME);
             }
 
-            if (postUserReq.getBirth() < 0) { // 생년이 0 미만 값으로 들어오면 오류 메시지, 0은 null 처리이므로 pass
+            // 생년이 0 미만 값으로 들어오면 오류 메시지, 0은 null 처리이므로 pass
+            if (postUserReq.getBirth() < 0) {
                 return new BaseResponse<>(INVALID_USER_BIRTH);
             }
 
@@ -92,6 +93,12 @@ public class UserController {
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
+
+            // NULL 값 체크
+
+            if (userStatus.getStatus().equals(null) || userStatus.getStatus().equals(""))
+                throw new BaseException(INVALID_USER_STATUS);
+
 
             PatchUserReq patchUserReq = new PatchUserReq(userIdx, userStatus.getStatus());
             userService.changeStatusOfUser(patchUserReq);
@@ -160,7 +167,7 @@ public class UserController {
                 return new BaseResponse<>(USERS_INVALID_NICKNAME);
             }
 
-            if (user.getNickName() == null) { // nickname null값이면 오류 메시지
+            if (user.getNickName().equals(null) || user.getNickName().equals("")) { // nickname null값이면 오류 메시지
                 return new BaseResponse<>(PATCH_USERS_NOT_VALUES);
             }
 
