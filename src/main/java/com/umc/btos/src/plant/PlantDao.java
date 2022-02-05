@@ -96,7 +96,14 @@ public class PlantDao {
         String Query = "UPDATE UserPlantList SET status=? WHERE userIdx=? AND plantIdx=?";
         Object[] Params = new Object[]{"selected", patchSelectPlantReq.getUserIdx(), patchSelectPlantReq.getPlantIdx()};
 
-        return this.jdbcTemplate.update(Query, Params);
+        this.jdbcTemplate.update(Query, Params);
+
+
+        //User.selectedPlantIdx 업데이트
+        String updateUserColumnQuery = "UPDATE User SET selectedPlantIdx=? WHERE userIdx=?";
+        Object[] updateUserColumnParams = new Object[]{patchSelectPlantReq.getPlantIdx(), patchSelectPlantReq.getUserIdx()};
+
+        return this.jdbcTemplate.update(updateUserColumnQuery, updateUserColumnParams);
     }
 
     //화분 구매 API
