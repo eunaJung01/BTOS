@@ -132,4 +132,20 @@ public class DiaryController {
 //        }
 //    }
 
+    /*
+     * 날짜 확인
+     * [GET] /diaries/test
+     */
+    @ResponseBody
+    @GetMapping("/test")
+    public BaseResponse<String> dateTest() {
+        try {
+            String result = diaryProvider.dateTest();
+            return new BaseResponse<>(result);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
 }

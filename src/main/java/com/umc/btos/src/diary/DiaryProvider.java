@@ -12,10 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.umc.btos.config.BaseResponseStatus.*;
 
@@ -314,6 +311,19 @@ public class DiaryProvider {
                 result.add(diary);
             }
 
+            return result;
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public String dateTest() throws BaseException {
+        try {
+            Date date = new Date();
+            LocalDate today = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
+
+            String result = "Date 객체 : " + date.toString() + " / LocalDate 객체 : " + today.toString();
             return result;
 
         } catch (Exception exception) {
