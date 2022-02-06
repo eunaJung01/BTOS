@@ -705,6 +705,7 @@ public class HistoryDao {
 
         return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new FirstHistory(
+                        "diary",
                         rs.getInt("diaryIdx"),
                         rs.getString("content"),
                         rs.getInt("emotionIdx"),
@@ -742,6 +743,7 @@ public class HistoryDao {
 
         return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new FirstHistory(
+                        "letter",
                         rs.getInt("letterIdx"),
                         rs.getString("content"),
                         rs.getString("senderNickName"),
