@@ -92,7 +92,6 @@ public class DiaryProvider {
     public void sendDiary() {
 
         LocalDate yesterday = LocalDate.now().minusDays(1); // 어제 날짜 (yyyy-MM-dd)
-        System.out.println(yesterday);
         List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(yesterday.toString()); // 당일 발송해야 하는 모든 diaryIdx
 //        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-02-01"); // test
 
