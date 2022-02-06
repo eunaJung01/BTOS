@@ -191,8 +191,10 @@ public class ArchiveDao {
 
         String query = "SELECT DISTINCT parsed_diaryDate " +
                 "FROM (SELECT left(diaryDate, 7) AS parsed_diaryDate, diaryDate " +
-                "FROM Diary WHERE userIdx = ?) parsed_diaryDate " +
-                "ORDER BY parsed_diaryDate DESC LIMIT ?, ?";
+                "FROM Diary " +
+                "WHERE userIdx = ? " +
+                "LIMIT ?, ?) parsed_diaryDate " +
+                "ORDER BY parsed_diaryDate DESC";
 
         return this.jdbcTemplate.queryForList(query, String.class, userIdx, startData, endData);
     }
@@ -225,9 +227,8 @@ public class ArchiveDao {
                 "AND DATE_FORMAT(diaryDate, '%Y.%m.%d') >= DATE_FORMAT(?, '%Y.%m.%d') " +
                 "AND DATE_FORMAT(diaryDate, '%Y.%m.%d') <= DATE_FORMAT(?, '%Y.%m.%d') " +
                 "AND status = 'active' " +
-                ") parsed_diaryDate " +
-                "ORDER BY parsed_diaryDate DESC " +
-                "LIMIT ?, ?";
+                "LIMIT ?, ?) parsed_diaryDate " +
+                "ORDER BY parsed_diaryDate DESC";
 
         return this.jdbcTemplate.queryForList(query, String.class, userIdx, startDate, endDate, startData, endData);
     }
