@@ -6,6 +6,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class BTOSApplication {
     public static void main(String[] args) {
+        
+        @PostConstruct
+        public void started() {
+            TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
+        }
 
         SpringApplication.run(BTOSApplication.class, args);
 
