@@ -721,7 +721,8 @@ public class HistoryDao {
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
                 "INNER JOIN Done ON Diary.diaryIdx = Done.diaryIdx " +
-                "WHERE Diary.diaryIdx = ? AND DiarySendList.status = 'active'";
+                "WHERE Diary.diaryIdx = ? AND DiarySendList.status = 'active' " +
+                "GROUP BY doneIdx";
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new Done(
