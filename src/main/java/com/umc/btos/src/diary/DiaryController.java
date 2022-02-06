@@ -133,7 +133,7 @@ public class DiaryController {
 //    }
 
     /*
-     * 날짜 확인
+     * 현재 서버 시간 확인
      * [GET] /diaries/test
      */
     @ResponseBody

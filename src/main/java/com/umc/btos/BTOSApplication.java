@@ -9,6 +9,7 @@ import java.util.TimeZone;
 @SpringBootApplication
 public class BTOSApplication {
 
+    // TimeZone = Asia/Seoul
     @PostConstruct
     public void started() {
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
