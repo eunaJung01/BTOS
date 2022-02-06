@@ -531,7 +531,7 @@ public class HistoryProvider {
             GetHistoryRes history = new GetHistoryRes(type);
 
             if (type.compareTo("diary") == 0) { // type = diary
-                Diary diary = historyDao.getDiary_main(idx);
+                FirstHistory diary = historyDao.getDiary_main(idx);
                 diary.setPositioning(true);
                 diary.setDoneList(historyDao.getDoneList_main(idx));
 
@@ -539,7 +539,7 @@ public class HistoryProvider {
                 history.setReplyList(historyDao.getReplyList_diary(userIdx, idx));
 
             } else if (type.compareTo("letter") == 0) { // type = letter
-                Letter letter = historyDao.getLetter_main(idx);
+                FirstHistory letter = historyDao.getLetter_main(idx);
                 letter.setPositioning(true);
 
                 history.setFirstHistory(letter);
@@ -552,7 +552,7 @@ public class HistoryProvider {
                     history.setFirstType("diary");
 
                     int diaryIdx = historyDao.getDiaryIdx_main(idx);
-                    Diary diary = historyDao.getDiary_main(diaryIdx);
+                    FirstHistory diary = historyDao.getDiary_main(diaryIdx);
                     diary.setDoneList(historyDao.getDoneList_main(diaryIdx));
 
                     List<Reply> replyList = historyDao.getReplyList_diary(userIdx, diaryIdx);
@@ -569,7 +569,7 @@ public class HistoryProvider {
                     history.setFirstType("letter");
 
                     int letterIdx = historyDao.getLetterIdx_main(idx);
-                    Letter letter = historyDao.getLetter_main(letterIdx);
+                    FirstHistory letter = historyDao.getLetter_main(letterIdx);
 
                     List<Reply> replyList = historyDao.getReplyList_letter(userIdx, letterIdx);
                     for (Reply reply : replyList) {
