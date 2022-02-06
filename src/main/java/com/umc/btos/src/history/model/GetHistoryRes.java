@@ -9,7 +9,7 @@ import java.util.List;
 @Setter
 public class GetHistoryRes<T> {
     private String firstType; // diary : 일기 / letter : 편지
-    private T firstHistory; // firstType = 1. diary -> Diary 객체 / 2. letter -> Letter 객체
+    private FirstHistory firstHistory;
     private List<Reply> replyList;
 
     public GetHistoryRes(String firstType) {

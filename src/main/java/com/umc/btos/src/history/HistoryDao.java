@@ -120,7 +120,7 @@ public class HistoryDao {
     // 일기 (DiarySendList.receiverIdx = userIdx AND User.nickName = senderNickName)
     public History_Sender getDiary_sender(int userIdx, String senderNickName) {
         String query = "SELECT Diary.diaryIdx AS idx, " +
-                "Diary.content AS diaryContent, Diary.emotionIdx AS emotionIdx, COUNT(Done.diaryIdx) AS doneListNum, " +
+                "Diary.content AS content, Diary.emotionIdx AS emotionIdx, COUNT(Done.diaryIdx) AS doneListNum, " +
                 "DiarySendList.createdAt AS sendAt_raw, date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
@@ -134,7 +134,9 @@ public class HistoryDao {
                 (rs, rowNum) -> new History_Sender(
                         "diary",
                         rs.getInt("idx"),
-                        new HistoryContent_Diary(rs.getString("diaryContent"), rs.getInt("emotionIdx"), rs.getInt("doneListNum")),
+                        rs.getString("content"),
+                        rs.getInt("emotionIdx"),
+                        rs.getInt("doneListNum"),
                         rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
                 ), userIdx, senderNickName);
@@ -187,7 +189,7 @@ public class HistoryDao {
     // 일기
     public History_Sender getDiary_sender(int userIdx, int diaryIdx) {
         String query = "SELECT Diary.diaryIdx AS idx, " +
-                "Diary.content AS diaryContent, Diary.emotionIdx AS emotionIdx, COUNT(Done.diaryIdx) AS doneListNum, " +
+                "Diary.content AS content, Diary.emotionIdx AS emotionIdx, COUNT(Done.diaryIdx) AS doneListNum, " +
                 "DiarySendList.createdAt AS sendAt_raw, date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
@@ -199,7 +201,9 @@ public class HistoryDao {
                 (rs, rowNum) -> new History_Sender(
                         "diary",
                         rs.getInt("idx"),
-                        new HistoryContent_Diary(rs.getString("diaryContent"), rs.getInt("emotionIdx"), rs.getInt("doneListNum")),
+                        rs.getString("content"),
+                        rs.getInt("emotionIdx"),
+                        rs.getInt("doneListNum"),
                         rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
                 ), userIdx, diaryIdx);
@@ -249,7 +253,7 @@ public class HistoryDao {
     // 일기 (DiarySendList.receiverIdx = userIdx AND User.nickName = senderNickName)
     public List<History_Sender> getDiaryList_sender(int userIdx, String senderNickName) {
         String query = "SELECT Diary.diaryIdx AS idx, " +
-                "Diary.content AS diaryContent, Diary.emotionIdx AS emotionIdx, COUNT(Done.diaryIdx) AS doneListNum, " +
+                "Diary.content AS content, Diary.emotionIdx AS emotionIdx, COUNT(Done.diaryIdx) AS doneListNum, " +
                 "DiarySendList.createdAt AS sendAt_raw, date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
@@ -262,7 +266,9 @@ public class HistoryDao {
                 (rs, rowNum) -> new History_Sender(
                         "diary",
                         rs.getInt("idx"),
-                        new HistoryContent_Diary(rs.getString("diaryContent"), rs.getInt("emotionIdx"), rs.getInt("doneListNum")),
+                        rs.getString("content"),
+                        rs.getInt("emotionIdx"),
+                        rs.getInt("doneListNum"),
                         rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
                 ), userIdx, senderNickName);
@@ -350,7 +356,7 @@ public class HistoryDao {
         int endData = pageNum * Constant.HISTORY_DATA_NUM;
 
         String query = "SELECT Diary.diaryIdx AS idx, User.nickName AS senderNickName, " +
-                "Diary.content AS diaryContent, Diary.emotionIdx AS emotionIdx, COUNT(Done.diaryIdx) AS doneListNum, " +
+                "Diary.content AS content, Diary.emotionIdx AS emotionIdx, COUNT(Done.diaryIdx) AS doneListNum, " +
                 "DiarySendList.createdAt AS sendAt_raw, date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
@@ -365,7 +371,9 @@ public class HistoryDao {
                         "diary",
                         rs.getInt("idx"),
                         rs.getString("senderNickName"),
-                        new HistoryContent_Diary(rs.getString("diaryContent"), rs.getInt("emotionIdx"), rs.getInt("doneListNum")),
+                        rs.getString("diaryContent"),
+                        rs.getInt("emotionIdx"),
+                        rs.getInt("doneListNum"),
                         rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
                 ), userIdx, startData, endData);
@@ -446,7 +454,7 @@ public class HistoryDao {
     // 일기
     public History getDiary(int userIdx, int diaryIdx) {
         String query = "SELECT Diary.diaryIdx AS idx, User.nickName AS senderNickName," +
-                "Diary.content AS diaryContent, Diary.emotionIdx AS emotionIdx, COUNT(Done.diaryIdx) AS doneListNum, " +
+                "Diary.content AS content, Diary.emotionIdx AS emotionIdx, COUNT(Done.diaryIdx) AS doneListNum, " +
                 "DiarySendList.createdAt AS sendAt_raw, date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
@@ -459,7 +467,9 @@ public class HistoryDao {
                         "diary",
                         rs.getInt("idx"),
                         rs.getString("senderNickName"),
-                        new HistoryContent_Diary(rs.getString("diaryContent"), rs.getInt("emotionIdx"), rs.getInt("doneListNum")),
+                        rs.getString("diaryContent"),
+                        rs.getInt("emotionIdx"),
+                        rs.getInt("doneListNum"),
                         rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
                 ), userIdx, diaryIdx);
@@ -684,8 +694,8 @@ public class HistoryDao {
     // --------------------------------------- 본문 ---------------------------------------
 
     // 일기
-    public Diary getDiary_main(int diaryIdx) {
-        String query = "SELECT Diary.diaryIdx, Diary.emotionIdx, Diary.content, User.nickName AS senderNickName, " +
+    public FirstHistory getDiary_main(int diaryIdx) {
+        String query = "SELECT Diary.diaryIdx, Diary.content, Diary.emotionIdx, User.nickName AS senderNickName, " +
                 "date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
@@ -694,10 +704,10 @@ public class HistoryDao {
                 "GROUP BY diaryIdx";
 
         return this.jdbcTemplate.queryForObject(query,
-                (rs, rowNum) -> new Diary(
+                (rs, rowNum) -> new FirstHistory(
                         rs.getInt("diaryIdx"),
-                        rs.getInt("emotionIdx"),
                         rs.getString("content"),
+                        rs.getInt("emotionIdx"),
                         rs.getString("senderNickName"),
                         rs.getString("sendAt")
                 ), diaryIdx);
@@ -720,7 +730,7 @@ public class HistoryDao {
     }
 
     // 편지
-    public Letter getLetter_main(int letterIdx) {
+    public FirstHistory getLetter_main(int letterIdx) {
         String query = "SELECT Letter.letterIdx, Letter.content, User.nickName AS senderNickName, " +
                 "date_format(LetterSendList.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM LetterSendList " +
@@ -731,7 +741,7 @@ public class HistoryDao {
                 "GROUP BY letterIdx";
 
         return this.jdbcTemplate.queryForObject(query,
-                (rs, rowNum) -> new Letter(
+                (rs, rowNum) -> new FirstHistory(
                         rs.getInt("letterIdx"),
                         rs.getString("content"),
                         rs.getString("senderNickName"),
@@ -743,7 +753,7 @@ public class HistoryDao {
 
     // 일기
     public List<Reply> getReplyList_diary(int userIdx, int diaryIdx) {
-        String query = "SELECT Reply.replyIdx, User.nickName AS senderNickName, Reply.content, " +
+        String query = "SELECT Reply.replyIdx, Reply.content, User.nickName AS senderNickName, " +
                 "date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
@@ -761,15 +771,15 @@ public class HistoryDao {
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new Reply(
                         rs.getInt("replyIdx"),
-                        rs.getString("senderNickName"),
                         rs.getString("content"),
+                        rs.getString("senderNickName"),
                         rs.getString("sendAt")
                 ), userIdx, userIdx, diaryIdx);
     }
 
     // 편지
     public List<Reply> getReplyList_letter(int userIdx, int letterIdx) {
-        String query = "SELECT Reply.replyIdx, User.nickName AS senderNickName, Reply.content, " +
+        String query = "SELECT Reply.replyIdx, Reply.content, User.nickName AS senderNickName, " +
                 "date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
@@ -788,8 +798,8 @@ public class HistoryDao {
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new Reply(
                         rs.getInt("replyIdx"),
-                        rs.getString("senderNickName"),
                         rs.getString("content"),
+                        rs.getString("senderNickName"),
                         rs.getString("sendAt")
                 ), userIdx, userIdx, letterIdx);
     }
