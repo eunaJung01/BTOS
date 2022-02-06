@@ -77,12 +77,12 @@ public class UserDao {
                         rs.getString("email"),
                         rs.getString("nickName"),
                         rs.getInt("birth"),
-                        rs.getInt("selectedPlantIdx"),
                         rs.getString("isPremium"),
                         rs.getBoolean("recOthers"),
                         rs.getBoolean("recSimilarAge"),
                         rs.getInt("fontIdx"),
-                        rs.getBoolean("pushAlarm")),
+                        rs.getBoolean("pushAlarm"),
+                        rs.getBoolean("isSad")),
                         getUserParams);
     }
 
