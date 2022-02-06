@@ -14,10 +14,10 @@ public class GetUserRes {
     private String email;
     private String nickName;
     private int birth;
-    private int selectedPlantIdx;
     private String isPremium;
     private boolean recOthers;
     private boolean recSimilarAge;
     private int fontIdx;
     private boolean pushAlarm;
+    private boolean isSad;
 }
