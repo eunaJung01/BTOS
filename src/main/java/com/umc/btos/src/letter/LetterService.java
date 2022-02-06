@@ -40,9 +40,24 @@ public class LetterService {
     public List<Integer> createLetter(PostLetterReq postLetterReq) throws BaseException {
 
         try {
-            int letterIdx = letterDao.createLetter(postLetterReq); // 편지 생성
-            List<Integer> receiveUserIdx =letterDao.createLetterSendList(letterIdx); // 휴먼상태가 아닌 user 5명을 랜덤으로 골라 편지 발송 //letterSendList에 추가
-            return receiveUserIdx;
+            int letterIdx = letterDao.createLetter(postLetterReq); // 편지 생성 //letter 테이블에 생성 // 생성한 편지의 letterIdx반환
+            PostLetterUserSimilarIdx idx_similar =letterDao.getIdx_Similar(letterIdx); // 생성한 유저의 idx와 SimilarAge여부를 반환
+
+            if (idx_similar.getUserSimilarAge() == 1){// 편지 발송 유저가 또래 편지 수신을 원할경우
+                List<Integer> receiveUserIdx_similar =letterDao.getLetterUserIdx_Similar(idx_similar); // 휴먼상태가 아닌 또래의 user 5명을 랜덤으로 골라 편지 발송 //letterSendList에 추가
+                for (int i = 0; i < 5; i++) { // 5명의 userIdx를 뽑는다. // 1명씩 테이블에 추가하므로 5번 반복
+                    letterDao.createLetterSendList(letterIdx,receiveUserIdx_similar,i);
+                }
+                return receiveUserIdx_similar;
+            }
+
+            else {// 편지 발송 유저가 또래 편지 수신을 원하지않는 경우
+                List<Integer> receiveUserIdx =letterDao.getLetterUserIdx(idx_similar); // 휴먼상태가 아닌 user 5명을 랜덤으로 골라 편지 발송 //letterSendList에 추가
+                for (int i = 0; i < 5; i++) { // 5명의 userIdx를 뽑는다. // 1명씩 테이블에 추가하므로 5번 반복
+                    letterDao.createLetterSendList(letterIdx,receiveUserIdx,i);
+                }
+                return receiveUserIdx;
+            }
 
         } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
             exception.printStackTrace(); // 에러 발생 원인 출력
