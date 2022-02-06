@@ -7,7 +7,6 @@ import com.umc.btos.utils.AES128;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -318,6 +317,10 @@ public class DiaryProvider {
         }
     }
 
+    /*
+     * 현재 서버 시간 확인
+     * [GET] /diaries/test
+     */
     public String dateTest() throws BaseException {
         try {
             Date date = new Date();
