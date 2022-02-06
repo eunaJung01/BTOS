@@ -91,7 +91,7 @@ public class ArchiveProvider {
             List<Integer> idxList = new ArrayList<>(); // 문자열 검색을 할 경우 monthList 생성하게 해주는 장치 (찾는 값이 존재하는 일기의 인덱스만 저장)
 
             // 1. 전체 조회 - default
-            if (search == null && startDate == null && endDate == null) {
+            if (search.isEmpty() && startDate.isEmpty() && endDate.isEmpty()) {
                 diaryList = archiveDao.getDiaryList(userIdx, pageNum);
                 monthList.addAll(archiveDao.getMonthList(userIdx, pageNum));
                 dataNum = archiveDao.getDiaryList_dataNum(userIdx);
@@ -99,7 +99,7 @@ public class ArchiveProvider {
 
             // 2. 문자열 검색 (search)
             // search & Diary.content : 띄어쓰기 모두 제거 -> 찾기
-            else if (search != null && startDate == null && endDate == null) {
+            else if (!search.isEmpty() && startDate.isEmpty() && endDate.isEmpty()) {
                 search = search.replaceAll("\"", ""); // 따옴표 제거
                 search = search.replaceAll(" ", ""); // 공백 제거
 
@@ -128,7 +128,7 @@ public class ArchiveProvider {
                 dataNum = archiveDao.getDiaryListByDate_dataNum(userIdx, startDate, endDate);
 
                 // 4. 문자열 검색 & 날짜 기간 설정 조회 (search, startDate ~ endDate)
-                if (search != null) {
+                if (!search.isEmpty()) {
                     search = search.replaceAll("\"", ""); // 따옴표 제거
                     search = search.replaceAll(" ", ""); // 공백 제거
 
@@ -183,7 +183,7 @@ public class ArchiveProvider {
                 }
             }
 
-            if (search != null) { // 문자열 검색이 들어간 경우
+            if (!search.isEmpty()) { // 문자열 검색이 들어간 경우
                 monthList = archiveDao.getMonthList(userIdx, idxList); // diaryIdx 리스트로 날짜(yyyy.MM) 리스트 반환 (중복 제거)
             }
             for (String month : monthList) {
