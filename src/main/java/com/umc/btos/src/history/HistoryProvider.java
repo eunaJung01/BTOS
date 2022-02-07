@@ -528,7 +528,7 @@ public class HistoryProvider {
      */
     public GetHistoryRes_Main getHistory_main(int userIdx, String type, int idx) throws BaseException {
         try {
-            GetHistoryRes_Main history = new GetHistoryRes_Main();
+            List<History_Main> history = new ArrayList<>();
 
             if (type.compareTo("diary") == 0) { // type = diary
                 History_Main diary = historyDao.getDiary_main(idx);
@@ -538,9 +538,7 @@ public class HistoryProvider {
             } else if (type.compareTo("letter") == 0) { // type = letter
                 History_Main letter = historyDao.getLetter_main(idx);
                 letter.setPositioning(true);
-
-                history.setFirstHistory(letter);
-                history.setReplyList(historyDao.getReplyList_letter(userIdx, idx));
+                history.add(letter);
 
             } else { // type = reply
                 String firstHistoryType = historyDao.getHistoryType(idx); // 답장의 최초 시작점 (diary / letter)
@@ -580,7 +578,8 @@ public class HistoryProvider {
                 }
             }
 
-            return history;
+            GetHistoryRes_Main getHistoryRes_main = new GetHistoryRes_Main(history);
+            return getHistoryRes_main;
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
