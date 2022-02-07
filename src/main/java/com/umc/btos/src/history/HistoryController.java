@@ -74,16 +74,16 @@ public class HistoryController {
      * typeIdx = 조회하고자 하는 본문의 식별자 (diary - diaryIdx / letter - letterIdx / reply - replyIdx)
      * createdAt 기준 오름차순 정렬
      */
-    @ResponseBody
-    @GetMapping("/{userIdx}/{type}/{typeIdx}")
-     BaseResponse<List<GetHistoryRes_Main>> getHistory_main(@PathVariable("userIdx") int userIdx, @PathVariable("type") String type, @PathVariable("typeIdx") int typeIdx) {
-        try {
-            List<GetHistoryRes_Main> history = historyProvider.getHistory_main(userIdx, type, typeIdx);
-            return new BaseResponse<>(history);
-
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        }
-    }
+//    @ResponseBody
+//    @GetMapping("/{userIdx}/{type}/{typeIdx}")
+//     BaseResponse<List<GetHistoryRes_Main>> getHistory_main(@PathVariable("userIdx") int userIdx, @PathVariable("type") String type, @PathVariable("typeIdx") int typeIdx) {
+//        try {
+//            List<GetHistoryRes_Main> history = historyProvider.getHistory_main(userIdx, type, typeIdx);
+//            return new BaseResponse<>(history);
+//
+//        } catch (BaseException exception) {
+//            return new BaseResponse<>(exception.getStatus());
+//        }
+//    }
 
 }
