@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/histories")
 public class HistoryController {
@@ -74,9 +76,9 @@ public class HistoryController {
      */
     @ResponseBody
     @GetMapping("/{userIdx}/{type}/{typeIdx}")
-    BaseResponse<GetHistoryRes_Main> getHistory_main(@PathVariable("userIdx") int userIdx, @PathVariable("type") String type, @PathVariable("typeIdx") int typeIdx) {
+     BaseResponse<List<GetHistoryRes_Main>> getHistory_main(@PathVariable("userIdx") int userIdx, @PathVariable("type") String type, @PathVariable("typeIdx") int typeIdx) {
         try {
-            GetHistoryRes_Main history = historyProvider.getHistory_main(userIdx, type, typeIdx);
+            List<GetHistoryRes_Main> history = historyProvider.getHistory_main(userIdx, type, typeIdx);
             return new BaseResponse<>(history);
 
         } catch (BaseException exception) {

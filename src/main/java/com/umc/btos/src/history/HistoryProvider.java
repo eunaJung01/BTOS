@@ -526,62 +526,62 @@ public class HistoryProvider {
      * idx = 조회하고자 하는 본문의 식별자 (diary - diaryIdx / letter - letterIdx / reply - replyIdx)
      * createdAt 기준 오름차순 정렬
      */
-    public GetHistoryRes_Main getHistory_main(int userIdx, String type, int typeIdx) throws BaseException {
+    public List<GetHistoryRes_Main> getHistory_main(int userIdx, String type, int typeIdx) throws BaseException {
         try {
-            List<History_Main> history = new ArrayList<>();
+            List<GetHistoryRes_Main> history = new ArrayList<>();
 
-            if (type.compareTo("diary") == 0) { // type = diary
-                History_Main diary = historyDao.getDiary_main(typeIdx);
+            // type = diary
+            if (type.compareTo("diary") == 0) {
+                GetHistoryRes_Main diary = historyDao.getDiary_main(typeIdx);
                 diary.setPositioning(true);
                 diary.setDoneList(historyDao.getDoneList_main(typeIdx));
+            }
 
-            } else if (type.compareTo("letter") == 0) { // type = letter
-                History_Main letter = historyDao.getLetter_main(typeIdx);
+            // type = letter
+            else if (type.compareTo("letter") == 0) {
+                GetHistoryRes_Main letter = historyDao.getLetter_main(typeIdx);
                 letter.setPositioning(true);
                 history.add(letter);
+            }
 
-            } else { // type = reply
+            // type = reply
+            else {
                 String firstHistoryType = historyDao.getHistoryType(typeIdx); // 답장의 최초 시작점 (diary / letter)
 
-                if (firstHistoryType.compareTo("diary") == 0) { // 시작점이 일기인 경우
-//                    history.setFirstType("diary");
-
+                // 시작점이 일기인 경우
+                if (firstHistoryType.compareTo("diary") == 0) {
                     int diaryIdx = historyDao.getDiaryIdx_main(typeIdx);
-                    History_Main diary = historyDao.getDiary_main(diaryIdx);
+                    GetHistoryRes_Main diary = historyDao.getDiary_main(diaryIdx);
                     diary.setDoneList(historyDao.getDoneList_main(diaryIdx));
 
-                    List<History_Main> replyList = historyDao.getReplyList_diary(userIdx, diaryIdx);
-                    for (History_Main reply : replyList) {
-                        if (reply.getReplyIdx() == typeIdx) { // 사용자가 조회하고자 하는 답장 본문
+                    List<GetHistoryRes_Main> replyList = historyDao.getReplyList_diary(userIdx, diaryIdx);
+                    for (GetHistoryRes_Main reply : replyList) {
+                        if (reply.getTypeIdx() == typeIdx) { // 사용자가 조회하고자 하는 답장 본문
                             reply.setPositioning(true);
                         }
                     }
+                    history.add(diary);
+                }
 
-                    history.setFirstHistory(diary);
-                    history.setReplyList(replyList);
-
-                } else if (firstHistoryType.compareTo("letter") == 0) { // 시작점이 편지인 경우
-//                    history.setFirstType("letter");
-
+                // 시작점이 편지인 경우
+                else if (firstHistoryType.compareTo("letter") == 0) {
                     int letterIdx = historyDao.getLetterIdx_main(typeIdx);
-                    History_Main letter = historyDao.getLetter_main(letterIdx);
+                    GetHistoryRes_Main letter = historyDao.getLetter_main(letterIdx);
 
-                    List<History_Main> replyList = historyDao.getReplyList_letter(userIdx, letterIdx);
-                    for (History_Main reply : replyList) {
-                        if (reply.getReplyIdx() == typeIdx) { // 사용자가 조회하고자 하는 답장 본문
+                    List<GetHistoryRes_Main> replyList = historyDao.getReplyList_letter(userIdx, letterIdx);
+                    for (GetHistoryRes_Main reply : replyList) {
+                        if (reply.getTypeIdx() == typeIdx) { // 사용자가 조회하고자 하는 답장 본문
                             reply.setPositioning(true);
                         }
                     }
-
-                    history.setFirstHistory(letter);
-                    history.setReplyList(replyList);
+                    history.add(letter);
                 }
             }
 
-            GetHistoryRes_Main getHistoryRes_main = new GetHistoryRes_Main(history);
-            return getHistoryRes_main;
+            return history;
 
         } catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
