@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-// History 목록 조회 (filtering = sender) & 발신인 조회
+// History 목록 조회 (filtering = sender)
 public class HistoryList_Sender {
     private String senderNickName; // 발신자 이름
     private int historyListNum; // 수신한 일기, 편지, 답장의 전체 개수

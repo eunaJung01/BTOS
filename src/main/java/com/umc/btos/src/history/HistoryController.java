@@ -54,12 +54,12 @@ public class HistoryController {
      */
     @ResponseBody
     @GetMapping("/sender/{userIdx}/{senderNickName}/{pageNum}")
-    BaseResponsePaging<GetHistoryRes_Sender> getHistoryList_sender(@PathVariable("userIdx") String userIdx, @PathVariable("senderNickName") String senderNickName, @PathVariable("pageNum") int pageNum, @RequestParam(value = "search", required = false) String search) {
+    BaseResponsePaging<List<History>> getHistoryList_sender(@PathVariable("userIdx") String userIdx, @PathVariable("senderNickName") String senderNickName, @PathVariable("pageNum") int pageNum, @RequestParam(value = "search", required = false) String search) {
         try {
             String[] params = new String[]{userIdx, senderNickName, search};
             PagingRes pageInfo = new PagingRes(pageNum, Constant.HISTORY_DATA_NUM); // 페이징 정보
 
-            GetHistoryRes_Sender historyList_sender = historyProvider.getHistoryList_sender(params, pageInfo);
+            List<History> historyList_sender = historyProvider.getHistoryList_sender(params, pageInfo);
             return new BaseResponsePaging<>(historyList_sender, pageInfo);
 
         } catch (BaseException exception) {
@@ -74,16 +74,16 @@ public class HistoryController {
      * typeIdx = 조회하고자 하는 본문의 식별자 (diary - diaryIdx / letter - letterIdx / reply - replyIdx)
      * createdAt 기준 오름차순 정렬
      */
-//    @ResponseBody
-//    @GetMapping("/{userIdx}/{type}/{typeIdx}")
-//     BaseResponse<List<GetHistoryRes_Main>> getHistory_main(@PathVariable("userIdx") int userIdx, @PathVariable("type") String type, @PathVariable("typeIdx") int typeIdx) {
-//        try {
-//            List<GetHistoryRes_Main> history = historyProvider.getHistory_main(userIdx, type, typeIdx);
-//            return new BaseResponse<>(history);
-//
-//        } catch (BaseException exception) {
-//            return new BaseResponse<>(exception.getStatus());
-//        }
-//    }
+    @ResponseBody
+    @GetMapping("/{userIdx}/{type}/{typeIdx}")
+     BaseResponse<List<GetHistoryRes_Main>> getHistory_main(@PathVariable("userIdx") int userIdx, @PathVariable("type") String type, @PathVariable("typeIdx") int typeIdx) {
+        try {
+            List<GetHistoryRes_Main> history = historyProvider.getHistory_main(userIdx, type, typeIdx);
+            return new BaseResponse<>(history);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 
 }
