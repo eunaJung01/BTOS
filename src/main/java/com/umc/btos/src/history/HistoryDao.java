@@ -27,7 +27,7 @@ public class HistoryDao {
                 "SELECT User.nickName AS senderNickName, Diary.createdAt AS sendAt " +
                 "FROM User " +
                 "INNER JOIN (DiarySendList INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx) " +
-                "ON User.userIdx = Diary.userIdx\n" +
+                "ON User.userIdx = Diary.userIdx " +
                 "WHERE DiarySendList.receiverIdx = ? " +
                 "UNION " +
                 "SELECT User.nickName AS senderNickName, Letter.createdAt AS sendAt " +
@@ -50,64 +50,73 @@ public class HistoryDao {
 
     // 일기 null 확인 : filtering == sender
     public int hasHistory_diary(int userIdx, String senderNickName) {
-        String query = "SELECT COUNT(*) " +
+        String query = "SELECT EXISTS(SELECT * " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? AND DiarySendList.status = 'active'";
+                "WHERE DiarySendList.receiverIdx = ? " +
+                "AND User.nickName = ? " +
+                "AND DiarySendList.status = 'active')";
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, senderNickName);
     }
 
     // 편지 null 확인 : filtering == sender
     public int hasHistory_letter(int userIdx, String senderNickName) {
-        String query = "SELECT COUNT(*) " +
+        String query = "SELECT EXISTS(SELECT * " +
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                "WHERE LetterSendList.receiverIdx = ? AND User.nickName = ? AND LetterSendList.status = 'active'";
+                "WHERE LetterSendList.receiverIdx = ? " +
+                "AND User.nickName = ? " +
+                "AND LetterSendList.status = 'active')";
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, senderNickName);
     }
 
     // 답장 null 확인 : filtering == sender
     public int hasHistory_reply(int userIdx, String senderNickName) {
-        String query = "SELECT COUNT(*) " +
+        String query = "SELECT EXISTS(SELECT * " +
                 "FROM Reply " +
                 "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
-                "WHERE Reply.receiverIdx = ? AND User.nickName = ? AND Reply.status = 'active'";
+                "WHERE Reply.receiverIdx = ? " +
+                "AND User.nickName = ? " +
+                "AND Reply.status = 'active')";
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, senderNickName);
     }
 
     // 일기 null 확인 : filtering == diary
     public int hasHistory_diary(int userIdx) {
-        String query = "SELECT COUNT(*) " +
+        String query = "SELECT EXISTS(SELECT * " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                "WHERE DiarySendList.receiverIdx = ? AND DiarySendList.status = 'active'";
+                "WHERE DiarySendList.receiverIdx = ? " +
+                "AND DiarySendList.status = 'active')";
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
     // 편지 null 확인 : filtering == letter
     public int hasHistory_letter(int userIdx) {
-        String query = "SELECT COUNT(*) " +
+        String query = "SELECT EXISTS(SELECT * " +
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                "WHERE LetterSendList.receiverIdx = ? AND LetterSendList.status = 'active'";
+                "WHERE LetterSendList.receiverIdx = ? " +
+                "AND LetterSendList.status = 'active')";
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
     // 답장 null 확인 : filtering == letter
     public int hasHistory_reply(int userIdx) {
-        String query = "SELECT COUNT(*) " +
+        String query = "SELECT EXISTS(SELECT * " +
                 "FROM Reply " +
                 "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
-                "WHERE Reply.receiverIdx = ? AND Reply.status = 'active'";
+                "WHERE Reply.receiverIdx = ? " +
+                "AND Reply.status = 'active')";
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
@@ -350,8 +359,8 @@ public class HistoryDao {
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
                 "INNER JOIN Done ON Diary.diaryIdx = Done.diaryIdx " +
                 "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? AND DiarySendList.status = 'active' " +
-                "ORDER BY sendAt DESC " +
-                "LIMIT 1";
+                "ORDER BY sendAt DESC " + // 발신일 기준 내림차순 정렬
+                "LIMIT 1"; // 상위 첫번째 값
 
         return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new History(
@@ -501,8 +510,8 @@ public class HistoryDao {
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
                 "WHERE DiarySendList.receiverIdx = ? AND DiarySendList.status = 'active' " +
-                "ORDER BY sendAt DESC) idx " +
-                "LIMIT ?, ?";
+                "ORDER BY sendAt DESC " +
+                "LIMIT ?, ?) idx";
 
         return this.jdbcTemplate.queryForList(query, int.class, userIdx, startData, endData);
     }
@@ -518,8 +527,8 @@ public class HistoryDao {
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
                 "WHERE LetterSendList.receiverIdx = ? AND LetterSendList.status = 'active' " +
-                "ORDER BY sendAt DESC) idx " +
-                "LIMIT ?, ?";
+                "ORDER BY sendAt DESC " +
+                "LIMIT ?, ?) idx";
 
         return this.jdbcTemplate.queryForList(query, int.class, userIdx, startData, endData);
     }
@@ -534,8 +543,8 @@ public class HistoryDao {
                 "FROM Reply " +
                 "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.receiverIdx = ? AND Reply.status = 'active' " +
-                "ORDER BY sendAt DESC) idx " +
-                "LIMIT ?, ?";
+                "ORDER BY sendAt DESC " +
+                "LIMIT ?, ?) idx";
 
         return this.jdbcTemplate.queryForList(query, int.class, userIdx, startData, endData);
     }
