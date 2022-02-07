@@ -146,6 +146,31 @@ public class UserDao {
     public int changeIsSad(PatchUserIsSadReq patchUserIsSadReq) {
         String changeIsSadQuery = "update User set isSad = ? where userIdx = ?";
         Object[] changeIsSadParams = new Object[] {patchUserIsSadReq.isIsSad(), patchUserIsSadReq.getUserIdx()};
+
+        boolean sadStatus = this.jdbcTemplate.queryForObject(
+                "select isSad from User where userIdx = ?",
+                boolean.class,
+                patchUserIsSadReq.getUserIdx()); // 현재 시무룩이 상태 조회
+
+        if (!sadStatus && patchUserIsSadReq.isIsSad() == true) { // 시무룩이 상태로 바뀌었을 때 화분 점수 -10
+
+            int plantScore = this.jdbcTemplate.queryForObject(
+                    "select score from UserPlantList where userIdx = ? and status = 'selected'",
+                    int.class,
+                    patchUserIsSadReq.getUserIdx()); // 화분 점수 가져옴
+
+            if (plantScore < 10) {
+                // 화분 점수가 10점 미만일 경우 0점으로 만듦
+                this.jdbcTemplate.update(
+                        "update UserPlantList set score = score - ? where userIdx = ? and status = 'selected'",
+                        new Object[]{plantScore, patchUserIsSadReq.getUserIdx()});
+            } else {
+                // 화분 점수가 10점 이상일 경우 10점 감소
+                this.jdbcTemplate.update(
+                        "update UserPlantList set score = score - 10 where userIdx = ? and status = 'selected'",
+                        patchUserIsSadReq.getUserIdx());
+            }
+        }
         return this.jdbcTemplate.update(changeIsSadQuery, changeIsSadParams);
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
     }
