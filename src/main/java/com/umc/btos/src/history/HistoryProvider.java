@@ -84,27 +84,29 @@ public class HistoryProvider {
                     }
 
                     for (String senderNickName : senderNickNameList) {
-                        List<History> historyList = new ArrayList<>(); // HistoryList_Sender.historyList
+                        List<History> historyList = new ArrayList<>(); // HistoryList_Sender.firstContent
 
-                        if (historyDao.hasHistory_diary(userIdx, senderNickName) != 0) { // null 확인
-                            historyList.add(historyDao.getDiary(userIdx, senderNickName)); // 일기
+                        if (historyDao.hasHistory_diary(userIdx, senderNickName) != 0) { // 해당 회원에게서 받은 일기가 있는지 확인
+                            historyList.add(historyDao.getDiary(userIdx, senderNickName)); // 가장 최근에 받은 일기
                         }
-                        if (historyDao.hasHistory_letter(userIdx, senderNickName) != 0) { // null 확인
-                            historyList.add(historyDao.getLetter(userIdx, senderNickName)); // 편지
+                        if (historyDao.hasHistory_letter(userIdx, senderNickName) != 0) { // 해당 회원에게서 받은 편지가 있는지 확인
+                            historyList.add(historyDao.getLetter(userIdx, senderNickName)); // 가장 최근에 받은 편지
                         }
-                        if (historyDao.hasHistory_reply(userIdx, senderNickName) != 0) { // null 확인
-                            historyList.add(historyDao.getReply(userIdx, senderNickName)); // 답장
+                        if (historyDao.hasHistory_reply(userIdx, senderNickName) != 0) { // 해당 회원에게서 받은 편지가 있는지 확인
+                            historyList.add(historyDao.getReply(userIdx, senderNickName)); // 가장 최근에 받은 답장
                         }
                         Collections.sort(historyList); // createAt 기준 내림차순 정렬
 
                         int historyListNum = historyDao.getDiaryListSize(userIdx, senderNickName) + historyDao.getLetterListSize(userIdx, senderNickName) + historyDao.getReplyListSize(userIdx, senderNickName);
 
-                        HistoryList_Sender historyList_sender = new HistoryList_Sender(senderNickName, historyListNum, historyList.get(0));
+                        HistoryList_Sender historyList_sender = new HistoryList_Sender(senderNickName, historyListNum, historyList.get(0)); // 수신한 일기, 편지, 답장 중 가장 최근에 받은 값
                         historyListRes_list.add(historyList_sender);
                     }
 
                     if (historyListRes_list.size() == 0) {
                         throw new NullPointerException(); // 검색 결과 없음
+                    } else {
+                        historyListRes.setList(historyListRes_list);
                     }
                 }
 
