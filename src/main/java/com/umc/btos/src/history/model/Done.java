@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
+// History 본문 보기 (type = diary)
 public class Done {
     private int doneIdx;
     private String content;

@@ -11,6 +11,8 @@ import java.util.Date;
 @Getter
 @Setter
 @AllArgsConstructor
+// History 목록 조회 (filtering = sender) & 발신인 조회
+// : senderNickName 필드 존재하지 않음
 public class History_Sender implements Comparable<History_Sender> {
     private String type; // diary : 일기 / letter : 편지 / reply : 답장
     private int idx; // 식별자 (diary - diaryIdx / letter - letterIdx / reply - replyIdx)

@@ -1,7 +1,6 @@
 package com.umc.btos.src.history;
 
 import com.umc.btos.config.Constant;
-import com.umc.btos.src.diary.model.GetDoneRes;
 import com.umc.btos.src.history.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -694,7 +693,7 @@ public class HistoryDao {
     // --------------------------------------- 본문 ---------------------------------------
 
     // 일기
-    public FirstHistory getDiary_main(int diaryIdx) {
+    public History_Main getDiary_main(int diaryIdx) {
         String query = "SELECT Diary.diaryIdx, Diary.content, Diary.emotionIdx, User.nickName AS senderNickName, " +
                 "date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM DiarySendList " +
@@ -704,7 +703,7 @@ public class HistoryDao {
                 "GROUP BY diaryIdx";
 
         return this.jdbcTemplate.queryForObject(query,
-                (rs, rowNum) -> new FirstHistory(
+                (rs, rowNum) -> new History_Main(
                         "diary",
                         rs.getInt("diaryIdx"),
                         rs.getString("content"),
@@ -732,7 +731,7 @@ public class HistoryDao {
     }
 
     // 편지
-    public FirstHistory getLetter_main(int letterIdx) {
+    public History_Main getLetter_main(int letterIdx) {
         String query = "SELECT Letter.letterIdx, Letter.content, User.nickName AS senderNickName, " +
                 "date_format(LetterSendList.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM LetterSendList " +
@@ -743,7 +742,7 @@ public class HistoryDao {
                 "GROUP BY letterIdx";
 
         return this.jdbcTemplate.queryForObject(query,
-                (rs, rowNum) -> new FirstHistory(
+                (rs, rowNum) -> new History_Main(
                         "letter",
                         rs.getInt("letterIdx"),
                         rs.getString("content"),
@@ -755,7 +754,7 @@ public class HistoryDao {
     // --------------------------------------- List<Reply> ---------------------------------------
 
     // 일기
-    public List<Reply> getReplyList_diary(int userIdx, int diaryIdx) {
+    public List<History_Main> getReplyList_diary(int userIdx, int diaryIdx) {
         String query = "SELECT Reply.replyIdx, Reply.content, User.nickName AS senderNickName, " +
                 "date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM DiarySendList " +
@@ -771,16 +770,16 @@ public class HistoryDao {
                 "AND Diary.diaryIdx = ?)";
 
         return this.jdbcTemplate.query(query,
-                (rs, rowNum) -> new Reply(
-                        rs.getInt("replyIdx"),
-                        rs.getString("content"),
-                        rs.getString("senderNickName"),
-                        rs.getString("sendAt")
+                (rs, rowNum) -> new History_Main(
+//                        rs.getInt("replyIdx"),
+//                        rs.getString("content"),
+//                        rs.getString("senderNickName"),
+//                        rs.getString("sendAt")
                 ), userIdx, userIdx, diaryIdx);
     }
 
     // 편지
-    public List<Reply> getReplyList_letter(int userIdx, int letterIdx) {
+    public List<History_Main> getReplyList_letter(int userIdx, int letterIdx) {
         String query = "SELECT Reply.replyIdx, Reply.content, User.nickName AS senderNickName, " +
                 "date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM LetterSendList " +
@@ -797,11 +796,11 @@ public class HistoryDao {
                 "AND Letter.letterIdx = ?)";
 
         return this.jdbcTemplate.query(query,
-                (rs, rowNum) -> new Reply(
-                        rs.getInt("replyIdx"),
-                        rs.getString("content"),
-                        rs.getString("senderNickName"),
-                        rs.getString("sendAt")
+                (rs, rowNum) -> new History_Main(
+//                        rs.getInt("replyIdx"),
+//                        rs.getString("content"),
+//                        rs.getString("senderNickName"),
+//                        rs.getString("sendAt")
                 ), userIdx, userIdx, letterIdx);
     }
 

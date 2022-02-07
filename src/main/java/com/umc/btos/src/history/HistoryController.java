@@ -52,12 +52,12 @@ public class HistoryController {
      */
     @ResponseBody
     @GetMapping("/sender/{userIdx}/{senderNickName}/{pageNum}")
-    BaseResponsePaging<GetSenderRes> getHistoryList_sender(@PathVariable("userIdx") String userIdx, @PathVariable("senderNickName") String senderNickName, @PathVariable("pageNum") int pageNum, @RequestParam(value = "search", required = false) String search) {
+    BaseResponsePaging<GetHistoryRes_Sender> getHistoryList_sender(@PathVariable("userIdx") String userIdx, @PathVariable("senderNickName") String senderNickName, @PathVariable("pageNum") int pageNum, @RequestParam(value = "search", required = false) String search) {
         try {
             String[] params = new String[]{userIdx, senderNickName, search};
             PagingRes pageInfo = new PagingRes(pageNum, Constant.HISTORY_DATA_NUM); // 페이징 정보
 
-            GetSenderRes historyList_sender = historyProvider.getHistoryList_sender(params, pageInfo);
+            GetHistoryRes_Sender historyList_sender = historyProvider.getHistoryList_sender(params, pageInfo);
             return new BaseResponsePaging<>(historyList_sender, pageInfo);
 
         } catch (BaseException exception) {
@@ -74,9 +74,9 @@ public class HistoryController {
      */
     @ResponseBody
     @GetMapping("/{userIdx}/{type}/{idx}")
-    BaseResponse<GetHistoryRes> getHistory_main(@PathVariable("userIdx") int userIdx, @PathVariable("type") String type, @PathVariable("idx") int idx) {
+    BaseResponse<GetHistoryRes_Main> getHistory_main(@PathVariable("userIdx") int userIdx, @PathVariable("type") String type, @PathVariable("idx") int idx) {
         try {
-            GetHistoryRes history = historyProvider.getHistory_main(userIdx, type, idx);
+            GetHistoryRes_Main history = historyProvider.getHistory_main(userIdx, type, idx);
             return new BaseResponse<>(history);
 
         } catch (BaseException exception) {

@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class GetHistoryRes<T> {
-    private FirstHistory firstHistory;
-    private List<Reply> replyList;
+// History 본문 보기
+public class GetHistoryRes_Main<T> {
+    private List<History_Main> history;
 }

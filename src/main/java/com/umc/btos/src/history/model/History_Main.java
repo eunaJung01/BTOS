@@ -7,7 +7,8 @@ import java.util.List;
 
 @Getter
 @Setter
-public class FirstHistory {
+// History 본문 보기
+public class History_Main {
     private String type; // diary : 일기 / letter : 편지 / reply : 답장
     private int idx; // 식별자 (diary - diaryIdx / letter - letterIdx / reply - replyIdx)
     private String content; // 내용 - createdAt 기준 내림차순 정렬 시 첫 항목
@@ -17,7 +18,8 @@ public class FirstHistory {
     private String sendAt; // 발신일 (yyyy.MM.dd)
     private boolean positioning = false;
 
-    public FirstHistory(String type, int idx, String content, int emotionIdx, String senderNickName, String sendAt) {
+    // type = diary
+    public History_Main(String type, int idx, String content, int emotionIdx, String senderNickName, String sendAt) {
         this.type = type;
         this.idx = idx;
         this.content = content;
@@ -26,7 +28,8 @@ public class FirstHistory {
         this.sendAt = sendAt;
     }
 
-    public FirstHistory(String type, int idx, String content, String senderNickName, String sendAt) {
+    // type = letter or reply
+    public History_Main(String type, int idx, String content, String senderNickName, String sendAt) {
         this.type = type;
         this.idx = idx;
         this.content = content;

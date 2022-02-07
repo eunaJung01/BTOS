@@ -141,7 +141,7 @@ public class DiaryDao {
 
     // 당일 발송해야 하는 모든 diaryIdx 반환
     public List<Integer> getDiaryIdxList(String date) {
-        String query = "SELECT diaryIdx FROM Diary WHERE left(createdAt, 10) = ? AND isPublic = 1 AND status = 'active'";
+        String query = "SELECT diaryIdx FROM Diary WHERE diaryDate = ? AND isPublic = 1 AND status = 'active'";
         return this.jdbcTemplate.queryForList(query, int.class, date);
     }
 

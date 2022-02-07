@@ -11,6 +11,7 @@ import java.util.Date;
 @Getter
 @Setter
 @AllArgsConstructor
+// History 목록 조회 (filtering = diary or letter)
 public class History implements Comparable<History> {
     private String type; // diary : 일기 / letter : 편지 / reply : 답장
     private int idx; // 식별자 (diary - diaryIdx / letter - letterIdx / reply - replyIdx)

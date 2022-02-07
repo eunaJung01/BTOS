@@ -152,13 +152,13 @@ public class HistoryProvider {
                  *      userIdx 회원이 수신한 일기 또는 편지(편지+답장)에서 가장 최근에 받은 일기와 편지에 대한 diaryIdx, letterIdx 또는 replyIdx 받기
                  *      둘 중 더 최근에 받은 데이터의 content에서 문자열 검색
                  *      찾는 문자열이 있는 idx의 정보들만 List<HistoryList_Sender>에 저장
-                 *      -> GetSenderRes.historyList에 저장
+                 *      -> GetHistoryListRes.list에 저장
                  *
                  * 2. filtering = diary(일기만) & letter(편지만)
                  *      userIdx 회원이 수신한 일기 또는 편지(편지+답장)에 대한 diaryIdxList, letterIdxList, replyIdxList 생성
                  *      list에 저장되어 있는 값을 통해 차례대로 content를 불러와서 문자열 검색 -> 찾는 문자열이 있는 idx들만 따로 저장하여 list 갱신
                  *      list 정보를 통해서 List<History>에 add
-                 *      -> createdAt 기준 내림차순 정렬, GetSenderRes.historyList에 저장
+                 *      -> createdAt 기준 내림차순 정렬, GetHistoryListRes.list에 저장
                  */
 
                 search = search.replaceAll("\"", ""); // 따옴표 제거
@@ -358,7 +358,7 @@ public class HistoryProvider {
      * 최신순 정렬 (createdAt 기준 내림차순 정렬)
      * 페이징 처리 (무한 스크롤) - 20개씩 조회
      */
-    public GetSenderRes getHistoryList_sender(String[] params, PagingRes pageInfo) throws BaseException {
+    public GetHistoryRes_Sender getHistoryList_sender(String[] params, PagingRes pageInfo) throws BaseException {
         try {
             // String[] params = new String[]{userIdx, senderNickName, search};
             int userIdx = Integer.parseInt(params[0]);
@@ -369,7 +369,7 @@ public class HistoryProvider {
             int pageNum = pageInfo.getCurrentPage(); // 페이지 번호
             double dataNum = 0; // data 총 개수 (후에 Math.ceil 사용하는 연산 때문에 double)
 
-            GetSenderRes historyList_sender = new GetSenderRes(senderNickName);
+            GetHistoryRes_Sender historyList_sender = new GetHistoryRes_Sender(senderNickName);
             List<History_Sender> historyList = new ArrayList<>(); // GetSenderRes.historyList
 
             if (search == null) {
@@ -413,7 +413,7 @@ public class HistoryProvider {
                  *      수신받은 모든 일기, 편지, 답장들의 idx를 저장하는 list 각각 생성 (diaryIdxList, letterIdxList, replyIdxList)
                  *      각 list에 저장되어 있는 값을 통해 차례대로 content를 불러와서 문자열 검색 -> 찾는 문자열이 있는 idx들만 따로 저장하여 list 갱신
                  *      list 정보를 통해서 List<History>에 add
-                 *      -> createdAt 기준 내림차순 정렬, GetSenderRes.historyList에 저장
+                 *      -> createdAt 기준 내림차순 정렬, GetHistoryRes_Sender.historyList에 저장
                  */
 
                 search = search.replaceAll("\"", ""); // 따옴표 제거
@@ -526,20 +526,17 @@ public class HistoryProvider {
      * idx = 조회하고자 하는 본문의 식별자 (diary - diaryIdx / letter - letterIdx / reply - replyIdx)
      * createdAt 기준 오름차순 정렬
      */
-    public GetHistoryRes getHistory_main(int userIdx, String type, int idx) throws BaseException {
+    public GetHistoryRes_Main getHistory_main(int userIdx, String type, int idx) throws BaseException {
         try {
-            GetHistoryRes history = new GetHistoryRes();
+            GetHistoryRes_Main history = new GetHistoryRes_Main();
 
             if (type.compareTo("diary") == 0) { // type = diary
-                FirstHistory diary = historyDao.getDiary_main(idx);
+                History_Main diary = historyDao.getDiary_main(idx);
                 diary.setPositioning(true);
                 diary.setDoneList(historyDao.getDoneList_main(idx));
 
-                history.setFirstHistory(diary);
-                history.setReplyList(historyDao.getReplyList_diary(userIdx, idx));
-
             } else if (type.compareTo("letter") == 0) { // type = letter
-                FirstHistory letter = historyDao.getLetter_main(idx);
+                History_Main letter = historyDao.getLetter_main(idx);
                 letter.setPositioning(true);
 
                 history.setFirstHistory(letter);
@@ -552,11 +549,11 @@ public class HistoryProvider {
 //                    history.setFirstType("diary");
 
                     int diaryIdx = historyDao.getDiaryIdx_main(idx);
-                    FirstHistory diary = historyDao.getDiary_main(diaryIdx);
+                    History_Main diary = historyDao.getDiary_main(diaryIdx);
                     diary.setDoneList(historyDao.getDoneList_main(diaryIdx));
 
-                    List<Reply> replyList = historyDao.getReplyList_diary(userIdx, diaryIdx);
-                    for (Reply reply : replyList) {
+                    List<History_Main> replyList = historyDao.getReplyList_diary(userIdx, diaryIdx);
+                    for (History_Main reply : replyList) {
                         if (reply.getReplyIdx() == idx) { // 사용자가 조회하고자 하는 답장 본문
                             reply.setPositioning(true);
                         }
@@ -569,10 +566,10 @@ public class HistoryProvider {
 //                    history.setFirstType("letter");
 
                     int letterIdx = historyDao.getLetterIdx_main(idx);
-                    FirstHistory letter = historyDao.getLetter_main(letterIdx);
+                    History_Main letter = historyDao.getLetter_main(letterIdx);
 
-                    List<Reply> replyList = historyDao.getReplyList_letter(userIdx, letterIdx);
-                    for (Reply reply : replyList) {
+                    List<History_Main> replyList = historyDao.getReplyList_letter(userIdx, letterIdx);
+                    for (History_Main reply : replyList) {
                         if (reply.getReplyIdx() == idx) { // 사용자가 조회하고자 하는 답장 본문
                             reply.setPositioning(true);
                         }
