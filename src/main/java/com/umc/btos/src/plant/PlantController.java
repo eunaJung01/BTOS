@@ -96,6 +96,7 @@ public class PlantController {
         try {
             //행 추가 성공시 : "요청에 성공하였습니다." - 1000
             //       실패시 : "화분 상태 변경에 실패하였습니다." - 7011
+            //중복 구매 시도시 : "이미 보유한 화분입니다." - 7016
             //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
             return new BaseResponse<>(plantService.buyPlant(postBuyPlantReq));
         } catch (BaseException exception) {
