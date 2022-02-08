@@ -813,7 +813,7 @@ public class HistoryDao {
         String query = "SELECT DISTINCT Diary.diaryIdx " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
-                "INNER JOIN Reply ON Reply.sendIdx = DiarySendList.diaryIdx " +
+                "INNER JOIN Reply ON Reply.sendIdx = DiarySendList.sendIdx " +
                 "WHERE Reply.sendIdx = (SELECT sendIdx FROM Reply WHERE replyIdx = ?)";
 
         return this.jdbcTemplate.queryForObject(query, int.class, replyIdx);
@@ -824,7 +824,7 @@ public class HistoryDao {
         String query = "SELECT DISTINCT Letter.letterIdx " +
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.diaryIdx = Letter.letterIdx " +
-                "INNER JOIN Reply ON Reply.sendIdx = LetterSendList.letterIdx " +
+                "INNER JOIN Reply ON Reply.sendIdx = LetterSendList.sendIdx " +
                 "WHERE Reply.sendIdx = (SELECT sendIdx FROM Reply WHERE replyIdx = ?)";
 
         return this.jdbcTemplate.queryForObject(query, int.class, replyIdx);

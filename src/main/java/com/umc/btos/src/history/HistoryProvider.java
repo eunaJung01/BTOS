@@ -554,7 +554,9 @@ public class HistoryProvider {
             if (type.compareTo("diary") == 0) {
                 GetHistoryRes_Main diary = historyDao.getDiary_main(typeIdx);
                 diary.setPositioning(true);
-                diary.setDoneList(historyDao.getDoneList_main(typeIdx));
+                if (historyDao.hasDone(typeIdx) == 1) { // 해당 일기에 done list가 있는 경우
+                    diary.setDoneList(historyDao.getDoneList_main(typeIdx));
+                }
 
                 history.add(diary);
                 history.addAll(historyDao.getReplyList_diary(userIdx, typeIdx)); // 답장 목록
@@ -577,7 +579,9 @@ public class HistoryProvider {
                 if (firstHistoryType.compareTo("diary") == 0) {
                     int diaryIdx = historyDao.getDiaryIdx_main(typeIdx);
                     GetHistoryRes_Main diary = historyDao.getDiary_main(diaryIdx);
-                    diary.setDoneList(historyDao.getDoneList_main(diaryIdx));
+                    if (historyDao.hasDone(typeIdx) == 1) { // 해당 일기에 done list가 있는 경우
+                        diary.setDoneList(historyDao.getDoneList_main(typeIdx));
+                    }
                     history.add(diary);
 
                     // 답장 목록
