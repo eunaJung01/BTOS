@@ -159,10 +159,7 @@ public class HistoryDao {
     // filtering == diary || letter (paging)
 
     // 일기 (DiarySendList.receiverIdx = userIdx)
-    public List<History> getDiaryList(int userIdx, int pageNum) {
-        int startData = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
-        int endData = pageNum * Constant.HISTORY_DATA_NUM;
-
+    public History getDiary_done(int userIdx, int diaryIdx) {
         String query = "SELECT Diary.diaryIdx AS typeIdx, User.nickName AS senderNickName, " +
                 "Diary.content AS content, Diary.emotionIdx AS emotionIdx, COUNT(Done.diaryIdx) AS doneListNum, " +
                 "DiarySendList.createdAt AS sendAt_raw, date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
@@ -170,11 +167,9 @@ public class HistoryDao {
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
                 "INNER JOIN Done ON Diary.diaryIdx = Done.diaryIdx " +
-                "WHERE DiarySendList.receiverIdx = ? AND DiarySendList.status = 'active' " +
-                "ORDER BY sendAt DESC " +
-                "LIMIT ?, ?";
+                "WHERE DiarySendList.receiverIdx = ? AND Diary.diaryIdx = ? AND DiarySendList.status = 'active'";
 
-        return this.jdbcTemplate.query(query,
+        return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new History(
                         "diary",
                         rs.getInt("typeIdx"),
@@ -184,11 +179,34 @@ public class HistoryDao {
                         rs.getInt("doneListNum"),
                         rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
-                ), userIdx, startData, endData);
+                ), userIdx, diaryIdx);
+    }
+
+    // 일기 (DiarySendList.receiverIdx = userIdx)
+    public History getDiary_nonDone(int userIdx, int diaryIdx) {
+        String query = "SELECT Diary.diaryIdx AS typeIdx, User.nickName AS senderNickName, " +
+                "Diary.content AS content, Diary.emotionIdx AS emotionIdx, " +
+                "DiarySendList.createdAt AS sendAt_raw, date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
+                "FROM DiarySendList " +
+                "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                "INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                "WHERE DiarySendList.receiverIdx = ? AND Diary.diaryIdx = ? AND DiarySendList.status = 'active'";
+
+        return this.jdbcTemplate.queryForObject(query,
+                (rs, rowNum) -> new History(
+                        "diary",
+                        rs.getInt("typeIdx"),
+                        rs.getString("senderNickName"),
+                        rs.getString("content"),
+                        rs.getInt("emotionIdx"),
+                        0,
+                        rs.getString("sendAt_raw"),
+                        rs.getString("sendAt")
+                ), userIdx, diaryIdx);
     }
 
     // 일기 (DiarySendList.receiverIdx = userIdx AND User.nickName = senderNickName)
-    public List<History> getDiaryList(int userIdx, String senderNickName) {
+    public History getDiary_done(int userIdx, String senderNickName) {
         String query = "SELECT Diary.diaryIdx AS typeIdx, " +
                 "Diary.content AS content, Diary.emotionIdx AS emotionIdx, COUNT(Done.diaryIdx) AS doneListNum, " +
                 "DiarySendList.createdAt AS sendAt_raw, date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
@@ -199,7 +217,7 @@ public class HistoryDao {
                 "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? AND DiarySendList.status = 'active' " +
                 "ORDER BY sendAt DESC";
 
-        return this.jdbcTemplate.query(query,
+        return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new History(
                         "diary",
                         rs.getInt("typeIdx"),
@@ -207,6 +225,29 @@ public class HistoryDao {
                         rs.getString("content"),
                         rs.getInt("emotionIdx"),
                         rs.getInt("doneListNum"),
+                        rs.getString("sendAt_raw"),
+                        rs.getString("sendAt")
+                ), userIdx, senderNickName);
+    }
+
+    // 일기 (DiarySendList.receiverIdx = userIdx)
+    public History getDiary_nonDone(int userIdx, String senderNickName) {
+        String query = "SELECT Diary.diaryIdx AS typeIdx, User.nickName AS senderNickName, " +
+                "Diary.content AS content, Diary.emotionIdx AS emotionIdx, " +
+                "DiarySendList.createdAt AS sendAt_raw, date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
+                "FROM DiarySendList " +
+                "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                "INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? AND DiarySendList.status = 'active'";
+
+        return this.jdbcTemplate.queryForObject(query,
+                (rs, rowNum) -> new History(
+                        "diary",
+                        rs.getInt("typeIdx"),
+                        rs.getString("senderNickName"),
+                        rs.getString("content"),
+                        rs.getInt("emotionIdx"),
+                        0,
                         rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
                 ), userIdx, senderNickName);
@@ -640,7 +681,7 @@ public class HistoryDao {
     // 일기
     public GetHistoryRes_Main getDiary_main(int diaryIdx) {
         String query = "SELECT Diary.diaryIdx AS typeIdx, Diary.content, Diary.emotionIdx, User.nickName AS senderNickName, " +
-                "date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
+                "DiarySendList.createdAt AS sendAt_raw, date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
@@ -654,6 +695,7 @@ public class HistoryDao {
                         rs.getString("content"),
                         rs.getInt("emotionIdx"),
                         rs.getString("senderNickName"),
+                        rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
                 ), diaryIdx);
     }
@@ -675,10 +717,20 @@ public class HistoryDao {
                 ), diaryIdx);
     }
 
+    // 해당 일기 done list 유무 반환
+    public int hasDone(int diaryIdx) {
+        String query = "SELECT EXISTS(SELECT * " +
+                "FROM Done " +
+                "WHERE diaryIdx = ? " +
+                "AND status = 'active')";
+
+        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
+    }
+
     // 편지
     public GetHistoryRes_Main getLetter_main(int letterIdx) {
         String query = "SELECT Letter.letterIdx AS typeIdx, Letter.content, User.nickName AS senderNickName, " +
-                "date_format(LetterSendList.createdAt, '%Y.%m.%d') AS sendAt " +
+                "LetterSendList.createdAt AS sendAt_raw, date_format(LetterSendList.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
@@ -692,6 +744,7 @@ public class HistoryDao {
                         rs.getInt("typeIdx"),
                         rs.getString("content"),
                         rs.getString("senderNickName"),
+                        rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
                 ), letterIdx);
     }
@@ -701,7 +754,7 @@ public class HistoryDao {
     // 일기
     public List<GetHistoryRes_Main> getReplyList_diary(int userIdx, int diaryIdx) {
         String query = "SELECT Reply.replyIdx AS typeIdx, Reply.content, User.nickName AS senderNickName, " +
-                "date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
+                "Reply.createdAt AS sendAt_raw, date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN Reply ON Reply.sendIdx = DiarySendList.sendIdx " +
@@ -720,6 +773,7 @@ public class HistoryDao {
                         rs.getInt("typeIdx"),
                         rs.getString("content"),
                         rs.getString("senderNickName"),
+                        rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
                 ), userIdx, userIdx, diaryIdx);
     }
@@ -727,7 +781,7 @@ public class HistoryDao {
     // 편지
     public List<GetHistoryRes_Main> getReplyList_letter(int userIdx, int letterIdx) {
         String query = "SELECT Reply.replyIdx AS typeIdx, Reply.content, User.nickName AS senderNickName, " +
-                "date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
+                "Reply.createdAt AS sendAt_raw, date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN Reply ON Reply.sendIdx = LetterSendList.sendIdx " +
@@ -747,6 +801,7 @@ public class HistoryDao {
                         rs.getInt("typeIdx"),
                         rs.getString("content"),
                         rs.getString("senderNickName"),
+                        rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
                 ), userIdx, userIdx, letterIdx);
     }
@@ -758,7 +813,7 @@ public class HistoryDao {
         String query = "SELECT DISTINCT Diary.diaryIdx " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
-                "INNER JOIN Reply ON Reply.sendIdx = DiarySendList.diaryIdx " +
+                "INNER JOIN Reply ON Reply.sendIdx = DiarySendList.sendIdx " +
                 "WHERE Reply.sendIdx = (SELECT sendIdx FROM Reply WHERE replyIdx = ?)";
 
         return this.jdbcTemplate.queryForObject(query, int.class, replyIdx);
@@ -769,7 +824,7 @@ public class HistoryDao {
         String query = "SELECT DISTINCT Letter.letterIdx " +
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.diaryIdx = Letter.letterIdx " +
-                "INNER JOIN Reply ON Reply.sendIdx = LetterSendList.letterIdx " +
+                "INNER JOIN Reply ON Reply.sendIdx = LetterSendList.sendIdx " +
                 "WHERE Reply.sendIdx = (SELECT sendIdx FROM Reply WHERE replyIdx = ?)";
 
         return this.jdbcTemplate.queryForObject(query, int.class, replyIdx);

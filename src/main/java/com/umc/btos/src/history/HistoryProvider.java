@@ -113,14 +113,21 @@ public class HistoryProvider {
                 // 일기만
                 else if (filtering.compareTo("diary") == 0) {
                     List<History> historyList = new ArrayList<>(); // GetHistoryListRes.list
+                    List<Integer> diaryIdxList = historyDao.getDiaryIdxList(userIdx, pageNum);
+                    dataNum = historyDao.getDiaryList_dataNum(userIdx);
 
-                    if (historyDao.hasHistory_diary(userIdx) != 0) { // null 확인
-                        historyList.addAll(historyDao.getDiaryList(userIdx, pageNum)); // 일기 (createAt 기준 내림차순 정렬)
-                        dataNum = historyDao.getDiaryList_dataNum(userIdx);
-
+                    if (historyDao.hasHistory_diary(userIdx) != 0) { // 해당 회원에게서 받은 일기가 있는지 확인
+                        for (int diaryIdx : diaryIdxList) {
+                            if (historyDao.hasDone(diaryIdx) == 1) { // 해당 일기에 done list가 있는 경우
+                                historyList.add(historyDao.getDiary_done(userIdx, diaryIdx));
+                            } else { // 해당 일기에 done list가 없는 경우
+                                historyList.add(historyDao.getDiary_nonDone(userIdx, diaryIdx));
+                            }
+                        }
                     } else {
                         throw new NullPointerException(); // 검색 결과 없음
                     }
+                    Collections.sort(historyList);
                     historyListRes.setList(historyList);
                 }
 
@@ -264,7 +271,11 @@ public class HistoryProvider {
                         List<History> historyList = new ArrayList<>(); // HistoryList_Sender.historyList
 
                         for (int diaryIdx : diaryIdxList) {
-                            historyList.add(historyDao.getDiary(userIdx, diaryIdx));
+                            if (historyDao.hasDone(diaryIdx) == 1) { // 해당 일기에 done list가 있는 경우
+                                historyList.add(historyDao.getDiary_done(userIdx, diaryIdx));
+                            } else { // 해당 일기에 done list가 없는 경우
+                                historyList.add(historyDao.getDiary_nonDone(userIdx, diaryIdx));
+                            }
                         }
                         Collections.sort(historyList); // createAt 기준 내림차순 정렬
                         historyListRes.setList(historyList);
@@ -371,7 +382,14 @@ public class HistoryProvider {
 
             if (search == null) {
                 if (historyDao.hasHistory_diary(userIdx, senderNickName) != 0) { // null 확인
-                    historyList.addAll(historyDao.getDiaryList(userIdx, senderNickName)); // 일기
+                    List<Integer> diaryIdxList = historyDao.getDiaryIdxList(userIdx, senderNickName); // 수신받은 모든 일기 diaryIdx
+                    for (int diaryIdx : diaryIdxList) {
+                        if (historyDao.hasDone(diaryIdx) == 1) { // 해당 일기에 done list가 있는 경우
+                            historyList.add(historyDao.getDiary_done(userIdx, senderNickName));
+                        } else { // 해당 일기에 done list가 없는 경우
+                            historyList.add(historyDao.getDiary_nonDone(userIdx, senderNickName));
+                        }
+                    }
                 }
                 if (historyDao.hasHistory_letter(userIdx, senderNickName) != 0) { // null 확인
                     historyList.addAll(historyDao.getLetterList(userIdx, senderNickName)); // 편지
@@ -422,6 +440,13 @@ public class HistoryProvider {
                 // diaryIdxList
                 if (historyDao.hasHistory_diary(userIdx, senderNickName) != 0) { // null 확인
                     diaryIdxList.addAll(historyDao.getDiaryIdxList(userIdx, senderNickName)); // 수신받은 모든 일기 diaryIdx
+                    for (int diaryIdx : diaryIdxList) {
+                        if (historyDao.hasDone(diaryIdx) == 1) { // 해당 일기에 done list가 있는 경우
+                            historyList.add(historyDao.getDiary_done(userIdx, senderNickName));
+                        } else { // 해당 일기에 done list가 없는 경우
+                            historyList.add(historyDao.getDiary_nonDone(userIdx, senderNickName));
+                        }
+                    }
 
                     List<Integer> diaryIdxList_searched = new ArrayList<>(); // 임시 list
                     for (int diaryIdx : diaryIdxList) {
@@ -529,7 +554,9 @@ public class HistoryProvider {
             if (type.compareTo("diary") == 0) {
                 GetHistoryRes_Main diary = historyDao.getDiary_main(typeIdx);
                 diary.setPositioning(true);
-                diary.setDoneList(historyDao.getDoneList_main(typeIdx));
+                if (historyDao.hasDone(typeIdx) == 1) { // 해당 일기에 done list가 있는 경우
+                    diary.setDoneList(historyDao.getDoneList_main(typeIdx));
+                }
 
                 history.add(diary);
                 history.addAll(historyDao.getReplyList_diary(userIdx, typeIdx)); // 답장 목록
@@ -552,7 +579,9 @@ public class HistoryProvider {
                 if (firstHistoryType.compareTo("diary") == 0) {
                     int diaryIdx = historyDao.getDiaryIdx_main(typeIdx);
                     GetHistoryRes_Main diary = historyDao.getDiary_main(diaryIdx);
-                    diary.setDoneList(historyDao.getDoneList_main(diaryIdx));
+                    if (historyDao.hasDone(typeIdx) == 1) { // 해당 일기에 done list가 있는 경우
+                        diary.setDoneList(historyDao.getDoneList_main(typeIdx));
+                    }
                     history.add(diary);
 
                     // 답장 목록
