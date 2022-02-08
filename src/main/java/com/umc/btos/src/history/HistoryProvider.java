@@ -350,6 +350,7 @@ public class HistoryProvider {
         } catch (NullPointerException nullPointerException) {
             throw new BaseException(EMPTY_RESULT); // 검색 결과 없음
         } catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -385,9 +386,9 @@ public class HistoryProvider {
                     List<Integer> diaryIdxList = historyDao.getDiaryIdxList(userIdx, senderNickName); // 수신받은 모든 일기 diaryIdx
                     for (int diaryIdx : diaryIdxList) {
                         if (historyDao.hasDone(diaryIdx) == 1) { // 해당 일기에 done list가 있는 경우
-                            historyList.add(historyDao.getDiary_done(userIdx, senderNickName));
+                            historyList.add(historyDao.getDiary_done(userIdx, diaryIdx));
                         } else { // 해당 일기에 done list가 없는 경우
-                            historyList.add(historyDao.getDiary_nonDone(userIdx, senderNickName));
+                            historyList.add(historyDao.getDiary_nonDone(userIdx, diaryIdx));
                         }
                     }
                 }
@@ -535,6 +536,8 @@ public class HistoryProvider {
         } catch (NullPointerException nullPointerException) {
             throw new BaseException(EMPTY_RESULT); // 검색 결과 없음
         } catch (Exception exception) {
+            System.out.println(exception);
+
             throw new BaseException(DATABASE_ERROR);
         }
     }
