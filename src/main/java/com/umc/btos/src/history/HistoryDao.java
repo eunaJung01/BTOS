@@ -640,7 +640,7 @@ public class HistoryDao {
     // 일기
     public GetHistoryRes_Main getDiary_main(int diaryIdx) {
         String query = "SELECT Diary.diaryIdx AS typeIdx, Diary.content, Diary.emotionIdx, User.nickName AS senderNickName, " +
-                "date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
+                "DiarySendList.createdAt AS sendAt_raw, date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
@@ -654,6 +654,7 @@ public class HistoryDao {
                         rs.getString("content"),
                         rs.getInt("emotionIdx"),
                         rs.getString("senderNickName"),
+                        rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
                 ), diaryIdx);
     }
@@ -678,7 +679,7 @@ public class HistoryDao {
     // 편지
     public GetHistoryRes_Main getLetter_main(int letterIdx) {
         String query = "SELECT Letter.letterIdx AS typeIdx, Letter.content, User.nickName AS senderNickName, " +
-                "date_format(LetterSendList.createdAt, '%Y.%m.%d') AS sendAt " +
+                "LetterSendList.createdAt AS sendAt_raw, date_format(LetterSendList.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
@@ -692,6 +693,7 @@ public class HistoryDao {
                         rs.getInt("typeIdx"),
                         rs.getString("content"),
                         rs.getString("senderNickName"),
+                        rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
                 ), letterIdx);
     }
@@ -701,7 +703,7 @@ public class HistoryDao {
     // 일기
     public List<GetHistoryRes_Main> getReplyList_diary(int userIdx, int diaryIdx) {
         String query = "SELECT Reply.replyIdx AS typeIdx, Reply.content, User.nickName AS senderNickName, " +
-                "date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
+                "Reply.createdAt AS sendAt_raw, date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN Reply ON Reply.sendIdx = DiarySendList.sendIdx " +
@@ -720,6 +722,7 @@ public class HistoryDao {
                         rs.getInt("typeIdx"),
                         rs.getString("content"),
                         rs.getString("senderNickName"),
+                        rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
                 ), userIdx, userIdx, diaryIdx);
     }
@@ -727,7 +730,7 @@ public class HistoryDao {
     // 편지
     public List<GetHistoryRes_Main> getReplyList_letter(int userIdx, int letterIdx) {
         String query = "SELECT Reply.replyIdx AS typeIdx, Reply.content, User.nickName AS senderNickName, " +
-                "date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
+                "Reply.createdAt AS sendAt_raw, date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN Reply ON Reply.sendIdx = LetterSendList.sendIdx " +
@@ -747,6 +750,7 @@ public class HistoryDao {
                         rs.getInt("typeIdx"),
                         rs.getString("content"),
                         rs.getString("senderNickName"),
+                        rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
                 ), userIdx, userIdx, letterIdx);
     }
