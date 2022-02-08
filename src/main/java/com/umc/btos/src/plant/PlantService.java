@@ -107,6 +107,8 @@ public class PlantService {
 
             if (plantScore > plantMaxScore) { // 식물 점수가 해당 단계의 성장치를 넘어간다면? -> 단계 변경
                 plantLevel++; // 단계 + 1
+                result.setPlantLevel(plantLevel);
+
                 plantScore -= plantMaxScore; // 점수 = 변경된 점수 - 성장치
 
                 if (plantDao.setLevel(userIdx, plantLevel) == 0) { // 변경된 단계 반영
@@ -200,6 +202,7 @@ public class PlantService {
 
             if (plantLevel_current != plantLevel) {
                 plantDao.setLevel(userIdx, plantLevel_current); // 변경된 단계 반영
+                result.setPlantLevel(plantLevel);
                 result.setLevelChanged(true); // 단계가 변경되었다는 정보를 response에 넣기
             }
 
