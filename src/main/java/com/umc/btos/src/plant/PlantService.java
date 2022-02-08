@@ -83,7 +83,7 @@ public class PlantService {
         try {
             PatchModifyScoreRes result = new PatchModifyScoreRes(false, type); // response 객체
 
-            // 시무룩 상태인가? -> 시무룩 상태라면 성장치 증가 X (바로 response 반환)
+            // 시무룩이 상태인가? -> 시무룩이 상태라면 성장치 증가 X (바로 response 반환)
             if (plantDao.checkSad(userIdx) == 1) {
                 return result;
             }
@@ -107,6 +107,8 @@ public class PlantService {
 
             if (plantScore > plantMaxScore) { // 식물 점수가 해당 단계의 성장치를 넘어간다면? -> 단계 변경
                 plantLevel++; // 단계 + 1
+                result.setPlantLevel(plantLevel);
+
                 plantScore -= plantMaxScore; // 점수 = 변경된 점수 - 성장치
 
                 if (plantDao.setLevel(userIdx, plantLevel) == 0) { // 변경된 단계 반영
@@ -153,6 +155,11 @@ public class PlantService {
                 return result;
             }
 
+            // 0단계 0점인가? == 점소 감소 시 음수인 경우 -> 성장치 감소 X (바로 response 반환)
+            if (plantScore == 0 && plantLevel == 0) {
+                return result;
+            }
+
             // 단계가 하나씩 줄어드는게 아니라 n단계씩 줄 수 있기 때문에 생각해야 할 것이 많음
             // public static final int[] PLANT_LEVEL = new int[] {15, 30, 50, 50};
 
@@ -195,6 +202,7 @@ public class PlantService {
 
             if (plantLevel_current != plantLevel) {
                 plantDao.setLevel(userIdx, plantLevel_current); // 변경된 단계 반영
+                result.setPlantLevel(plantLevel);
                 result.setLevelChanged(true); // 단계가 변경되었다는 정보를 response에 넣기
             }
 

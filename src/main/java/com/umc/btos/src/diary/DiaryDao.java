@@ -164,6 +164,15 @@ public class DiaryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
     }
 
+    // 발신인 nickName 반환
+    public String getSenderNickName(int diaryIdx) {
+        String query = "SELECT nickName FROM User " +
+                "INNER JOIN Diary ON User.userIdx = Diary.userIdx " +
+                "WHERE diaryIdx = ?";
+
+        return this.jdbcTemplate.queryForObject(query, String.class, diaryIdx);
+    }
+
     // 발신인 생년 반환 (User.birth)
     public int getSenderBirth(int diaryIdx) {
         String query = "SELECT birth FROM User " +

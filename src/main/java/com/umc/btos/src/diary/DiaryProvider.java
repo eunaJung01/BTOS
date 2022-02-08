@@ -303,7 +303,8 @@ public class DiaryProvider {
 
             // 일기에 따른 발송 리스트 조회
             for (int diaryIdx : diaryIdxList) {
-                GetSendListRes diary = new GetSendListRes(diaryIdx);
+                String senderNickName = diaryDao.getSenderNickName(diaryIdx); // 발신인 nickName
+                GetSendListRes diary = new GetSendListRes(diaryIdx, senderNickName);
                 diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, yesterday));
 //                diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, "2022.02.05")); // test
                 result.add(diary);
