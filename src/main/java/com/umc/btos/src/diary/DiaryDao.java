@@ -159,9 +159,7 @@ public class DiaryDao {
 
     // 발신인 userIdx 반환
     public int getSenderUserIdx(int diaryIdx) {
-        String query = "SELECT User.userIdx FROM User " +
-                "INNER JOIN Diary ON User.userIdx = Diary.userIdx " +
-                "WHERE diaryIdx = ?";
+        String query = "SELECT Diary.userIdx FROM Diary WHERE diaryIdx = ?";
 
         return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
     }
@@ -197,12 +195,16 @@ public class DiaryDao {
     }
 
     // 일기 발송 리스트 반환
-    public List<Integer> getReceiverIdxList(int diaryIdx, String date) {
-        String query  = "SELECT receiverIdx FROM DiarySendList " +
-                "WHERE diaryIdx = ? AND left(createdAt, 10) = ? AND status = 'active' " +
+    public List<Integer> getReceiverIdxList(int diaryIdx, String diaryDate) {
+        String query  = "SELECT receiverIdx " +
+                "FROM DiarySendList " +
+                "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                "WHERE Diary.diaryIdx = ? " +
+                "AND diaryDate = ? " +
+                "AND DiarySendList.status = 'active' " +
                 "ORDER BY receiverIdx";
 
-        return this.jdbcTemplate.queryForList(query, int.class, diaryIdx, date);
+        return this.jdbcTemplate.queryForList(query, int.class, diaryIdx, diaryDate);
     }
 
     // ================================================================================
