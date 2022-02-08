@@ -99,7 +99,7 @@ public class HistoryProvider {
 
                         int historyListNum = historyDao.getDiaryListSize(userIdx, senderNickName) + historyDao.getLetterListSize(userIdx, senderNickName) + historyDao.getReplyListSize(userIdx, senderNickName);
 
-                        HistoryList_Sender historyList_sender = new HistoryList_Sender(senderNickName, historyListNum, historyList.get(0)); // 수신한 일기, 편지, 답장 중 가장 최근에 받은 값
+                        HistoryList_Sender historyList_sender = new HistoryList_Sender(historyListNum, historyList.get(0)); // 수신한 일기, 편지, 답장 중 가장 최근에 받은 값
                         historyListRes_list.add(historyList_sender);
                     }
 
@@ -226,7 +226,7 @@ public class HistoryProvider {
                         }
                         if (historyList.size() != 0) {
                             Collections.sort(historyList); // createAt 기준 내림차순 정렬
-                            historyListRes_list.add(new HistoryList_Sender(senderNickName, historyList.size(), historyList.get(0)));
+                            historyListRes_list.add(new HistoryList_Sender(historyList.size(), historyList.get(0)));
                         }
                     }
 
