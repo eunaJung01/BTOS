@@ -271,7 +271,11 @@ public class HistoryProvider {
                         List<History> historyList = new ArrayList<>(); // HistoryList_Sender.historyList
 
                         for (int diaryIdx : diaryIdxList) {
-                            historyList.add(historyDao.getDiary(userIdx, diaryIdx));
+                            if (historyDao.hasDone(diaryIdx) == 1) { // 해당 일기에 done list가 있는 경우
+                                historyList.add(historyDao.getDiary_done(userIdx, diaryIdx));
+                            } else { // 해당 일기에 done list가 없는 경우
+                                historyList.add(historyDao.getDiary_nonDone(userIdx, diaryIdx));
+                            }
                         }
                         Collections.sort(historyList); // createAt 기준 내림차순 정렬
                         historyListRes.setList(historyList);
@@ -378,7 +382,14 @@ public class HistoryProvider {
 
             if (search == null) {
                 if (historyDao.hasHistory_diary(userIdx, senderNickName) != 0) { // null 확인
-                    historyList.addAll(historyDao.getDiaryList(userIdx, senderNickName)); // 일기
+                    List<Integer> diaryIdxList = historyDao.getDiaryIdxList(userIdx, senderNickName); // 수신받은 모든 일기 diaryIdx
+                    for (int diaryIdx : diaryIdxList) {
+                        if (historyDao.hasDone(diaryIdx) == 1) { // 해당 일기에 done list가 있는 경우
+                            historyList.add(historyDao.getDiary_done(userIdx, senderNickName));
+                        } else { // 해당 일기에 done list가 없는 경우
+                            historyList.add(historyDao.getDiary_nonDone(userIdx, senderNickName));
+                        }
+                    }
                 }
                 if (historyDao.hasHistory_letter(userIdx, senderNickName) != 0) { // null 확인
                     historyList.addAll(historyDao.getLetterList(userIdx, senderNickName)); // 편지
@@ -429,6 +440,13 @@ public class HistoryProvider {
                 // diaryIdxList
                 if (historyDao.hasHistory_diary(userIdx, senderNickName) != 0) { // null 확인
                     diaryIdxList.addAll(historyDao.getDiaryIdxList(userIdx, senderNickName)); // 수신받은 모든 일기 diaryIdx
+                    for (int diaryIdx : diaryIdxList) {
+                        if (historyDao.hasDone(diaryIdx) == 1) { // 해당 일기에 done list가 있는 경우
+                            historyList.add(historyDao.getDiary_done(userIdx, senderNickName));
+                        } else { // 해당 일기에 done list가 없는 경우
+                            historyList.add(historyDao.getDiary_nonDone(userIdx, senderNickName));
+                        }
+                    }
 
                     List<Integer> diaryIdxList_searched = new ArrayList<>(); // 임시 list
                     for (int diaryIdx : diaryIdxList) {

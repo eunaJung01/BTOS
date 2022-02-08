@@ -206,7 +206,7 @@ public class HistoryDao {
     }
 
     // 일기 (DiarySendList.receiverIdx = userIdx AND User.nickName = senderNickName)
-    public List<History> getDiaryList(int userIdx, String senderNickName) {
+    public History getDiary_done(int userIdx, String senderNickName) {
         String query = "SELECT Diary.diaryIdx AS typeIdx, " +
                 "Diary.content AS content, Diary.emotionIdx AS emotionIdx, COUNT(Done.diaryIdx) AS doneListNum, " +
                 "DiarySendList.createdAt AS sendAt_raw, date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
@@ -217,7 +217,7 @@ public class HistoryDao {
                 "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? AND DiarySendList.status = 'active' " +
                 "ORDER BY sendAt DESC";
 
-        return this.jdbcTemplate.query(query,
+        return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new History(
                         "diary",
                         rs.getInt("typeIdx"),
@@ -225,6 +225,29 @@ public class HistoryDao {
                         rs.getString("content"),
                         rs.getInt("emotionIdx"),
                         rs.getInt("doneListNum"),
+                        rs.getString("sendAt_raw"),
+                        rs.getString("sendAt")
+                ), userIdx, senderNickName);
+    }
+
+    // 일기 (DiarySendList.receiverIdx = userIdx)
+    public History getDiary_nonDone(int userIdx, String senderNickName) {
+        String query = "SELECT Diary.diaryIdx AS typeIdx, User.nickName AS senderNickName, " +
+                "Diary.content AS content, Diary.emotionIdx AS emotionIdx, " +
+                "DiarySendList.createdAt AS sendAt_raw, date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
+                "FROM DiarySendList " +
+                "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                "INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? AND DiarySendList.status = 'active'";
+
+        return this.jdbcTemplate.queryForObject(query,
+                (rs, rowNum) -> new History(
+                        "diary",
+                        rs.getInt("typeIdx"),
+                        rs.getString("senderNickName"),
+                        rs.getString("content"),
+                        rs.getInt("emotionIdx"),
+                        0,
                         rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
                 ), userIdx, senderNickName);
