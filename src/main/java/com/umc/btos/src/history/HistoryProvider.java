@@ -113,14 +113,21 @@ public class HistoryProvider {
                 // 일기만
                 else if (filtering.compareTo("diary") == 0) {
                     List<History> historyList = new ArrayList<>(); // GetHistoryListRes.list
+                    List<Integer> diaryIdxList = historyDao.getDiaryIdxList(userIdx, pageNum);
+                    dataNum = historyDao.getDiaryList_dataNum(userIdx);
 
-                    if (historyDao.hasHistory_diary(userIdx) != 0) { // null 확인
-                        historyList.addAll(historyDao.getDiaryList(userIdx, pageNum)); // 일기 (createAt 기준 내림차순 정렬)
-                        dataNum = historyDao.getDiaryList_dataNum(userIdx);
-
+                    if (historyDao.hasHistory_diary(userIdx) != 0) { // 해당 회원에게서 받은 일기가 있는지 확인
+                        for (int diaryIdx : diaryIdxList) {
+                            if (historyDao.hasDone(diaryIdx) == 1) { // 해당 일기에 done list가 있는 경우
+                                historyList.add(historyDao.getDiary_done(userIdx, diaryIdx));
+                            } else { // 해당 일기에 done list가 없는 경우
+                                historyList.add(historyDao.getDiary_nonDone(userIdx, diaryIdx));
+                            }
+                        }
                     } else {
                         throw new NullPointerException(); // 검색 결과 없음
                     }
+                    Collections.sort(historyList);
                     historyListRes.setList(historyList);
                 }
 
