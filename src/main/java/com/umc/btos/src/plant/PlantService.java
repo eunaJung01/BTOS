@@ -83,7 +83,7 @@ public class PlantService {
         try {
             PatchModifyScoreRes result = new PatchModifyScoreRes(false, type); // response 객체
 
-            // 시무룩 상태인가? -> 시무룩 상태라면 성장치 증가 X (바로 response 반환)
+            // 시무룩이 상태인가? -> 시무룩이 상태라면 성장치 증가 X (바로 response 반환)
             if (plantDao.checkSad(userIdx) == 1) {
                 return result;
             }
@@ -150,6 +150,11 @@ public class PlantService {
             // 성장치 MAX인가? == 최대 단계 & 최대 점수인 경우 -> 성장치 감소 X (바로 response 반환)
             int maxLevel = plantDao.getMaxLevel(userIdx);
             if (plantLevel == maxLevel && plantScore == plantMaxScore) {
+                return result;
+            }
+
+            // 0단계 0점인가? == 점소 감소 시 음수인 경우 -> 성장치 감소 X (바로 response 반환)
+            if (plantScore == 0 && plantLevel == 0) {
                 return result;
             }
 
