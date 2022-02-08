@@ -64,6 +64,12 @@ public class PlantService {
     //화분 구매(보유) API
     public BaseResponseStatus buyPlant(PostBuyPlantReq postBuyPlantReq) throws BaseException {
         try {
+            //회원 화분 중복 확인
+                // 중복이면
+            if(plantDao.checkPlantExist(postBuyPlantReq.getPlantIdx(), postBuyPlantReq.getUserIdx()) == 1)
+                return DUPLICATE_IDX_PLANT;
+
+                //중복이 아니면
             if (plantDao.buyPlant(postBuyPlantReq) == 1) //변경 성공시
                 return SUCCESS;
             else //구매 실패시
