@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.umc.btos.config.BaseResponseStatus.*;
+
 @RestController
 @RequestMapping("/mailboxes")
 public class MailboxController {
@@ -30,6 +32,11 @@ public class MailboxController {
     @GetMapping("/{userIdx}")
     public BaseResponse<List<GetMailboxRes>> getMailbox(@PathVariable("userIdx") int userIdx) {
         try {
+            // TODO : 형식적 validation - 존재하는 회원인가?
+            if (mailboxProvider.checkUserIdx(userIdx) == 0) {
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+            }
+
             List<GetMailboxRes> mailbox = mailboxProvider.getMailbox(userIdx);
             return new BaseResponse<>(mailbox);
 
@@ -40,18 +47,29 @@ public class MailboxController {
 
     /*
      * 우편함 - 일기 / 편지 / 답장 조회
-     * [GET] /mailboxes/mail/:userIdx?type=&idx=
+     * [GET] /mailboxes/mail/:userIdx?type=&typeIdx=
      * userIdx = 해당 우편을 조회하는 회원 식별자
      * type = 일기, 편지, 답장 구분 (diary / letter / reply)
-     * idx = 식별자 정보 (type-idx : diary-diaryIdx / letter-letterIdx / reply-replyIdx)
+     * typeIdx = 식별자 정보 (type-typeIdx : diary-diaryIdx / letter-letterIdx / reply-replyIdx)
      */
     @ResponseBody
     @GetMapping("/mail/{userIdx}")
-    public BaseResponse<GetMailRes> getMail(@PathVariable("userIdx") int userIdx, @RequestParam("type") String type, @RequestParam("idx") int idx) {
+    public BaseResponse<GetMailRes> getMail(@PathVariable("userIdx") int userIdx, @RequestParam("type") String type, @RequestParam("typeIdx") int typeIdx) {
         try {
+            // TODO : 형식적 validation - 존재하는 회원인가? / type(diary, letter, reply) 입력 확인 / 해당 type에 존재하는 typeIdx인가?
+            if (mailboxProvider.checkUserIdx(userIdx) == 0) {
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+            }
+            if (type.compareTo("diary") == 0 && type.compareTo("letter") == 0 && type.compareTo("reply") == 0) {
+                throw new BaseException(INVALID_TYPE); // 잘못된 type 입니다. (diary, letter, reply 중 1)
+            }
+            if (mailboxProvider.checkTypeIdx(type, typeIdx) == 0) {
+                throw new BaseException(INVALID_TYPEIDX_ABOUT_TYPE); // 해당 type에 존재하지 않는 typeIdx 입니다.
+            }
+
             GetMailRes mail = new GetMailRes(type);
-            mailboxProvider.setMailRes_sender(mail, type, idx); // 발신인 정보 저장
-            mail.setContent(mailboxProvider.setMailContent(userIdx, type, idx));
+            mailboxProvider.setMailRes_sender(mail, type, typeIdx); // 발신인 정보 저장
+            mail.setContent(mailboxProvider.setMailContent(userIdx, type, typeIdx));
 
             return new BaseResponse<>(mail);
 
