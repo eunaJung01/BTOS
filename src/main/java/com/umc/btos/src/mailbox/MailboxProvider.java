@@ -55,22 +55,22 @@ public class MailboxProvider {
 
     /*
      * 우편함 - 일기 / 편지 / 답장 조회
-     * [GET] /mailboxes/mail/:userIdx?type=&idx=
+     * [GET] /mailboxes/mail/:userIdx?type=&typeIdx=
      * userIdx = 해당 우편을 조회하는 회원 식별자
      * type = 일기, 편지, 답장 구분 (diary / letter / reply)
-     * idx = 식별자 정보 (type-idx : diary-diaryIdx / letter-letterIdx / reply-replyIdx)
+     * typeIdx = 식별자 정보 (type-typeIdx : diary-diaryIdx / letter-letterIdx / reply-replyIdx)
      */
-    public Object setMailContent(int userIdx, String type, int idx) throws BaseException {
+    public Object setMailContent(int userIdx, String type, int typeIdx) throws BaseException {
         try {
             Object mail;
             if (type.compareTo("diary") == 0) {
-                mail = diaryProvider.getDiary(userIdx, idx); // 일기 정보 저장
+                mail = diaryProvider.getDiary(userIdx, typeIdx); // 일기 정보 저장
 
             } else if (type.compareTo("letter") == 0) {
-                mail = letterProvider.getLetter(userIdx, idx); // 편지 정보 저장
+                mail = letterProvider.getLetter(userIdx, typeIdx); // 편지 정보 저장
 
             } else {
-                mail = replyProvider.getReply(idx); // 답장 정보 저장
+                mail = replyProvider.getReply(typeIdx); // 답장 정보 저장
             }
             return mail;
 
@@ -80,22 +80,22 @@ public class MailboxProvider {
     }
 
     // 발신인 정보 (User.nickName, User.fontIdx) 저장
-    public void setMailRes_sender(GetMailRes mail, String type, int idx) throws BaseException {
+    public void setMailRes_sender(GetMailRes mail, String type, int typeIdx) throws BaseException {
         try {
             int senderFontIdx = 0;
             String senderNickName = "";
 
             if (type.compareTo("diary") == 0) { // 일기
-                senderNickName = mailboxDao.getSenderNickName_diary(idx);
-                senderFontIdx = mailboxDao.getFontIdx_diary(idx);
+                senderNickName = mailboxDao.getSenderNickName_diary(typeIdx);
+                senderFontIdx = mailboxDao.getFontIdx_diary(typeIdx);
 
             } else if (type.compareTo("letter") == 0) { // 편지
-                senderNickName = mailboxDao.getSenderNickName_letter(idx);
-                senderFontIdx = mailboxDao.getFontIdx_letter(idx);
+                senderNickName = mailboxDao.getSenderNickName_letter(typeIdx);
+                senderFontIdx = mailboxDao.getFontIdx_letter(typeIdx);
 
             } else { // 답장
-                senderNickName = mailboxDao.getSenderNickName_reply(idx);
-                senderFontIdx = mailboxDao.getFontIdx_reply(idx);
+                senderNickName = mailboxDao.getSenderNickName_reply(typeIdx);
+                senderFontIdx = mailboxDao.getFontIdx_reply(typeIdx);
             }
 
             mail.setSenderNickName(senderNickName);
