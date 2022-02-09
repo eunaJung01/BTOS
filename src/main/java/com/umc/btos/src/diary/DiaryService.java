@@ -72,7 +72,7 @@ public class DiaryService {
 
         // 작성일과 일기의 해당 날짜가 다를 경우 발송(isPublic == 1) 불가
         if (diaryDate.compareTo(now_formatted) != 0 && isPublic == 1) {
-            throw new BaseException(UNPRIVATE_DATE); // 당일에 작성한 일기만 발송 가능합니다!
+            throw new BaseException(UNPRIVATE_DATE); // 당일에 작성한 일기만 발송 가능합니다.
         }
     }
 
@@ -82,7 +82,7 @@ public class DiaryService {
             return new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(diaryContent);
 
         } catch (Exception ignored) {
-            throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 또는 done list 내용 암호화에 실패하였습니다.
+            throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 암호화에 실패하였습니다.
         }
     }
 
@@ -96,7 +96,7 @@ public class DiaryService {
             return doneList_encrypted;
 
         } catch (Exception ignored) {
-            throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 또는 done list 내용 암호화에 실패하였습니다.
+            throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 암호화에 실패하였습니다.
         }
     }
 
@@ -125,13 +125,13 @@ public class DiaryService {
         try {
             // Diary Table 수정
             if (diaryDao.modifyDiary(putDiaryReq) == 0) {
-                throw new BaseException(MODIFY_FAIL_DIARY); // 일기 수정 실패 - 일기 내용
+                throw new BaseException(MODIFY_FAIL_DIARY); // 일기 수정에 실패하였습니다.
             }
 
             // Done Table 수정
             List doneIdxList = diaryDao.getDoneIdxList(putDiaryReq); // 해당 일기의 모든 doneIdx (List 형태로 저장)
             if (diaryDao.modifyDoneList(putDiaryReq, doneIdxList) == 0) {
-                throw new BaseException(MODIFY_FAIL_DONELIST); // 일기 수정 실패 - done list
+                throw new BaseException(MODIFY_FAIL_DONE); // done list 수정에 실패하였습니다.
             }
 
         } catch (Exception exception) {
@@ -147,12 +147,12 @@ public class DiaryService {
         try {
             // Diary.status 수정
             if (diaryDao.deleteDiary(diaryIdx) == 0) {
-                throw new BaseException(DELETE_FAIL_DIARY); // 일기 삭제 실패
+                throw new BaseException(DELETE_FAIL_DIARY); // 일기 삭제에 실패하였습니다.
             }
 
             // Done.status 수정
             if (diaryDao.deleteDone(diaryIdx) == 0) {
-                throw new BaseException(DELETE_FAIL_DONELIST); // done list 삭제 실패
+                throw new BaseException(DELETE_FAIL_DONE); // done list 삭제에 실패하였습니다.
             }
 
         } catch (Exception exception) {

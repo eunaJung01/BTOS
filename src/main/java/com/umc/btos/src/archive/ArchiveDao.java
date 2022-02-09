@@ -19,6 +19,18 @@ public class ArchiveDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    // 존재하는 회원인지 확인
+    public int checkUserIdx(int userIdx) {
+        String query = "SELECT EXISTS (SELECT userIdx FROM User WHERE userIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
+    }
+
+    // 존재하는 일기인지 확인
+    public int checkDiaryIdx(int diaryIdx) {
+        String query = "SELECT EXISTS (SELECT diaryIdx FROM Diary WHERE diaryIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
+    }
+
     // ====================================== 달력 조회 ======================================
 
     // 달력 조회 (diaryDate(일기의 해당 날짜) 기준 오름차순 정렬)

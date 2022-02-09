@@ -78,21 +78,28 @@ public enum BaseResponseStatus {
     // 6000 : 레마
     TEMP2(false, 9000, "conflict 방지용 2"),
     INVALID_USERIDX(false, 6000, "존재하지 않는 회원입니다."),
-    INVALID_DIARYIDX(false, 6001, "존재하지 않는 일기입니다."),
-    INVALID_USER_ABOUT_DIARY(false, 6002, "해당 일기에 접근 권한이 없는 회원입니다."),
-    DIARY_EXISTS(false, 6003, "일기는 하루에 하나만 작성 가능합니다."),
-    UNPRIVATE_DATE(false, 6004, "당일에 작성한 일기만 발송 가능합니다!"),
-    DIARY_ENCRYPTION_ERROR(false, 6005, "일기 또는 done list 내용 암호화에 실패하였습니다."),
-    MODIFY_FAIL_DIARY(false, 6006, "일기 수정 실패 - 일기 내용"),
-    MODIFY_FAIL_DONELIST(false, 6007, "일기 수정 실패 - done list"),
-    DELETE_FAIL_DIARY(false, 6008, "일기 삭제 실패"),
-    DELETE_FAIL_DONELIST(false, 6009, "done list 삭제 실패"),
-    DIARY_NONPREMIUM_USER(false, 6010, "프리미엄 가입이 필요합니다."),
-    DIARY_DECRYPTION_ERROR(false, 6011, "일기 복호화에 실패하였습니다."),
-    EMPTY_RESULT(false, 6012, "검색 결과 없음"),
-    PAGENUM_ERROR(false, 6013, "잘못된 페이지 요청입니다."),
-    MAIN_HISTORY_WRONG_REQ(false, 6014, "잘못된 userIdx 또는 idx 요청입니다."),
-    NO_DIARY_SENT_TODAY(false, 6015, "오늘 발송되는 일기는 없습니다."),
+    INVALID_NICKNAME(false, 6001, "존재하지 않는 회원 닉네임입니다."),
+    INVALID_DIARYIDX(false, 6002, "존재하지 않는 일기입니다."),
+    INVALID_USER_ABOUT_DIARY(false, 6003, "해당 일기에 접근 권한이 없는 회원입니다."),
+    INVALID_TYPE(false, 6004, "잘못된 type 입니다. (diary, letter, reply 중 1)"),
+    INVALID_TYPEIDX_ABOUT_TYPE(false, 6005, "해당 type에 존재하지 않는 typeIdx 입니다."),
+
+    DIARY_NONPREMIUM_USER(false, 6006, "프리미엄 가입이 필요합니다."),
+    DIARY_ENCRYPTION_ERROR(false, 6007, "일기 암호화에 실패하였습니다."),
+    DIARY_DECRYPTION_ERROR(false, 6008, "일기 복호화에 실패하였습니다."),
+
+    DIARY_EXISTS(false, 6009, "일기는 하루에 하나만 작성 가능합니다."),
+    UNPRIVATE_DATE(false, 6010, "당일에 작성한 일기만 발송 가능합니다."),
+    NO_DIARY_SENT_TODAY(false, 6011, "오늘 발송되는 일기는 없습니다."),
+
+    MODIFY_FAIL_DIARY(false, 6012, "일기 수정에 실패하였습니다."),
+    MODIFY_FAIL_DONE(false, 6013, "done list 수정에 실패하였습니다."),
+    DELETE_FAIL_DIARY(false, 6014, "일기 삭제에 실패하였습니다."),
+    DELETE_FAIL_DONE(false, 6015, "done list 삭제에 실패하였습니다."),
+
+    PAGENUM_ERROR_0(false, 6016, "페이지 번호는 1부터 시작합니다."),
+    PAGENUM_ERROR(false, 6017, "잘못된 페이지 요청입니다."),
+    EMPTY_RESULT(false, 6018, "검색 결과 없음"),
 
 
     // 7000 : 자몽

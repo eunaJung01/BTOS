@@ -25,6 +25,52 @@ public class HistoryProvider {
     }
 
     /*
+     * 존재하는 회원인지 확인
+     */
+    public int checkUserIdx(int userIdx) throws BaseException {
+        try {
+            return historyDao.checkUserIdx(userIdx); // 존재하면 1, 존재하지 않는다면 0 반환
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /*
+     * 존재하는 회원 닉네임인지 확인
+     */
+    public int checkNickName(String senderNickName) throws BaseException {
+        try {
+            return historyDao.checkNickName(senderNickName); // 존재하면 1, 존재하지 않는다면 0 반환
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /*
+     * 해당 type에 존재하는 typeIdx인지 확인
+     */
+    public int checkTypeIdx(String type, int typeIdx) throws BaseException {
+        try {
+            if (type.compareTo("diary") == 0) {
+                return historyDao.checkDiaryIdx(typeIdx);
+
+            } else if (type.compareTo("letter") == 0) {
+                return historyDao.checkLetterIdx(typeIdx);
+
+            } else {
+                return historyDao.checkReplyIdx(typeIdx);
+            }
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // ================================================================================
+
+    /*
      * History 목록 조회
      * [GET] /histories/list/:userIdx/:pageNum?filtering=&search=
      * filtering = 1. sender : 발신인 (Diary, Letter, Reply) / 2. diary : 일기만 (Diary) / 3. letter : 편지만 (Letter, Reply)
@@ -338,6 +384,7 @@ public class HistoryProvider {
             }
 
             // PagingRes
+            pageInfo.setDataNum((int) dataNum);
             int endPage = (int) Math.ceil(dataNum / Constant.HISTORY_DATA_NUM); // 마지막 페이지 번호
             if (pageInfo.getCurrentPage() > endPage) {
                 throw new BaseException(PAGENUM_ERROR); // 잘못된 페이지 요청입니다.
@@ -350,7 +397,6 @@ public class HistoryProvider {
         } catch (NullPointerException nullPointerException) {
             throw new BaseException(EMPTY_RESULT); // 검색 결과 없음
         } catch (Exception exception) {
-            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -521,6 +567,7 @@ public class HistoryProvider {
             }
 
             // PagingRes
+            pageInfo.setDataNum((int) dataNum);
             int endPage = (int) Math.ceil(dataNum / Constant.HISTORY_DATA_NUM); // 마지막 페이지 번호
             if (pageInfo.getCurrentPage() > endPage) {
                 throw new BaseException(PAGENUM_ERROR); // 잘못된 페이지 요청입니다.
