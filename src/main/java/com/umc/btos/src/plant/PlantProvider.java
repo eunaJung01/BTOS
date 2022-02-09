@@ -49,8 +49,8 @@ public class PlantProvider {
     //모든 화분 조회(Profile + 상점)
     public List<GetPlantRes> getPlantList(int userIdx) throws BaseException {
         try {
-            List<Integer> plantIdxList = plantDao.getPlantIdx(); //Plant 테이블에 있는 모든 화분 idx
-            List<Integer> userPlantIdxList = plantDao.getUserPlantIdx(userIdx); //해당 user가 가지고 있는 모든 화분 idx
+            List<Integer> plantIdxList = plantDao.getPlantIdx(); //Plant 테이블에 있는 모든 plantIdx
+            List<Integer> userPlantIdxList = plantDao.getUserPlantIdx(userIdx); //해당 회원이 가지고 있는 모든 plantIdx
 
             return plantDao.getPlantList(userIdx, plantIdxList, userPlantIdxList);
         } catch (Exception exception) {

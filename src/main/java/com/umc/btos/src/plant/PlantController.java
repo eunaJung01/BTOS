@@ -32,6 +32,8 @@ public class PlantController {
      * 화분목록조회(Profile + 상점) API
      * [GET] /plants/:userIdx
      * Path variable : userIdx (mandatory: Y)
+     *
+     * userIdx 기준으로 보유(active/selected)/미보유한 모든 화분에 대해 조회
      */
     @ResponseBody
     @GetMapping("{userIdx}")
@@ -51,6 +53,8 @@ public class PlantController {
      * 회원이 선택한 화분 조회 API
      * [GET] /plants?plantIdx=&userIdx=
      * Query String : plantIdx, userIdx (mandatory: Y)
+     *
+     * userIdx가 선택한 plantIdx 조회
      */
     @ResponseBody
     @GetMapping("")
@@ -59,7 +63,7 @@ public class PlantController {
         try {
             //조회 성공 시 : GetSpecificPlantRes 형태로 결과 반환 - 1000
             //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
-            return new BaseResponse<>(plantProvider.getSelectedPlant(plantIdx, userIdx));
+            return new BaseResponse<>(plantProvider.getSelectedPlant(plantIdx, userIdx)); //조회(read) -> Provider
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -68,7 +72,9 @@ public class PlantController {
     /**
      * 화분 선택 API
      * [PATCH] /plants/select
-     * RequestBody : PatchSelectPlantReq - 필드명 userIdx, futurePlant(=uPlantIdx) (mandatory: Y)
+     * RequestBody : PatchSelectPlantReq - 필드명 userIdx, plantIdx (mandatory: Y)
+     *
+     * userIdx가 BODY로 넘긴 plantIdx의 status를 selected로 변경
      */
     @ResponseBody
     @PatchMapping("select")
@@ -78,7 +84,7 @@ public class PlantController {
             //selected -> active 실패시 : "화분 상태 변경에 실패하였습니다." - 7010
             //futurePlant값이 이미 선택된 화분인 경우 : "이미 선택된 화분입니다." - 5005
             //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
-            return new BaseResponse<>(plantService.selectPlant(patchSelectPlantReq));
+            return new BaseResponse<>(plantService.selectPlant(patchSelectPlantReq)); //선택(update) -> Service
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -89,6 +95,8 @@ public class PlantController {
      * 화분 구매(보유) API
      * [POST] /plants/buy
      * RequestBody : PostBuyPlantReq - 필드명 userIdx, plantIdx (mandatory: Y)
+     *
+     * userIdx가 Body로 넘긴 plantIdx 구매
      */
     @ResponseBody
     @PostMapping("buy")
@@ -98,7 +106,7 @@ public class PlantController {
             //       실패시 : "화분 상태 변경에 실패하였습니다." - 7011
             //중복 구매 시도시 : "이미 보유한 화분입니다." - 7016
             //DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
-            return new BaseResponse<>(plantService.buyPlant(postBuyPlantReq));
+            return new BaseResponse<>(plantService.buyPlant(postBuyPlantReq)); //구매(post) -> Service
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -108,6 +116,8 @@ public class PlantController {
     /**
      * 화분 개수 조회 API
      * [GET] /plants/count
+     *
+     * Plant 테이블에 있는 모든 화분의 개수 조회
      */
     @ResponseBody
     @GetMapping("count")
@@ -115,7 +125,7 @@ public class PlantController {
         try {
             // 성공 시 : "요청에 성공하였습니다." - 1000
             // DATABASE_ERROR : "데이터베이스 연결에 실패하였습니다." - 4000
-            GetCountPlantRes getCountPlantRes = new GetCountPlantRes(plantProvider.countPlant());
+            GetCountPlantRes getCountPlantRes = new GetCountPlantRes(plantProvider.countPlant()); //조회(read) -> Provider
             return new BaseResponse<>(getCountPlantRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));

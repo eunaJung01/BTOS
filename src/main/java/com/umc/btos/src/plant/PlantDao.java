@@ -56,13 +56,16 @@ public class PlantDao {
         getPlantRes.setMaxLevel(plantBasicInfo.getMaxLevel());
 
         if (status == 1) { //보유중이면 화분 현재 레벨, 보유 상태 가져오기
+            // 유저가 보유중인 화분의 level 가져오기
             String currentLevelQuery = "SELECT level FROM UserPlantList WHERE userIdx=? AND plantIdx=?";
             Object[] Params = new Object[]{userIdx, plantIdx};
             int level = jdbcTemplate.queryForObject(currentLevelQuery, int.class, Params);
 
+            // 유저의 보유중인 화분 상태(active/selected) 가져오기
             String statusQuery = "SELECT status FROM UserPlantList WHERE userIdx=? AND plantIdx=?";
             String plantStatus = jdbcTemplate.queryForObject(statusQuery, String.class, Params);
 
+            // 레벨, 상태 셋팅
             getPlantRes.setCurrentLevel(level); // 현재레벨
             getPlantRes.setPlantStatus(plantStatus); // "active" OR "selected"
         } else { //미보유
