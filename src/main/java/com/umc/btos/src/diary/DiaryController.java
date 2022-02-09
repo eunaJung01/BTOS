@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.umc.btos.config.BaseResponseStatus.*;
+
 @RestController
 @RequestMapping("/diaries")
 public class DiaryController {
@@ -53,8 +55,13 @@ public class DiaryController {
     @PostMapping("")
     public BaseResponse<PatchModifyScoreRes> saveDiary(@RequestBody PostDiaryReq postDiaryReq) {
         try {
-            diaryService.saveDiary(postDiaryReq);
-            PatchModifyScoreRes plantRes = plantService.modifyScore_plus(postDiaryReq.getUserIdx(), Constant.PLANT_LEVELUP_DIARY, "diary");
+            // TODO : 존재하는 회원인지 확인
+            if (diaryProvider.checkUserIdx(postDiaryReq.getUserIdx()) == 0) {
+                throw new BaseException(INVALID_USER); // 존재하지 않는 회원입니다.
+            }
+
+            diaryService.saveDiary(postDiaryReq); // 일기 저장
+            PatchModifyScoreRes plantRes = plantService.modifyScore_plus(postDiaryReq.getUserIdx(), Constant.PLANT_LEVELUP_DIARY, "diary"); // 화분 점수 증가
 
             return new BaseResponse<>(plantRes);
 

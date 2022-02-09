@@ -77,6 +77,7 @@ public enum BaseResponseStatus {
 
     // 6000 : 레마
     TEMP2(false, 9000, "conflict 방지용 2"),
+    INVALID_USER(false, 6000, "존재하지 않는 회원입니다."),
     DIARY_EXISTS(false, 6000, "일기는 하루에 하나만 작성 가능합니다."),
     UNPRIVATE_DATE(false, 6001, "당일에 작성한 일기만 발송 가능합니다!"),
     DIARY_ENCRYPTION_ERROR(false, 6001, "일기 또는 done list 내용 암호화에 실패하였습니다."),

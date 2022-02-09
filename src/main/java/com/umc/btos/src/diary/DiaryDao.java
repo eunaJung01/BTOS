@@ -25,6 +25,12 @@ public class DiaryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, date);
     }
 
+    // 존재하는 회원인지 확인
+    public int checkUserIdx(int userIdx) {
+        String query = "SELECT EXISTS (SELECT userIdx FROM User WHERE userIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
+    }
+
     // =================================== 일기 저장 ===================================
 
     // 일기 저장 -> diaryIdx 반환

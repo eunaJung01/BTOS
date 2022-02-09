@@ -43,6 +43,18 @@ public class DiaryProvider {
     }
 
     /*
+     * 존재하는 회원인지 확인
+     */
+    public int checkUserIdx(int userIdx) throws BaseException {
+        try {
+            return diaryDao.checkUserIdx(userIdx); // 존재하면 1, 존재하지 않는다면 0 반환
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /*
      * 일기 조회 - 우편함
      */
     public GetDiaryRes getDiary(int userIdx, int diaryIdx) throws BaseException {
