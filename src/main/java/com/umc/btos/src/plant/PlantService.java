@@ -57,10 +57,10 @@ public class PlantService {
             //회원 화분 중복 확인
                 // 중복이면
             if(plantDao.checkPlantExist(postBuyPlantReq.getPlantIdx(), postBuyPlantReq.getUserIdx()) == 1)
-                return DUPLICATE_IDX_PLANT;
+                throw new BaseException(DUPLICATE_IDX_PLANT);
 
-                //중복이 아니면
-            if (plantDao.buyPlant(postBuyPlantReq) == 1) //변경 성공시
+                //중복이 아니면, 구매
+            if (plantDao.buyPlant(postBuyPlantReq) == 1) //구매(insert) 성공시
                 return SUCCESS;
             else //구매 실패시
                 throw new BaseException(MODIFY_FAIL_BUY_PLANT);
