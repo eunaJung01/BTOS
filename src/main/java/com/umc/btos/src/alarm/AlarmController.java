@@ -1,10 +1,14 @@
 package com.umc.btos.src.alarm;
 
+import com.umc.btos.config.BaseException;
+import com.umc.btos.config.BaseResponse;
+import com.umc.btos.src.alarm.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/alarms")
@@ -19,6 +23,24 @@ public class AlarmController {
     public AlarmController(AlarmProvider alarmProvider, AlarmService alarmService) {
         this.alarmProvider = alarmProvider;
         this.alarmService = alarmService;
+    }
+
+    /*
+     * 알림 목록 조회
+     * [GET] /alarms?userIdx=
+     * Alarm.status = 'active'인 알림들만 조회
+     * 수신일(createdAt) 기준 내림차순 정렬
+     */
+    @ResponseBody
+    @GetMapping("")
+    BaseResponse<List<GetAlarmRes>> getAlarmList(@RequestParam("userIdx") int userIdx) {
+        try {
+            List<GetAlarmRes> alarmList = alarmProvider.getAlarmList(userIdx);
+            return new BaseResponse<>(alarmList);
+
+        }  catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
     }
 
 }
