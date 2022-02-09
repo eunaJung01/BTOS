@@ -27,9 +27,35 @@ public class ArchiveProvider {
     }
 
     /*
+     * 존재하는 회원인지 확인
+     */
+    public int checkUserIdx(int userIdx) throws BaseException {
+        try {
+            return archiveDao.checkUserIdx(userIdx); // 존재하면 1, 존재하지 않는다면 0 반환
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /*
+     * 존재하는 일기인지 확인
+     */
+    public int checkDiaryIdx(int diaryIdx) throws BaseException {
+        try {
+            return archiveDao.checkDiaryIdx(diaryIdx); // 존재하면 1, 존재하지 않는다면 0 반환
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // ================================================================================
+
+    /*
      * 달력 조회
      * [GET] /archives/calendar/:userIdx/:date?type=
-     * date = YYYY.MM
+     * date = yyyy.MM
      * type (조회 방식) = 1. doneList : 나뭇잎 색으로 done list 개수 표현 / 2. emotion : 감정 이모티콘
      */
     public List<GetCalendarRes> getCalendar(int userIdx, String date, String type) throws BaseException {
@@ -62,7 +88,7 @@ public class ArchiveProvider {
      * 일기 리스트 조회
      * [GET] /archives/diaryList/:userIdx/:pageNum?search=&startDate=&endDate=
      * search = 검색할 문자열 ("String")
-     * startDate, lastDate = 날짜 기간 설정 (YYYY.MM.DD ~ YYYY.MM.DD)
+     * startDate, lastDate = 날짜 기간 설정 (yyyy.MM.dd ~ yyyy.MM.dd)
      * 검색 & 기간 설정 조회는 중첩됨
      * 최신순 정렬 (diaryDate 기준 내림차순 정렬)
      * 페이징 처리 (무한 스크롤) - 20개씩 조회
