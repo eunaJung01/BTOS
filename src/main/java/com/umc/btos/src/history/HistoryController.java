@@ -35,9 +35,6 @@ public class HistoryController {
     @ResponseBody
     @GetMapping("/list/{userIdx}/{pageNum}")
     BaseResponsePaging<GetHistoryListRes> getHistoryList(@PathVariable("userIdx") String userIdx, @PathVariable("pageNum") int pageNum, @RequestParam(value = "filtering", defaultValue = "sender") String filtering, @RequestParam(value = "search", required = false) String search) {
-        String[] params = new String[]{userIdx, filtering, search};
-        PagingRes pageInfo = new PagingRes(pageNum, Constant.HISTORY_DATA_NUM); // 페이징 정보
-
         try {
             // TODO : 형식적 validation - 존재하는 회원인가? / pageNum == 0인 경우
             if (historyProvider.checkUserIdx(Integer.parseInt(userIdx)) == 0) {
@@ -47,11 +44,14 @@ public class HistoryController {
                 throw new BaseException(PAGENUM_ERROR_0); // 페이지 번호는 1부터 시작합니다.
             }
 
+            String[] params = new String[]{userIdx, filtering, search};
+            PagingRes pageInfo = new PagingRes(pageNum, Constant.HISTORY_DATA_NUM); // 페이징 정보
+
             GetHistoryListRes historyList = historyProvider.getHistoryList(params, pageInfo);
             return new BaseResponsePaging<>(historyList, pageInfo);
 
         } catch (BaseException exception) {
-            return new BaseResponsePaging<>(exception.getStatus(), pageInfo);
+            return new BaseResponsePaging<>(exception.getStatus());
         }
     }
 
@@ -65,9 +65,6 @@ public class HistoryController {
     @ResponseBody
     @GetMapping("/sender/{userIdx}/{senderNickName}/{pageNum}")
     BaseResponsePaging<List<History>> getHistoryList_sender(@PathVariable("userIdx") String userIdx, @PathVariable("senderNickName") String senderNickName, @PathVariable("pageNum") int pageNum, @RequestParam(value = "search", required = false) String search) {
-        String[] params = new String[]{userIdx, senderNickName, search};
-        PagingRes pageInfo = new PagingRes(pageNum, Constant.HISTORY_DATA_NUM); // 페이징 정보
-
         try {
             // TODO : 형식적 validation - 존재하는 회원인가? / 존재하는 회원 닉네임인가? / pageNum == 0인 경우
             if (historyProvider.checkUserIdx(Integer.parseInt(userIdx)) == 0) {
@@ -80,11 +77,14 @@ public class HistoryController {
                 throw new BaseException(PAGENUM_ERROR_0); // 페이지 번호는 1부터 시작합니다.
             }
 
+            String[] params = new String[]{userIdx, senderNickName, search};
+            PagingRes pageInfo = new PagingRes(pageNum, Constant.HISTORY_DATA_NUM); // 페이징 정보
+
             List<History> historyList_sender = historyProvider.getHistoryList_sender(params, pageInfo);
             return new BaseResponsePaging<>(historyList_sender, pageInfo);
 
         } catch (BaseException exception) {
-            return new BaseResponsePaging<>(exception.getStatus(), pageInfo);
+            return new BaseResponsePaging<>(exception.getStatus());
         }
     }
 
