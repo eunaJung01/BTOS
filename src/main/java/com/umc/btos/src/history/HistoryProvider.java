@@ -441,13 +441,6 @@ public class HistoryProvider {
                 // diaryIdxList
                 if (historyDao.hasHistory_diary(userIdx, senderNickName) != 0) { // null 확인
                     diaryIdxList.addAll(historyDao.getDiaryIdxList(userIdx, senderNickName)); // 수신받은 모든 일기 diaryIdx
-                    for (int diaryIdx : diaryIdxList) {
-                        if (historyDao.hasDone(diaryIdx) == 1) { // 해당 일기에 done list가 있는 경우
-                            historyList.add(historyDao.getDiary_done(userIdx, senderNickName));
-                        } else { // 해당 일기에 done list가 없는 경우
-                            historyList.add(historyDao.getDiary_nonDone(userIdx, senderNickName));
-                        }
-                    }
 
                     List<Integer> diaryIdxList_searched = new ArrayList<>(); // 임시 list
                     for (int diaryIdx : diaryIdxList) {
@@ -492,7 +485,11 @@ public class HistoryProvider {
 
                 if (diaryIdxList.size() != 0 || letterIdxList.size() != 0 || replyIdxList.size() != 0) {
                     for (int diaryIdx : diaryIdxList) {
-                        historyList.add(historyDao.getDiary(userIdx, diaryIdx));
+                        if (historyDao.hasDone(diaryIdx) == 1) { // 해당 일기에 done list가 있는 경우
+                            historyList.add(historyDao.getDiary_done(userIdx, diaryIdx, senderNickName));
+                        } else { // 해당 일기에 done list가 없는 경우
+                            historyList.add(historyDao.getDiary_nonDone(userIdx, diaryIdx, senderNickName));
+                        }
                     }
                     for (int letterIdx : letterIdxList) {
                         historyList.add(historyDao.getLetter(userIdx, letterIdx));
@@ -536,8 +533,6 @@ public class HistoryProvider {
         } catch (NullPointerException nullPointerException) {
             throw new BaseException(EMPTY_RESULT); // 검색 결과 없음
         } catch (Exception exception) {
-            System.out.println(exception);
-
             throw new BaseException(DATABASE_ERROR);
         }
     }
