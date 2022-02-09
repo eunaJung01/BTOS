@@ -1,6 +1,6 @@
 package com.umc.btos.src.alarm;
 
-import com.umc.btos.src.alarm.model.GetAlarmRes;
+import com.umc.btos.src.alarm.model.GetAlarmListRes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -24,14 +24,14 @@ public class AlarmDao {
     }
 
     // 알림 목록 반환
-    public List<GetAlarmRes> getAlarmList(int userIdx) {
+    public List<GetAlarmListRes> getAlarmList(int userIdx) {
         String query = "SELECT alarmIdx, content, createdAt " +
                 "FROM Alarm " +
                 "WHERE userIdx = ? AND status = 'active' " +
                 "ORDER BY createdAt DESC";
 
         return this.jdbcTemplate.query(query,
-                (rs, rowNum) -> new GetAlarmRes(
+                (rs, rowNum) -> new GetAlarmListRes(
                         rs.getInt("alarmIdx"),
                         rs.getString("content"),
                         rs.getString("createdAt")

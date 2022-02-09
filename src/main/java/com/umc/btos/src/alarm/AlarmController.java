@@ -33,12 +33,27 @@ public class AlarmController {
      */
     @ResponseBody
     @GetMapping("")
-    BaseResponse<List<GetAlarmRes>> getAlarmList(@RequestParam("userIdx") int userIdx) {
+    BaseResponse<List<GetAlarmListRes>> getAlarmList(@RequestParam("userIdx") int userIdx) {
         try {
-            List<GetAlarmRes> alarmList = alarmProvider.getAlarmList(userIdx);
+            List<GetAlarmListRes> alarmList = alarmProvider.getAlarmList(userIdx);
             return new BaseResponse<>(alarmList);
 
-        }  catch (BaseException exception) {
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /*
+     * 알림 조회
+     * [GET] /alarms/:alarmIdx?userIdx=&type=&typeIdx=
+     */
+    @ResponseBody
+    @GetMapping("/{alarmIdx}")
+    BaseResponse<GetAlarmRes> getAlarm(@PathVariable("alarmIdx") int alarmIdx, @RequestParam("userIdx") int userIdx, @RequestParam("type") String type, @RequestParam("typeIdx") int typeIdx) {
+        try {
+            GetAlarmRes alarm = alarmProvider.getAlarm(alarmIdx, userIdx, type, typeIdx);
+            return new BaseResponse<>(alarm);
+        } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
     }
