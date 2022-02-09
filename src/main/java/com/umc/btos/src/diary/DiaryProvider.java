@@ -42,6 +42,46 @@ public class DiaryProvider {
         }
     }
 
+    // ================================================================================
+
+    /*
+     * 존재하는 회원인지 확인
+     */
+    public int checkUserIdx(int userIdx) throws BaseException {
+        try {
+            return diaryDao.checkUserIdx(userIdx); // 존재하면 1, 존재하지 않는다면 0 반환
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /*
+     * 존재하는 일기인지 확인
+     */
+    public int checkDiaryIdx(int diaryIdx) throws BaseException {
+        try {
+            return diaryDao.checkDiaryIdx(diaryIdx); // 존재하면 1, 존재하지 않는다면 0 반환
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /*
+     * 해당 회원이 작성한 일기인지 확인
+     */
+    public int checkDiaryAboutUser(int userIdx, int diaryIdx) throws BaseException {
+        try {
+            return diaryDao.checkDiaryAboutUser(userIdx, diaryIdx); // 존재하면 1, 존재하지 않는다면 0 반환
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // ================================================================================
+
     /*
      * 일기 조회 - 우편함
      */
