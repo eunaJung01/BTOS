@@ -36,6 +36,38 @@ public class HistoryProvider {
         }
     }
 
+    /*
+     * 존재하는 회원 닉네임인지 확인
+     */
+    public int checkNickName(String senderNickName) throws BaseException {
+        try {
+            return historyDao.checkNickName(senderNickName); // 존재하면 1, 존재하지 않는다면 0 반환
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /*
+     * 해당 type에 존재하는 typeIdx인지 확인
+     */
+    public int checkTypeIdx(String type, int typeIdx) throws BaseException {
+        try {
+            if (type.compareTo("diary") == 0) {
+                return historyDao.checkDiaryIdx(typeIdx);
+
+            } else if (type.compareTo("letter") == 0) {
+                return historyDao.checkLetterIdx(typeIdx);
+
+            } else {
+                return historyDao.checkReplyIdx(typeIdx);
+            }
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     // ================================================================================
 
     /*

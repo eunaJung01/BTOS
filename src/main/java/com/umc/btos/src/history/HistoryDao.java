@@ -24,6 +24,31 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
+    // 존재하는 회원 닉네임인지 확인
+    public int checkNickName(String nickName) {
+        String query = "SELECT EXISTS (SELECT nickName FROM User WHERE nickName = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, int.class, nickName);
+    }
+
+    // 존재하는 일기인지 확인
+    public int checkDiaryIdx(int diaryIdx) {
+        String query = "SELECT EXISTS (SELECT diaryIdxd FROM Diary WHERE diaryIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
+    }
+
+    // 존재하는 편지인지 확인
+    public int checkLetterIdx(int letterIdx) {
+        String query = "SELECT EXISTS (SELECT letterIdx FROM Letter WHERE letterIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, int.class, letterIdx);
+    }
+
+    // 존재하는 답장인지 확인
+    public int checkReplyIdx(int replyIdx) {
+        String query = "SELECT EXISTS (SELECT replyIdx FROM Reply WHERE replyIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, int.class, replyIdx);
+    }
+
+
     // ===================================  History 목록 조회 & 발신인 조회 ===================================
 
     // 일기 & 편지 & 답장 발신인 닉네임 목록 반환 (createdAt 기준 내림차순 정렬)

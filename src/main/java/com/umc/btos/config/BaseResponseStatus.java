@@ -78,6 +78,7 @@ public enum BaseResponseStatus {
     // 6000 : 레마
     TEMP2(false, 9000, "conflict 방지용 2"),
     INVALID_USERIDX(false, 6000, "존재하지 않는 회원입니다."),
+    INVALID_NICKNAME(false, 6001, "존재하지 않는 회원 닉네임입니다."),
     INVALID_DIARYIDX(false, 6001, "존재하지 않는 일기입니다."),
     INVALID_USER_ABOUT_DIARY(false, 6002, "해당 일기에 접근 권한이 없는 회원입니다."),
     DIARY_EXISTS(false, 6003, "일기는 하루에 하나만 작성 가능합니다."),
@@ -92,8 +93,9 @@ public enum BaseResponseStatus {
     EMPTY_RESULT(false, 6012, "검색 결과 없음"),
     PAGENUM_ERROR(false, 6013, "잘못된 페이지 요청입니다."),
     PAGENUM_ERROR_0(false, 6014, "페이지 번호는 1부터 시작합니다."),
-    MAIN_HISTORY_WRONG_REQ(false, 6015, "잘못된 userIdx 또는 idx 요청입니다."),
     NO_DIARY_SENT_TODAY(false, 6016, "오늘 발송되는 일기는 없습니다."),
+    INVALID_TYPE(false, 6017, "잘못된 type 입니다. (diary, letter, reply 중 1)"),
+    INVALID_TYPEIDX_ABOUT_TYPE(false, 6017, "해당 type에 존재하지 않는 typeIdx 입니다."),
 
 
     // 7000 : 자몽

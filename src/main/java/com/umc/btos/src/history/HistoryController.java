@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.umc.btos.config.BaseResponseStatus.INVALID_USERIDX;
+import static com.umc.btos.config.BaseResponseStatus.*;
 
 @RestController
 @RequestMapping("/histories")
@@ -39,9 +39,12 @@ public class HistoryController {
         PagingRes pageInfo = new PagingRes(pageNum, Constant.HISTORY_DATA_NUM); // 페이징 정보
 
         try {
-            // TODO : 형식적 validation - 존재하는 회원인가?
+            // TODO : 형식적 validation - 존재하는 회원인가? / pageNum == 0인 경우
             if (historyProvider.checkUserIdx(Integer.parseInt(userIdx)) == 0) {
                 throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+            }
+            if (pageNum == 0) {
+                throw new BaseException(PAGENUM_ERROR_0); // 페이지 번호는 1부터 시작합니다.
             }
 
             GetHistoryListRes historyList = historyProvider.getHistoryList(params, pageInfo);
@@ -66,9 +69,15 @@ public class HistoryController {
         PagingRes pageInfo = new PagingRes(pageNum, Constant.HISTORY_DATA_NUM); // 페이징 정보
 
         try {
-            // TODO : 형식적 validation - 존재하는 회원인가?
+            // TODO : 형식적 validation - 존재하는 회원인가? / 존재하는 회원 닉네임인가? / pageNum == 0인 경우
             if (historyProvider.checkUserIdx(Integer.parseInt(userIdx)) == 0) {
                 throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+            }
+            if (historyProvider.checkNickName(senderNickName) == 0) {
+                throw new BaseException(INVALID_NICKNAME); // 존재하지 않는 회원 닉네임입니다.
+            }
+            if (pageNum == 0) {
+                throw new BaseException(PAGENUM_ERROR_0); // 페이지 번호는 1부터 시작합니다.
             }
 
             List<History> historyList_sender = historyProvider.getHistoryList_sender(params, pageInfo);
@@ -88,11 +97,17 @@ public class HistoryController {
      */
     @ResponseBody
     @GetMapping("/{userIdx}/{type}/{typeIdx}")
-     BaseResponse<List<GetHistoryRes_Main>> getHistory_main(@PathVariable("userIdx") int userIdx, @PathVariable("type") String type, @PathVariable("typeIdx") int typeIdx) {
+    BaseResponse<List<GetHistoryRes_Main>> getHistory_main(@PathVariable("userIdx") int userIdx, @PathVariable("type") String type, @PathVariable("typeIdx") int typeIdx) {
         try {
-            // TODO : 형식적 validation - 존재하는 회원인가?
+            // TODO : 형식적 validation - 존재하는 회원인가? / type(diary, letter, reply) 입력 확인 / 해당 type에 존재하는 typeIdx인가?
             if (historyProvider.checkUserIdx(userIdx) == 0) {
                 throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+            }
+            if (type.compareTo("diary") == 0 && type.compareTo("letter") == 0 && type.compareTo("reply") == 0) {
+                throw new BaseException(INVALID_TYPE); // 잘못된 type 입니다. (diary, letter, reply 중 1)
+            }
+            if (historyProvider.checkTypeIdx(type, typeIdx) == 0) {
+                throw new BaseException(INVALID_TYPEIDX_ABOUT_TYPE); // 해당 type에 존재하지 않는 typeIdx 입니다.
             }
 
             List<GetHistoryRes_Main> history = historyProvider.getHistory_main(userIdx, type, typeIdx);
