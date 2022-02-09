@@ -29,16 +29,6 @@ public class PlantService {
     }
 
 
-    //화분 선택 API ~ 화분의 status를 active로 바꾸는 함수 (selected -> active)
-    public void activePlant(int userIdx) throws BaseException {
-        try {
-            plantDao.activePlant(userIdx);
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
-
     //화분 선택 API
     public BaseResponseStatus selectPlant(PatchSelectPlantReq patchSelectPlantReq) throws BaseException {
         try {
@@ -48,7 +38,7 @@ public class PlantService {
                 throw new BaseException(INVALID_IDX_PLANT);
 
             //기존에 선택되어있던 화분의 status를 active로 바꾸자 (selected -> active)
-            activePlant(patchSelectPlantReq.getUserIdx());
+            plantDao.activePlant(patchSelectPlantReq.getUserIdx());
 
             //status: active -> selected
             if (plantDao.selectPlant(patchSelectPlantReq) == 1) //변경 성공시
@@ -67,10 +57,10 @@ public class PlantService {
             //회원 화분 중복 확인
                 // 중복이면
             if(plantDao.checkPlantExist(postBuyPlantReq.getPlantIdx(), postBuyPlantReq.getUserIdx()) == 1)
-                return DUPLICATE_IDX_PLANT;
+                throw new BaseException(DUPLICATE_IDX_PLANT);
 
-                //중복이 아니면
-            if (plantDao.buyPlant(postBuyPlantReq) == 1) //변경 성공시
+                //중복이 아니면, 구매
+            if (plantDao.buyPlant(postBuyPlantReq) == 1) //구매(insert) 성공시
                 return SUCCESS;
             else //구매 실패시
                 throw new BaseException(MODIFY_FAIL_BUY_PLANT);

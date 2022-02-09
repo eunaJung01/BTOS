@@ -25,7 +25,7 @@ public class PlantDao {
     //결과값이 존재하면 1, 없으면 0
     public int checkPlantExist(int plantIdx, int userIdx) {
         String Query = "SELECT EXISTS(SELECT * FROM UserPlantList WHERE plantIdx=? AND userIdx=?) as success";
-        Object[] Params = new Object[] {plantIdx, userIdx};
+        Object[] Params = new Object[]{plantIdx, userIdx};
 
         return this.jdbcTemplate.queryForObject(Query, int.class, Params);
     }
@@ -56,13 +56,16 @@ public class PlantDao {
         getPlantRes.setMaxLevel(plantBasicInfo.getMaxLevel());
 
         if (status == 1) { //보유중이면 화분 현재 레벨, 보유 상태 가져오기
+            // 유저가 보유중인 화분의 level 가져오기
             String currentLevelQuery = "SELECT level FROM UserPlantList WHERE userIdx=? AND plantIdx=?";
             Object[] Params = new Object[]{userIdx, plantIdx};
             int level = jdbcTemplate.queryForObject(currentLevelQuery, int.class, Params);
 
+            // 유저의 보유중인 화분 상태(active/selected) 가져오기
             String statusQuery = "SELECT status FROM UserPlantList WHERE userIdx=? AND plantIdx=?";
             String plantStatus = jdbcTemplate.queryForObject(statusQuery, String.class, Params);
 
+            // 레벨, 상태 셋팅
             getPlantRes.setCurrentLevel(level); // 현재레벨
             getPlantRes.setPlantStatus(plantStatus); // "active" OR "selected"
         } else { //미보유
@@ -158,15 +161,15 @@ public class PlantDao {
 
         List<GetPlantRes> getPlantResList = new ArrayList<GetPlantRes>();
 
-        for (int i = 0; i < plantIdxList.size(); i++) {
+        for (int i : plantIdxList) { //for(int i=0; i< plantIdxList.size(); i++), 주의 : plantIdxList는 1부터 시작하므로 인덱스 참조 시 i-1로 해야함
 
             GetPlantRes getPlantRes = new GetPlantRes();
 
             String plantQuery = "SELECT plantIdx, plantName, plantInfo, plantPrice, maxLevel " +
                     "FROM Plant WHERE plantIdx=? AND status=?";
-            Object[] plantParams = new Object[]{plantIdxList.get(i), "active"};
+            Object[] plantParams = new Object[]{plantIdxList.get(i-1), "active"};
 
-            //화분 기본 정보 FROM Plant
+            //화분 기본 정보 FROM Plant 테이블
             PlantBasicInfo plantBasicInfo = jdbcTemplate.queryForObject(
                     plantQuery,
                     (rs, rowNum) -> new PlantBasicInfo(
@@ -177,7 +180,7 @@ public class PlantDao {
                             rs.getInt("maxLevel")),
                     plantParams);
 
-            // 화분 기본 정보 set
+            // 화분 기본 정보 셋팅
             getPlantRes.setPlantIdx(plantBasicInfo.getPlantIdx());
             getPlantRes.setPlantName(plantBasicInfo.getPlantName());
             getPlantRes.setPlantInfo(plantBasicInfo.getPlantInfo());
@@ -185,11 +188,12 @@ public class PlantDao {
             getPlantRes.setMaxLevel(plantBasicInfo.getMaxLevel());
 
 
-            int Idx = plantIdxList.get(i);
-            int uIdx = userPlantIdxList.indexOf(plantIdxList.get(i)); //보유한 화분인지 idx로 구분
+            //plantIdxList에 있는 plantIdx가 userPlantIdxList에 존재한다면 userIdx가 보유 중인 것
+            int uIdx = userPlantIdxList.indexOf(plantIdxList.get(i-1)); //반환 값이 -1이면 미보유
 
             //사용자가 보유중인 화분인 경우 현재 레벨, 상태(active/selected) set
             if (uIdx != -1) {
+                // 유저가 보유중인 화분의 level 가져오기
                 String currentLevelQuery = "SELECT level FROM UserPlantList WHERE userIdx=? AND plantIdx=?";
                 Object[] Params = new Object[]{userIdx, userPlantIdxList.get(uIdx)};
                 int level = jdbcTemplate.queryForObject(currentLevelQuery, int.class, Params);
@@ -198,6 +202,7 @@ public class PlantDao {
                 String plantStatusQuery = "SELECT status FROM UserPlantList WHERE userIdx=? AND plantIdx=?";
                 String status = jdbcTemplate.queryForObject(plantStatusQuery, String.class, Params);
 
+                // 레벨, 상태 셋팅
                 getPlantRes.setCurrentLevel(level); //현재 레벨
                 getPlantRes.setPlantStatus(status); //보유 상태
             } else {
@@ -205,7 +210,7 @@ public class PlantDao {
                 getPlantRes.setPlantStatus("inactive");
                 getPlantRes.setIsOwn(false);
             }
-            getPlantResList.add(getPlantRes);
+            getPlantResList.add(getPlantRes); //i번째 요소 전체에 대한 셋팅이 끝났으므로 최종 반환 형태인 GetPlantResList 객체에 추가
         }
 
         return getPlantResList;
