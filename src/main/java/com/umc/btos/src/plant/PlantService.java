@@ -29,16 +29,6 @@ public class PlantService {
     }
 
 
-    //화분 선택 API ~ 화분의 status를 active로 바꾸는 함수 (selected -> active)
-    public void activePlant(int userIdx) throws BaseException {
-        try {
-            plantDao.activePlant(userIdx);
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
-
     //화분 선택 API
     public BaseResponseStatus selectPlant(PatchSelectPlantReq patchSelectPlantReq) throws BaseException {
         try {
@@ -48,7 +38,7 @@ public class PlantService {
                 throw new BaseException(INVALID_IDX_PLANT);
 
             //기존에 선택되어있던 화분의 status를 active로 바꾸자 (selected -> active)
-            activePlant(patchSelectPlantReq.getUserIdx());
+            plantDao.activePlant(patchSelectPlantReq.getUserIdx());
 
             //status: active -> selected
             if (plantDao.selectPlant(patchSelectPlantReq) == 1) //변경 성공시
