@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.umc.btos.config.BaseResponseStatus.*;
+
 @RestController
 @RequestMapping("/diaries")
 public class DiaryController {
@@ -53,8 +55,13 @@ public class DiaryController {
     @PostMapping("")
     public BaseResponse<PatchModifyScoreRes> saveDiary(@RequestBody PostDiaryReq postDiaryReq) {
         try {
-            diaryService.saveDiary(postDiaryReq);
-            PatchModifyScoreRes plantRes = plantService.modifyScore_plus(postDiaryReq.getUserIdx(), Constant.PLANT_LEVELUP_DIARY, "diary");
+            // TODO : 형식적 validation - 존재하는 회원인가?
+            if (diaryProvider.checkUserIdx(postDiaryReq.getUserIdx()) == 0) {
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+            }
+
+            diaryService.saveDiary(postDiaryReq); // 일기 저장
+            PatchModifyScoreRes plantRes = plantService.modifyScore_plus(postDiaryReq.getUserIdx(), Constant.PLANT_LEVELUP_DIARY, "diary"); // 화분 점수 증가
 
             return new BaseResponse<>(plantRes);
 
@@ -71,9 +78,23 @@ public class DiaryController {
     @PutMapping("")
     public BaseResponse<String> modifyDiary(@RequestBody PutDiaryReq putDiaryReq) {
         try {
-            diaryService.modifyDiary(putDiaryReq);
+            int userIdx = putDiaryReq.getUserIdx();
+            int diaryIdx = putDiaryReq.getDiaryIdx();
 
-            String result = "일기(diaryIdx=" + putDiaryReq.getDiaryIdx() + ") 수정 완료";
+            // TODO : 형식적 validation - 존재하는 회원인가? / 존재하는 일기인가? / 해당 회원이 작성한 일기인가?
+            if (diaryProvider.checkUserIdx(userIdx) == 0) {
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+            }
+            if (diaryProvider.checkDiaryIdx(diaryIdx) == 0) {
+                throw new BaseException(INVALID_DIARYIDX); // 존재하지 않는 일기입니다.
+            }
+            if (diaryProvider.checkDiaryAboutUser(userIdx, diaryIdx) == 0) {
+                throw new BaseException(INVALID_USER_ABOUT_DIARY); // 해당 일기에 접근 권한이 없는 회원입니다.
+            }
+
+            diaryService.modifyDiary(putDiaryReq); // 일기 수정
+
+            String result = "일기(diaryIdx=" + diaryIdx + ") 수정 완료";
             return new BaseResponse<>(result);
 
         } catch (BaseException exception) {
@@ -83,13 +104,24 @@ public class DiaryController {
 
     /*
      * 일기 삭제
-     * [PATCH] /diaries/delete/:diaryIdx
+     * [PATCH] /diaries/delete/:diaryIdx?userIdx=
      */
     @ResponseBody
     @PatchMapping("/delete/{diaryIdx}")
-    public BaseResponse<String> deleteDiary(@PathVariable("diaryIdx") int diaryIdx) {
+    public BaseResponse<String> deleteDiary(@PathVariable("diaryIdx") int diaryIdx, @RequestParam("userIdx") int userIdx) {
         try {
-            diaryService.deleteDiary(diaryIdx);
+            // TODO : 형식적 validation - 존재하는 회원인가? / 존재하는 일기인가? / 해당 회원이 작성한 일기인가?
+            if (diaryProvider.checkUserIdx(userIdx) == 0) {
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+            }
+            if (diaryProvider.checkDiaryIdx(diaryIdx) == 0) {
+                throw new BaseException(INVALID_DIARYIDX); // 존재하지 않는 일기입니다.
+            }
+            if (diaryProvider.checkDiaryAboutUser(userIdx, diaryIdx) == 0) {
+                throw new BaseException(INVALID_USER_ABOUT_DIARY); // 해당 일기에 접근 권한이 없는 회원입니다.
+            }
+
+            diaryService.deleteDiary(diaryIdx); // 일기 삭제
 
             String result = "일기-diaryIdx=" + diaryIdx + " 삭제 완료";
             return new BaseResponse<>(result);
