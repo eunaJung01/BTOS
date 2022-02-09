@@ -30,11 +30,10 @@ public class BaseResponsePaging<T> {
     }
 
     // 요청에 실패한 경우
-    public BaseResponsePaging(BaseResponseStatus status, PagingRes pageInfo) {
+    public BaseResponsePaging(BaseResponseStatus status) {
         this.isSuccess = status.isSuccess();
         this.message = status.getMessage();
         this.code = status.getCode();
-        this.pageInfo = pageInfo;
     }
 
 }

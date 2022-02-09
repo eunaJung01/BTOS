@@ -63,9 +63,6 @@ public class ArchiveController {
     @ResponseBody
     @GetMapping("/diaryList/{userIdx}/{pageNum}")
     public BaseResponsePaging<List<GetDiaryListRes>> getDiaryList(@PathVariable("userIdx") String userIdx, @PathVariable("pageNum") int pageNum, @RequestParam(required = false) String search, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
-        String[] params = new String[]{userIdx, search, startDate, endDate};
-        PagingRes pageInfo = new PagingRes(pageNum, Constant.DIARYLIST_DATA_NUM); // 페이징 정보
-
         try {
             // TODO : 형식적 validation - 존재하는 회원인가? / pageNum == 0인 경우
             if (archiveProvider.checkUserIdx(Integer.parseInt(userIdx)) == 0) {
@@ -75,11 +72,14 @@ public class ArchiveController {
                 throw new BaseException(PAGENUM_ERROR_0); // 페이지 번호는 1부터 시작합니다.
             }
 
+            String[] params = new String[]{userIdx, search, startDate, endDate};
+            PagingRes pageInfo = new PagingRes(pageNum, Constant.DIARYLIST_DATA_NUM); // 페이징 정보
+
             List<GetDiaryListRes> diaryList = archiveProvider.getDiaryList(params, pageInfo);
             return new BaseResponsePaging<>(diaryList, pageInfo);
 
         } catch (BaseException exception) {
-            return new BaseResponsePaging<>(exception.getStatus(), pageInfo);
+            return new BaseResponsePaging<>(exception.getStatus());
         }
     }
 

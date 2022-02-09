@@ -8,6 +8,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class GetAlarmRes {
-    private int alarmIdx;
-    private String content;
+    private String alarmType;
+    private int typeIdx;
+    // Alarm.type == diary / letter / reply -> userIdx (우편함 목록 조회)
+    // Alarm.type == plant -> uPlantIdx (해당 화분 조회)
+    // Alarm.type == report -> 뭐였냐에 따라 diaryIdx, letterIdx, replyIdx
 }

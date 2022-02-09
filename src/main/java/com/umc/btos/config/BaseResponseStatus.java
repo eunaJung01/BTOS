@@ -101,6 +101,8 @@ public enum BaseResponseStatus {
     PAGENUM_ERROR(false, 6017, "잘못된 페이지 요청입니다."),
     EMPTY_RESULT(false, 6018, "검색 결과 없음"),
 
+    NO_ALARM(false, 6019, "해당 회원에게 띄워줄 알림이 없습니다."),
+
 
     // 7000 : 자몽
     TEMP3(false, 9000, "conflict 방지용 3"),
