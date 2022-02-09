@@ -25,6 +25,20 @@ public class HistoryProvider {
     }
 
     /*
+     * 존재하는 회원인지 확인
+     */
+    public int checkUserIdx(int userIdx) throws BaseException {
+        try {
+            return historyDao.checkUserIdx(userIdx); // 존재하면 1, 존재하지 않는다면 0 반환
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // ================================================================================
+
+    /*
      * History 목록 조회
      * [GET] /histories/list/:userIdx/:pageNum?filtering=&search=
      * filtering = 1. sender : 발신인 (Diary, Letter, Reply) / 2. diary : 일기만 (Diary) / 3. letter : 편지만 (Letter, Reply)

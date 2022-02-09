@@ -18,6 +18,12 @@ public class HistoryDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    // 존재하는 회원인지 확인
+    public int checkUserIdx(int userIdx) {
+        String query = "SELECT EXISTS (SELECT userIdx FROM User WHERE userIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
+    }
+
     // ===================================  History 목록 조회 & 발신인 조회 ===================================
 
     // 일기 & 편지 & 답장 발신인 닉네임 목록 반환 (createdAt 기준 내림차순 정렬)
