@@ -35,6 +35,40 @@ public class MailboxProvider {
     }
 
     /*
+     * 존재하는 회원인지 확인
+     */
+    public int checkUserIdx(int userIdx) throws BaseException {
+        try {
+            return mailboxDao.checkUserIdx(userIdx); // 존재하면 1, 존재하지 않는다면 0 반환
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /*
+     * 해당 type에 존재하는 typeIdx인지 확인
+     */
+    public int checkTypeIdx(String type, int typeIdx) throws BaseException {
+        try {
+            if (type.compareTo("diary") == 0) {
+                return mailboxDao.checkDiaryIdx(typeIdx);
+
+            } else if (type.compareTo("letter") == 0) {
+                return mailboxDao.checkLetterIdx(typeIdx);
+
+            } else {
+                return mailboxDao.checkReplyIdx(typeIdx);
+            }
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // ================================================================================
+
+    /*
      * 우편함 목록 조회
      * [GET] /mailboxes/:userIdx
      */
