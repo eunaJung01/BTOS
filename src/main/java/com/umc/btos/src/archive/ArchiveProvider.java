@@ -160,6 +160,7 @@ public class ArchiveProvider {
             }
 
             // PagingRes
+            pageInfo.setDataNum((int) dataNum);
             int endPage = (int) Math.ceil(dataNum / Constant.DIARYLIST_DATA_NUM); // 마지막 페이지 번호
             if (pageInfo.getCurrentPage() > endPage) {
                 throw new BaseException(PAGENUM_ERROR); // 잘못된 페이지 요청입니다.

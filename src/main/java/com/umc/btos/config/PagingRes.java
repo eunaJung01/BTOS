@@ -11,6 +11,7 @@ public class PagingRes {
     private int startPage = 1;
     private int endPage;
     private int dataPerPage;
+    private int dataNum; // 데이터 총 개수
 
     public PagingRes(int currentPage, int dataPerPage) {
         this.currentPage = currentPage;
