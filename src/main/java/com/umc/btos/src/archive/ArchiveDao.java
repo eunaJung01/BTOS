@@ -42,7 +42,7 @@ public class ArchiveDao {
         LocalDate initial = LocalDate.of(year, month, 1);
         LocalDate endDate = initial.withDayOfMonth(initial.lengthOfMonth());
 
-        String query = "SELECT diaryDate " +
+        String query = "SELECT diaryIdx, diaryDate " +
                 "FROM Diary " +
                 "WHERE userIdx = ? " +
                 "AND DATE_FORMAT(diaryDate, '%Y.%m.%d') >= DATE_FORMAT(?, '%Y.%m.%d') " +
@@ -52,6 +52,7 @@ public class ArchiveDao {
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetCalendarRes(
+                        rs.getInt("diaryIdx"),
                         rs.getString("diaryDate")
                 ), userIdx, startDate, endDate);
     }
