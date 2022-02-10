@@ -30,7 +30,7 @@ public class BlocklistProvider {
     // userIdx를 Query String로 받아 차단들을 반환
     public List<GetBlocklistRes> getBlockList(int userIdx) throws BaseException {
         try {
-            List<GetBlocklistRes> getBlocklistRes = blocklistDao.getBlockList(userIdx);
+            List<GetBlocklistRes> getBlocklistRes = blocklistDao.getBlockListNickName(userIdx);
             return getBlocklistRes;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);

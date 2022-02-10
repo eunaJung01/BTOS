@@ -38,16 +38,17 @@ public class BlocklistDao {
         return this.jdbcTemplate.update(modifyBlockStatusQuery, modifyBlockStatusParams); // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
     }
 
+
     //모든 차단 조회 API // status가 active인 차단 모두를 list형태로 반환
-    public List<GetBlocklistRes> getBlockList(int userIdx) {
-        String getBlockQuery = "select blockIdx,blockedUserIdx  from BlockList where userIdx=? and status=\"active\"";
-        int getBlockParams = userIdx;
+    public List<GetBlocklistRes> getBlockListNickName(int userIdx) {
+        String getBlockQuery = "select nickName,blockIdx,blockedUserIdx from BlockList B, User U where B.userIdx=? and B.status='active' and U.userIdx = blockedUserIdx";
 
         return this.jdbcTemplate.query(getBlockQuery,
                 (rs, rowNum) -> new GetBlocklistRes(
+                        rs.getString("nickName"),
                         rs.getInt("blockIdx"),
                         rs.getInt("blockedUserIdx")),
-                getBlockParams);
+                userIdx);
     }
 
 }
