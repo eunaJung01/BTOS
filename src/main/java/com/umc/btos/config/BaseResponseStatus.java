@@ -102,7 +102,7 @@ public enum BaseResponseStatus {
     EMPTY_RESULT(false, 6018, "검색 결과 없음"),
 
     INVALID_USER_ABOUT_ALARM(false, 6019, " 해당 알림에 접근 권한이 없는 회원입니다."),
-    INACTVIE_ALARM(false, 6020, " 이미 확인된 알림입니다."),
+    INACTVIE_ALARM(false, 6020, "이미 확인된 알림입니다."),
     NO_ALARM(false, 6021, "해당 회원에게 띄워줄 알림이 없습니다."),
     ALARM_MODIFY_FAIL_STATUS(false, 6022, "Alarm.status = 'checked' 변환에 실패하였습니다."),
 

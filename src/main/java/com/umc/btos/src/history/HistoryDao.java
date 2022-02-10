@@ -48,7 +48,6 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, replyIdx);
     }
 
-
     // ===================================  History 목록 조회 & 발신인 조회 ===================================
 
     // 일기 & 편지 & 답장 발신인 닉네임 목록 반환 (createdAt 기준 내림차순 정렬)
