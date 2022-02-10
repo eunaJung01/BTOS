@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.umc.btos.config.BaseResponseStatus.INVALID_USERIDX;
+import static com.umc.btos.config.BaseResponseStatus.*;
 
 @RestController
 @RequestMapping("/alarms")
@@ -58,6 +58,17 @@ public class AlarmController {
     @GetMapping("/{alarmIdx}")
     BaseResponse<GetAlarmRes> getAlarm(@PathVariable("alarmIdx") int alarmIdx, @RequestParam("userIdx") int userIdx) {
         try {
+            // TODO : 형식적 validation - 존재하는 회원인가? / 해당 회원의 알림인가? / status = active
+            if (alarmProvider.checkUserIdx(userIdx) == 0) {
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+            }
+            if (alarmProvider.checkUserAboutAlarm(alarmIdx, userIdx) == 0) {
+                throw new BaseException(INVALID_USER_ABOUT_ALARM); // 해당 알림에 접근 권한이 없는 회원입니다.
+            }
+            if (alarmProvider.checkStatus_active(alarmIdx) == 0) {
+                throw new BaseException(INACTVIE_ALARM); // 이미 확인된 알림입니다.
+            }
+
             GetAlarmRes alarm = alarmProvider.getAlarm(alarmIdx, userIdx);
             return new BaseResponse<>(alarm);
 

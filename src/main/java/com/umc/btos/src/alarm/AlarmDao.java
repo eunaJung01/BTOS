@@ -23,6 +23,18 @@ public class AlarmDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
+    // 해당 회원의 알림인지 확인
+    public int checkUserAboutAlarm(int alarmIdx, int userIdx) {
+        String query = "SELECT EXISTS (SELECT alarmIdx FROM Alarm WHERE alarmIdx = ? AND userIdx = ?)";
+        return this.jdbcTemplate.queryForObject(query, int.class, alarmIdx, userIdx);
+    }
+
+    // status = active인 알림인지 확인
+    public int checkStatus_active(int alarmIdx) {
+        String query = "SELECT EXISTS (SELECT alarmIdx FROM Alarm WHERE alarmIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, int.class, alarmIdx);
+    }
+
     // ====================================== 알림 목록 조회 ======================================
 
     // 알림 목록 창에 띄워줄 알림이 존재하는지 확인 (Alarm.status = active)

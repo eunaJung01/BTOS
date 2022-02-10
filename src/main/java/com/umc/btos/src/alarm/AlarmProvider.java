@@ -36,6 +36,30 @@ public class AlarmProvider {
         }
     }
 
+    /*
+     * 해당 회원의 알림인지 확인
+     */
+    public int checkUserAboutAlarm(int alarmIdx, int userIdx) throws BaseException {
+        try {
+            return alarmDao.checkUserAboutAlarm(alarmIdx, userIdx); // 존재하면 1, 존재하지 않는다면 0 반환
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /*
+     * status = active인 알림인지 확인
+     */
+    public int checkStatus_active(int alarmIdx) throws BaseException {
+        try {
+            return alarmDao.checkStatus_active(alarmIdx); // 존재하면 1, 존재하지 않는다면 0 반환
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     // ================================================================================
 
     /*
