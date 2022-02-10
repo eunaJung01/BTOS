@@ -428,7 +428,7 @@ public class HistoryDao {
     }
 
     // 일기 (DiarySendList.receiverIdx = userIdx AND User.nickName = senderNickName)
-    public History getDiary(int userIdx, String senderNickName) {
+    public History getDiary_done(int userIdx, String senderNickName) {
         String query = "SELECT Diary.diaryIdx AS typeIdx, " +
                 "Diary.content AS content, Diary.emotionIdx AS emotionIdx, COUNT(Done.diaryIdx) AS doneListNum, " +
                 "DiarySendList.createdAt AS sendAt_raw, date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
@@ -448,6 +448,31 @@ public class HistoryDao {
                         rs.getString("content"),
                         rs.getInt("emotionIdx"),
                         rs.getInt("doneListNum"),
+                        rs.getString("sendAt_raw"),
+                        rs.getString("sendAt")
+                ), userIdx, senderNickName);
+    }
+
+    // 일기 (DiarySendList.receiverIdx = userIdx AND User.nickName = senderNickName)
+    public History getDiary_nonDone(int userIdx, String senderNickName) {
+        String query = "SELECT Diary.diaryIdx AS typeIdx, " +
+                "Diary.content AS content, Diary.emotionIdx AS emotionIdx, "+
+                "DiarySendList.createdAt AS sendAt_raw, date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
+                "FROM DiarySendList " +
+                "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                "INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? AND Diary.isSend = 1 AND DiarySendList.status = 'active' " +
+                "ORDER BY sendAt DESC " + // 발신일 기준 내림차순 정렬
+                "LIMIT 1"; // 상위 첫번째 값
+
+        return this.jdbcTemplate.queryForObject(query,
+                (rs, rowNum) -> new History(
+                        "diary",
+                        rs.getInt("typeIdx"),
+                        senderNickName,
+                        rs.getString("content"),
+                        rs.getInt("emotionIdx"),
+                        0,
                         rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
                 ), userIdx, senderNickName);
@@ -762,6 +787,17 @@ public class HistoryDao {
                 "AND status = 'active')";
 
         return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
+    }
+
+    // 해당 일기 done list 유무 반환
+    public int hasDone(int diaryIdx, String senderNickName) {
+        String query = "SELECT EXISTS(SELECT * " +
+                "FROM Diary " +
+                "INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                "INNER JOIN Done ON Diary.diaryIdx = Done.diaryIdx " +
+                "WHERE Diary.diaryIdx = ? AND User.nickName = ?)";
+
+        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx, senderNickName);
     }
 
     // 편지

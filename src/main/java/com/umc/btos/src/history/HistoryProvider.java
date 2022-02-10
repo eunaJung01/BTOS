@@ -133,7 +133,11 @@ public class HistoryProvider {
                         List<History> historyList = new ArrayList<>(); // HistoryList_Sender.firstContent
 
                         if (historyDao.hasHistory_diary(userIdx, senderNickName) != 0) { // 해당 회원에게서 받은 일기가 있는지 확인
-                            historyList.add(historyDao.getDiary(userIdx, senderNickName)); // 가장 최근에 받은 일기
+                            if (historyDao.hasDone(userIdx, senderNickName) == 1) { // 해당 일기에 done list가 있는 경우
+                                historyList.add(historyDao.getDiary_done(userIdx, senderNickName));
+                            } else { // 해당 일기에 done list가 없는 경우
+                                historyList.add(historyDao.getDiary_nonDone(userIdx, senderNickName));
+                            }
                         }
                         if (historyDao.hasHistory_letter(userIdx, senderNickName) != 0) { // 해당 회원에게서 받은 편지가 있는지 확인
                             historyList.add(historyDao.getLetter(userIdx, senderNickName)); // 가장 최근에 받은 편지
