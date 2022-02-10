@@ -67,71 +67,49 @@ public class AlarmProvider {
 
     /*
      * 알림 조회
-     * [GET] /alarms/:alarmIdx?userIdx=&type=&typeIdx=
+     * [GET] /alarms/:alarmIdx?userIdx=
      */
-//    public class GetAlarmRes {
-//        private String alarmType;
-//        private int reqParamIdx;
-//        /*
-//         * alarmType = diary / letter / reply -> reqParamIdx = userIdx (우편함 목록 조회)
-//         * alarmType = plant -> reqParamIdx = uPlantIdx (해당 화분 조회)
-//         * alarmType = report -> reqParamIdx = diaryIdx, letterIdx, replyIdx (신고 당한 일기/편지/답장 조회)
-//         */
-//    }
-//    public GetAlarmRes getAlarm(int alarmIdx, int userIdx, String type, int typeIdx) throws BaseException {
-//        try {
-//            String alarmType = type; // diary, letter, reply, plant, report_diary, report_letter, report_reply, notice
-//            int reqParamIdx = 0; // 알림 클릭 시 해당 화면으로 전환되기 위해 필요한 parameter 값
-//            /*
-//             * alarmType = diary / letter / reply -> reqParamIdx = userIdx (우편함 목록 조회)
-//             * alarmType = plant -> reqParamIdx = uPlantIdx (해당 화분 조회)
-//             * alarmType = report_diary -> reqParamIdx = diaryIdx, letterIdx, replyIdx (신고 당한 일기 조회)
-//             * alarmType = report_letter -> reqParamIdx = letterIdx (신고 당한 편지 조회)
-//             * alarmType = report_reply -> reqParamIdx = replyIdx (신고 당한 답장 조회)
-//             * alarmType = notice -> reqParamIdx = noticeIdx (해당 공지사항 조회)
-//             */
-//
-//            // type 종류 : diary, letter, reply, plant, report, notice
-//            switch (type) {
-//                case "diary" :
-//                    // userIdx 가져오기
-//
-//                    break;
-//
-//                case "letter" :
-//                    // userIdx 가져오기
-//                    break;
-//
-//                case "reply" :
-//                    // userIdx 가져오기
-//                    break;
-//
-//                case "plant" :
-//                    // uPlantIdx 가져오기
-//                    break;
-//
-//                case "report" :
-//                    // Alarm.type == diary인 경우
-//                    // diaryIdx 가져오기
-//
-//                    // Alarm.type == letter인 경우
-//                    // diaryIdx 가져오기
-//
-//                    // Alarm.type == reply인 경우
-//                    // diaryIdx 가져오기
-//
-//                    break;
-//
-//                case "notice" :
-//                    // noticeIdx 가져오기
-//                    break;
-//            }
-//
-//            return new GetAlarmRes(alarmType, reqParamIdx);
-//
-//        } catch (Exception exception) {
-//            throw new BaseException(DATABASE_ERROR);
-//        }
-//    }
+    public GetAlarmRes getAlarm(int alarmIdx, int userIdx) throws BaseException {
+        try {
+            String alarmType = alarmDao.getAlarmType(alarmIdx); // diary, letter, reply, plant, report(report_diary, report_letter, report_reply), notice
+            int reqParamIdx = alarmDao.getAlarmTypeIdx(alarmIdx); // 알림 클릭 시 해당 화면으로 전환되기 위해 필요한 parameter 값
+            /*
+             * alarmType = diary / letter / reply -> reqParamIdx = null (우편함 목록 조회)
+             * alarmType = plant -> reqParamIdx = uPlantIdx (해당 화분 조회)
+             * alarmType = report_diary -> reqParamIdx = diaryIdx, letterIdx, replyIdx (신고 당한 일기 조회)
+             * alarmType = report_letter -> reqParamIdx = letterIdx (신고 당한 편지 조회)
+             * alarmType = report_reply -> reqParamIdx = replyIdx (신고 당한 답장 조회)
+             * alarmType = notice -> reqParamIdx = noticeIdx (해당 공지사항 조회)
+             */
+
+            if (alarmType.compareTo("reply") == 0) {
+                String reportType = alarmDao.getReportType(alarmIdx, reqParamIdx); // Report.reportType
+
+                switch (reportType) {
+                    case "diary":
+                        alarmType = "report_diary";
+                        break;
+
+                    case "letter":
+                        alarmType = "report_letter";
+                        break;
+
+                    case "reply":
+                        alarmType = "report_reply";
+                        break;
+                }
+            }
+
+            if (alarmDao.modifyStatus(alarmIdx) == 0) { // status 변경 : active -> checked
+                throw new BaseException(ALARM_MODIFY_FAIL_STATUS);
+            }
+            return new GetAlarmRes(userIdx, alarmType, reqParamIdx);
+
+        } catch (BaseException exception) {
+            throw new BaseException(ALARM_MODIFY_FAIL_STATUS); // Alarm.status = 'checked' 변환에 실패하였습니다.
+        } catch(Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 }

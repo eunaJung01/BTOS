@@ -36,7 +36,7 @@ public class AlarmDao {
         String query = "SELECT alarmIdx, content, createdAt " +
                 "FROM Alarm " +
                 "WHERE userIdx = ? AND status = 'active' " +
-                "ORDER BY createdAt DESC";
+                "ORDER BY createdAt DESC"; // createdAt 기준 내림차순 정렬
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetAlarmListRes(
@@ -44,6 +44,36 @@ public class AlarmDao {
                         rs.getString("content"),
                         rs.getString("createdAt")
                 ), userIdx);
+    }
+
+    // ====================================== 알림 조회 ======================================
+
+    // Alarm.type 반환
+    public String getAlarmType(int alarmIdx) {
+        String query = "SELECT type FROM Alarm WHERE alarmIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, String.class, alarmIdx);
+    }
+
+    // Alarm.typeIdx 반환
+    public int getAlarmTypeIdx(int alarmIdx) {
+        String query = "SELECT typeIdx FROM Alarm WHERE alarmIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, int.class, alarmIdx);
+    }
+
+    // Report.reportType 반환
+    public String getReportType(int alarmIdx, int typeIdx) {
+        String query = "SELECT Report.reportType " +
+                "FROM Alarm " +
+                "INNER JOIN Report ON Alarm.typeIdx = Report.reportIdx " +
+                "WHERE Alarm.alarmIdx = ? AND Alarm.typeIdx = ?";
+
+        return this.jdbcTemplate.queryForObject(query, String.class, alarmIdx, typeIdx);
+    }
+
+    // Alarm.status = active -> checked
+    public int modifyStatus(int alarmIdx) {
+        String query = "UPDATE Alarm SET status = 'checked' WHERE alarmIdx = ?";
+        return this.jdbcTemplate.update(query, alarmIdx);
     }
 
 }
