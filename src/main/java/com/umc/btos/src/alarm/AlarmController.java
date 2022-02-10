@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.umc.btos.config.BaseResponseStatus.INVALID_USERIDX;
+
 @RestController
 @RequestMapping("/alarms")
 public class AlarmController {
@@ -35,6 +37,11 @@ public class AlarmController {
     @GetMapping("")
     BaseResponse<List<GetAlarmListRes>> getAlarmList(@RequestParam("userIdx") int userIdx) {
         try {
+            // TODO : 형식적 validation - 존재하는 회원인가?
+            if (alarmProvider.checkUserIdx(userIdx) == 0) {
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+            }
+
             List<GetAlarmListRes> alarmList = alarmProvider.getAlarmList(userIdx);
             return new BaseResponse<>(alarmList);
 
@@ -53,6 +60,7 @@ public class AlarmController {
 //        try {
 //            GetAlarmRes alarm = alarmProvider.getAlarm(alarmIdx, userIdx, type, typeIdx);
 //            return new BaseResponse<>(alarm);
+//
 //        } catch (BaseException exception) {
 //            return new BaseResponse<>(exception.getStatus());
 //        }

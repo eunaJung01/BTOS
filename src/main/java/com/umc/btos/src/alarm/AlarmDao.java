@@ -17,6 +17,14 @@ public class AlarmDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    // 존재하는 회원인지 확인
+    public int checkUserIdx(int userIdx) {
+        String query = "SELECT EXISTS (SELECT userIdx FROM User WHERE userIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
+    }
+
+    // ====================================== 알림 목록 조회 ======================================
+
     // 알림 목록 창에 띄워줄 알림이 존재하는지 확인 (Alarm.status = active)
     public int checkAlarmList(int userIdx) {
         String query = "SELECT EXISTS (SELECT * FROM Alarm WHERE userIdx = ? AND status = 'active')";
