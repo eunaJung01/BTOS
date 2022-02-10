@@ -88,7 +88,7 @@ public class DiaryController {
             if (diaryProvider.checkDiaryIdx(diaryIdx) == 0) {
                 throw new BaseException(INVALID_DIARYIDX); // 존재하지 않는 일기입니다.
             }
-            if (diaryProvider.checkDiaryAboutUser(userIdx, diaryIdx) == 0) {
+            if (diaryProvider.checkUserAboutDiary(userIdx, diaryIdx) == 0) {
                 throw new BaseException(INVALID_USER_ABOUT_DIARY); // 해당 일기에 접근 권한이 없는 회원입니다.
             }
 
@@ -117,7 +117,7 @@ public class DiaryController {
             if (diaryProvider.checkDiaryIdx(diaryIdx) == 0) {
                 throw new BaseException(INVALID_DIARYIDX); // 존재하지 않는 일기입니다.
             }
-            if (diaryProvider.checkDiaryAboutUser(userIdx, diaryIdx) == 0) {
+            if (diaryProvider.checkUserAboutDiary(userIdx, diaryIdx) == 0) {
                 throw new BaseException(INVALID_USER_ABOUT_DIARY); // 해당 일기에 접근 권한이 없는 회원입니다.
             }
 

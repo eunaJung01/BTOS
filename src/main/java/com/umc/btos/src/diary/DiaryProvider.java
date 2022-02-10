@@ -71,9 +71,9 @@ public class DiaryProvider {
     /*
      * 해당 회원이 작성한 일기인지 확인
      */
-    public int checkDiaryAboutUser(int userIdx, int diaryIdx) throws BaseException {
+    public int checkUserAboutDiary(int userIdx, int diaryIdx) throws BaseException {
         try {
-            return diaryDao.checkDiaryAboutUser(userIdx, diaryIdx); // 존재하면 1, 존재하지 않는다면 0 반환
+            return diaryDao.checkUserAboutDiary(userIdx, diaryIdx); // 존재하면 1, 존재하지 않는다면 0 반환
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
