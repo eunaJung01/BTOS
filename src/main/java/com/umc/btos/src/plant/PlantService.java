@@ -32,9 +32,9 @@ public class PlantService {
     //화분 선택 API
     public BaseResponseStatus selectPlant(PatchSelectPlantReq patchSelectPlantReq) throws BaseException {
         try {
-            //회원이 plantIdx를 이미 selected된 화분으로 넘겼는지 체크
+            //회원이 이미 selected인 화분(plantIdx)을 또 selected한건지 여부 확인
             int checkRes = plantProvider.checkPlant(patchSelectPlantReq);
-            if (checkRes != 3) //넘겼다면
+            if (checkRes == -1) //selected인 화분으로 넘겼으면
                 throw new BaseException(INVALID_IDX_PLANT);
 
             //기존에 선택되어있던 화분의 status를 active로 바꾸자 (selected -> active)
