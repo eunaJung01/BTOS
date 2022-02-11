@@ -77,19 +77,19 @@ public class LetterController {
      * 편지 조회 API
      * [GET] /letters/:letterIdx/:userIdx
      */
-//    // Path-variable - letterIdx를 인수로 받아 해당 인덱스의 letter을 불러온다.
-//    @ResponseBody // userIdx는 이 API를 호출하는 편지를 읽는 유저
-//    @GetMapping("/{letterIdx}/{userIdx}") // (GET) localhost:9000/btos/letters/:letterIdx
-//    public BaseResponse<GetLetterRes> getLetter(@PathVariable("letterIdx") int letterIdx,@PathVariable("userIdx") int userIdx) {
-//        // @PathVariable RESTful(URL)에서 명시된 파라미터({})를 받는 어노테이션, 이 경우 letterIdx값, userIdx을 받아옴.
-//        // Get Letters
-//        try {
-//            GetLetterRes getLetterRes = letterProvider.getLetter(letterIdx,userIdx);
-//            return new BaseResponse<>(getLetterRes);
-//        } catch (BaseException exception) {
-//            return new BaseResponse<>((exception.getStatus()));
-//        }
-//
-//    }
+    // Path-variable - letterIdx를 인수로 받아 해당 인덱스의 letter을 불러온다.
+    @ResponseBody // userIdx는 이 API를 호출하는 편지를 읽는 유저
+    @GetMapping("/{letterIdx}/{userIdx}") // (GET) localhost:9000/btos/letters/:letterIdx
+    public BaseResponse<GetLetterRes> getLetter(@PathVariable("letterIdx") int letterIdx,@PathVariable("userIdx") int userIdx) {
+        // @PathVariable RESTful(URL)에서 명시된 파라미터({})를 받는 어노테이션, 이 경우 letterIdx값, userIdx을 받아옴.
+        // Get Letters
+        try {
+            GetLetterRes getLetterRes = letterProvider.getLetter(letterIdx,userIdx);
+            return new BaseResponse<>(getLetterRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+
+    }
 
 }
