@@ -278,7 +278,7 @@ public class ArchiveProvider {
                 doneList.addAll(archiveDao.getDoneList(diaryIdx));
 
                 if (isPublic == 0) { // private 일기일 경우 Done.content 복호화
-                    decryptContents(doneList);
+                    doneList = decryptContents(doneList); // doneList 갱신
                 }
             }
 
@@ -306,14 +306,14 @@ public class ArchiveProvider {
     }
 
     // done list
-    public void decryptContents(List<String> doneList) throws BaseException {
+    public List<String> decryptContents(List<String> doneList) throws BaseException {
         try {
             // Done.content
-            List<String> doneList_decrypted = new ArrayList<>(); // 임시 List
+            List<String> doneList_decrypted = new ArrayList<>();
             for (String doneContent : doneList) {
                 doneList_decrypted.add(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
             }
-            doneList = doneList_decrypted; // doneList 갱신
+            return doneList_decrypted;
 
         } catch (Exception ignored) {
             throw new BaseException(DIARY_DECRYPTION_ERROR); // 일기 복호화에 실패하였습니다.
