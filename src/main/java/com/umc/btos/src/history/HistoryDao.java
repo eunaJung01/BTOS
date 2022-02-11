@@ -597,19 +597,6 @@ public class HistoryDao {
     }
 
     // diaryIdx 리스트 반환 : filtering = diary
-//    public int getDiaryIdxList(int userIdx) {
-//        String query = "SELECT idx FROM (" +
-//                "SELECT Diary.diaryIdx AS idx, DiarySendList.createdAt AS sendAt " +
-//                "FROM DiarySendList " +
-//                "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
-//                "INNER JOIN User ON Diary.userIdx = User.userIdx " +
-//                "WHERE DiarySendList.receiverIdx = ? AND Diary.isSend = 1 AND DiarySendList.status = 'active' " +
-//                "ORDER BY sendAt DESC) idx";
-//
-//        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
-//    }
-
-    // diaryIdx 리스트 반환 : filtering = diary
     public List<Integer> getDiaryIdxList(int userIdx) {
         String query = "SELECT idx FROM (" +
                 "SELECT Diary.diaryIdx AS idx, DiarySendList.createdAt AS sendAt " +
@@ -694,20 +681,6 @@ public class HistoryDao {
 
     // --------------------------------------- idx ---------------------------------------
     // filtering = sender && search != null
-
-    // diaryIdx (createAt 기준 내림차순 정렬 시 상위 1번째 항목)
-    public int getDiaryIdx_sender(int userIdx, String senderNickName) {
-        String query = "SELECT idx FROM (" +
-                "SELECT Diary.diaryIdx AS idx, DiarySendList.createdAt AS sendAt " +
-                "FROM DiarySendList " +
-                "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
-                "INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? AND Diary.isSend = 1 AND DiarySendList.status = 'active' " +
-                "ORDER BY sendAt DESC) idx " +
-                "LIMIT 1";
-
-        return this.jdbcTemplate.queryForObject(query, int.class, userIdx, senderNickName);
-    }
 
     // letterIdx (createAt 기준 내림차순 정렬 시 상위 1번째 항목)
     public int getLetterIdx_sender(int userIdx, String senderNickName) {
