@@ -88,4 +88,13 @@ public class AlarmDao {
         return this.jdbcTemplate.update(query, alarmIdx);
     }
 
+    // ====================================== 알림 생성 ======================================
+
+    // type = diary
+    public int postAlarm_diary(int userIdx, int diaryIdx, String content) {
+        String query = "INSERT INTO Alarm (userIdx, type, typeIdx, content) VALUES(?,?,?,?)";
+        Object[] alarm = new Object[]{userIdx, "diary", diaryIdx, content};
+        return this.jdbcTemplate.update(query, alarm);
+    }
+
 }
