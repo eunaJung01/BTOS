@@ -104,6 +104,12 @@ public class LetterDao {
                 letterIdx, receiverIdx);
     }
 
+    // 해당 userIdx를 갖는 유저의 nickName을 반환
+    public String getNickName(int userIdx) {
+        String getNickNameQuery = "select nickName from User where userIdx = ?;";
+        return this.jdbcTemplate.queryForObject(getNickNameQuery, String.class, userIdx);
+    }
+
     // 해당 letterIdx를 갖는 편지의 isChecked를 1로 update
     public int modifyIsChecked(int letterIdx, int receiverIdx) {
         String getReplyQuery = "UPDATE LetterSendList SET isChecked = 1 WHERE letterIdx = ? AND receiverIdx = ?";
