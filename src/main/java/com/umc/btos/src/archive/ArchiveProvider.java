@@ -108,7 +108,8 @@ public class ArchiveProvider {
 
             // PagingRes
             int pageNum = pageInfo.getCurrentPage(); // 페이지 번호
-            double dataNum = 0; // data 총 개수 (후에 Math.ceil 사용하는 연산 때문에 double)
+            double dataNum_total = 0; // 총 데이터 개수 (후에 Math.ceil 사용하는 연산 때문에 double)
+            int dataNum_currentPage = 0; // 현재 페이지의 데이터 개수
             boolean needsPaging = false;
 
             List<GetDiaryListRes> result = new ArrayList<>();
@@ -121,7 +122,7 @@ public class ArchiveProvider {
             if (search == null && startDate == null && endDate == null) {
                 diaryList = archiveDao.getDiaryList(userIdx, pageNum);
                 monthList.addAll(archiveDao.getMonthList(userIdx, pageNum));
-                dataNum = archiveDao.getDiaryList_dataNum(userIdx);
+                dataNum_total = archiveDao.getDiaryList_dataNum(userIdx); // 총 데이터 개수
             }
 
             // 2. 문자열 검색 (search)
@@ -144,8 +145,8 @@ public class ArchiveProvider {
                         idxList.add(diaryIdx);
                     }
                 }
-                dataNum = diaryList.size();
-                if (dataNum > Constant.DIARYLIST_DATA_NUM) { // 페이징 처리 필요
+                dataNum_total = diaryList.size();
+                if (dataNum_total > Constant.DIARYLIST_DATA_NUM) { // 페이징 처리 필요
                     needsPaging = true;
                 }
 
@@ -153,7 +154,7 @@ public class ArchiveProvider {
                 // 3. 기간 설정 조회 (startDate ~ endDate)
                 diaryList = archiveDao.getDiaryListByDate(userIdx, startDate, endDate, pageNum);
                 monthList.addAll(archiveDao.getMonthList(userIdx, startDate, endDate, pageNum));
-                dataNum = archiveDao.getDiaryListByDate_dataNum(userIdx, startDate, endDate);
+                dataNum_total = archiveDao.getDiaryListByDate_dataNum(userIdx, startDate, endDate);
 
                 // 4. 문자열 검색 & 날짜 기간 설정 조회 (search, startDate ~ endDate)
 //                if (!search.isEmpty()) {
@@ -174,20 +175,21 @@ public class ArchiveProvider {
                         }
                         diaryList = diaryList_searched;
                     }
-                    dataNum = diaryList.size();
-                    if (dataNum > Constant.DIARYLIST_DATA_NUM) { // 페이징 처리 필요
+                    dataNum_total = diaryList.size();
+                    if (dataNum_total > Constant.DIARYLIST_DATA_NUM) { // 페이징 처리 필요
                         needsPaging = true;
                     }
                 }
             }
 
-            if (dataNum == 0) {
+            if (dataNum_total == 0) {
                 throw new NullPointerException(); // 검색 결과 없음
             }
 
             // PagingRes
-            pageInfo.setDataNum((int) dataNum);
-            int endPage = (int) Math.ceil(dataNum / Constant.DIARYLIST_DATA_NUM); // 마지막 페이지 번호
+            pageInfo.setDataNum_total((int) dataNum_total);
+            int endPage = (int) Math.ceil(dataNum_total / Constant.DIARYLIST_DATA_NUM); // 마지막 페이지 번호
+            if (endPage == 0) endPage = 1;
             if (pageInfo.getCurrentPage() > endPage) {
                 throw new BaseException(PAGENUM_ERROR); // 잘못된 페이지 요청입니다.
             }
@@ -198,7 +200,7 @@ public class ArchiveProvider {
             if (needsPaging) {
                 int startDataIdx = (pageNum - 1) * Constant.DIARYLIST_DATA_NUM;
                 int endDataIdx = pageNum * Constant.DIARYLIST_DATA_NUM;
-                if (endDataIdx > dataNum) endDataIdx = (int) dataNum;
+                if (endDataIdx > dataNum_total) endDataIdx = (int) dataNum_total;
 
                 List<Diary> diaryList_paging = new ArrayList<>(); // 일기 정보 저장 (done list 조회 X, 일기 내용만 조회)
                 for (int i = startDataIdx; i < endDataIdx; i++) {
@@ -206,6 +208,8 @@ public class ArchiveProvider {
                 }
                 diaryList = diaryList_paging;
             }
+            dataNum_currentPage = diaryList.size();
+            pageInfo.setDataNum_currentPage(dataNum_currentPage);
 
             // content 복호화
             for (Diary diary : diaryList) {
