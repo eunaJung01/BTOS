@@ -3,6 +3,7 @@ package com.umc.btos.src.plant;
 import com.umc.btos.config.BaseException;
 import com.umc.btos.config.BaseResponseStatus;
 import com.umc.btos.config.Constant;
+import com.umc.btos.src.alarm.AlarmService;
 import com.umc.btos.src.plant.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +22,13 @@ public class PlantService {
 
     private final PlantDao plantDao;
     private final PlantProvider plantProvider;
+    private final AlarmService alarmService;
 
     @Autowired
-    public PlantService(PlantDao plantDao, PlantProvider plantProvider) {
+    public PlantService(PlantDao plantDao, PlantProvider plantProvider, AlarmService alarmService) {
         this.plantDao = plantDao;
         this.plantProvider = plantProvider;
+        this.alarmService = alarmService;
     }
 
 
@@ -111,6 +114,7 @@ public class PlantService {
                     throw new BaseException(MODIFY_FAIL_LEVEL); // 화분 단계 변경에 실패하였습니다.
                 }
                 result.setLevelChanged(true); // 단계가 변경되었다는 정보를 response에 넣기
+                alarmService.postAlarm_plant("plus", userIdx, plantDao.getUPlantIdx(userIdx), plantLevel); // 알림 저장
             }
 
             if (plantDao.setScore(userIdx, plantScore) == 0) { // 변경된 점수 반영
@@ -200,6 +204,7 @@ public class PlantService {
                 plantDao.setLevel(userIdx, plantLevel_current); // 변경된 단계 반영
                 result.setPlantLevel(plantLevel);
                 result.setLevelChanged(true); // 단계가 변경되었다는 정보를 response에 넣기
+                alarmService.postAlarm_plant("minus", userIdx, plantDao.getUPlantIdx(userIdx), plantLevel); // 알림 저장
             }
 
             plantDao.setScore(userIdx, plantScore); // 변경된 점수 반영

@@ -274,6 +274,12 @@ public class PlantDao {
         return this.jdbcTemplate.update(query, score, userIdx);
     }
 
+    // uPlantIdx 반환
+    public int getUPlantIdx(int userIdx) {
+        String query = "SELECT uPlantIdx FROM UserPlantList WHERE userIdx = ? AND status = 'selected'";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
+    }
+
     /*
     //화분 점수 더함 (Dao) : 증가, 감소에 쓰임
     //score = score + addScore : 기존 점수에 addScore(양수/음수) 더함
