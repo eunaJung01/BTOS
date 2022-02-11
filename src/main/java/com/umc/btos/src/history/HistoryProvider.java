@@ -186,12 +186,26 @@ public class HistoryProvider {
                     List<History> historyList = new ArrayList<>(); // GetHistoryListRes.list
 
                     if (historyDao.hasHistory_letter(userIdx) != 0) { // null 확인
-                        historyList.addAll(historyDao.getLetterList(userIdx, pageNum)); // 편지 (createAt 기준 내림차순 정렬)
+                        historyList.addAll(historyDao.getLetterList(userIdx)); // 편지 (createAt 기준 내림차순 정렬)
                     }
                     if (historyDao.hasHistory_reply(userIdx) != 0) { // null 확인
-                        historyList.addAll(historyDao.getReplyList(userIdx, pageNum)); // 답장
+                        historyList.addAll(historyDao.getReplyList(userIdx)); // 답장
                     }
-                    dataNum = historyDao.getLetterList_dataNum(userIdx) + historyDao.getReplyList_dataNum(userIdx);
+                    dataNum = historyList.size();
+                    Collections.sort(historyList);
+
+                    // 페이징 처리
+                    if (dataNum > Constant.HISTORY_DATA_NUM) {
+                        int startDataIdx = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
+                        int endDataIdx = pageNum * Constant.HISTORY_DATA_NUM;
+                        if (endDataIdx > dataNum) endDataIdx = (int) dataNum - 1;
+
+                        List<History> historyList_paging = new ArrayList<>();
+                        for (int i = startDataIdx; i < endDataIdx; i++) {
+                            historyList_paging.add(historyList.get(i));
+                        }
+                        historyList = historyList_paging;
+                    }
 
                     if (historyList.size() == 0) {
                         throw new NullPointerException(); // 검색 결과 없음
@@ -401,6 +415,7 @@ public class HistoryProvider {
         } catch (NullPointerException nullPointerException) {
             throw new BaseException(EMPTY_RESULT); // 검색 결과 없음
         } catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }

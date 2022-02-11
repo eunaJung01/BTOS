@@ -291,9 +291,7 @@ public class HistoryDao {
     }
 
     // 편지 (LetterSendList.receiverIdx = userIdx)
-    public List<History> getLetterList(int userIdx, int pageNum) {
-        int startData = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
-        int endData = pageNum * Constant.HISTORY_DATA_NUM;
+    public List<History> getLetterList(int userIdx) {
 
         String query = "SELECT Letter.letterIdx AS typeIdx, User.nickName AS senderNickName, Letter.content AS content, " +
                 "LetterSendList.createdAt AS sendAt_raw, date_format(LetterSendList.createdAt, '%Y.%m.%d') AS sendAt " +
@@ -301,8 +299,7 @@ public class HistoryDao {
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
                 "WHERE LetterSendList.receiverIdx = ? AND LetterSendList.status = 'active' " +
-                "ORDER BY sendAt DESC " +
-                "LIMIT ?, ?";
+                "ORDER BY sendAt DESC";
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new History(
@@ -312,7 +309,7 @@ public class HistoryDao {
                         rs.getString("content"),
                         rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
-                ), userIdx, startData, endData);
+                ), userIdx);
     }
 
     // 편지 (LetterSendList.receiverIdx = userIdx AND User.nickName = senderNickName)
@@ -337,27 +334,24 @@ public class HistoryDao {
     }
 
     // 답장 (Reply.receiverIdx = userIdx)
-    public List<History> getReplyList(int userIdx, int pageNum) {
-        int startData = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
-        int endData = pageNum * Constant.HISTORY_DATA_NUM;
+    public List<History> getReplyList(int userIdx) {
 
         String query = "SELECT Reply.replyIdx AS typeIdx, User.nickName AS senderNickName, Reply.content AS content, " +
                 "Reply.createdAt AS sendAt_raw, date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM Reply " +
                 "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.receiverIdx = ? AND Reply.status = 'active' " +
-                "ORDER BY sendAt DESC " +
-                "LIMIT ?, ?";
+                "ORDER BY sendAt DESC";
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new History(
-                        "letter",
+                        "reply",
                         rs.getInt("typeIdx"),
                         rs.getString("senderNickName"),
                         rs.getString("content"),
                         rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
-                ), userIdx, startData, endData);
+                ), userIdx);
     }
 
     // 답장 (Reply.receiverIdx = userIdx AND User.nickName = senderNickName)
