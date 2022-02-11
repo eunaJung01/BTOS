@@ -491,7 +491,8 @@ public class HistoryProvider {
 
             // PagingRes
             int pageNum = pageInfo.getCurrentPage(); // 페이지 번호
-            double dataNum = 0; // data 총 개수 (후에 Math.ceil 사용하는 연산 때문에 double)
+            double dataNum_total = 0; // 총 데이터 개수 (후에 Math.ceil 사용하는 연산 때문에 double)
+            int dataNum_currentPage = 0; // 현재 페이지의 데이터 개수
 
             List<History> historyList = new ArrayList<>(); // GetSenderRes.historyList
 
@@ -513,15 +514,15 @@ public class HistoryProvider {
                     historyList.addAll(historyDao.getReplyList(userIdx, senderNickName)); // 답장
                 }
                 Collections.sort(historyList); // createAt 기준 내림차순 정렬
-                dataNum = historyList.size();
-                pageInfo.setDataNum_total((int) dataNum); // 총 데이터 개수
+                dataNum_total = historyList.size();
+                pageInfo.setDataNum_total((int) dataNum_total); // 총 데이터 개수
 
-                if (dataNum != 0) {
+                if (dataNum_total != 0) {
                     // 페이징 처리
-                    if (dataNum > Constant.HISTORY_DATA_NUM) {
+                    if (dataNum_total > Constant.HISTORY_DATA_NUM) {
                         int startDataIdx = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
                         int endDataIdx = pageNum * Constant.HISTORY_DATA_NUM;
-                        if (endDataIdx > dataNum) endDataIdx = (int) dataNum;
+                        if (endDataIdx > dataNum_total) endDataIdx = (int) dataNum_total;
 
                         List<History> historyList_paging = new ArrayList<>();
                         for (int i = startDataIdx; i < endDataIdx; i++) {
@@ -529,8 +530,8 @@ public class HistoryProvider {
                         }
                         historyList = historyList_paging;
                     }
-                    dataNum = historyList.size();
-                    pageInfo.setDataNum_currentPage((int) dataNum); // 현재 페이지의 데이터 개수
+                    dataNum_currentPage = historyList.size();
+                    pageInfo.setDataNum_currentPage(dataNum_currentPage); // 현재 페이지의 데이터 개수
 
                 } else {
                     throw new NullPointerException(); // 검색 결과 없음
@@ -616,15 +617,15 @@ public class HistoryProvider {
                     }
                     Collections.sort(historyList); // createAt 기준 내림차순 정렬
                 }
-                dataNum = historyList.size();
-                pageInfo.setDataNum_total((int) dataNum); // 총 데이터 개수
+                dataNum_total = historyList.size();
+                pageInfo.setDataNum_total((int) dataNum_total); // 총 데이터 개수
 
-                if (dataNum != 0) {
+                if (dataNum_total != 0) {
                     // 페이징 처리
-                    if (dataNum > Constant.HISTORY_DATA_NUM) {
+                    if (dataNum_total > Constant.HISTORY_DATA_NUM) {
                         int startDataIdx = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
                         int endDataIdx = pageNum * Constant.HISTORY_DATA_NUM;
-                        if (endDataIdx > dataNum) endDataIdx = (int) dataNum;
+                        if (endDataIdx > dataNum_total) endDataIdx = (int) dataNum_total;
 
                         List<History> historyList_paging = new ArrayList<>();
                         for (int i = startDataIdx; i < endDataIdx; i++) {
@@ -632,8 +633,8 @@ public class HistoryProvider {
                         }
                         historyList = historyList_paging;
                     }
-                    dataNum = historyList.size();
-                    pageInfo.setDataNum_currentPage((int) dataNum); // 현재 페이지의 데이터 개수
+                    dataNum_currentPage = historyList.size();
+                    pageInfo.setDataNum_currentPage(dataNum_currentPage); // 현재 페이지의 데이터 개수
 
                 } else {
                     throw new NullPointerException(); // 검색 결과 없음
@@ -641,7 +642,7 @@ public class HistoryProvider {
             }
 
             // PagingRes
-            int endPage = (int) Math.ceil(dataNum / Constant.HISTORY_DATA_NUM); // 마지막 페이지 번호
+            int endPage = (int) Math.ceil(dataNum_total / Constant.HISTORY_DATA_NUM); // 마지막 페이지 번호
             if (endPage == 0) endPage = 1;
             if (pageInfo.getCurrentPage() > endPage) {
                 throw new BaseException(PAGENUM_ERROR); // 잘못된 페이지 요청입니다.
