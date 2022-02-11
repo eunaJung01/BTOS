@@ -106,6 +106,8 @@ public enum BaseResponseStatus {
     NO_ALARM(false, 6021, "해당 회원에게 띄워줄 알림이 없습니다."),
     ALARM_MODIFY_FAIL_STATUS(false, 6022, "Alarm.status = 'checked' 변환에 실패하였습니다."),
 
+    POST_FAIL_ALARM(false, 6023, "알림 저장에 실패하였습니다."),
+
 
     // 7000 : 자몽
     TEMP3(false, 9000, "conflict 방지용 3"),
