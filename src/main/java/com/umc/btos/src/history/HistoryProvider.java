@@ -89,7 +89,7 @@ public class HistoryProvider {
             int pageNum = pageInfo.getCurrentPage(); // 페이지 번호
             double dataNum = 0; // data 총 개수 (후에 Math.ceil 사용하는 연산 때문에 double)
 
-            GetHistoryListRes historyListRes = new GetHistoryListRes(filtering);
+            GetHistoryListRes historyListRes = new GetHistoryListRes();
             /*
              * filtering = "sender"인 경우 GetHistoryListRes.list = List<HistoryList_Sender>
              * filtering = "diary" 또는 "letter"인 경우 GetHistoryListRes.list = List<History>
