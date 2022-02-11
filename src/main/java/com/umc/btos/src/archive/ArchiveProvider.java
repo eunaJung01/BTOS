@@ -198,6 +198,7 @@ public class ArchiveProvider {
             if (needsPaging) {
                 int startDataIdx = (pageNum - 1) * Constant.DIARYLIST_DATA_NUM;
                 int endDataIdx = pageNum * Constant.DIARYLIST_DATA_NUM;
+                if (endDataIdx > dataNum) endDataIdx = (int) dataNum - 1;
 
                 List<Diary> diaryList_paging = new ArrayList<>(); // 일기 정보 저장 (done list 조회 X, 일기 내용만 조회)
                 for (int i = startDataIdx; i < endDataIdx; i++) {

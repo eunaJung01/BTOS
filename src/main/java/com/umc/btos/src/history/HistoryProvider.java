@@ -121,6 +121,7 @@ public class HistoryProvider {
                     if (dataNum > Constant.HISTORY_DATA_NUM) {
                         int startDataIdx = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
                         int endDataIdx = pageNum * Constant.HISTORY_DATA_NUM;
+                        if (endDataIdx > dataNum) endDataIdx = (int) dataNum - 1;
 
                         List<String> senderNickNameList_paging = new ArrayList<>();
                         for (int i = startDataIdx; i < endDataIdx; i++) {
@@ -299,6 +300,7 @@ public class HistoryProvider {
                     if (dataNum > Constant.HISTORY_DATA_NUM) {
                         int startDataIdx = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
                         int endDataIdx = pageNum * Constant.HISTORY_DATA_NUM;
+                        if (endDataIdx > dataNum) endDataIdx = (int) dataNum - 1;
 
                         List<HistoryList_Sender> historyListRes_list_paging = new ArrayList<>();
                         for (int i = startDataIdx; i < endDataIdx; i++) {
@@ -415,7 +417,6 @@ public class HistoryProvider {
         } catch (NullPointerException nullPointerException) {
             throw new BaseException(EMPTY_RESULT); // 검색 결과 없음
         } catch (Exception exception) {
-            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -472,6 +473,7 @@ public class HistoryProvider {
                     if (dataNum > Constant.HISTORY_DATA_NUM) {
                         int startDataIdx = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
                         int endDataIdx = pageNum * Constant.HISTORY_DATA_NUM;
+                        if (endDataIdx > dataNum) endDataIdx = (int) dataNum - 1;
 
                         List<History> historyList_paging = new ArrayList<>();
                         for (int i = startDataIdx; i < endDataIdx; i++) {
@@ -572,6 +574,7 @@ public class HistoryProvider {
                     if (dataNum > Constant.HISTORY_DATA_NUM) {
                         int startDataIdx = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
                         int endDataIdx = pageNum * Constant.HISTORY_DATA_NUM;
+                        if (endDataIdx > dataNum) endDataIdx = (int) dataNum - 1;
 
                         List<History> historyList_paging = new ArrayList<>();
                         for (int i = startDataIdx; i < endDataIdx; i++) {
