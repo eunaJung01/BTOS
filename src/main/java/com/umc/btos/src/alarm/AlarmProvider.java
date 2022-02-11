@@ -66,6 +66,7 @@ public class AlarmProvider {
      * 알림 목록 조회
      * [GET] /alarms?userIdx=
      * Alarm.status = 'active'인 알림들만 조회
+     * type = diary인 경우 Diary.isSend = 1인 알림들만 조회
      * 수신일(createdAt) 기준 내림차순 정렬
      */
     public List<GetAlarmListRes> getAlarmList(int userIdx) throws BaseException, NullPointerException {

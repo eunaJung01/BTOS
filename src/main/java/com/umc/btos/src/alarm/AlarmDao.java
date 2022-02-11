@@ -45,17 +45,30 @@ public class AlarmDao {
 
     // 알림 목록 반환
     public List<GetAlarmListRes> getAlarmList(int userIdx) {
-        String query = "SELECT alarmIdx, content, createdAt " +
+        String query = "SELECT alarmIdx, content, createdAt FROM (" +
+                // type != diary
+                "SELECT Alarm.alarmIdx, Alarm.content, Alarm.createdAt " +
                 "FROM Alarm " +
-                "WHERE userIdx = ? AND status = 'active' " +
-                "ORDER BY createdAt DESC"; // createdAt 기준 내림차순 정렬
+                "WHERE Alarm.userIdx = ? " +
+                "AND Alarm.type != 'diary' " +
+                "AND Alarm.status = 'active' " +
+                "UNION " +
+                // type == diary
+                "SELECT Alarm.alarmIdx, Alarm.content, Alarm.createdAt " +
+                "FROM Alarm " +
+                "INNER JOIN Diary ON Alarm.typeIdx = Diary.diaryIdx " +
+                "WHERE Alarm.userIdx = ? " +
+                "AND Alarm.type = 'diary' " +
+                "AND Diary.isSend = 1 " +
+                "AND Alarm.status = 'active' " +
+                "ORDER BY createdAt DESC) alarmIdx"; // createdAt 기준 내림차순 정렬
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetAlarmListRes(
                         rs.getInt("alarmIdx"),
                         rs.getString("content"),
                         rs.getString("createdAt")
-                ), userIdx);
+                ), userIdx, userIdx);
     }
 
     // ====================================== 알림 조회 ======================================
@@ -86,6 +99,22 @@ public class AlarmDao {
     public int modifyStatus(int alarmIdx) {
         String query = "UPDATE Alarm SET status = 'checked' WHERE alarmIdx = ?";
         return this.jdbcTemplate.update(query, alarmIdx);
+    }
+
+    // ====================================== 알림 생성 ======================================
+
+    // type = diary
+    public int postAlarm_diary(int userIdx, int diaryIdx, String content) {
+        String query = "INSERT INTO Alarm (userIdx, type, typeIdx, content) VALUES(?,?,?,?)";
+        Object[] alarm = new Object[]{userIdx, "diary", diaryIdx, content};
+        return this.jdbcTemplate.update(query, alarm);
+    }
+
+    // type = plant
+    public int postAlarm_plant(int userIdx, int uPlantIdx, String content) {
+        String query = "INSERT INTO Alarm (userIdx, type, typeIdx, content) VALUES(?,?,?,?)";
+        Object[] alarm = new Object[]{userIdx, "plant", uPlantIdx, content};
+        return this.jdbcTemplate.update(query, alarm);
     }
 
 }

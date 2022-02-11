@@ -310,10 +310,10 @@ public class DiaryProvider {
             String senderNickName = diaryDao.getSenderNickName(diaryIdx); // 발신인 nickName
             GetSendListRes diary = new GetSendListRes(diaryIdx, senderNickName);
             diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, yesterday));
-//                diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, "2022.02.05")); // test
+//            diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, "2022.02.05")); // test
             diarySendList.add(diary);
         }
-//        alarmService.postAlarm_diary(diarySendList);
+        alarmService.postAlarm_diary(diarySendList); // 알림 저장
 
         /*
          * TODO : 매일 19:00:00에 당일 발송되는 일기의 Diary.isSend = 1로 변경
@@ -346,7 +346,6 @@ public class DiaryProvider {
 
     /*
      * 일기 발송 리스트 조회
-     * 매일 18:59:59 Firebase에서 호출
      * [GET] /diaries/diarySendList
      */
     public List<GetSendListRes> getDiarySendList() throws BaseException {
@@ -369,7 +368,6 @@ public class DiaryProvider {
 //                diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, "2022.02.05")); // test
                 result.add(diary);
             }
-//            alarmService.postAlarm_diary(result);
 
             return result;
 
