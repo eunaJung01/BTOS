@@ -259,7 +259,40 @@ public class ArchiveProvider {
         return content_spaceDeleted.contains(search); // 문자열 검색 (존재 : true, 미존재 : false)
     }
 
-    // content 복호화 - 일기 리스트 조회
+    /*
+     * 일기 조회
+     * [GET] /archives/:diaryIdx
+     */
+    public GetDiaryRes getDiary(int diaryIdx) throws BaseException {
+        try {
+            // 일기
+            Diary diary = archiveDao.getDiary(diaryIdx);
+            if (archiveDao.getIsPublic(diaryIdx) == 0) { // private 일기일 경우 Diary.content 복호화
+                decryptContents(diary);
+            }
+
+            // done list
+            List<String> doneList = new ArrayList<>();
+            if (archiveDao.hasDoneList(diaryIdx)) { // 해당 일기에 done list가 있는 경우
+                doneList.addAll(archiveDao.getDoneList(diaryIdx));
+
+                if (archiveDao.getIsPublic(diaryIdx) == 0) { // private 일기일 경우 Done.content 복호화
+                    decryptContents(doneList);
+                }
+            }
+
+            return new GetDiaryRes(diary.getDiaryIdx(), diary.getEmotionIdx(), diary.getDiaryDate(), diary.getContent(), doneList);
+
+        } catch (BaseException exception) {
+            throw new BaseException(DIARY_DECRYPTION_ERROR); // 일기 복호화에 실패하였습니다.
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // ====================================== content 복호화 ======================================
+
+    // 일기
     public void decryptContents(Diary diary) throws BaseException {
         try {
             // Diary.content
@@ -271,39 +304,15 @@ public class ArchiveProvider {
         }
     }
 
-    /*
-     * 일기 조회
-     * [GET] /archives/:diaryIdx
-     */
-    public GetDiaryRes getDiary(int diaryIdx) throws BaseException {
+    // done list
+    public void decryptContents(List<String> doneList) throws BaseException {
         try {
-            GetDiaryRes diary = archiveDao.getDiary(diaryIdx); // 일기의 정보
-            diary.setDoneList(archiveDao.getDoneList(diaryIdx)); // done list 정보
-
-            // content 복호화
-            if (diary.getIsPublic() == 0) { // private 일기일 경우 content 복호화
-                decryptContents(diary);
-            }
-            return diary;
-
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
-    // content 복호화 - 일기 조회
-    public void decryptContents(GetDiaryRes diary) throws BaseException {
-        try {
-            // Diary.content
-            String diaryContent = diary.getContent();
-            diary.setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent));
-
             // Done.content
-            List<Done> doneList = diary.getDoneList();
-            for (int j = 0; j < doneList.size(); j++) {
-                String doneContent = diary.getDoneList().get(j).getContent();
-                diary.getDoneList().get(j).setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
+            List<String> doneList_decrypted = new ArrayList<>(); // 임시 List
+            for (String doneContent : doneList) {
+                doneList_decrypted.add(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
             }
+            doneList = doneList_decrypted; // doneList 갱신
 
         } catch (Exception ignored) {
             throw new BaseException(DIARY_DECRYPTION_ERROR); // 일기 복호화에 실패하였습니다.
