@@ -192,8 +192,8 @@ public class HistoryProvider {
                     if (historyDao.hasHistory_reply(userIdx) != 0) { // null 확인
                         historyList.addAll(historyDao.getReplyList(userIdx)); // 답장
                     }
-                    dataNum = historyList.size();
                     Collections.sort(historyList);
+                    dataNum = historyList.size();
 
                     // 페이징 처리
                     if (dataNum > Constant.HISTORY_DATA_NUM) {
@@ -356,9 +356,9 @@ public class HistoryProvider {
                     List<Integer> letterIdxList = new ArrayList<>();
                     List<Integer> replyIdxList = new ArrayList<>();
 
+                    // letter
                     if (historyDao.hasHistory_letter(userIdx) != 0) { // null 확인
-                        letterIdxList.addAll(historyDao.getLetterIdxList(userIdx, pageNum)); // 수신받은 모든 편지 letterIdx
-                        dataNum += historyDao.getLetterIdxList_dataNum(userIdx);
+                        letterIdxList.addAll(historyDao.getLetterIdxList(userIdx)); // 수신받은 모든 편지 letterIdx
 
                         List<Integer> letterIdxList_searched = new ArrayList<>();
                         for (int letterIdx : letterIdxList) {
@@ -370,9 +370,10 @@ public class HistoryProvider {
                         }
                         letterIdxList = letterIdxList_searched; // letterIdxList 갱신
                     }
+
+                    // reply
                     if (historyDao.hasHistory_reply(userIdx) != 0) { // null 확인
-                        replyIdxList.addAll(historyDao.getReplyIdxList(userIdx, pageNum)); // 수신받은 모든 답장 replyIdx
-                        dataNum += historyDao.getReplyIdxList_dataNum(userIdx);
+                        replyIdxList.addAll(historyDao.getReplyIdxList(userIdx)); // 수신받은 모든 답장 replyIdx
 
                         List<Integer> replyIdxList_searched = new ArrayList<>();
                         for (int replyIdx : replyIdxList) {
@@ -395,6 +396,20 @@ public class HistoryProvider {
                             historyList.add(historyDao.getReply(userIdx, replyIdx));
                         }
                         Collections.sort(historyList); // createAt 기준 내림차순 정렬
+                        dataNum = historyList.size();
+
+                        // 페이징 처리
+                        if (dataNum > Constant.HISTORY_DATA_NUM) {
+                            int startDataIdx = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
+                            int endDataIdx = pageNum * Constant.HISTORY_DATA_NUM;
+                            if (endDataIdx > dataNum) endDataIdx = (int) dataNum - 1;
+
+                            List<History> historyList_paging = new ArrayList<>();
+                            for (int i = startDataIdx; i < endDataIdx; i++) {
+                                historyList_paging.add(historyList.get(i));
+                            }
+                            historyList = historyList_paging;
+                        }
                         historyListRes.setList(historyList);
 
                     } else {

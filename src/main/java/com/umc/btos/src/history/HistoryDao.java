@@ -614,9 +614,7 @@ public class HistoryDao {
     }
 
     // letterIdx 리스트 반환 : filtering = letter
-    public List<Integer> getLetterIdxList(int userIdx, int pageNum) {
-        int startData = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
-        int endData = pageNum * Constant.HISTORY_DATA_NUM;
+    public List<Integer> getLetterIdxList(int userIdx) {
 
         String query = "SELECT idx FROM (" +
                 "SELECT Letter.letterIdx AS idx, LetterSendList.createdAt AS sendAt " +
@@ -624,26 +622,22 @@ public class HistoryDao {
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
                 "WHERE LetterSendList.receiverIdx = ? AND LetterSendList.status = 'active' " +
-                "ORDER BY sendAt DESC " +
-                "LIMIT ?, ?) idx";
+                "ORDER BY sendAt DESC) idx";
 
-        return this.jdbcTemplate.queryForList(query, int.class, userIdx, startData, endData);
+        return this.jdbcTemplate.queryForList(query, int.class, userIdx);
     }
 
     // replyIdx 리스트 반환 : filtering = letter
-    public List<Integer> getReplyIdxList(int userIdx, int pageNum) {
-        int startData = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
-        int endData = pageNum * Constant.HISTORY_DATA_NUM;
+    public List<Integer> getReplyIdxList(int userIdx) {
 
         String query = "SELECT idx FROM (" +
                 "SELECT Reply.replyIdx AS idx, Reply.createdAt AS sendAt " +
                 "FROM Reply " +
                 "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.receiverIdx = ? AND Reply.status = 'active' " +
-                "ORDER BY sendAt DESC " +
-                "LIMIT ?, ?) idx";
+                "ORDER BY sendAt DESC) idx";
 
-        return this.jdbcTemplate.queryForList(query, int.class, userIdx, startData, endData);
+        return this.jdbcTemplate.queryForList(query, int.class, userIdx);
     }
 
     // --------------------------------------- idxList size ---------------------------------------
