@@ -270,18 +270,19 @@ public class ArchiveProvider {
             if (archiveDao.getIsPublic(diaryIdx) == 0) { // private 일기일 경우 Diary.content 복호화
                 decryptContents(diary);
             }
+            int isPublic = archiveDao.getIsPublic(diaryIdx);
 
             // done list
             List<String> doneList = new ArrayList<>();
             if (archiveDao.hasDoneList(diaryIdx)) { // 해당 일기에 done list가 있는 경우
                 doneList.addAll(archiveDao.getDoneList(diaryIdx));
 
-                if (archiveDao.getIsPublic(diaryIdx) == 0) { // private 일기일 경우 Done.content 복호화
+                if (isPublic == 0) { // private 일기일 경우 Done.content 복호화
                     decryptContents(doneList);
                 }
             }
 
-            return new GetDiaryRes(diary.getDiaryIdx(), diary.getEmotionIdx(), diary.getDiaryDate(), diary.getContent(), doneList);
+            return new GetDiaryRes(diary.getDiaryIdx(), diary.getEmotionIdx(), isPublic, diary.getDiaryDate(), diary.getContent(), doneList);
 
         } catch (BaseException exception) {
             throw new BaseException(DIARY_DECRYPTION_ERROR); // 일기 복호화에 실패하였습니다.
