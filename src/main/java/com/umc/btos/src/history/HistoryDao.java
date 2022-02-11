@@ -291,9 +291,7 @@ public class HistoryDao {
     }
 
     // 편지 (LetterSendList.receiverIdx = userIdx)
-    public List<History> getLetterList(int userIdx, int pageNum) {
-        int startData = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
-        int endData = pageNum * Constant.HISTORY_DATA_NUM;
+    public List<History> getLetterList(int userIdx) {
 
         String query = "SELECT Letter.letterIdx AS typeIdx, User.nickName AS senderNickName, Letter.content AS content, " +
                 "LetterSendList.createdAt AS sendAt_raw, date_format(LetterSendList.createdAt, '%Y.%m.%d') AS sendAt " +
@@ -301,8 +299,7 @@ public class HistoryDao {
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
                 "WHERE LetterSendList.receiverIdx = ? AND LetterSendList.status = 'active' " +
-                "ORDER BY sendAt DESC " +
-                "LIMIT ?, ?";
+                "ORDER BY sendAt DESC";
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new History(
@@ -312,7 +309,7 @@ public class HistoryDao {
                         rs.getString("content"),
                         rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
-                ), userIdx, startData, endData);
+                ), userIdx);
     }
 
     // 편지 (LetterSendList.receiverIdx = userIdx AND User.nickName = senderNickName)
@@ -337,27 +334,24 @@ public class HistoryDao {
     }
 
     // 답장 (Reply.receiverIdx = userIdx)
-    public List<History> getReplyList(int userIdx, int pageNum) {
-        int startData = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
-        int endData = pageNum * Constant.HISTORY_DATA_NUM;
+    public List<History> getReplyList(int userIdx) {
 
         String query = "SELECT Reply.replyIdx AS typeIdx, User.nickName AS senderNickName, Reply.content AS content, " +
                 "Reply.createdAt AS sendAt_raw, date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM Reply " +
                 "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.receiverIdx = ? AND Reply.status = 'active' " +
-                "ORDER BY sendAt DESC " +
-                "LIMIT ?, ?";
+                "ORDER BY sendAt DESC";
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new History(
-                        "letter",
+                        "reply",
                         rs.getInt("typeIdx"),
                         rs.getString("senderNickName"),
                         rs.getString("content"),
                         rs.getString("sendAt_raw"),
                         rs.getString("sendAt")
-                ), userIdx, startData, endData);
+                ), userIdx);
     }
 
     // 답장 (Reply.receiverIdx = userIdx AND User.nickName = senderNickName)
@@ -603,9 +597,22 @@ public class HistoryDao {
     }
 
     // diaryIdx 리스트 반환 : filtering = diary
+    public List<Integer> getDiaryIdxList(int userIdx) {
+        String query = "SELECT idx FROM (" +
+                "SELECT Diary.diaryIdx AS idx, DiarySendList.createdAt AS sendAt " +
+                "FROM DiarySendList " +
+                "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                "INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                "WHERE DiarySendList.receiverIdx = ? AND Diary.isSend = 1 AND DiarySendList.status = 'active' " +
+                "ORDER BY sendAt DESC) idx";
+
+        return this.jdbcTemplate.queryForList(query, int.class, userIdx);
+    }
+
+    // diaryIdx 리스트 반환 : filtering = diary
     public List<Integer> getDiaryIdxList(int userIdx, int pageNum) {
-        int startData = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
-        int endData = pageNum * Constant.HISTORY_DATA_NUM;
+        int startDataIdx = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
+        int endDataIdx = pageNum * Constant.HISTORY_DATA_NUM;
 
         String query = "SELECT idx FROM (" +
                 "SELECT Diary.diaryIdx AS idx, DiarySendList.createdAt AS sendAt " +
@@ -613,16 +620,14 @@ public class HistoryDao {
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
                 "WHERE DiarySendList.receiverIdx = ? AND Diary.isSend = 1 AND DiarySendList.status = 'active' " +
-                "ORDER BY sendAt DESC " +
-                "LIMIT ?, ?) idx";
+                "ORDER BY sendAt DESC) idx " +
+                "LIMIT ?, ?";
 
-        return this.jdbcTemplate.queryForList(query, int.class, userIdx, startData, endData);
+        return this.jdbcTemplate.queryForList(query, int.class, userIdx, startDataIdx, endDataIdx);
     }
 
     // letterIdx 리스트 반환 : filtering = letter
-    public List<Integer> getLetterIdxList(int userIdx, int pageNum) {
-        int startData = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
-        int endData = pageNum * Constant.HISTORY_DATA_NUM;
+    public List<Integer> getLetterIdxList(int userIdx) {
 
         String query = "SELECT idx FROM (" +
                 "SELECT Letter.letterIdx AS idx, LetterSendList.createdAt AS sendAt " +
@@ -630,33 +635,35 @@ public class HistoryDao {
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
                 "WHERE LetterSendList.receiverIdx = ? AND LetterSendList.status = 'active' " +
-                "ORDER BY sendAt DESC " +
-                "LIMIT ?, ?) idx";
+                "ORDER BY sendAt DESC) idx";
 
-        return this.jdbcTemplate.queryForList(query, int.class, userIdx, startData, endData);
+        return this.jdbcTemplate.queryForList(query, int.class, userIdx);
     }
 
     // replyIdx 리스트 반환 : filtering = letter
-    public List<Integer> getReplyIdxList(int userIdx, int pageNum) {
-        int startData = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
-        int endData = pageNum * Constant.HISTORY_DATA_NUM;
+    public List<Integer> getReplyIdxList(int userIdx) {
 
         String query = "SELECT idx FROM (" +
                 "SELECT Reply.replyIdx AS idx, Reply.createdAt AS sendAt " +
                 "FROM Reply " +
                 "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.receiverIdx = ? AND Reply.status = 'active' " +
-                "ORDER BY sendAt DESC " +
-                "LIMIT ?, ?) idx";
+                "ORDER BY sendAt DESC) idx";
 
-        return this.jdbcTemplate.queryForList(query, int.class, userIdx, startData, endData);
+        return this.jdbcTemplate.queryForList(query, int.class, userIdx);
     }
 
     // --------------------------------------- idxList size ---------------------------------------
 
     // diaryIdx 리스트 반환 시 (filtering = diary) data 개수 반환
     public int getDiaryIdxList_dataNum(int userIdx) {
-        String query = "SELECT COUNT(*) FROM DiarySendList WHERE DiarySendList.receiverIdx = ? AND Diary.isSend = 1 AND DiarySendList.status = 'active'";
+        String query = "SELECT COUNT(*) " +
+                "FROM DiarySendList " +
+                "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                "WHERE DiarySendList.receiverIdx = ? " +
+                "AND Diary.isSend = 1 " +
+                "AND DiarySendList.status = 'active'";
+
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
@@ -674,20 +681,6 @@ public class HistoryDao {
 
     // --------------------------------------- idx ---------------------------------------
     // filtering = sender && search != null
-
-    // diaryIdx (createAt 기준 내림차순 정렬 시 상위 1번째 항목)
-    public int getDiaryIdx_sender(int userIdx, String senderNickName) {
-        String query = "SELECT idx FROM (" +
-                "SELECT Diary.diaryIdx AS idx, DiarySendList.createdAt AS sendAt " +
-                "FROM DiarySendList " +
-                "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
-                "INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? AND Diary.isSend = 1 AND DiarySendList.status = 'active' " +
-                "ORDER BY sendAt DESC) idx " +
-                "LIMIT 1";
-
-        return this.jdbcTemplate.queryForObject(query, int.class, userIdx, senderNickName);
-    }
 
     // letterIdx (createAt 기준 내림차순 정렬 시 상위 1번째 항목)
     public int getLetterIdx_sender(int userIdx, String senderNickName) {

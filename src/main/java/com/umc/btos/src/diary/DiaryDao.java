@@ -240,12 +240,12 @@ public class DiaryDao {
     @Scheduled(cron = "00 00 19 * * *")
 //    @Scheduled(cron = "30 23 19 * * *") // test
     public void modifyIsSend() {
-        LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
+        String yesterday = LocalDate.now().minusDays(1).toString().replaceAll("-", "."); // 어제 날짜 (yyyy.MM.dd)
 
         String query = "UPDATE Diary SET isSend = 1 " +
-                "WHERE left(createdAt, 10) = ? AND isPublic = 1 AND status = 'active'";
+                "WHERE diaryDate = ? AND isPublic = 1 AND status = 'active'";
 
-        this.jdbcTemplate.update(query, now.toString());
+        this.jdbcTemplate.update(query, yesterday);
     }
 
 }

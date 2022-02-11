@@ -2,6 +2,7 @@ package com.umc.btos.src.diary;
 
 import com.umc.btos.config.*;
 import com.umc.btos.config.secret.Secret;
+import com.umc.btos.src.alarm.AlarmService;
 import com.umc.btos.src.diary.model.*;
 import com.umc.btos.utils.AES128;
 import org.slf4j.Logger;
@@ -20,13 +21,15 @@ public class DiaryProvider {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final DiaryDao diaryDao;
+    private final AlarmService alarmService;
 
 //    @Value("${secret.private-diary-key}")
 //    String PRIVATE_DIARY_KEY;
 
     @Autowired
-    public DiaryProvider(DiaryDao diaryDao) {
+    public DiaryProvider(DiaryDao diaryDao, AlarmService alarmService) {
         this.diaryDao = diaryDao;
+        this.alarmService = alarmService;
     }
 
     /*
@@ -128,7 +131,7 @@ public class DiaryProvider {
     // Diary - Send Algorithm
     @Scheduled(cron = "55 59 18 * * *") // 매일 18:59:55에 DiarySendList 생성
 //     @Scheduled(cron = "00 51 13 * * *") // test
-    public void sendDiary() {
+    public void sendDiary() throws BaseException {
 
         String yesterday = LocalDate.now().minusDays(1).toString().replaceAll("-", "."); // 어제 날짜 (yyyy.MM.dd)
         List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(yesterday); // 당일 발송해야 하는 모든 diaryIdx
@@ -296,6 +299,23 @@ public class DiaryProvider {
         }
 
         /*
+         * TODO : 알림 테이블에 저장
+         */
+        diaryIdxList = diaryDao.getDiaryIdxList(yesterday); // 당일 발송해야 하는 모든 diaryIdx
+
+        List<GetSendListRes> diarySendList = new ArrayList<>();
+
+        // 일기에 따른 발송 리스트 조회
+        for (int diaryIdx : diaryIdxList) {
+            String senderNickName = diaryDao.getSenderNickName(diaryIdx); // 발신인 nickName
+            GetSendListRes diary = new GetSendListRes(diaryIdx, senderNickName);
+            diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, yesterday));
+//                diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, "2022.02.05")); // test
+            diarySendList.add(diary);
+        }
+//        alarmService.postAlarm_diary(diarySendList);
+
+        /*
          * TODO : 매일 19:00:00에 당일 발송되는 일기의 Diary.isSend = 1로 변경
          * diaryDao.modifyIsSend();
          */
@@ -349,6 +369,7 @@ public class DiaryProvider {
 //                diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, "2022.02.05")); // test
                 result.add(diary);
             }
+//            alarmService.postAlarm_diary(result);
 
             return result;
 

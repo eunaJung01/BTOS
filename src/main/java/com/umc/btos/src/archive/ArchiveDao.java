@@ -249,26 +249,27 @@ public class ArchiveDao {
     // =================================== 일기 조회 ===================================
 
     // Diary
-    public GetDiaryRes getDiary(int diaryIdx) {
+    public Diary getDiary(int diaryIdx) {
         String query = "SELECT * FROM Diary WHERE diaryIdx = ? AND status = 'active'";
         return this.jdbcTemplate.queryForObject(query,
-                (rs, rowNum) -> new GetDiaryRes(
+                (rs, rowNum) -> new Diary(
                         rs.getInt("diaryIdx"),
                         rs.getInt("emotionIdx"),
                         rs.getString("diaryDate"),
-                        rs.getInt("isPublic"),
                         rs.getString("content")
                 ), diaryIdx);
     }
 
+    // done list 개수 반환
+    public boolean hasDoneList(int diaryIdx) {
+        String query = "SELECT EXISTS (SELECT COUNT(*) FROM Done WHERE diaryIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, boolean.class, diaryIdx);
+    }
+
     // Done
-    public List<Done> getDoneList(int diaryIdx) {
-        String query = "SELECT * FROM Done WHERE diaryIdx = ? AND status = 'active'";
-        return this.jdbcTemplate.query(query,
-                (rs, rowNum) -> new Done(
-                        rs.getInt("doneIdx"),
-                        rs.getString("content")
-                ), diaryIdx);
+    public List<String> getDoneList(int diaryIdx) {
+        String query = "SELECT content FROM Done WHERE diaryIdx = ? AND status = 'active'";
+        return this.jdbcTemplate.queryForList(query, String.class, diaryIdx);
     }
 
 }
