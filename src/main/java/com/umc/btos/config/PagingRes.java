@@ -10,12 +10,13 @@ public class PagingRes {
     private int currentPage;
     private int startPage = 1;
     private int endPage;
-    private int dataPerPage;
-    private int dataNum; // 데이터 총 개수
+    private int dataNumPerPage; // 한 페이지에 최대로 출력되는 데이터 개수
+    private int dataNum_currentPage; // 현재 페이지의 데이터 개수
+    private int dataNum_total; // 총 데이터 개수
 
-    public PagingRes(int currentPage, int dataPerPage) {
+    public PagingRes(int currentPage, int dataNumPerPage) {
         this.currentPage = currentPage;
-        this.dataPerPage = dataPerPage;
+        this.dataNumPerPage = dataNumPerPage;
     }
 
 }
