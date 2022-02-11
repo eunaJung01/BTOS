@@ -41,10 +41,11 @@ public class LetterController {
     public BaseResponse<PostLetterPlantRes> createLetter(@RequestBody PostLetterReq postLetterReq) {
 
         try{
-            List<Integer> receiveUserIdx = letterService.createLetter(postLetterReq); // letter, letterSendList에 컬럼 추가
+            PostLetterRes postLetterRes = letterService.createLetter(postLetterReq);
             // 화분 점수 증가
             PatchModifyScoreRes ModifyScore = plantService.modifyScore_plus(postLetterReq.getUserIdx(), Constant.PLANT_LEVELUP_LETTER,"letter");
-            PostLetterPlantRes result_all = new PostLetterPlantRes(receiveUserIdx,ModifyScore ); // new 다음에 대문자여야한다.
+            String senderNickName = letterService.getNickName(postLetterReq.getUserIdx());
+            PostLetterPlantRes result_all = new PostLetterPlantRes(postLetterRes.getLetterIdx(),senderNickName,postLetterRes.getReceiveUserIdx(),ModifyScore ); // new 다음에 대문자여야한다.
 
             return new BaseResponse<>(result_all);
         } catch (BaseException exception){
