@@ -14,9 +14,7 @@ public class OAuthService {
     private final GoogleOAuth googleOAuth;
     private final HttpServletResponse response;
 
-    /**
-     * 구글 로그인 처리
-     */
+    // googleLogin 로그인 처리 : 리디렉션 url 생성, 리디렉션
     public void request() {
         String redirectURL = googleOAuth.getOauthRedirectURL();
 
@@ -27,11 +25,7 @@ public class OAuthService {
         }
     }
 
-    /**
-     * 로그인 처리 후 토큰 요청
-     * @param code
-     * @return
-     */
+    // callback 메소드 처리 : access token 등 발급
     public String requestAccessToken(String code) {
         return googleOAuth.requestAccessToken(code);
     }
