@@ -95,6 +95,12 @@ public class AlarmDao {
         return this.jdbcTemplate.queryForObject(query, String.class, alarmIdx, typeIdx);
     }
 
+    // type = report인 경우 GetAlarmRes.alarmTypeIdx는 신고를 당한 일기의 diaryIdx / 편지의 letterIdx / 답장의 replyIdx
+    public int getAlarmTypeIdx_report(int typeIdx) {
+        String query = "SELECT idx FROM Report WHERE reportIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, int.class, typeIdx);
+    }
+
     // Alarm.status = active -> checked
     public int modifyStatus(int alarmIdx) {
         String query = "UPDATE Alarm SET status = 'checked' WHERE alarmIdx = ?";
@@ -110,10 +116,31 @@ public class AlarmDao {
         return this.jdbcTemplate.update(query, alarm);
     }
 
+    // type = letter
+    public int postAlarm_letter(int userIdx, int letterIdx, String content) {
+        String query = "INSERT INTO Alarm (userIdx, type, typeIdx, content) VALUES(?,?,?,?)";
+        Object[] alarm = new Object[]{userIdx, "letter", letterIdx, content};
+        return this.jdbcTemplate.update(query, alarm);
+    }
+
+    // type = reply
+    public int postAlarm_reply(int userIdx, int replyIdx, String content) {
+        String query = "INSERT INTO Alarm (userIdx, type, typeIdx, content) VALUES(?,?,?,?)";
+        Object[] alarm = new Object[]{userIdx, "reply", replyIdx, content};
+        return this.jdbcTemplate.update(query, alarm);
+    }
+
     // type = plant
     public int postAlarm_plant(int userIdx, int uPlantIdx, String content) {
         String query = "INSERT INTO Alarm (userIdx, type, typeIdx, content) VALUES(?,?,?,?)";
         Object[] alarm = new Object[]{userIdx, "plant", uPlantIdx, content};
+        return this.jdbcTemplate.update(query, alarm);
+    }
+
+    // type = report
+    public int postAlarm_report(int userIdx, int reportIdx, String content) {
+        String query = "INSERT INTO Alarm (userIdx, type, typeIdx, content) VALUES(?,?,?,?)";
+        Object[] alarm = new Object[]{userIdx, "report", reportIdx, content};
         return this.jdbcTemplate.update(query, alarm);
     }
 

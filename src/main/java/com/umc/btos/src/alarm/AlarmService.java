@@ -48,10 +48,47 @@ public class AlarmService {
     }
 
 
-    // type = letter
+    /*
+     * Alarm.type = letter
+     * 편지 저장 및 발송 시 편지 발송 리스트 생성 -> 알림 테이블에 저장
+     */
+    public void postAlarm_letter(int letterIdx, String senderNickName, List<Integer> receiverIdxList) throws BaseException {
+        try {
+            String content = "'" + senderNickName + "'에게서 편지가 도착했습니다.";
+
+            for (int receiverIdx : receiverIdxList) {
+                if (alarmDao.postAlarm_letter(receiverIdx, letterIdx, content) == 0) {
+                    throw new BaseException(POST_FAIL_ALARM);
+                }
+            }
+
+        } catch (BaseException exception) {
+            throw new BaseException(POST_FAIL_ALARM); // 알림 저장에 실패하였습니다.
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 
-    // type = reply
+    /*
+     * Alarm.type = reply
+     * 답장 저장 및 발송 시 해당 수신인에 대하여 알림 테이블에 저장
+     */
+    public void postAlarm_reply(int replyIdx, String senderNickName, int receiverIdx) throws BaseException {
+        try {
+            String content = "'" + senderNickName + "'에게서 답장이 도착했습니다.";
+
+            if (alarmDao.postAlarm_reply(receiverIdx, replyIdx, content) == 0) {
+                throw new BaseException(POST_FAIL_ALARM);
+            }
+
+
+        } catch (BaseException exception) {
+            throw new BaseException(POST_FAIL_ALARM); // 알림 저장에 실패하였습니다.
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 
     /*
@@ -88,7 +125,38 @@ public class AlarmService {
     }
 
 
-    // type = report
+    /*
+     * Alarm.type = report
+     * 신고 접수 시 해당 신고를 당한 회원에 대하여 알림 테이블에 저장
+     */
+    public void postAlarm_report(int reportIdx, int receiverIdx, String type) throws BaseException {
+        try {
+            String content = null;
+
+            switch (type) {
+                case "diary":
+                    content = "귀하의 일기가 신고 접수되었습니다.";
+                    break;
+
+                case "letter":
+                    content = "귀하의 편지가 신고 접수되었습니다.";
+                    break;
+
+                case "reply":
+                    content = "귀하의 답장이 신고 접수되었습니다.";
+                    break;
+            }
+
+            if (alarmDao.postAlarm_report(receiverIdx, reportIdx, content) == 0) {
+                throw new BaseException(POST_FAIL_ALARM);
+            }
+
+        } catch (BaseException exception) {
+            throw new BaseException(POST_FAIL_ALARM); // 알림 저장에 실패하였습니다.
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 
     // type = notice

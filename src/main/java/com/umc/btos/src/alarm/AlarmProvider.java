@@ -109,7 +109,6 @@ public class AlarmProvider {
 
             if (alarmType.compareTo("reply") == 0) {
                 String reportType = alarmDao.getReportType(alarmIdx, reqParamIdx); // Report.reportType
-
                 switch (reportType) {
                     case "diary":
                         alarmType = "report_diary";
@@ -123,6 +122,8 @@ public class AlarmProvider {
                         alarmType = "report_reply";
                         break;
                 }
+                // Alarm.typeIdx(== Reply.replyIdx)를 통하여 해당 신고 당한 일기의 diaryIdx / 편지의 letterIdx / 답장의 replyIdx 반환
+                reqParamIdx = alarmDao.getAlarmTypeIdx_report(reqParamIdx);
             }
 
             if (alarmDao.modifyStatus(alarmIdx) == 0) { // status 변경 : active -> checked
