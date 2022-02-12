@@ -27,6 +27,7 @@ public class Payment {
      * @throws GoogleJsonResponseException
      *
      * Payment.java 사용 전에 notion 개발현황>인앱결제>서버>구현 1번을 꼭 읽어주세요.
+     * 테스트를 위해서 실행 할 때는 아래 에러나는 부분을 지우지 말고 주석처리 해주세요! 저 부분은 서비스 계정이 발급되면 채울 수 있습니다!
      */
     public Payment(GetValidationReq getValidationReq) throws IOException, GeneralSecurityException, GoogleJsonResponseException {
         //TODO 1. GoogleCredential 생성
