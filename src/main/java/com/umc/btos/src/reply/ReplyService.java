@@ -4,8 +4,6 @@ package com.umc.btos.src.reply;
 import com.umc.btos.config.BaseException;
 
 
-import com.umc.btos.src.letter.model.PatchLetterReq;
-import com.umc.btos.src.letter.model.PostLetterRes;
 import com.umc.btos.src.reply.model.*;
 import com.umc.btos.utils.JwtService;
 import org.slf4j.Logger;
