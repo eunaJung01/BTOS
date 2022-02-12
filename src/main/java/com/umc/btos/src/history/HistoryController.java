@@ -29,6 +29,7 @@ public class HistoryController {
      * [GET] /histories/list/:userIdx/:pageNum?filtering=&search=
      * filtering = 1. sender : 발신인 (Diary, Letter, Reply) / 2. diary : 일기만 (Diary) / 3. letter : 편지만 (Letter, Reply)
      * search (검색할 문자열 "String") = 1. filtering = sender : 닉네임 검색 / 2. filtering = diary or letter : 내용 검색
+     * 검색 시 띄어쓰기, 영문 대소문자 구분없이 조회됨
      * 최신순 정렬 (createdAt 기준 내림차순 정렬)
      * 페이징 처리 (무한 스크롤) - 20개씩 조회
      */
@@ -59,6 +60,7 @@ public class HistoryController {
      * History 발신인 조회
      * [GET] /histories/sender/:userIdx/:senderNickName/:pageNum?search=
      * search = 검색할 문자열 ("String")
+     * 검색 시 띄어쓰기, 영문 대소문자 구분없이 조회됨
      * 최신순 정렬 (createdAt 기준 내림차순 정렬)
      * 페이징 처리 (무한 스크롤) - 20개씩 조회
      */

@@ -52,6 +52,7 @@ public class ArchiveController {
      * search = 검색할 문자열 ("String")
      * startDate, lastDate = 날짜 기간 설정 (yyyy.MM.dd ~ yyyy.MM.dd)
      * 검색 & 기간 설정 조회는 중첩됨
+     * 검색 시 띄어쓰기, 영문 대소문자 구분없이 조회됨
      * 최신순 정렬 (diaryDate 기준 내림차순 정렬)
      * 페이징 처리 (무한 스크롤) - 20개씩 조회
      *
