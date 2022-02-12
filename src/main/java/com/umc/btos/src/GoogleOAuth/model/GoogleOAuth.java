@@ -1,4 +1,4 @@
-package com.umc.btos.src.GoogleOAuth.model;
+package com.umc.btos.src.googleOAuth.model;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

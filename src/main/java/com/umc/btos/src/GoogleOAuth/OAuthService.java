@@ -1,6 +1,6 @@
-package com.umc.btos.src.GoogleOAuth;
+package com.umc.btos.src.googleOAuth;
 
-import com.umc.btos.src.GoogleOAuth.model.GoogleOAuth;
+import com.umc.btos.src.googleOAuth.model.GoogleOAuth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

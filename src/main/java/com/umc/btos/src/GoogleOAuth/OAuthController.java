@@ -1,4 +1,4 @@
-package com.umc.btos.src.GoogleOAuth;
+package com.umc.btos.src.googleOAuth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
