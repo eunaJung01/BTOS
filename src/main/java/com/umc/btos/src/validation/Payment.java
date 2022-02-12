@@ -20,6 +20,14 @@ import java.util.Collections;
 
 public class Payment {
 
+    /**
+     * @param getValidationReq
+     * @throws IOException
+     * @throws GeneralSecurityException
+     * @throws GoogleJsonResponseException
+     *
+     * Payment.java 사용 전에 notion 개발현황>인앱결제>서버>구현 1번을 꼭 읽어주세요.
+     */
     public Payment(GetValidationReq getValidationReq) throws IOException, GeneralSecurityException, GoogleJsonResponseException {
         //TODO 1. GoogleCredential 생성
         //     2. API 호출

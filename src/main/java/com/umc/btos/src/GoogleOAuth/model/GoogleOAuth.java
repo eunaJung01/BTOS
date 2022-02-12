@@ -27,6 +27,9 @@ public class GoogleOAuth {
     @Value("{google.token.url}")
     private String GOOGLE_TOKEN_URL;
 
+    /**
+     * @return 리디렉션 URL
+     */
     public String getOauthRedirectURL() { //redirect 처리를 할 URL을 생성하는 메소드
         Map<String, Object> params = new HashMap<>();
         params.put("scope", "profile");
@@ -42,6 +45,10 @@ public class GoogleOAuth {
         return GOOGLE_URL + "?" + parameterString;
     }
 
+    /**
+     * @param code
+     * @return Json 형태의 String 문자열 (access token 및 refresh token 등)
+     */
     public String requestAccessToken(String code) { //access token 및 refresh token 요청
         RestTemplate restTemplate = new RestTemplate();
 
