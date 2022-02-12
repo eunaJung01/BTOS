@@ -70,7 +70,25 @@ public class AlarmService {
     }
 
 
-    // type = reply
+    /*
+     * Alarm.type = reply
+     * 답장 저장 및 발송 시 해당 수신인에 대하여 알림 테이블에 저장
+     */
+    public void postAlarm_reply(int replyIdx, String senderNickName, int receiverIdx) throws BaseException {
+        try {
+            String content = "'" + senderNickName + "'에게서 답장이 도착했습니다.";
+
+            if (alarmDao.postAlarm_reply(receiverIdx, replyIdx, content) == 0) {
+                throw new BaseException(POST_FAIL_ALARM);
+            }
+
+
+        } catch (BaseException exception) {
+            throw new BaseException(POST_FAIL_ALARM); // 알림 저장에 실패하였습니다.
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 
     /*
