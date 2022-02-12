@@ -889,7 +889,7 @@ public class HistoryDao {
     public int getLetterIdx_main(int replyIdx) {
         String query = "SELECT DISTINCT Letter.letterIdx " +
                 "FROM LetterSendList " +
-                "INNER JOIN Letter ON LetterSendList.diaryIdx = Letter.letterIdx " +
+                "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN Reply ON Reply.sendIdx = LetterSendList.sendIdx " +
                 "WHERE Reply.sendIdx = (SELECT sendIdx FROM Reply WHERE replyIdx = ?)";
 
