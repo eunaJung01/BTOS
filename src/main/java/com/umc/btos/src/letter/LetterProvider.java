@@ -37,4 +37,16 @@ public class LetterProvider {
         }
     }
 
+    /*
+    편지를 보내는 회원 - 회원여부 확인
+    */
+
+    public int checkUserIdx(int userIdx) throws BaseException {
+        try {
+            return letterDao.checkUserIdx(userIdx); // 존재하면 1, 존재하지 않는다면 0 반환
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }
