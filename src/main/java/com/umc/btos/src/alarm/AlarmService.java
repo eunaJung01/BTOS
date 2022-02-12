@@ -125,7 +125,38 @@ public class AlarmService {
     }
 
 
-    // type = report
+    /*
+     * Alarm.type = report
+     * 신고 접수 시 해당 신고를 당한 회원에 대하여 알림 테이블에 저장
+     */
+    public void postAlarm_report(int reportIdx, int receiverIdx, String type) throws BaseException {
+        try {
+            String content = null;
+
+            switch (type) {
+                case "diary":
+                    content = "귀하의 일기가 신고 접수되었습니다.";
+                    break;
+
+                case "letter":
+                    content = "귀하의 편지가 신고 접수되었습니다.";
+                    break;
+
+                case "reply":
+                    content = "귀하의 답장이 신고 접수되었습니다.";
+                    break;
+            }
+
+            if (alarmDao.postAlarm_report(receiverIdx, reportIdx, content) == 0) {
+                throw new BaseException(POST_FAIL_ALARM);
+            }
+
+        } catch (BaseException exception) {
+            throw new BaseException(POST_FAIL_ALARM); // 알림 저장에 실패하였습니다.
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 
     // type = notice
