@@ -116,4 +116,10 @@ public class LetterDao {
         return this.jdbcTemplate.update(getReplyQuery, letterIdx, receiverIdx); // 대응시켜 매핑시켜 쿼리 요청 (성공했으면 1, 실패했으면 0)
     }
 
+    // 존재하는 회원인지 확인
+    public int checkUserIdx(int userIdx) {
+        String query = "SELECT EXISTS (SELECT userIdx FROM User WHERE userIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
+    }
+
 }
