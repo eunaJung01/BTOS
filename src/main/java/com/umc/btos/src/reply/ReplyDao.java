@@ -2,9 +2,6 @@ package com.umc.btos.src.reply;
 
 
 
-import com.umc.btos.src.letter.model.GetLetterRes;
-import com.umc.btos.src.letter.model.PatchLetterReq;
-import com.umc.btos.src.letter.model.PostLetterRes;
 import com.umc.btos.src.reply.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
