@@ -69,6 +69,11 @@ dependencies {
     implementation 'com.google.firebase:firebase-admin:7.1.0'
     // okhttp
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
+
+    // google libraries
+    // Google Purchase API v2
+    compileOnly('com.google.api-client:google-api-client:1.21.0')
+    compileOnly('com.google.apis:google-api-services-androidpublisher:v2-rev22-1.21.0')
 }
 
 test {
