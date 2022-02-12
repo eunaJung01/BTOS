@@ -9,5 +9,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class PostReplyRes {
-    private int replyIdx;
+    private int receiverIdx; // 답장을 받는 사람의 userIdx
+    private String senderNickName; // 답장을 보내는 사람의 닉네임
 }
