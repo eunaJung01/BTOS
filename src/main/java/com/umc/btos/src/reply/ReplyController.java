@@ -38,9 +38,7 @@ public class ReplyController {
     public BaseResponse<PostReplyFinalRes> createReply(@RequestBody PostReplyReq postReplyReq) {
         //  @RequestBody란, 클라이언트가 전송하는 HTTP Request Body(우리는 JSON으로 통신하니, 이 경우 body는 JSON)를 자바 객체로 매핑시켜주는 어노테이션
         try{
-            int replyIdx = replyService.createReply(postReplyReq);
-            PostReplyRes postReplyRes = replyService.getReplyreceiverNickname(postReplyReq); // 받는 유저의 userIdx, 답장을 보내는 사람의 닉네임 반환
-            PostReplyFinalRes postReplyFinalRes = new PostReplyFinalRes(replyIdx,postReplyRes.getReceiverIdx(),postReplyRes.getSenderNickName());
+            PostReplyFinalRes postReplyFinalRes = replyService.createReply(postReplyReq);
             return new BaseResponse<>(postReplyFinalRes);
         } catch (BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
