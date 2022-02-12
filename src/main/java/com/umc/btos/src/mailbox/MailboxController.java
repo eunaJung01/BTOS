@@ -67,9 +67,7 @@ public class MailboxController {
                 throw new BaseException(INVALID_TYPEIDX_ABOUT_TYPE); // 해당 type에 존재하지 않는 typeIdx 입니다.
             }
 
-            GetMailRes mail = new GetMailRes(type);
-            mailboxProvider.setMailRes_sender(mail, type, typeIdx); // 발신인 정보 저장
-            mail.setContent(mailboxProvider.setMailContent(userIdx, type, typeIdx));
+            GetMailRes mail = mailboxProvider.getMail(userIdx, type, typeIdx); // 우편 내용, 발신인 정보 저장
 
             return new BaseResponse<>(mail);
 

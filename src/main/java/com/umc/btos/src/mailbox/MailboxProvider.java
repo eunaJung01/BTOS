@@ -94,28 +94,22 @@ public class MailboxProvider {
      * type = 일기, 편지, 답장 구분 (diary / letter / reply)
      * typeIdx = 식별자 정보 (type-typeIdx : diary-diaryIdx / letter-letterIdx / reply-replyIdx)
      */
-    public Object setMailContent(int userIdx, String type, int typeIdx) throws BaseException {
+    public GetMailRes getMail(int userIdx, String type, int typeIdx) throws BaseException {
         try {
-            Object mail;
+            // 우편 내용 저장
+            GetMailRes mail = new GetMailRes();
+
             if (type.compareTo("diary") == 0) {
-                mail = diaryProvider.getDiary(userIdx, typeIdx); // 일기 정보 저장
+                mail.setContent(diaryProvider.getDiary(userIdx, typeIdx)); // 일기 정보 저장
 
             } else if (type.compareTo("letter") == 0) {
-                mail = letterProvider.getLetter(userIdx, typeIdx); // 편지 정보 저장
+                mail.setContent(letterProvider.getLetter(userIdx, typeIdx)); // 편지 정보 저장
 
             } else {
-                mail = replyProvider.getReply(typeIdx); // 답장 정보 저장
+                mail.setContent(replyProvider.getReply(typeIdx)); // 답장 정보 저장
             }
-            return mail;
 
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
-    // 발신인 정보 (User.nickName, User.fontIdx) 저장
-    public void setMailRes_sender(GetMailRes mail, String type, int typeIdx) throws BaseException {
-        try {
+            // 발신인 정보 (User.nickName, User.fontIdx) 저장
             int senderFontIdx = 0;
             String senderNickName = "";
 
@@ -135,7 +129,10 @@ public class MailboxProvider {
             mail.setSenderNickName(senderNickName);
             mail.setSenderFontIdx(senderFontIdx);
 
+            return mail;
+
         } catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
