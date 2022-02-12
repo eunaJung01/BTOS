@@ -4,6 +4,7 @@ package com.umc.btos.src.reply;
 
 import com.umc.btos.src.letter.model.GetLetterRes;
 import com.umc.btos.src.letter.model.PatchLetterReq;
+import com.umc.btos.src.letter.model.PostLetterRes;
 import com.umc.btos.src.reply.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,15 +25,22 @@ public class ReplyDao {
 
 
     // 답장 생성
-    public int createReply(PostReplyReq postReplyReq) {
+    public int createReply(PostReplyReq postReplyReq) { // replyIdx를 반환
         String createReplyQuery = "insert into Reply (replierIdx,receiverIdx,firstHistoryType,sendIdx,content) VALUES (?,?,?,?,?)"; // 실행될 동적 쿼리문
         Object[] createReplyParams = new Object[]{postReplyReq.getReplierIdx(),postReplyReq.getReceiverIdx(),postReplyReq.getFirstHistoryType(),postReplyReq.getSendIdx(),postReplyReq.getContent()}; // 동적 쿼리의 ?부분에 주입될 값
         this.jdbcTemplate.update(createReplyQuery, createReplyParams);
 
-        // 즉 DB의 Letter Table에 (replier,receiver,content)값을 가지는 편지 데이터를 삽입(생성)한다.
+        // 즉 DB의 Reply Table에 (replier,receiver,content)값을 가지는 편지 데이터를 삽입(생성)한다.
 
         String lastInsertIdQuery = "select last_insert_id()"; // 가장 마지막에 삽입된(생성된) id값은 가져온다.
-        return this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class); // 해당 쿼리문의 결과 마지막으로 삽인된 유저의 userIdx번호를 반환한다.
+        int replyIdx = this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class); // 해당 쿼리문의 결과 마지막으로 삽인된 유저의 userIdx번호를 반환한다.
+        return replyIdx;
+    }
+
+    // 답장을 보내는 유저의 닉네임 반환
+    public String getNickname(int userIdx) {
+        String getNickNameQuery = "select nickName from User where userIdx = ?; "; // 해당 userIdx를 만족하는 User를 해당 nickname으로 변경한다.
+        return this.jdbcTemplate.queryForObject(getNickNameQuery, String.class, userIdx);
     }
 
     // 답장 status 변경
