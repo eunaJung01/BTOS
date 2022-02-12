@@ -41,13 +41,9 @@ public class LetterController {
     public BaseResponse<PostLetterPlantRes> createLetter(@RequestBody PostLetterReq postLetterReq) {
 
         try{
-            PostLetterRes postLetterRes = letterService.createLetter(postLetterReq);
+            PostLetterPlantRes postLetterPlantRes = letterService.createLetter(postLetterReq);
             // 화분 점수 증가
-            PatchModifyScoreRes ModifyScore = plantService.modifyScore_plus(postLetterReq.getUserIdx(), Constant.PLANT_LEVELUP_LETTER,"letter");
-            String senderNickName = letterService.getNickName(postLetterReq.getUserIdx());
-            PostLetterPlantRes result_all = new PostLetterPlantRes(postLetterRes.getLetterIdx(),senderNickName,postLetterRes.getReceiverIdxList(),ModifyScore ); // new 다음에 대문자여야한다.
-
-            return new BaseResponse<>(result_all);
+            return new BaseResponse<>(postLetterPlantRes);
         } catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
         }
