@@ -110,6 +110,13 @@ public class AlarmDao {
         return this.jdbcTemplate.update(query, alarm);
     }
 
+    // type = letter
+    public int postAlarm_letter(int userIdx, int letterIdx, String content) {
+        String query = "INSERT INTO Alarm (userIdx, type, typeIdx, content) VALUES(?,?,?,?)";
+        Object[] alarm = new Object[]{userIdx, "letter", letterIdx, content};
+        return this.jdbcTemplate.update(query, alarm);
+    }
+
     // type = plant
     public int postAlarm_plant(int userIdx, int uPlantIdx, String content) {
         String query = "INSERT INTO Alarm (userIdx, type, typeIdx, content) VALUES(?,?,?,?)";

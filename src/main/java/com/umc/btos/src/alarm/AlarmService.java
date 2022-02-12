@@ -48,7 +48,26 @@ public class AlarmService {
     }
 
 
-    // type = letter
+    /*
+     * Alarm.type = letter
+     * 편지 저장 및 발송 시 편지 발송 리스트 생성 -> 알림 테이블에 저장
+     */
+    public void postAlarm_letter(int letterIdx, String senderNickName, List<Integer> receiverIdxList) throws BaseException {
+        try {
+            String content = "'" + senderNickName + "'에게서 편지가 도착했습니다.";
+
+            for (int receiverIdx : receiverIdxList) {
+                if (alarmDao.postAlarm_letter(receiverIdx, letterIdx, content) == 0) {
+                    throw new BaseException(POST_FAIL_ALARM);
+                }
+            }
+
+        } catch (BaseException exception) {
+            throw new BaseException(POST_FAIL_ALARM); // 알림 저장에 실패하였습니다.
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 
     // type = reply
