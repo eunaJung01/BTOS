@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static com.umc.btos.config.BaseResponseStatus.*;
 
@@ -131,6 +132,7 @@ public class ArchiveProvider {
             else if (search != null && startDate == null && endDate == null) {
                 search = search.replaceAll("\"", ""); // 따옴표 제거
                 search = search.replaceAll(" ", ""); // 공백 제거
+                search = search.toLowerCase(); // 영문 대소문자 구분 X
 
                 List<Integer> diaryIdxList_all = archiveDao.getDiaryIdxList(userIdx); // 특정 회원의 모든 일기 diaryIdx : List 형태로 저장
 
@@ -161,6 +163,7 @@ public class ArchiveProvider {
                 if (search != null) {
                     search = search.replaceAll("\"", ""); // 따옴표 제거
                     search = search.replaceAll(" ", ""); // 공백 제거
+                    search = search.toLowerCase(); // 영문 대소문자 구분 X
 
                     List<Diary> diaryList_searched = new ArrayList<>();
                     for (Diary diary : diaryList) {
@@ -255,8 +258,8 @@ public class ArchiveProvider {
 
     // 문자열 검색 (in Diary.content)
     public boolean searchString(String diaryContent, String search) {
-        String content_spaceDeleted = diaryContent.replaceAll(" ", ""); // 공백 제거
-        return content_spaceDeleted.contains(search); // 문자열 검색 (존재 : true, 미존재 : false)
+        diaryContent = diaryContent.replaceAll(" ", "").toLowerCase(); // 공백 제거, 영문 대소문자 구별 X
+        return diaryContent.contains(search); // 문자열 검색 (존재 : true, 미존재 : false)
     }
 
     /*
