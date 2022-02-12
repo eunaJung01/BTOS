@@ -25,7 +25,7 @@ public class MailboxDao {
 
     // 존재하는 일기인지 확인
     public int checkDiaryIdx(int diaryIdx) {
-        String query = "SELECT EXISTS (SELECT diaryIdxd FROM Diary WHERE diaryIdx = ? AND status = 'active')";
+        String query = "SELECT EXISTS (SELECT diaryIdx FROM Diary WHERE diaryIdx = ? AND status = 'active')";
         return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
     }
 
