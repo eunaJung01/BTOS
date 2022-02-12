@@ -64,6 +64,14 @@ public class LetterDao {
         return userIdx_Similar;
     }
 
+    public List<Integer> getLetterUserIdx_Random(PostLetterUserSimilarIdx postLetterUserSimilarIdx) { // 편지를 수신할 유저의 userIdx들을 list형태로 반환
+        String getUserIdx = "select U.userIdx from User U where U.status='active' and U.userIdx != ? and U.recOthers = 1 order by rand() limit 10";
+        // 휴먼상태가 아니고, 타인의 편지를 수신하는 유저를 list형태로 모두 반환  (편지를 보내는 유저 제외)
+        // 랜덤으로 조건에 해당하는 모든 유저의 userIdx를 뽑는 쿼리문
+        List<Integer> userIdx_Random = this.jdbcTemplate.queryForList(getUserIdx, int.class,postLetterUserSimilarIdx.getUserIdx()); // 변수 userIdx에 랜덤으로 뽑은 userIdx를 넣는다.
+
+        return userIdx_Random;
+    }
     public void createLetterSendList(int letterIdx, List<Integer> userIdx_list,int i){ // LetterSendList 테이블에 추가
         String createLetterSendListQuery = "insert into LetterSendList (letterIdx,receiverIdx) VALUES (?,?)"; // 실행될 동적 쿼리문
         Object[] createLetterSendListParams = new Object[]{letterIdx, userIdx_list.get(i)}; // 동적 쿼리의 ?부분에 주입될 값
