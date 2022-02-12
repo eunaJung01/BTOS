@@ -203,6 +203,7 @@ public class HistoryProvider {
 
                 search = search.replaceAll("\"", ""); // 따옴표 제거
                 search = search.replaceAll(" ", ""); // 공백 제거
+                search = search.toLowerCase(); // 영문 대소문자 구분 X
 
                 // 발신인
                 if (filtering.compareTo("sender") == 0) {
@@ -411,8 +412,8 @@ public class HistoryProvider {
 
     // 문자열 검색
     public boolean searchString(String content, String search) {
-        String content_spaceDeleted = content.replaceAll(" ", ""); // 공백 제거
-        return content_spaceDeleted.contains(search); // 문자열 검색 (존재 : true, 미존재 : false)
+        content = content.replaceAll(" ", "").toLowerCase(); // 공백 제거, 영문 대소문자 구별 X
+        return content.contains(search); // 문자열 검색 (존재 : true, 미존재 : false)
     }
 
     /*
@@ -483,6 +484,7 @@ public class HistoryProvider {
 
                 search = search.replaceAll("\"", ""); // 따옴표 제거
                 search = search.replaceAll(" ", ""); // 공백 제거
+                search = search.toLowerCase(); // 영문 대소문자 구분 X
 
                 List<Integer> diaryIdxList = new ArrayList<>();
                 List<Integer> letterIdxList = new ArrayList<>();
