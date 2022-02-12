@@ -34,11 +34,13 @@ public class ReplyService {
 // ******************************************************************************
     // 답장 작성(POST)
 
-    public int createReply(PostReplyReq postReplyReq) throws BaseException {
+    public PostReplyFinalRes createReply(PostReplyReq postReplyReq) throws BaseException {
 
         try {
             int replyIdx = replyDao.createReply(postReplyReq);
-            return replyIdx;
+            PostReplyFinalRes postReplyFinalRes = getReplyreceiverNickname(replyIdx,postReplyReq); // 받는 유저의 userIdx, 답장을 보내는 사람의 닉네임 반환
+
+            return postReplyFinalRes;
 
         } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지 : 8004
 
@@ -46,15 +48,14 @@ public class ReplyService {
         }
     }
 
-    // 답장 작성(POST)
+    // POST - nickName을 찾고 PostReplyFinalRes 객체를 만들어 반환
 
-    public PostReplyRes getReplyreceiverNickname(PostReplyReq postReplyReq) throws BaseException {
+    public PostReplyFinalRes getReplyreceiverNickname(int replyIdx, PostReplyReq postReplyReq) throws BaseException {
 
         try {
             String senderNickName = replyDao.getNickname(postReplyReq.getReplierIdx());
-            PostReplyRes postReplyRes = new PostReplyRes(postReplyReq.getReceiverIdx(),senderNickName );
-            return postReplyRes;
-
+            PostReplyFinalRes postReplyFinalRes = new PostReplyFinalRes(replyIdx,postReplyReq.getReceiverIdx(),senderNickName );
+            return postReplyFinalRes;
         } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지 : 8004
 
             throw new BaseException(REPLY_DATABASE_ERROR);
