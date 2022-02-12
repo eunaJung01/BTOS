@@ -100,13 +100,13 @@ public class MailboxProvider {
             GetMailRes mail = new GetMailRes();
 
             if (type.compareTo("diary") == 0) {
-                mail.setContent(diaryProvider.getDiary(userIdx, typeIdx)); // 일기 정보 저장
+                mail.setMail(diaryProvider.getDiary(userIdx, typeIdx)); // 일기 정보 저장
 
             } else if (type.compareTo("letter") == 0) {
-                mail.setContent(letterProvider.getLetter(userIdx, typeIdx)); // 편지 정보 저장
+                mail.setMail(letterProvider.getLetter(userIdx, typeIdx)); // 편지 정보 저장
 
             } else {
-                mail.setContent(replyProvider.getReply(typeIdx)); // 답장 정보 저장
+                mail.setMail(replyProvider.getReply(typeIdx)); // 답장 정보 저장
             }
 
             // 발신인 정보 (User.nickName, User.fontIdx) 저장
