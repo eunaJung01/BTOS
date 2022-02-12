@@ -264,6 +264,9 @@ public class HistoryProvider {
                         diaryIdxList = diaryIdxList_searched; // diaryIdxList 갱신
                     }
                     dataNum_total = diaryIdxList.size(); // 총 데이터 개수
+                    if (dataNum_total == 0) {
+                        throw new NullPointerException(); // 검색 결과 없음
+                    }
                     pageInfo.setDataNum_total((int) dataNum_total);
 
                     if (dataNum_total != 0) {
@@ -360,6 +363,8 @@ public class HistoryProvider {
                         pageInfo.setDataNum_currentPage(dataNum_currentPage);
 
                         historyListRes.setList(historyList);
+                    } else {
+                        throw new NullPointerException(); // 검색 결과 없음
                     }
                 }
             }

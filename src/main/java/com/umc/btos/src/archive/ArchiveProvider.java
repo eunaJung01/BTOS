@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import static com.umc.btos.config.BaseResponseStatus.*;
 
@@ -26,6 +25,8 @@ public class ArchiveProvider {
     public ArchiveProvider(ArchiveDao archiveDao) {
         this.archiveDao = archiveDao;
     }
+
+    // ================================================== validation ==================================================
 
     /*
      * 존재하는 회원인지 확인
@@ -51,7 +52,7 @@ public class ArchiveProvider {
         }
     }
 
-    // ================================================================================
+    // ================================================================================================================
 
     /*
      * 달력 조회
@@ -69,11 +70,14 @@ public class ArchiveProvider {
             // 달력 : 한달 단위로 날짜마다 저장된 일기에 대한 정보(done list 개수 또는 감정 이모티콘 식별자)를 저장
             List<GetCalendarRes> calendar = archiveDao.getCalendarList(userIdx, date);
 
-            if (type.compareTo("doneList") == 0) { // done list로 조회 -> 일기 별 doneList 개수 저장 (set doneListNum)
+            // 1. type =  done list -> 일기 별 doneList 개수 저장 (set doneListNum)
+            if (type.compareTo("doneList") == 0) {
                 for (GetCalendarRes dateInfo : calendar) {
                     dateInfo.setDoneListNum(archiveDao.setDoneListNum(userIdx, dateInfo.getDiaryDate()));
                 }
-            } else { // emotion으로 조회 -> 일기 별 감정 이모티콘 정보 저장 (set emotionIdx)
+            }
+            // 2. type = emotion -> 일기 별 감정 이모티콘 정보 저장 (set emotionIdx)
+            else {
                 for (GetCalendarRes dateInfo : calendar) {
                     dateInfo.setEmotionIdx(archiveDao.getEmotionIdx(userIdx, dateInfo.getDiaryDate()));
                 }
@@ -295,7 +299,7 @@ public class ArchiveProvider {
         }
     }
 
-    // ====================================== content 복호화 ======================================
+    // ================================================ content 복호화 ================================================
 
     // 일기
     public void decryptContents(Diary diary) throws BaseException {
