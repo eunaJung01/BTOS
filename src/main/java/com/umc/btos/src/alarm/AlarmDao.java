@@ -95,6 +95,12 @@ public class AlarmDao {
         return this.jdbcTemplate.queryForObject(query, String.class, alarmIdx, typeIdx);
     }
 
+    // type = report인 경우 GetAlarmRes.alarmTypeIdx는 신고를 당한 일기의 diaryIdx / 편지의 letterIdx / 답장의 replyIdx
+    public int getAlarmTypeIdx_report(int typeIdx) {
+        String query = "SELECT idx FROM Report WHERE reportIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, int.class, typeIdx);
+    }
+
     // Alarm.status = active -> checked
     public int modifyStatus(int alarmIdx) {
         String query = "UPDATE Alarm SET status = 'checked' WHERE alarmIdx = ?";
