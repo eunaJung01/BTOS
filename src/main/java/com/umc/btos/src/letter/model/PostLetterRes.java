@@ -11,5 +11,5 @@ import java.util.List;
 public class PostLetterRes {
 
     private int letterIdx;
-    private List<Integer> receiveUserIdx; //전송한 유저idx들
+    private List<Integer> receiverIdxList; //전송한 유저idx들
 }
