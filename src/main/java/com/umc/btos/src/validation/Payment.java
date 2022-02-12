@@ -11,6 +11,10 @@ import com.google.api.services.androidpublisher.AndroidPublisher;
 import com.google.api.services.androidpublisher.model.ProductPurchase;
 import com.umc.btos.src.validation.model.GetValidationReq;
 import org.springframework.util.ResourceUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +22,8 @@ import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 
+@RestController
+@RequestMapping("/shops")
 public class Payment {
 
     /**
@@ -25,11 +31,14 @@ public class Payment {
      * @throws IOException
      * @throws GeneralSecurityException
      * @throws GoogleJsonResponseException
+     * @return String
      *
      * Payment.java 사용 전에 notion 개발현황>인앱결제>서버>구현 1번을 꼭 읽어주세요.
      * 테스트를 위해서 실행 할 때는 아래 에러나는 부분을 지우지 말고 주석처리 해주세요! 저 부분은 서비스 계정이 발급되면 채울 수 있습니다!
      */
-    public Payment(GetValidationReq getValidationReq) throws IOException, GeneralSecurityException, GoogleJsonResponseException {
+    @ResponseBody
+    @GetMapping("/receipt-validation")
+    public String validationReceipt(GetValidationReq getValidationReq) throws IOException, GeneralSecurityException, GoogleJsonResponseException {
         //TODO 1. GoogleCredential 생성
         //     2. API 호출
 
@@ -78,5 +87,7 @@ public class Payment {
 
         // 상품이 구매된 시각. 타임스탬프 형태
         Long purchaseTimeMillis = productPurchase.getPurchaseTimeMillis();
+
+        return productPurchase.toPrettyString();
     }
 }
