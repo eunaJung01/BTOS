@@ -41,10 +41,11 @@ public class LetterController {
     public BaseResponse<PostLetterPlantRes> createLetter(@RequestBody PostLetterReq postLetterReq) {
 
         try{
-            List<Integer> receiveUserIdx = letterService.createLetter(postLetterReq); // letter, letterSendList에 컬럼 추가
+            PostLetterRes postLetterRes = letterService.createLetter(postLetterReq);
             // 화분 점수 증가
             PatchModifyScoreRes ModifyScore = plantService.modifyScore_plus(postLetterReq.getUserIdx(), Constant.PLANT_LEVELUP_LETTER,"letter");
-            PostLetterPlantRes result_all = new PostLetterPlantRes(receiveUserIdx,ModifyScore ); // new 다음에 대문자여야한다.
+            String senderNickName = letterService.getNickName(postLetterReq.getUserIdx());
+            PostLetterPlantRes result_all = new PostLetterPlantRes(postLetterRes.getLetterIdx(),senderNickName,postLetterRes.getReceiveUserIdx(),ModifyScore ); // new 다음에 대문자여야한다.
 
             return new BaseResponse<>(result_all);
         } catch (BaseException exception){
@@ -77,19 +78,19 @@ public class LetterController {
      * 편지 조회 API
      * [GET] /letters/:letterIdx/:userIdx
      */
-//    // Path-variable - letterIdx를 인수로 받아 해당 인덱스의 letter을 불러온다.
-//    @ResponseBody // userIdx는 이 API를 호출하는 편지를 읽는 유저
-//    @GetMapping("/{letterIdx}/{userIdx}") // (GET) localhost:9000/btos/letters/:letterIdx
-//    public BaseResponse<GetLetterRes> getLetter(@PathVariable("letterIdx") int letterIdx,@PathVariable("userIdx") int userIdx) {
-//        // @PathVariable RESTful(URL)에서 명시된 파라미터({})를 받는 어노테이션, 이 경우 letterIdx값, userIdx을 받아옴.
-//        // Get Letters
-//        try {
-//            GetLetterRes getLetterRes = letterProvider.getLetter(letterIdx,userIdx);
-//            return new BaseResponse<>(getLetterRes);
-//        } catch (BaseException exception) {
-//            return new BaseResponse<>((exception.getStatus()));
-//        }
-//
-//    }
+    // Path-variable - letterIdx를 인수로 받아 해당 인덱스의 letter을 불러온다.
+    @ResponseBody // userIdx는 이 API를 호출하는 편지를 읽는 유저
+    @GetMapping("/{letterIdx}/{userIdx}") // (GET) localhost:9000/btos/letters/:letterIdx
+    public BaseResponse<GetLetterRes> getLetter(@PathVariable("letterIdx") int letterIdx,@PathVariable("userIdx") int userIdx) {
+        // @PathVariable RESTful(URL)에서 명시된 파라미터({})를 받는 어노테이션, 이 경우 letterIdx값, userIdx을 받아옴.
+        // Get Letters
+        try {
+            GetLetterRes getLetterRes = letterProvider.getLetter(letterIdx,userIdx);
+            return new BaseResponse<>(getLetterRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+
+    }
 
 }

@@ -5,6 +5,7 @@ import com.umc.btos.config.BaseException;
 
 
 import com.umc.btos.src.letter.model.PatchLetterReq;
+import com.umc.btos.src.letter.model.PostLetterRes;
 import com.umc.btos.src.reply.model.*;
 import com.umc.btos.utils.JwtService;
 import org.slf4j.Logger;
@@ -35,11 +36,11 @@ public class ReplyService {
 // ******************************************************************************
     // 답장 작성(POST)
 
-    public PostReplyRes createReply(PostReplyReq postReplyReq) throws BaseException {
+    public int createReply(PostReplyReq postReplyReq) throws BaseException {
 
         try {
             int replyIdx = replyDao.createReply(postReplyReq);
-            return new PostReplyRes(replyIdx);
+            return replyIdx;
 
         } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지 : 8004
 
@@ -47,6 +48,20 @@ public class ReplyService {
         }
     }
 
+    // 답장 작성(POST)
+
+    public PostReplyRes getReplyreceiverNickname(PostReplyReq postReplyReq) throws BaseException {
+
+        try {
+            String senderNickName = replyDao.getNickname(postReplyReq.getReplierIdx());
+            PostReplyRes postReplyRes = new PostReplyRes(postReplyReq.getReceiverIdx(),senderNickName );
+            return postReplyRes;
+
+        } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지 : 8004
+
+            throw new BaseException(REPLY_DATABASE_ERROR);
+        }
+    }
 
     // 답장삭제 - status를 deleted로 변경 (Patch)
     public void modifyReplyStatus(PatchReplyReq patchReplyReq) throws BaseException {

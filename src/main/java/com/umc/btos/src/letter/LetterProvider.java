@@ -22,7 +22,7 @@ public class LetterProvider {
     }
 
     // 해당 letterIdx를 갖는 Letter 조회
-    public GetLetterRes getLetter(int userIdx, int letterIdx) throws BaseException {
+    public GetLetterRes getLetter(int letterIdx, int userIdx) throws BaseException {
         try {
             GetLetterRes getLetterRes = letterDao.getLetter(letterIdx, userIdx);
 

@@ -11,6 +11,8 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class PostLetterPlantRes {
+    private int letterIdx;
+    private String senderNickName; //편지를 보낸 사람의 닉네임
     private List<Integer> receiveUserIdx; //전송한 유저idx들
     private PatchModifyScoreRes patchModifyScoreRes; // 화분점수 변경 반환
 

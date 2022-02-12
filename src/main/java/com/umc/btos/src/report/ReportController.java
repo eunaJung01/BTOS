@@ -47,17 +47,17 @@ public class ReportController {
             reportService.createReport(postReportReq);
              if ((ReportReason.equals("sex")) || (ReportReason.equals("hate"))) {
              // 화분 점수 감소 //-100
-                 PatchModifyScoreRes ModifyScore_sex_hate = plantService.modifyScore_minus(reportService.getUserIdx(postReportReq), Constant.PLANT_LEVELDOWN_REPORT_SEX_HATE, "report_sex_hate");
+                 PatchModifyScoreRes ModifyScore_sex_hate = plantService.modifyScore_minus(reportService.getUserIdx(postReportReq), Constant.PLANT_LEVELDOWN_REPORT_SEX_HATE, "report");
                  PostReportUserIdxPlantRes result_sex_hate = new PostReportUserIdxPlantRes(reportService.getUserIdx(postReportReq), ModifyScore_sex_hate );
                  return new BaseResponse<>(result_sex_hate);
              } else if ((ReportReason.equals("spam")) || (ReportReason.equals("dislike"))) {
              // 화분 점수 감소 // -30
-                 PatchModifyScoreRes ModifyScore_spam_dislike = plantService.modifyScore_minus(reportService.getUserIdx(postReportReq), Constant.PLANT_LEVELDOWN_REPORT_SPAM_DISLIKE, "report_spam_dislike");
+                 PatchModifyScoreRes ModifyScore_spam_dislike = plantService.modifyScore_minus(reportService.getUserIdx(postReportReq), Constant.PLANT_LEVELDOWN_REPORT_SPAM_DISLIKE, "report");
                  PostReportUserIdxPlantRes result_spam_dislike = new PostReportUserIdxPlantRes(reportService.getUserIdx(postReportReq), ModifyScore_spam_dislike );
                  return new BaseResponse<>(result_spam_dislike);
              }
              else if ((ReportReason.equals("etc"))) {
-                 PatchModifyScoreRes ModifyScore_null = new PatchModifyScoreRes(false,"report_etc");
+                 PatchModifyScoreRes ModifyScore_null = new PatchModifyScoreRes(false,"report");
                  PostReportUserIdxPlantRes result_etc = new PostReportUserIdxPlantRes(reportService.getUserIdx(postReportReq), ModifyScore_null );
                  return new BaseResponse<>(result_etc);
              }
