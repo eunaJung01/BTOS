@@ -19,6 +19,8 @@ public class ArchiveDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    // ================================================== validation ==================================================
+
     // 존재하는 회원인지 확인
     public int checkUserIdx(int userIdx) {
         String query = "SELECT EXISTS (SELECT userIdx FROM User WHERE userIdx = ? AND status = 'active')";
@@ -31,16 +33,16 @@ public class ArchiveDao {
         return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
     }
 
-    // ====================================== 달력 조회 ======================================
+    // ================================================== 달력 조회 ===================================================
 
     // 달력 조회 (diaryDate(일기의 해당 날짜) 기준 오름차순 정렬)
     public List<GetCalendarRes> getCalendarList(int userIdx, String date) {
         String startDate = date + ".01";
 
-        int year = Integer.parseInt(String.valueOf(date.charAt(0))) * 1000 + Integer.parseInt(String.valueOf(date.charAt(1))) * 100 + Integer.parseInt(String.valueOf(date.charAt(2))) * 10 + Integer.parseInt(String.valueOf(date.charAt(3)));
-        int month = Integer.parseInt(String.valueOf(date.charAt(5))) * 10 + Integer.parseInt(String.valueOf(date.charAt(6)));
-        LocalDate initial = LocalDate.of(year, month, 1);
-        LocalDate endDate = initial.withDayOfMonth(initial.lengthOfMonth());
+        int year = Integer.parseInt(date.substring(0, 4)); // date[0] ~ date[3]
+        int month = Integer.parseInt(date.substring(5, 7)); // date[5] ~ date[6]
+        LocalDate initial = LocalDate.of(year, month, 1); // yyyy.MM.01
+        LocalDate endDate = initial.withDayOfMonth(initial.lengthOfMonth()); // 해당 월의 마지막 날 가져오기
 
         String query = "SELECT diaryIdx, diaryDate " +
                 "FROM Diary " +
