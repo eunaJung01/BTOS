@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.umc.btos.config.BaseResponseStatus.INVALID_USERIDX;
+import static com.umc.btos.config.BaseResponseStatus.LETTER_INVALID_USERIDX;
+
 @RestController
 @RequestMapping("/letters")
 public class LetterController {
@@ -41,6 +44,11 @@ public class LetterController {
     public BaseResponse<PostLetterPlantRes> createLetter(@RequestBody PostLetterReq postLetterReq) {
 
         try{
+            // 형식적 validation - 회원 존재 여부 확인
+            if (letterProvider.checkUserIdx(postLetterReq.getUserIdx()) == 0) {
+                throw new BaseException(LETTER_INVALID_USERIDX); // 존재하지 않는 회원입니다.
+            }
+
             PostLetterPlantRes postLetterPlantRes = letterService.createLetter(postLetterReq);
             // 화분 점수 증가
             return new BaseResponse<>(postLetterPlantRes);
