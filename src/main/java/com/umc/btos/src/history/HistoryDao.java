@@ -734,7 +734,7 @@ public class HistoryDao {
     // --------------------------------------- 본문 ---------------------------------------
 
     // 일기
-    public GetHistoryRes_Main getDiary_main(int diaryIdx) {
+    public GetHistoryRes getDiary_main(int diaryIdx) {
         String query = "SELECT Diary.diaryIdx AS typeIdx, Diary.content, Diary.emotionIdx, User.nickName AS senderNickName, " +
                 "DiarySendList.createdAt AS sendAt_raw, date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM DiarySendList " +
@@ -744,7 +744,7 @@ public class HistoryDao {
                 "GROUP BY Diary.diaryIdx";
 
         return this.jdbcTemplate.queryForObject(query,
-                (rs, rowNum) -> new GetHistoryRes_Main(
+                (rs, rowNum) -> new GetHistoryRes(
                         "diary",
                         rs.getInt("typeIdx"),
                         rs.getString("content"),
@@ -794,7 +794,7 @@ public class HistoryDao {
     }
 
     // 편지
-    public GetHistoryRes_Main getLetter_main(int letterIdx) {
+    public GetHistoryRes getLetter_main(int letterIdx) {
         String query = "SELECT Letter.letterIdx AS typeIdx, Letter.content, User.nickName AS senderNickName, " +
                 "LetterSendList.createdAt AS sendAt_raw, date_format(LetterSendList.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM LetterSendList " +
@@ -805,7 +805,7 @@ public class HistoryDao {
                 "GROUP BY Letter.letterIdx";
 
         return this.jdbcTemplate.queryForObject(query,
-                (rs, rowNum) -> new GetHistoryRes_Main(
+                (rs, rowNum) -> new GetHistoryRes(
                         "letter",
                         rs.getInt("typeIdx"),
                         rs.getString("content"),
@@ -818,7 +818,7 @@ public class HistoryDao {
     // --------------------------------------- List<Reply> ---------------------------------------
 
     // 일기
-    public List<GetHistoryRes_Main> getReplyList_diary(int userIdx, int diaryIdx) {
+    public List<GetHistoryRes> getReplyList_diary(int userIdx, int diaryIdx) {
         String query = "SELECT Reply.replyIdx AS typeIdx, Reply.content, User.nickName AS senderNickName, " +
                 "Reply.createdAt AS sendAt_raw, date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM DiarySendList " +
@@ -834,7 +834,7 @@ public class HistoryDao {
                 "AND Diary.diaryIdx = ?)";
 
         return this.jdbcTemplate.query(query,
-                (rs, rowNum) -> new GetHistoryRes_Main(
+                (rs, rowNum) -> new GetHistoryRes(
                         "reply",
                         rs.getInt("typeIdx"),
                         rs.getString("content"),
@@ -845,7 +845,7 @@ public class HistoryDao {
     }
 
     // 편지
-    public List<GetHistoryRes_Main> getReplyList_letter(int userIdx, int letterIdx) {
+    public List<GetHistoryRes> getReplyList_letter(int userIdx, int letterIdx) {
         String query = "SELECT Reply.replyIdx AS typeIdx, Reply.content, User.nickName AS senderNickName, " +
                 "Reply.createdAt AS sendAt_raw, date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
                 "FROM LetterSendList " +
@@ -862,7 +862,7 @@ public class HistoryDao {
                 "AND Letter.letterIdx = ?)";
 
         return this.jdbcTemplate.query(query,
-                (rs, rowNum) -> new GetHistoryRes_Main(
+                (rs, rowNum) -> new GetHistoryRes(
                         "reply",
                         rs.getInt("typeIdx"),
                         rs.getString("content"),

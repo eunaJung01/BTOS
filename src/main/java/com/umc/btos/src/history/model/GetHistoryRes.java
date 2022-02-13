@@ -10,7 +10,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 // History 본문 보기
-public class GetHistoryRes_Main {
+public class GetHistoryRes {
     private String type; // diary : 일기 / letter : 편지 / reply : 답장
     private int typeIdx; // 식별자 (diary - diaryIdx / letter - letterIdx / reply - replyIdx)
     private String content; // 내용 - createdAt 기준 내림차순 정렬 시 첫 항목
@@ -22,7 +22,7 @@ public class GetHistoryRes_Main {
     private boolean positioning = false;
 
     // type = diary
-    public GetHistoryRes_Main(String type, int typeIdx, String content, int emotionIdx, String senderNickName, String sendAt_raw, String sendAt) {
+    public GetHistoryRes(String type, int typeIdx, String content, int emotionIdx, String senderNickName, String sendAt_raw, String sendAt) {
         this.type = type;
         this.typeIdx = typeIdx;
         this.content = content;
@@ -33,7 +33,7 @@ public class GetHistoryRes_Main {
     }
 
     // type = letter or reply
-    public GetHistoryRes_Main(String type, int typeIdx, String content, String senderNickName, String sendAt_raw, String sendAt) {
+    public GetHistoryRes(String type, int typeIdx, String content, String senderNickName, String sendAt_raw, String sendAt) {
         this.type = type;
         this.typeIdx = typeIdx;
         this.content = content;

@@ -99,7 +99,7 @@ public class HistoryController {
      */
     @ResponseBody
     @GetMapping("/{userIdx}/{type}/{typeIdx}")
-    BaseResponse<List<GetHistoryRes_Main>> getHistory_main(@PathVariable("userIdx") int userIdx, @PathVariable("type") String type, @PathVariable("typeIdx") int typeIdx) {
+    BaseResponse<List<GetHistoryRes>> getHistory_main(@PathVariable("userIdx") int userIdx, @PathVariable("type") String type, @PathVariable("typeIdx") int typeIdx) {
         try {
             // TODO : 형식적 validation - 존재하는 회원인가? / type(diary, letter, reply) 입력 확인 / 해당 type에 존재하는 typeIdx인가?
             if (historyProvider.checkUserIdx(userIdx) == 0) {
@@ -112,7 +112,7 @@ public class HistoryController {
                 throw new BaseException(INVALID_TYPEIDX_ABOUT_TYPE); // 해당 type에 존재하지 않는 typeIdx 입니다.
             }
 
-            List<GetHistoryRes_Main> history = historyProvider.getHistory_main(userIdx, type, typeIdx);
+            List<GetHistoryRes> history = historyProvider.getHistory_main(userIdx, type, typeIdx);
             return new BaseResponse<>(history);
 
         } catch (BaseException exception) {

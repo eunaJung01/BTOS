@@ -93,7 +93,7 @@ public class HistoryProvider {
 
             GetHistoryListRes historyListRes = new GetHistoryListRes();
             /*
-             * filtering = "sender"인 경우 GetHistoryListRes.list = List<HistoryList_Sender>
+             * filtering = "sender"인 경우 GetHistoryListRes.list = List<History_Sender>
              * filtering = "diary" 또는 "letter"인 경우 GetHistoryListRes.list = List<History>
              * History 객체 : 수신한 일기/편지/답장에 대한 상세 정보를 저장
              */
@@ -101,7 +101,7 @@ public class HistoryProvider {
             if (search == null) {
                 // 발신인
                 if (filtering.compareTo("sender") == 0) {
-                    List<HistoryList_Sender> historyListRes_list = new ArrayList<>(); // GetHistoryListRes.list
+                    List<History_Sender> historyListRes_list = new ArrayList<>(); // GetHistoryListRes.list
 
                     // userIdx 회원이 받은 일기, 편지, 답장의 발신인 닉네임 목록 (createdAt 기준 내림차순 정렬)
                     List<String> senderNickNameList = historyDao.getNickNameList_sortedByCreatedAt(userIdx);
@@ -208,7 +208,7 @@ public class HistoryProvider {
 
                 // 발신인
                 if (filtering.compareTo("sender") == 0) {
-                    List<HistoryList_Sender> historyListRes_list = new ArrayList<>(); // GetHistoryListRes.list
+                    List<History_Sender> historyListRes_list = new ArrayList<>(); // GetHistoryListRes.list
 
                     // userIdx 회원이 받은 일기, 편지, 답장의 발신자 닉네임 목록 (createdAt 기준 내림차순 정렬)
                     List<String> senderNickNameList = historyDao.getNickNameList_sortedByCreatedAt(userIdx);
@@ -390,7 +390,7 @@ public class HistoryProvider {
     }
 
     // filtering = sender
-    private void setHistoryListRes_list(int userIdx, List<HistoryList_Sender> historyListRes_list, List<String> senderNickNameList) {
+    private void setHistoryListRes_list(int userIdx, List<History_Sender> historyListRes_list, List<String> senderNickNameList) {
         for (String senderNickName : senderNickNameList) {
             List<History> historyList = new ArrayList<>(); // HistoryList_Sender.firstContent
 
@@ -411,7 +411,7 @@ public class HistoryProvider {
 
             int historyListNum = historyDao.getDiaryListSize(userIdx, senderNickName) + historyDao.getLetterListSize(userIdx, senderNickName) + historyDao.getReplyListSize(userIdx, senderNickName);
 
-            HistoryList_Sender historyList_sender = new HistoryList_Sender(historyListNum, historyList.get(0)); // 수신한 일기, 편지, 답장 중 가장 최근에 받은 값
+            History_Sender historyList_sender = new History_Sender(historyListNum, historyList.get(0)); // 수신한 일기, 편지, 답장 중 가장 최근에 받은 값
             historyListRes_list.add(historyList_sender);
         }
     }
@@ -606,13 +606,13 @@ public class HistoryProvider {
      * typeIdx = 조회하고자 하는 본문의 식별자 (diary - diaryIdx / letter - letterIdx / reply - replyIdx)
      * createdAt 기준 오름차순 정렬
      */
-    public List<GetHistoryRes_Main> getHistory_main(int userIdx, String type, int typeIdx) throws BaseException {
+    public List<GetHistoryRes> getHistory_main(int userIdx, String type, int typeIdx) throws BaseException {
         try {
-            List<GetHistoryRes_Main> history = new ArrayList<>();
+            List<GetHistoryRes> history = new ArrayList<>();
 
             // type = diary
             if (type.compareTo("diary") == 0) {
-                GetHistoryRes_Main diary = historyDao.getDiary_main(typeIdx);
+                GetHistoryRes diary = historyDao.getDiary_main(typeIdx);
                 diary.setPositioning(true);
                 if (historyDao.hasDone(typeIdx) == 1) { // 해당 일기에 done list가 있는 경우
                     diary.setDoneList(historyDao.getDoneList_main(typeIdx));
@@ -624,7 +624,7 @@ public class HistoryProvider {
 
             // type = letter
             else if (type.compareTo("letter") == 0) {
-                GetHistoryRes_Main letter = historyDao.getLetter_main(typeIdx);
+                GetHistoryRes letter = historyDao.getLetter_main(typeIdx);
                 letter.setPositioning(true);
 
                 history.add(letter);
@@ -638,15 +638,15 @@ public class HistoryProvider {
                 // 시작점이 일기인 경우
                 if (firstHistoryType.compareTo("diary") == 0) {
                     int diaryIdx = historyDao.getDiaryIdx_main(typeIdx);
-                    GetHistoryRes_Main diary = historyDao.getDiary_main(diaryIdx);
+                    GetHistoryRes diary = historyDao.getDiary_main(diaryIdx);
                     if (historyDao.hasDone(typeIdx) == 1) { // 해당 일기에 done list가 있는 경우
                         diary.setDoneList(historyDao.getDoneList_main(typeIdx));
                     }
                     history.add(diary);
 
                     // 답장 목록
-                    List<GetHistoryRes_Main> replyList = historyDao.getReplyList_diary(userIdx, diaryIdx);
-                    for (GetHistoryRes_Main reply : replyList) {
+                    List<GetHistoryRes> replyList = historyDao.getReplyList_diary(userIdx, diaryIdx);
+                    for (GetHistoryRes reply : replyList) {
                         if (reply.getTypeIdx() == typeIdx) { // 사용자가 조회하고자 하는 답장 본문
                             reply.setPositioning(true);
                         }
@@ -657,11 +657,11 @@ public class HistoryProvider {
                 // 시작점이 편지인 경우
                 else if (firstHistoryType.compareTo("letter") == 0) {
                     int letterIdx = historyDao.getLetterIdx_main(typeIdx);
-                    GetHistoryRes_Main letter = historyDao.getLetter_main(letterIdx);
+                    GetHistoryRes letter = historyDao.getLetter_main(letterIdx);
                     history.add(letter);
 
-                    List<GetHistoryRes_Main> replyList = historyDao.getReplyList_letter(userIdx, letterIdx);
-                    for (GetHistoryRes_Main reply : replyList) {
+                    List<GetHistoryRes> replyList = historyDao.getReplyList_letter(userIdx, letterIdx);
+                    for (GetHistoryRes reply : replyList) {
                         if (reply.getTypeIdx() == typeIdx) { // 사용자가 조회하고자 하는 답장 본문
                             reply.setPositioning(true);
                         }
