@@ -19,27 +19,31 @@ public class History implements Comparable<History> {
     private int doneListNum = 0; // 일기일 경우 done list 개수 / 편지 또는 답장일 경우 0
     private String sendAt_raw; // 발신일(== 수신일) (yyyy-MM-dd HH:mm:ss)
     private String sendAt; // 발신일 - 화면 출력용 (yyyy.MM.dd)
-    private String senderNickName; // 발신자 이름
+    private String senderNickName; // 발신인 User.senderNickName
+    private boolean senderActive; // 발신인 계정 상태 1. true : 활성 또는 휴면 2. false : 탈퇴 -> 답장 불가
+    private int senderFontIdx; // 발신인 User.fontIdx
 
-    /// type = diary
-    public History(String type, int typeIdx, String senderNickName, String content, int emotionIdx, int doneListNum, String sendAt_raw, String sendAt) {
+    // letterList, replyList
+    public History(String type, int typeIdx, String content, String sendAt_raw, String sendAt, String senderNickName, int senderFontIdx) {
         this.type = type;
         this.typeIdx = typeIdx;
-        this.senderNickName = senderNickName;
         this.content = content;
-        this.emotionIdx = emotionIdx;
-        this.doneListNum = doneListNum;
         this.sendAt_raw = sendAt_raw;
         this.sendAt = sendAt;
+        this.senderNickName = senderNickName;
+        this.senderFontIdx = senderFontIdx;
     }
 
-    public History(String type, int typeIdx, String senderNickName, String content, String sendAt_raw, String sendAt) {
+    // letter, reply
+    public History(String type, int typeIdx, String content, String sendAt_raw, String sendAt, String senderNickName, boolean senderActive, int senderFontIdx) {
         this.type = type;
         this.typeIdx = typeIdx;
-        this.senderNickName = senderNickName;
         this.content = content;
         this.sendAt_raw = sendAt_raw;
         this.sendAt = sendAt;
+        this.senderNickName = senderNickName;
+        this.senderActive = senderActive;
+        this.senderFontIdx = senderFontIdx;
     }
 
     @SneakyThrows
