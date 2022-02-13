@@ -37,9 +37,9 @@ public class AlarmController {
     @GetMapping("")
     BaseResponse<List<GetAlarmListRes>> getAlarmList(@RequestParam("userIdx") int userIdx) {
         try {
-            // TODO : 형식적 validation - 존재하는 회원인가?
+            // TODO : 형식적 validation - 존재하는 회원인가? & User.status = 'active'
             if (alarmProvider.checkUserIdx(userIdx) == 0) {
-                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않거나 탈퇴한 회원입니다.
             }
 
             List<GetAlarmListRes> alarmList = alarmProvider.getAlarmList(userIdx);
@@ -58,9 +58,9 @@ public class AlarmController {
     @GetMapping("/{alarmIdx}")
     BaseResponse<GetAlarmRes> getAlarm(@PathVariable("alarmIdx") int alarmIdx, @RequestParam("userIdx") int userIdx) {
         try {
-            // TODO : 형식적 validation - 존재하는 회원인가? / 해당 회원의 알림인가? / status = active
+            // TODO : 형식적 validation - 존재하는 회원인가? & User.status = 'active' / 해당 회원의 알림인가? / status = active
             if (alarmProvider.checkUserIdx(userIdx) == 0) {
-                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않거나 탈퇴한 회원입니다.
             }
             if (alarmProvider.checkUserAboutAlarm(alarmIdx, userIdx) == 0) {
                 throw new BaseException(INVALID_USER_ABOUT_ALARM); // 해당 알림에 접근 권한이 없는 회원입니다.

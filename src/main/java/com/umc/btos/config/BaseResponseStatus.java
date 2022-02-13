@@ -77,7 +77,7 @@ public enum BaseResponseStatus {
 
     // 6000 : 레마
     TEMP2(false, 9000, "conflict 방지용 2"),
-    INVALID_USERIDX(false, 6000, "존재하지 않는 회원입니다."),
+    INVALID_USERIDX(false, 6000, "존재하지 않거나 탈퇴한 회원입니다."),
     INVALID_NICKNAME(false, 6001, "존재하지 않는 회원 닉네임입니다."),
     INVALID_DIARYIDX(false, 6002, "존재하지 않는 일기입니다."),
     INVALID_USER_ABOUT_DIARY(false, 6003, "해당 일기에 접근 권한이 없는 회원입니다."),

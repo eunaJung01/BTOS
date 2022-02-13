@@ -37,9 +37,9 @@ public class HistoryController {
     @GetMapping("/list/{userIdx}/{pageNum}")
     BaseResponsePaging<GetHistoryListRes> getHistoryList(@PathVariable("userIdx") String userIdx, @PathVariable("pageNum") int pageNum, @RequestParam(value = "filtering", defaultValue = "sender") String filtering, @RequestParam(value = "search", required = false) String search) {
         try {
-            // TODO : 형식적 validation - 존재하는 회원인가? / pageNum == 0인 경우
+            // TODO : 형식적 validation - 존재하는 회원인가? & User.status = 'active' / pageNum == 0인 경우
             if (historyProvider.checkUserIdx(Integer.parseInt(userIdx)) == 0) {
-                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않거나 탈퇴한 회원입니다.
             }
             if (pageNum == 0) {
                 throw new BaseException(PAGENUM_ERROR_0); // 페이지 번호는 1부터 시작합니다.
