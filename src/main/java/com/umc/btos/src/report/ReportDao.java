@@ -22,25 +22,30 @@ public class ReportDao {
 
     private JdbcTemplate jdbcTemplate;
 
-
     @Autowired
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
-
     }
 
-    // 편지의 경우 : 작성한 userIdx반환
+    // 신고 당한 UserIdx 반환
     public int getUserIdx(PostReportReq postReportReq) {
+        // 신고의 Type 반환  // diary:일기, letter : 편지, reply : 답장
         String getType = postReportReq.getReportType();
-        if (getType.equals("diary")) { // 일기일 경우
+
+        // TYPE : 일기
+        if (getType.equals("diary")) {
             String selectQuery_diary = "SELECT Diary.userIdx FROM Diary WHERE diaryIdx=?";
             int param = postReportReq.getIdx();
             return this.jdbcTemplate.queryForObject(selectQuery_diary, int.class, param);
-        } else if (getType.equals("letter")) { // 편지이 경우
+        }
+        // TYPE : 편지
+        else if (getType.equals("letter")) {
             String selectQuery_letter = "SELECT Letter.userIdx FROM Letter WHERE letterIdx= ?";
             int param = postReportReq.getIdx();
             return this.jdbcTemplate.queryForObject(selectQuery_letter, int.class, param);
-        } else if (getType.equals("reply")) { // 답장일 경우
+        }
+        // TYPE : 답장
+        else if (getType.equals("reply")) {
             String selectQuery_reply = "SELECT Reply.replierIdx FROM Reply WHERE replyIdx=?";
             int param = postReportReq.getIdx();
             return this.jdbcTemplate.queryForObject(selectQuery_reply, int.class, param);
@@ -48,15 +53,15 @@ public class ReportDao {
         return 1;
     }
 
-
+    // 신고 생성 // Report 테이블에 값 추가
     public int createReport(PostReportReq postReportReq) {
-        String createReportQuery = "insert into Report (reportType,reason,idx,content) VALUES (?,?,?,?)"; // 실행될 동적 쿼리문
-        Object[] createReportParams = new Object[]{postReportReq.getReportType(), postReportReq.getReason(), postReportReq.getIdx(), postReportReq.getContent()}; // 동적 쿼리의 ?부분에 주입될 값
+        // DB의 Report Table에 (reportType,reason,idx,content)값을 가지는 신고 데이터를 생성한다.
+        String createReportQuery = "insert into Report (reportType,reason,idx,content) VALUES (?,?,?,?)";
+        Object[] createReportParams = new Object[]{postReportReq.getReportType(), postReportReq.getReason(), postReportReq.getIdx(), postReportReq.getContent()};
         this.jdbcTemplate.update(createReportQuery, createReportParams);
 
-        // 즉 DB의 Report Table에 (reportType,reason,idx,content)값을 가지는 유저 데이터를 삽입(생성)한다.
-
-        String lastInsertIdQuery = "select last_insert_id()"; // 가장 마지막에 삽입된(생성된) id값은 가져온다.
-        return this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class); // 해당 쿼리문의 결과 마지막으로 삽인된 유저의 userIdx번호를 반환한다.
+        // 가장 마지막에 삽입된 reportIdx값을 가져온다.
+        String lastInsertIdQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class);
     }
 }
