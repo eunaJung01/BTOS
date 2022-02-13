@@ -37,76 +37,111 @@ public class LetterService {
 
 
     // ******************************************************************************
-    // 편지 작성(POST)
 
+    // 편지 작성(POST)
     public PostLetterPlantRes createLetter(PostLetterReq postLetterReq) throws BaseException {
         try {
-            int letterIdx = letterDao.createLetter(postLetterReq); // 편지 생성 //letter 테이블에 생성 // 생성한 편지의 letterIdx반환
-            PostLetterUserSimilarIdx idx_similar =letterDao.getIdx_Similar(letterIdx); // 생성한 유저의 idx와 SimilarAge여부를 반환
-            if (idx_similar.getUserSimilarAge() == 1){// 편지 발송 유저가 또래 편지 수신을 원할경우
+            //letter 테이블에 편지 생성
+            // 생성한 편지의 letterIdx반환
+            int letterIdx = letterDao.createLetter(postLetterReq);
+
+            // 생성한 유저의 idx와 SimilarAge여부를 반환
+            PostLetterUserSimilarIdx idx_similar =letterDao.getIdx_Similar(letterIdx);
+
+            // [또래 유저 발송 O]
+            // 편지 발송 유저가 또래 편지 수신을 원할경우
+            if (idx_similar.getUserSimilarAge() == 1){
+                // 랜덤으로 선택된 5명의 또래 유저Idx 리스트
                 List<Integer> receiveUserIdx_similar =letterDao.getLetterUserIdx_Similar(idx_similar);
-                    // 휴먼상태가 아닌 또래의 user 5명을 랜덤으로 골라 편지 발송 //letterSendList에 추가
-                for (int i = 0; i < receiveUserIdx_similar.size(); i++) { //(최대 5명) 5명의 userIdx를 뽑는다. // 1명씩 테이블에 추가하므로 5번 반복
+
+                //letterSendList 테이블에 발송 편지 목록 추가
+                //(최대 5명) 뽑힌 유저의 수만큼 편지 발송 // 1명씩 테이블에 추가하므로 5번 반복
+                for (int i = 0; i < receiveUserIdx_similar.size(); i++) {
                     letterDao.createLetterSendList(letterIdx,receiveUserIdx_similar,i);
                 }
-                if (receiveUserIdx_similar.size() < 5 ){ // 또래의 유저가 5명 미만이라면
+
+                // 또래의 유저가 5명 미만이라면
+                if (receiveUserIdx_similar.size() < 5 ){
                     Map<Integer, Integer> letterIdxMap = new HashMap<>();
+                    // Key :  이미 편지를 수신받은 유저Idx, Value : 1
                     for (int pastSend : receiveUserIdx_similar) {
-                        letterIdxMap.put(pastSend, 1); // 이미 편지를 보낸 유저의 값을 1로 지정
+                        letterIdxMap.put(pastSend, 1);
                     }
-                    //  (5 - 선택된 유저) 만큼 랜덤으로 보낼 유저 인덱스의 리스트 만들기
+
+                    // 랜덤으로 보낼 유저 인덱스의 리스트 생성
+                    // 이미 편지를 보낸 유저가 존재할 수 있으므로 넉넉하게 10명 뽑음
                     List<Integer> receiveUserIdx_Random =letterDao.getLetterUserIdx_Random(idx_similar);
-                    // 또래 이외에 (5 - 선택된 유저) 만큼 랜덤으로 선택한 유저에게 편지 발송
+
+                    // (5 - 편지 수신 완료 User의 수) 만큼 랜덤으로 선택한 유저에게 편지 발송
                     int sendUserIdx = 0;
                     int similar_size = receiveUserIdx_similar.size();
-                    for (int j = 0; j < (5-similar_size); j++,sendUserIdx++){ // j 번만큼 편지 전송
+                    // j번(5 - 편지 수신 완료 User의 수) 만큼 편지 전송
+                    for (int j = 0; j < (5-similar_size); j++,sendUserIdx++){
                         int userIdx = receiveUserIdx_Random.get(sendUserIdx);
-                        if (letterIdxMap.containsKey(userIdx)==true) { // 만약 이미 편지를 보낸 유저라면
+
+                        // 만약 이미 편지를 받은 유저라면
+                        if (letterIdxMap.containsKey(userIdx)==true) {
                             j -= 1; // 편지를 보낸 수 줄임
                             continue;
                         }
+
+                        // LetterSendList 테이블에 편지 발송 추가
                         letterDao.createLetterSendList(letterIdx,receiveUserIdx_Random,sendUserIdx);
+                        // 편지 발송 목록에 해당 userIdx 추가  // 편지 발송 API의 Res에 필요
                         receiveUserIdx_similar.add(userIdx);
                     }
-
                 }
+                // 화분 점수 증가
                 PatchModifyScoreRes ModifyScore = plantService.modifyScore_plus(postLetterReq.getUserIdx(), Constant.PLANT_LEVELUP_LETTER,"letter");
+                // 편지 발송 유저의 닉네임
                 String senderNickName = getNickName(postLetterReq.getUserIdx());
                 PostLetterPlantRes result_similar = new PostLetterPlantRes(letterIdx,senderNickName,receiveUserIdx_similar,ModifyScore );
                 return result_similar;
             }
-            else {// 편지 발송 유저가 또래 편지 수신을 원하지않는 경우
-                // (최대 5명) userIdx를 뽑는다.
-                List<Integer> receiveUserIdx =letterDao.getLetterUserIdx(idx_similar); // 휴먼상태가 아닌 user 5명을 랜덤으로 골라 편지 발송 //letterSendList에 추가
-                for (int i = 0; i < receiveUserIdx.size(); i++) { // 1명씩 테이블에 추가 // 5명보다 작을경우 더이상 보낼 유저가 없는것이므로 나온 유저의 수 만큼만 편지를 전송한다.
+
+            // [또래 유저 발송 X]
+            else {
+                // 랜덤으로 선택된 5명의 유저Idx 리스트
+                List<Integer> receiveUserIdx =letterDao.getLetterUserIdx(idx_similar);
+
+                //letterSendList 테이블에 발송 편지 목록 추가
+                //(최대 5명) 뽑힌 유저의 수만큼 편지 발송 // 1명씩 테이블에 추가하므로 5번 반복
+                // 만약 5명보다 적을경우(유저가 5명이 안될경우)에도 선택된 유저만큼만 발송되므로 ERROR발생 X
+                for (int i = 0; i < receiveUserIdx.size(); i++) {
                     letterDao.createLetterSendList(letterIdx,receiveUserIdx,i);
                 }
+
+                // 화분 점수 증가
                 PatchModifyScoreRes ModifyScore = plantService.modifyScore_plus(postLetterReq.getUserIdx(), Constant.PLANT_LEVELUP_LETTER,"letter");
+                // 편지 발송 유저의 닉네임
                 String senderNickName = getNickName(postLetterReq.getUserIdx());
                 PostLetterPlantRes result = new PostLetterPlantRes(letterIdx,senderNickName,receiveUserIdx,ModifyScore );
                 return result;
             }
-        } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
+        } catch (Exception exception) {
             exception.printStackTrace(); // 에러 발생 원인 출력
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    // 편지 발송 유저의 닉네임반환
     public String getNickName(int userIdx) throws BaseException {
         try {
-            String nickName = letterDao.getNickName(userIdx); // 해당 과정이 무사히 수행되면 True(1), 그렇지 않으면 False(0)입니다.
+            String nickName = letterDao.getNickName(userIdx);
             return nickName;
-        } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
+        } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
     // 편지 삭제 - status를 deleted로 변경 (Patch)
     public void modifyLetterStatus(PatchLetterReq patchLetterReq) throws BaseException {
         try {
-            int result = letterDao.modifyLetterStatus(patchLetterReq); // 해당 과정이 무사히 수행되면 True(1), 그렇지 않으면 False(0)입니다.
-            if (result == 0) { // result값이 0이면 과정이 실패한 것이므로 에러 메서지를 보냅니다.
-                throw new BaseException(MODIFY_FAIL_LETTER_STATUS);
-            }
-        } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
+            // result값이 0이면 과정이 실패 - 8001 ERROR
+            int result = letterDao.modifyLetterStatus(patchLetterReq);
+            if (result == 0) throw new BaseException(MODIFY_FAIL_LETTER_STATUS);
+
+        } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
