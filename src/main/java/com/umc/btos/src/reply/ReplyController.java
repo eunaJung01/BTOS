@@ -32,11 +32,10 @@ public class ReplyController {
      * [POST] /replies
      */
 
-    // Body
     @ResponseBody
-    @PostMapping("")    // POST 방식의 요청을 매핑하기 위한 어노테이션
+    @PostMapping("")
+    // 답장 생성
     public BaseResponse<PostReplyFinalRes> createReply(@RequestBody PostReplyReq postReplyReq) {
-        //  @RequestBody란, 클라이언트가 전송하는 HTTP Request Body(우리는 JSON으로 통신하니, 이 경우 body는 JSON)를 자바 객체로 매핑시켜주는 어노테이션
         try{
             PostReplyFinalRes postReplyFinalRes = replyService.createReply(postReplyReq);
             return new BaseResponse<>(postReplyFinalRes);
@@ -65,12 +64,13 @@ public class ReplyController {
         }
     }
 
+
+    // 우편함에서 Provider의 메서드를 호출함
     /**
      * 답장 조회 API
      * [GET] /replies/:replyIdx
      */
     // Path-variable
-
 //    @ResponseBody
 //    @GetMapping("/{replyIdx}") // (GET) localhost:9000/replies/:replyIdx
 //    public BaseResponse<GetReplyRes> getReply(@PathVariable("replyIdx") int replyIdx) {
