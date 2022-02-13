@@ -36,7 +36,8 @@ public class NoticeController {
      */
     @ResponseBody
     @GetMapping("")
-    public BaseResponse<List<GetNoticeRes>> getNotices() { // 공지사항 조회 함수
+    // 공지사항 조회
+    public BaseResponse<List<GetNoticeRes>> getNotices() {
         try {
             //조회 성공 시 : List<GetBlocklistRes> 형태로 결과(공지사항 목록) 반환
             List<GetNoticeRes> getNoticeRes = noticeProvider.getNotices();
