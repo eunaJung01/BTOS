@@ -4,6 +4,7 @@ package com.umc.btos.src.reply;
 import com.umc.btos.config.BaseException;
 
 
+import com.umc.btos.src.alarm.AlarmService;
 import com.umc.btos.src.reply.model.*;
 import com.umc.btos.utils.JwtService;
 import org.slf4j.Logger;
@@ -20,15 +21,14 @@ public class ReplyService {
     // *********************** 동작에 있어 필요한 요소들을 불러옵니다. *************************
     private final ReplyDao replyDao;
     private final ReplyProvider replyProvider;
-    private final JwtService jwtService;
+    private final AlarmService alarmService;
 
 
     @Autowired //readme 참고
-    public ReplyService(ReplyDao replyDao, ReplyProvider replyProvider, JwtService jwtService) {
+    public ReplyService(ReplyDao replyDao, ReplyProvider replyProvider, AlarmService alarmService) {
         this.replyDao = replyDao;
         this.replyProvider = replyProvider;
-        this.jwtService = jwtService;
-
+        this.alarmService = alarmService;
     }
 
 // ******************************************************************************
@@ -40,6 +40,7 @@ public class ReplyService {
             int replyIdx = replyDao.createReply(postReplyReq);
             PostReplyFinalRes postReplyFinalRes = getReplyreceiverNickname(replyIdx,postReplyReq); // 받는 유저의 userIdx, 답장을 보내는 사람의 닉네임 반환
 
+            alarmService.postAlarm_reply(postReplyFinalRes.getReplyIdx(), postReplyFinalRes.getSenderNickName(), postReplyFinalRes.getReceiverIdx()); // 알림 저장
             return postReplyFinalRes;
 
         } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지 : 8004
