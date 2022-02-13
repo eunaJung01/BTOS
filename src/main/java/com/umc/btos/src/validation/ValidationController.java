@@ -24,9 +24,14 @@ public class ValidationController {
     private final OAuthController oAuthController;
 
     /**
+     * 영수증 검증 서버
+     * [GET] /shops/receipt-validation
+     *
      * @param getValidationReq
      * @param accessToken
-     * @return validationController(validationReceipt).java 사용 전에 notion 개발현황>인앱결제>서버>구현 2번을 꼭 읽어주세요.
+     * @return String
+     *
+     * validationController(validationReceipt).java 사용 전에 notion 개발현황>인앱결제>서버>구현 2번을 꼭 읽어주세요.
      */
     @ResponseBody
     @GetMapping("/receipt-validation")
