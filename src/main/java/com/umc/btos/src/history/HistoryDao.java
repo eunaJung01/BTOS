@@ -1211,4 +1211,46 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(query, String.class, replyIdx);
     }
 
+    // --------------------------------------- hasReply ---------------------------------------
+    public int hasReply_diary(int userIdx, int diaryIdx) {
+        String query = "SELECT EXISTS(SELECT Reply.replyIdx                           AS typeIdx, " +
+                "                     Reply.content, " +
+                "                     Reply.createdAt                          AS sendAt_raw, " +
+                "                     date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "                     User.nickName                            AS senderNickName, " +
+                "                     User.fontIdx                             AS senderFontIdx " +
+                "              FROM DiarySendList " +
+                "                       INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                "                       INNER JOIN Reply ON Reply.sendIdx = DiarySendList.sendIdx " +
+                "                       INNER JOIN User ON Reply.replierIdx = User.userIdx " +
+                "              WHERE Reply.firstHistoryType = 'diary' " +
+                "                AND DiarySendList.sendIdx = " +
+                "                    (SELECT DISTINCT DiarySendList.sendIdx " +
+                "                     FROM DiarySendList " +
+                "                              INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                "                              INNER JOIN Reply ON Reply.sendIdx = DiarySendList.sendIdx " +
+                "                     WHERE (Reply.replierIdx = ? OR Reply.receiverIdx = ?) " +
+                "                       AND Diary.diaryIdx = ?))";
+
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx, userIdx, diaryIdx);
+    }
+
+    public int hasReply_letter(int userIdx, int letterIdx) {
+        String query = "SELECT EXISTS(SELECT * " +
+                "              FROM LetterSendList " +
+                "                       INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
+                "                       INNER JOIN Reply ON Reply.sendIdx = LetterSendList.sendIdx " +
+                "                       INNER JOIN User ON Reply.replierIdx = User.userIdx " +
+                "              WHERE Reply.firstHistoryType = 'letter' " +
+                "                AND LetterSendList.sendIdx = " +
+                "                    (SELECT DISTINCT LetterSendList.sendIdx " +
+                "                     FROM LetterSendList " +
+                "                              INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
+                "                              INNER JOIN Reply ON Reply.sendIdx = LetterSendList.sendIdx " +
+                "                     WHERE (Reply.replierIdx = ? OR Reply.receiverIdx = ?) " +
+                "                       AND Letter.letterIdx = ?))";
+
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx, userIdx, letterIdx);
+    }
+
 }

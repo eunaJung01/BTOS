@@ -650,32 +650,36 @@ public class HistoryProvider {
                 if (historyDao.hasDone(typeIdx) == 1) { // 해당 일기에 done list가 있는 경우
                     diary.setDoneList(historyDao.getDoneList_main(typeIdx));
                 }
-
                 historyList.add(diary);
-                historyList.addAll(historyDao.getReplyList_diary(userIdx, typeIdx)); // 답장 목록
 
-                // setSenderActive
-                for (GetHistoryRes history : historyList) {
-                    if (history.getType().compareTo("reply") == 0) {
-                        int replyIdx = history.getTypeIdx();
-                        history.setSenderActive(historyDao.getSenderActive_reply(replyIdx));
+                if (historyDao.hasReply_diary(userIdx, typeIdx) == 1) { // 답장 유무 확인
+                    historyList.addAll(historyDao.getReplyList_diary(userIdx, typeIdx)); // 답장 목록
+
+                    // setSenderActive
+                    for (GetHistoryRes history : historyList) {
+                        if (history.getType().compareTo("reply") == 0) {
+                            int replyIdx = history.getTypeIdx();
+                            history.setSenderActive(historyDao.getSenderActive_reply(replyIdx));
+                        }
                     }
                 }
             }
 
             // type = letter
             else if (type.compareTo("letter") == 0) {
-                GetHistoryRes letter = historyDao.getLetter_main(typeIdx, historyDao.getSenderActive_reply(typeIdx));
+                GetHistoryRes letter = historyDao.getLetter_main(typeIdx, historyDao.getSenderActive_letter(typeIdx));
                 letter.setPositioning(true);
-
                 historyList.add(letter);
-                historyList.addAll(historyDao.getReplyList_letter(userIdx, typeIdx)); // 답장 목록
 
-                // setSenderActive
-                for (GetHistoryRes history : historyList) {
-                    if (history.getType().compareTo("reply") == 0) {
-                        int replyIdx = history.getTypeIdx();
-                        history.setSenderActive(historyDao.getSenderActive_reply(replyIdx));
+                if (historyDao.hasReply_letter(userIdx, typeIdx) == 1) { // 답장 유무 확인
+                    historyList.addAll(historyDao.getReplyList_letter(userIdx, typeIdx)); // 답장 목록
+
+                    // setSenderActive
+                    for (GetHistoryRes history : historyList) {
+                        if (history.getType().compareTo("reply") == 0) {
+                            int replyIdx = history.getTypeIdx();
+                            history.setSenderActive(historyDao.getSenderActive_reply(replyIdx));
+                        }
                     }
                 }
             }
@@ -733,7 +737,6 @@ public class HistoryProvider {
             return historyList;
 
         } catch (Exception exception) {
-            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
