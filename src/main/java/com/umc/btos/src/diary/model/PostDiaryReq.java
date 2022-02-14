@@ -15,7 +15,7 @@ public class PostDiaryReq {
     private String diaryDate; // yyyy.MM.dd
     private String diaryContent;
     private boolean isPublic;
-    private List doneList;
+    private List<String> doneList;
 
     public int getIsPublic_int() { // https://projectlombok.org/features/GetterSetter
         if (this.isPublic) {

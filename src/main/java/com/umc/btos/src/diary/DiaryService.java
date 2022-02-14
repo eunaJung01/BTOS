@@ -108,10 +108,10 @@ public class DiaryService {
             checkDiaryDate(putDiaryReq.getUserIdx(), putDiaryReq.getDiaryDate());
         }
         // 2. 당일에 작성한 일기가 아니라면 발송 불가
-        checkPublicDate(putDiaryReq.getDiaryDate(), putDiaryReq.getIsPublic());
+        checkPublicDate(putDiaryReq.getDiaryDate(), putDiaryReq.getIsPublic_int());
 
         // isPublic == 0(private)인 경우 -> Diary.content & Done.content 부분 암호화하여 저장
-        if (putDiaryReq.getIsPublic() == 0) {
+        if (putDiaryReq.getIsPublic_int() == 0) {
             String diaryContent_encrypted = encryptDiaryContent(putDiaryReq.getDiaryContent()); // Diary.content 암호화
             putDiaryReq.setDiaryContent(diaryContent_encrypted);
 
@@ -126,11 +126,57 @@ public class DiaryService {
             }
 
             // Done Table 수정
-            List doneIdxList = diaryDao.getDoneIdxList(putDiaryReq); // 해당 일기의 모든 doneIdx (List 형태로 저장)
-            if (diaryDao.modifyDoneList(putDiaryReq, doneIdxList) == 0) {
-                throw new BaseException(MODIFY_FAIL_DONE); // done list 수정에 실패하였습니다.
-            }
+            List<Integer> doneIdxList = diaryDao.getDoneIdxList(putDiaryReq); // 해당 일기에 저장되어 있던 모든 doneIdx (origin done list)
+            List<String> doneContentList_modified = putDiaryReq.getDoneList(); // modified done list
 
+            int doneListNum_origin = doneIdxList.size(); // 기존 done list 개수
+            int doneListNum_new = doneContentList_modified.size(); // 수정 done list 개수
+
+            // 기존 done list 개수 > 수정 done list 개수
+            if (doneListNum_origin > doneListNum_new) {
+                for (int i = 0; i < doneListNum_origin; i++) {
+                    // UPDATE
+                    if (i < doneContentList_modified.size()) {
+                        if (diaryDao.modifyDone(doneIdxList.get(i), doneContentList_modified.get(i)) == 0) {
+                            throw new BaseException(MODIFY_FAIL_DONE); // done list 수정에 실패하였습니다.
+                        }
+                    }
+                    // status = 'deleted;
+                    else {
+                        if (diaryDao.modifyDone_modifyStatus(doneIdxList.get(i)) == 0) {
+                            throw new BaseException(MODIFY_FAIL_DONE); // done list 수정에 실패하였습니다.
+                        }
+                    }
+                }
+            }
+            // 기존 done list 개수 < 수정 done list 개수
+            else if (doneListNum_origin < doneListNum_new) {
+                for (int i = 0; i < doneListNum_new; i++) {
+                    // UPDATE
+                    if (i < doneListNum_origin) {
+                        if (diaryDao.modifyDone(doneIdxList.get(i), doneContentList_modified.get(i)) == 0) {
+                            throw new BaseException(MODIFY_FAIL_DONE); // done list 수정에 실패하였습니다.
+                        }
+                    }
+                    // INSERT
+                    else {
+                        if (diaryDao.modifyDone_insert(putDiaryReq.getDiaryIdx(), doneContentList_modified.get(i)) == 0) {
+                            throw new BaseException(MODIFY_FAIL_DONE); // done list 수정에 실패하였습니다.
+                        }
+                    }
+                }
+            }
+            // 기존 done list 개수 == 수정 done list 개수
+            else {
+                // UPDATE
+                for (int i = 0; i < doneListNum_new; i++) {
+                    if (diaryDao.modifyDone(doneIdxList.get(i), doneContentList_modified.get(i)) == 0) {
+                        throw new BaseException(MODIFY_FAIL_DONE); // done list 수정에 실패하였습니다.
+                    }
+                }
+            }
+        } catch (BaseException exception) {
+            throw new BaseException(MODIFY_FAIL_DONE); // done list 수정에 실패하였습니다.
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
