@@ -30,9 +30,9 @@ public class BlocklistController {
             * 차단 작성 API
      * [POST] /blocklists
      */
-    // Body에 json 파일을 담아 차단 데이터 생성
+
     @ResponseBody
-    @PostMapping("")    // POST 어노테이션
+    @PostMapping("")
     public BaseResponse<PostBlocklistRes> createBlocklist(@RequestBody PostBlocklistReq postBlocklistReq) {
 
         try{
@@ -41,8 +41,9 @@ public class BlocklistController {
         } catch (BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }
-
     }
+
+
     /**
      * 차단 해제 API
      * [PATCH] /blocklists/:blockIdx
@@ -60,6 +61,8 @@ public class BlocklistController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+
     /**
      * 차단목록조회 API
      * [GET] /blocklists?userIdx=
