@@ -21,11 +21,12 @@ public class LetterProvider {
         this.letterDao = letterDao;
     }
 
-    // 해당 letterIdx를 갖는 Letter 조회
+    //편지 조회 // 해당 letterIdx를 갖는 Letter 조회
     public GetLetterRes getLetter(int letterIdx, int userIdx) throws BaseException {
         try {
             GetLetterRes getLetterRes = letterDao.getLetter(letterIdx, userIdx);
-            int isSuccess = letterDao.modifyIsChecked(letterIdx, userIdx); // 열람여부 변경 성공 여부 반환 : 성공 시 1, 실패 시 0을 반환
+            // 열람여부 변경 성공 여부 반환 : 성공 시 1, 실패 시 0을 반환
+            int isSuccess = letterDao.modifyIsChecked(letterIdx, userIdx);
             if (isSuccess == 0) {
                 throw new BaseException(MODIFY_LETTERSENDLIST_ISCHECKED_ERROR);
             }
@@ -39,10 +40,10 @@ public class LetterProvider {
     /*
     편지를 보내는 회원 - 회원여부 확인
     */
-
     public int checkUserIdx(int userIdx) throws BaseException {
         try {
-            return letterDao.checkUserIdx(userIdx); // 존재하면 1, 존재하지 않는다면 0 반환
+            // 존재하면 1, 존재하지 않는다면 0 반환
+            return letterDao.checkUserIdx(userIdx);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
