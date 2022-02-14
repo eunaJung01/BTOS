@@ -67,7 +67,6 @@ public class LetterController {
     // Path-variable - letterIdx를 파라미터로 받음 - 해당 letterIdx의 status를 deleted로 변경
     public BaseResponse<String> deleteLetter(@PathVariable("letterIdx") int letterIdx) {  //반환형은 string
         try {
-
             PatchLetterReq patchLetterReq = new PatchLetterReq(letterIdx);
             letterService.modifyLetterStatus(patchLetterReq);
             String result = "편지가 삭제되었습니다.";
