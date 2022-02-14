@@ -33,9 +33,9 @@ public class ArchiveController {
     @GetMapping("/calendar/{userIdx}/{date}")
     public BaseResponse<List<GetCalendarRes>> getCalendar(@PathVariable("userIdx") int userIdx, @PathVariable("date") String date, @RequestParam("type") String type) {
         try {
-            // TODO : 형식적 validation - 존재하는 회원인가?
+            // TODO : 형식적 validation - 존재하는 회원인가? & User.status = 'active'
             if (archiveProvider.checkUserIdx(userIdx) == 0) {
-                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않거나 탈퇴한 회원입니다.
             }
 
             List<GetCalendarRes> calendar = archiveProvider.getCalendar(userIdx, date, type);
@@ -65,9 +65,9 @@ public class ArchiveController {
     @GetMapping("/diaryList/{userIdx}/{pageNum}")
     public BaseResponsePaging<List<GetDiaryListRes>> getDiaryList(@PathVariable("userIdx") String userIdx, @PathVariable("pageNum") int pageNum, @RequestParam(required = false) String search, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
         try {
-            // TODO : 형식적 validation - 존재하는 회원인가? / pageNum == 0인 경우
+            // TODO : 형식적 validation - 존재하는 회원인가? & User.status = 'active' / pageNum == 0인 경우
             if (archiveProvider.checkUserIdx(Integer.parseInt(userIdx)) == 0) {
-                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않거나 탈퇴한 회원입니다.
             }
             if (pageNum == 0) {
                 throw new BaseException(PAGENUM_ERROR_0); // 페이지 번호는 1부터 시작합니다.

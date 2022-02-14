@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Repository
@@ -39,10 +40,10 @@ public class ArchiveDao {
     public List<GetCalendarRes> getCalendarList(int userIdx, String date) {
         String startDate = date + ".01";
 
-        int year = Integer.parseInt(date.substring(0, 4)); // date[0] ~ date[3]
-        int month = Integer.parseInt(date.substring(5, 7)); // date[5] ~ date[6]
-        LocalDate initial = LocalDate.of(year, month, 1); // yyyy.MM.01
-        LocalDate endDate = initial.withDayOfMonth(initial.lengthOfMonth()); // 해당 월의 마지막 날 가져오기
+        // String parsing -> LocalDate 객체 생성
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        LocalDate startDate_localDate = LocalDate.parse(startDate, formatter); // yyyy.MM.01
+        LocalDate endDate = startDate_localDate.withDayOfMonth(startDate_localDate.lengthOfMonth()); // 해당 월의 마지막 날 가져오기
 
         String query = "SELECT diaryIdx, diaryDate " +
                 "FROM Diary " +
