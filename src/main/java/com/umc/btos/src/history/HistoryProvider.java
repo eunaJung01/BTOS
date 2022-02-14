@@ -499,6 +499,20 @@ public class HistoryProvider {
                 dataNum_currentPage = historyList.size();
                 pageInfo.setDataNum_currentPage(dataNum_currentPage); // 현재 페이지의 데이터 개수
 
+                // setSenderActive
+                for (History history : historyList) {
+                    int typeIdx = history.getTypeIdx();
+
+                    switch (history.getType()) {
+                        case "letter" :
+                            history.setSenderActive(historyDao.getSenderActive_letter(typeIdx));
+                            break;
+                        case "reply" :
+                            history.setSenderActive(historyDao.getSenderActive_reply(typeIdx));
+                            break;
+                    }
+                }
+
             } else {
                 /*
                  * 문자열 검색 (search)
