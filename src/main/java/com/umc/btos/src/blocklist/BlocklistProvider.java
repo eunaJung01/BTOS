@@ -17,8 +17,6 @@ import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
 
 public class BlocklistProvider {
     private final BlocklistDao blocklistDao;
-
-
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired

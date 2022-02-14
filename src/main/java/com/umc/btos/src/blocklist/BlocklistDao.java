@@ -25,17 +25,18 @@ public class BlocklistDao {
         Object[] createBlocklistParams = new Object[]{postBlocklistReq.getUserIdx(),postBlocklistReq.getBlockedUserIdx()};
         this.jdbcTemplate.update(createBlocklistQuery, createBlocklistParams);
 
-        String lastInsertIdQuery = "select last_insert_id()"; // 가장 마지막에 삽입된(생성된) id값은 가져온다.
-        return this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class); // 해당 쿼리문의 결과 마지막으로 삽인된 차단의 blockIdx번호를 반환한다.
+        // 가장 마지막에 삽입된(생성된) blockIdx값을 가져온다.
+        String lastInsertIdQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class);
     }
 
 
     //차단 제거 // 차단의 status를 deleted로 변경
     public int modifyBlockStatus(PatchBlocklistReq patchBlocklistReq) {
-        String modifyBlockStatusQuery = "update BlockList set status = ? where blockIdx = ? "; // 해당 blockIdx를 만족하는 block의 status를 deleted으로 변경한다.
-        Object[] modifyBlockStatusParams = new Object[]{"deleted", patchBlocklistReq.getBlockIdx()}; // 주입될 값들(status, blockIdx) 순
+        String modifyBlockStatusQuery = "update BlockList set status = ? where blockIdx = ? ";
+        Object[] modifyBlockStatusParams = new Object[]{"deleted", patchBlocklistReq.getBlockIdx()};
 
-        return this.jdbcTemplate.update(modifyBlockStatusQuery, modifyBlockStatusParams); // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
+        return this.jdbcTemplate.update(modifyBlockStatusQuery, modifyBlockStatusParams);
     }
 
 
