@@ -37,7 +37,7 @@ public class HistoryProvider {
     }
 
     /*
-     * 존재하는 회원 닉네임인지 확인
+     * 존재하는 회원 닉네임인지 확인 (User.status 확인 X)
      */
     public int checkNickName(String senderNickName) throws BaseException {
         try {

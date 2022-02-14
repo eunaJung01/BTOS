@@ -26,7 +26,7 @@ public class HistoryDao {
 
     // 존재하는 회원 닉네임인지 확인
     public int checkNickName(String nickName) {
-        String query = "SELECT EXISTS (SELECT nickName FROM User WHERE nickName = ? AND status = 'active')";
+        String query = "SELECT EXISTS (SELECT nickName FROM User WHERE nickName = ?)";
         return this.jdbcTemplate.queryForObject(query, int.class, nickName);
     }
 
