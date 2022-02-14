@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class ReportProvider {
     private final ReportDao reportDao;
-
-
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
