@@ -33,9 +33,9 @@ public class ArchiveController {
     @GetMapping("/calendar/{userIdx}/{date}")
     public BaseResponse<List<GetCalendarRes>> getCalendar(@PathVariable("userIdx") int userIdx, @PathVariable("date") String date, @RequestParam("type") String type) {
         try {
-            // TODO : 형식적 validation - 존재하는 회원인가?
+            // TODO : 형식적 validation - 존재하는 회원인가? & User.status = 'active'
             if (archiveProvider.checkUserIdx(userIdx) == 0) {
-                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않거나 탈퇴한 회원입니다.
             }
 
             List<GetCalendarRes> calendar = archiveProvider.getCalendar(userIdx, date, type);
@@ -52,6 +52,7 @@ public class ArchiveController {
      * search = 검색할 문자열 ("String")
      * startDate, lastDate = 날짜 기간 설정 (yyyy.MM.dd ~ yyyy.MM.dd)
      * 검색 & 기간 설정 조회는 중첩됨
+     * 검색 시 띄어쓰기, 영문 대소문자 구분없이 조회됨
      * 최신순 정렬 (diaryDate 기준 내림차순 정렬)
      * 페이징 처리 (무한 스크롤) - 20개씩 조회
      *
@@ -64,9 +65,9 @@ public class ArchiveController {
     @GetMapping("/diaryList/{userIdx}/{pageNum}")
     public BaseResponsePaging<List<GetDiaryListRes>> getDiaryList(@PathVariable("userIdx") String userIdx, @PathVariable("pageNum") int pageNum, @RequestParam(required = false) String search, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
         try {
-            // TODO : 형식적 validation - 존재하는 회원인가? / pageNum == 0인 경우
+            // TODO : 형식적 validation - 존재하는 회원인가? & User.status = 'active' / pageNum == 0인 경우
             if (archiveProvider.checkUserIdx(Integer.parseInt(userIdx)) == 0) {
-                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않거나 탈퇴한 회원입니다.
             }
             if (pageNum == 0) {
                 throw new BaseException(PAGENUM_ERROR_0); // 페이지 번호는 1부터 시작합니다.

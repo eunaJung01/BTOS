@@ -86,9 +86,8 @@ public class PlantDao {
 
     //화분 선택 API ~ 기존에 선택되어있던 화분의 status를 active로 바꾸자 (selected -> active)
     public int activePlant(int userIdx) {
-        String queryToActive = "UPDATE UserPlantList SET status=? " +
-                "WHERE plantIdx=(SELECT Idx FROM (SELECT plantIdx AS Idx FROM UserPlantList WHERE userIdx=? AND status=?) T) AND userIdx=?";
-        Object[] paramsToActive = new Object[]{"active", userIdx, "selected", userIdx};
+        String queryToActive = "UPDATE UserPlantList SET status=? WHERE userIdx=? AND status=?";
+        Object[] paramsToActive = new Object[]{"active", userIdx, "selected"};
 
         return this.jdbcTemplate.update(queryToActive, paramsToActive);
     }
@@ -273,6 +272,12 @@ public class PlantDao {
     public int setScore(int userIdx, int score) {
         String query = "UPDATE UserPlantList SET score = ? WHERE userIdx = ? AND status = 'selected'";
         return this.jdbcTemplate.update(query, score, userIdx);
+    }
+
+    // uPlantIdx 반환
+    public int getUPlantIdx(int userIdx) {
+        String query = "SELECT uPlantIdx FROM UserPlantList WHERE userIdx = ? AND status = 'selected'";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
     /*

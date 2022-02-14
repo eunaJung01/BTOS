@@ -21,8 +21,8 @@ public class LetterProvider {
         this.letterDao = letterDao;
     }
 
-    //편지 조회 // 해당 letterIdx를 갖는 Letter 조회
-    public GetLetterRes getLetter(int letterIdx, int userIdx) throws BaseException {
+    // 해당 letterIdx를 갖는 Letter 조회
+    public GetLetterRes getLetter(int userIdx, int letterIdx) throws BaseException {
         try {
             GetLetterRes getLetterRes = letterDao.getLetter(letterIdx, userIdx);
             // 열람여부 변경 성공 여부 반환 : 성공 시 1, 실패 시 0을 반환

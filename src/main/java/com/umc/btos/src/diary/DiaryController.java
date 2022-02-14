@@ -55,9 +55,9 @@ public class DiaryController {
     @PostMapping("")
     public BaseResponse<PatchModifyScoreRes> saveDiary(@RequestBody PostDiaryReq postDiaryReq) {
         try {
-            // TODO : 형식적 validation - 존재하는 회원인가?
+            // TODO : 형식적 validation - 존재하는 회원인가? & User.status = 'active'
             if (diaryProvider.checkUserIdx(postDiaryReq.getUserIdx()) == 0) {
-                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않거나 탈퇴한 회원입니다.
             }
 
             diaryService.saveDiary(postDiaryReq); // 일기 저장
@@ -81,9 +81,9 @@ public class DiaryController {
             int userIdx = putDiaryReq.getUserIdx();
             int diaryIdx = putDiaryReq.getDiaryIdx();
 
-            // TODO : 형식적 validation - 존재하는 회원인가? / 존재하는 일기인가? / 해당 회원이 작성한 일기인가?
+            // TODO : 형식적 validation - 존재하는 회원인가? & User.status = 'active' / 존재하는 일기인가? / 해당 회원이 작성한 일기인가?
             if (diaryProvider.checkUserIdx(userIdx) == 0) {
-                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않거나 탈퇴한 회원입니다.
             }
             if (diaryProvider.checkDiaryIdx(diaryIdx) == 0) {
                 throw new BaseException(INVALID_DIARYIDX); // 존재하지 않는 일기입니다.
@@ -110,9 +110,9 @@ public class DiaryController {
     @PatchMapping("/delete/{diaryIdx}")
     public BaseResponse<String> deleteDiary(@PathVariable("diaryIdx") int diaryIdx, @RequestParam("userIdx") int userIdx) {
         try {
-            // TODO : 형식적 validation - 존재하는 회원인가? / 존재하는 일기인가? / 해당 회원이 작성한 일기인가?
+            // TODO : 형식적 validation - 존재하는 회원인가? & User.status = 'active' / 존재하는 일기인가? / 해당 회원이 작성한 일기인가?
             if (diaryProvider.checkUserIdx(userIdx) == 0) {
-                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않거나 탈퇴한 회원입니다.
             }
             if (diaryProvider.checkDiaryIdx(diaryIdx) == 0) {
                 throw new BaseException(INVALID_DIARYIDX); // 존재하지 않는 일기입니다.

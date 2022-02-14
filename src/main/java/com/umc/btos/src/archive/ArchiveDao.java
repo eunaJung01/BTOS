@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Repository
@@ -18,6 +19,8 @@ public class ArchiveDao {
     public void setDateSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
+
+    // ================================================== validation ==================================================
 
     // 존재하는 회원인지 확인
     public int checkUserIdx(int userIdx) {
@@ -31,18 +34,18 @@ public class ArchiveDao {
         return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
     }
 
-    // ====================================== 달력 조회 ======================================
+    // ================================================== 달력 조회 ===================================================
 
     // 달력 조회 (diaryDate(일기의 해당 날짜) 기준 오름차순 정렬)
     public List<GetCalendarRes> getCalendarList(int userIdx, String date) {
         String startDate = date + ".01";
 
-        int year = Integer.parseInt(String.valueOf(date.charAt(0))) * 1000 + Integer.parseInt(String.valueOf(date.charAt(1))) * 100 + Integer.parseInt(String.valueOf(date.charAt(2))) * 10 + Integer.parseInt(String.valueOf(date.charAt(3)));
-        int month = Integer.parseInt(String.valueOf(date.charAt(5))) * 10 + Integer.parseInt(String.valueOf(date.charAt(6)));
-        LocalDate initial = LocalDate.of(year, month, 1);
-        LocalDate endDate = initial.withDayOfMonth(initial.lengthOfMonth());
+        // String parsing -> LocalDate 객체 생성
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        LocalDate startDate_localDate = LocalDate.parse(startDate, formatter); // yyyy.MM.01
+        LocalDate endDate = startDate_localDate.withDayOfMonth(startDate_localDate.lengthOfMonth()); // 해당 월의 마지막 날 가져오기
 
-        String query = "SELECT diaryDate " +
+        String query = "SELECT diaryIdx, diaryDate " +
                 "FROM Diary " +
                 "WHERE userIdx = ? " +
                 "AND DATE_FORMAT(diaryDate, '%Y.%m.%d') >= DATE_FORMAT(?, '%Y.%m.%d') " +
@@ -52,6 +55,7 @@ public class ArchiveDao {
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetCalendarRes(
+                        rs.getInt("diaryIdx"),
                         rs.getString("diaryDate")
                 ), userIdx, startDate, endDate);
     }
@@ -248,26 +252,27 @@ public class ArchiveDao {
     // =================================== 일기 조회 ===================================
 
     // Diary
-    public GetDiaryRes getDiary(int diaryIdx) {
+    public Diary getDiary(int diaryIdx) {
         String query = "SELECT * FROM Diary WHERE diaryIdx = ? AND status = 'active'";
         return this.jdbcTemplate.queryForObject(query,
-                (rs, rowNum) -> new GetDiaryRes(
+                (rs, rowNum) -> new Diary(
                         rs.getInt("diaryIdx"),
                         rs.getInt("emotionIdx"),
                         rs.getString("diaryDate"),
-                        rs.getInt("isPublic"),
                         rs.getString("content")
                 ), diaryIdx);
     }
 
+    // done list 개수 반환
+    public boolean hasDoneList(int diaryIdx) {
+        String query = "SELECT EXISTS (SELECT COUNT(*) FROM Done WHERE diaryIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, boolean.class, diaryIdx);
+    }
+
     // Done
-    public List<Done> getDoneList(int diaryIdx) {
-        String query = "SELECT * FROM Done WHERE diaryIdx = ? AND status = 'active'";
-        return this.jdbcTemplate.query(query,
-                (rs, rowNum) -> new Done(
-                        rs.getInt("doneIdx"),
-                        rs.getString("content")
-                ), diaryIdx);
+    public List<String> getDoneList(int diaryIdx) {
+        String query = "SELECT content FROM Done WHERE diaryIdx = ? AND status = 'active'";
+        return this.jdbcTemplate.queryForList(query, String.class, diaryIdx);
     }
 
 }

@@ -39,8 +39,8 @@ public class PlantProvider {
         try { //회원이 plantIdx를 이미 selected된 화분으로 넘겼으면
             if (patchSelectPlantReq.getPlantIdx() == plantDao.checkPlant(patchSelectPlantReq.getUserIdx()))
                 return -1;
-            else //아니면 3 반환
-                return 3;
+            else //아니면 1 반환
+                return 1;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

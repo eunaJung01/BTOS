@@ -66,6 +66,7 @@ public class AlarmProvider {
      * 알림 목록 조회
      * [GET] /alarms?userIdx=
      * Alarm.status = 'active'인 알림들만 조회
+     * type = diary인 경우 Diary.isSend = 1인 알림들만 조회
      * 수신일(createdAt) 기준 내림차순 정렬
      */
     public List<GetAlarmListRes> getAlarmList(int userIdx) throws BaseException, NullPointerException {
@@ -100,7 +101,7 @@ public class AlarmProvider {
             /*
              * alarmType = diary / letter / reply -> reqParamIdx = null (우편함 목록 조회)
              * alarmType = plant -> reqParamIdx = uPlantIdx (해당 화분 조회)
-             * alarmType = report_diary -> reqParamIdx = diaryIdx, letterIdx, replyIdx (신고 당한 일기 조회)
+             * alarmType = report_diary -> reqParamIdx = diaryIdx (신고 당한 일기 조회)
              * alarmType = report_letter -> reqParamIdx = letterIdx (신고 당한 편지 조회)
              * alarmType = report_reply -> reqParamIdx = replyIdx (신고 당한 답장 조회)
              * alarmType = notice -> reqParamIdx = noticeIdx (해당 공지사항 조회)
@@ -108,7 +109,6 @@ public class AlarmProvider {
 
             if (alarmType.compareTo("reply") == 0) {
                 String reportType = alarmDao.getReportType(alarmIdx, reqParamIdx); // Report.reportType
-
                 switch (reportType) {
                     case "diary":
                         alarmType = "report_diary";
@@ -122,6 +122,8 @@ public class AlarmProvider {
                         alarmType = "report_reply";
                         break;
                 }
+                // Alarm.typeIdx(== Reply.replyIdx)를 통하여 해당 신고 당한 일기의 diaryIdx / 편지의 letterIdx / 답장의 replyIdx 반환
+                reqParamIdx = alarmDao.getAlarmTypeIdx_report(reqParamIdx);
             }
 
             if (alarmDao.modifyStatus(alarmIdx) == 0) { // status 변경 : active -> checked
