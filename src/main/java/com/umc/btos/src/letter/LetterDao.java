@@ -16,7 +16,6 @@ import java.util.List;
 @EnableScheduling // 추가
 @Repository
 public class LetterDao {
-
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
