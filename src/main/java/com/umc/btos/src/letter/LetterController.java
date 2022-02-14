@@ -48,9 +48,8 @@ public class LetterController {
             if (letterProvider.checkUserIdx(postLetterReq.getUserIdx()) == 0) {
                 throw new BaseException(LETTER_INVALID_USERIDX); // 존재하지 않는 회원입니다.
             }
-
-            PostLetterPlantRes postLetterPlantRes = letterService.createLetter(postLetterReq);
             // 화분 점수 증가
+            PostLetterPlantRes postLetterPlantRes = letterService.createLetter(postLetterReq);
             return new BaseResponse<>(postLetterPlantRes);
         } catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
@@ -86,7 +85,6 @@ public class LetterController {
     @ResponseBody // userIdx는 이 API를 호출하는 편지를 읽는 유저
     @GetMapping("/{letterIdx}/{userIdx}") // (GET) localhost:9000/btos/letters/:letterIdx
     public BaseResponse<GetLetterRes> getLetter(@PathVariable("letterIdx") int letterIdx,@PathVariable("userIdx") int userIdx) {
-        // @PathVariable RESTful(URL)에서 명시된 파라미터({})를 받는 어노테이션, 이 경우 letterIdx값, userIdx을 받아옴.
         // Get Letters
         try {
             GetLetterRes getLetterRes = letterProvider.getLetter(letterIdx,userIdx);

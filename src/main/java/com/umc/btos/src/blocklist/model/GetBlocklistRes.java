@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class GetBlocklistRes {
-    private String blockedNickname; // 신고당한 유저의 Idx
+    private String blockedNickname; // 신고당한 유저의 닉네임
     private int blockIdx;
-    private int blockedUserIdx;
+    private int blockedUserIdx; // 신고당한 유저의 userIdx
 }

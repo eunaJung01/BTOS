@@ -5,8 +5,7 @@ import com.umc.btos.config.BaseException;
 
 
 import com.umc.btos.src.alarm.AlarmService;
-import com.umc.btos.src.reply.model.*;
-import com.umc.btos.utils.JwtService;
+import com.umc.btos.src.reply.model.*;\
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +22,7 @@ public class ReplyService {
     private final ReplyProvider replyProvider;
     private final AlarmService alarmService;
 
-
-    @Autowired //readme 참고
+    @Autowired
     public ReplyService(ReplyDao replyDao, ReplyProvider replyProvider, AlarmService alarmService) {
         this.replyDao = replyDao;
         this.replyProvider = replyProvider;
@@ -32,8 +30,8 @@ public class ReplyService {
     }
 
 // ******************************************************************************
-    // 답장 작성(POST)
 
+    // 답장 작성(POST)
     public PostReplyFinalRes createReply(PostReplyReq postReplyReq) throws BaseException {
 
         try {
@@ -49,28 +47,32 @@ public class ReplyService {
         }
     }
 
-    // POST - nickName을 찾고 PostReplyFinalRes 객체를 만들어 반환
-
+    // 답장 작성자의 정보 반환
+    // POST API - nickName, ReceiverIdx를 PostReplyFinalRes 객체를 만들어 반환
     public PostReplyFinalRes getReplyreceiverNickname(int replyIdx, PostReplyReq postReplyReq) throws BaseException {
 
         try {
+            // 답장 발송 유저의 닉네임
             String senderNickName = replyDao.getNickname(postReplyReq.getReplierIdx());
             PostReplyFinalRes postReplyFinalRes = new PostReplyFinalRes(replyIdx,postReplyReq.getReceiverIdx(),senderNickName );
             return postReplyFinalRes;
-        } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지 : 8004
 
+        } catch (Exception exception) {
+            // DB에 이상이 있는 경우 에러 메시지 : 8004
             throw new BaseException(REPLY_DATABASE_ERROR);
         }
     }
 
-    // 답장삭제 - status를 deleted로 변경 (Patch)
+    // 답장삭제 - status를 deleted로 변경
     public void modifyReplyStatus(PatchReplyReq patchReplyReq) throws BaseException {
         try {
-            int result = replyDao.modifyReplyStatus(patchReplyReq); // 해당 과정이 무사히 수행되면 True(1), 그렇지 않으면 False(0)입니다.
-            if (result == 0) { // result값이 0이면 과정이 실패한 것이므로 에러 메서지를 보냅니다.
+            // Success = 1,  Fail = 0
+            int result = replyDao.modifyReplyStatus(patchReplyReq);
+            if (result == 0) {
+                //ERROR - 8005 : 답장 삭제 실패
                 throw new BaseException(MODIFY_FAIL_REPLY_STATUS);
             }
-        } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
+        } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
     }

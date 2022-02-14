@@ -25,7 +25,6 @@ public class LetterProvider {
     public GetLetterRes getLetter(int userIdx, int letterIdx) throws BaseException {
         try {
             GetLetterRes getLetterRes = letterDao.getLetter(letterIdx, userIdx);
-
             int isSuccess = letterDao.modifyIsChecked(letterIdx, userIdx); // 열람여부 변경 성공 여부 반환 : 성공 시 1, 실패 시 0을 반환
             if (isSuccess == 0) {
                 throw new BaseException(MODIFY_LETTERSENDLIST_ISCHECKED_ERROR);

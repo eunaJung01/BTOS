@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GetNoticeRes {
     private int noticeIdx;
-    private String title;
-    private String content;
-    private String createdAt;
+    private String title; // 공지의 제목
+    private String content; // 공지의 내용
+    private String createdAt; // 공지 생성 시간
 }

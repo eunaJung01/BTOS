@@ -38,34 +38,47 @@ public class ReportController {
      * 신고 작성 API
      * [POST] /reports
      */
-    // Body에 json으로 정보를 입력받아 신고 데이터 생성
+
     @ResponseBody
-    @PostMapping("")    // POST 어노테이션
+    @PostMapping("")
     public BaseResponse<PostReportUserIdxPlantRes> createReport(@RequestBody PostReportReq postReportReq) {
+
         try{
-            String ReportReason = postReportReq.getReason(); // 신고 사유 // spam : 스팸 / sex : 성적 / hate : 혐오 / dislike : 마음에 안듦 / etc : 기타
+            // 신고 사유
+            // spam : 스팸 / sex : 성적 / hate : 혐오 / dislike : 마음에 안듦 / etc : 기타
+            String ReportReason = postReportReq.getReason();
+
+            // 신고 생성 // Report 테이블에 값 추가
             int reportIdx = reportService.createReport(postReportReq);
+
+            // 신고 사유 : sex, hate
              if ((ReportReason.equals("sex")) || (ReportReason.equals("hate"))) {
-             // 화분 점수 감소 //-100
+                 // 화분 점수 감소 //-100
                  PatchModifyScoreRes ModifyScore_sex_hate = plantService.modifyScore_minus(reportService.getUserIdx(postReportReq), Constant.PLANT_LEVELDOWN_REPORT_SEX_HATE, "report");
                  PostReportUserIdxPlantRes result_sex_hate = new PostReportUserIdxPlantRes(reportIdx,postReportReq.getReportType(), reportService.getUserIdx(postReportReq), ModifyScore_sex_hate );
                  return new BaseResponse<>(result_sex_hate);
-             } else if ((ReportReason.equals("spam")) || (ReportReason.equals("dislike"))) {
-             // 화분 점수 감소 // -30
+             }
+
+             // 신고 사유 : spam, dislike
+             else if ((ReportReason.equals("spam")) || (ReportReason.equals("dislike"))) {
+                 // 화분 점수 감소 // -30
                  PatchModifyScoreRes ModifyScore_spam_dislike = plantService.modifyScore_minus(reportService.getUserIdx(postReportReq), Constant.PLANT_LEVELDOWN_REPORT_SPAM_DISLIKE, "report");
                  PostReportUserIdxPlantRes result_spam_dislike = new PostReportUserIdxPlantRes(reportIdx,postReportReq.getReportType(), reportService.getUserIdx(postReportReq), ModifyScore_spam_dislike );
                  return new BaseResponse<>(result_spam_dislike);
              }
+
+             // 신고 사유 : etc
              else if ((ReportReason.equals("etc"))) {
+                 // 화분 점수 감소 // 없음
                  PatchModifyScoreRes ModifyScore_null = new PatchModifyScoreRes(false,"report");
                  PostReportUserIdxPlantRes result_etc = new PostReportUserIdxPlantRes(reportIdx,postReportReq.getReportType(), reportService.getUserIdx(postReportReq), ModifyScore_null );
                  return new BaseResponse<>(result_etc);
              }
              else {
+                 // ERROR : 8009 - 신고의 사유가 정해진 사유를 벗어납니다.
                  throw new BaseException(POST_REPORT_REASON);
              }
         } catch (BaseException exception){
-
             return new BaseResponse<>((exception.getStatus()));
         }
     }
