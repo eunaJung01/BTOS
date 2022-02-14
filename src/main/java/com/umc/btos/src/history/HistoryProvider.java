@@ -398,7 +398,6 @@ public class HistoryProvider {
         } catch (NullPointerException exception) {
             throw new BaseException(EMPTY_RESULT); // 검색 결과 없음
         } catch (Exception exception) {
-            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -408,6 +407,7 @@ public class HistoryProvider {
         for (String senderNickName : senderNickNameList) {
             List<History> historyList = new ArrayList<>(); // HistoryList_Sender.firstContent
 
+            // diary
             if (historyDao.hasHistory_diary(userIdx, senderNickName) != 0) { // 해당 회원에게서 수신한 일기가 있는지 확인
                 if (historyDao.hasDone(userIdx, senderNickName) == 1) { // 해당 일기에 done list가 있는 경우
                     historyList.add(historyDao.getDiary_done(userIdx, senderNickName, historyDao.getSenderActive_diary(userIdx, senderNickName))); // 가장 최근에 받은 일기
@@ -415,9 +415,11 @@ public class HistoryProvider {
                     historyList.add(historyDao.getDiary_nonDone(userIdx, senderNickName, historyDao.getSenderActive_diary(userIdx, senderNickName))); // 가장 최근에 받은 일기
                 }
             }
+            // letter
             if (historyDao.hasHistory_letter(userIdx, senderNickName) != 0) { // 해당 회원에게서 수신한 편지가 있는지 확인
                 historyList.add(historyDao.getLetter(userIdx, senderNickName, historyDao.getSenderActive_letter(userIdx, senderNickName))); // 가장 최근에 받은 편지
             }
+            // reply
             if (historyDao.hasHistory_reply(userIdx, senderNickName) != 0) { // 해당 회원에게서 수신한 편지가 있는지 확인
                 historyList.add(historyDao.getReply(userIdx, senderNickName, historyDao.getSenderActive_reply(userIdx, senderNickName))); // 가장 최근에 받은 답장
             }
