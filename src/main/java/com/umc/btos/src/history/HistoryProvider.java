@@ -190,6 +190,19 @@ public class HistoryProvider {
                     dataNum_currentPage = historyList.size(); // 현재 페이지의 데이터 개수
                     pageInfo.setDataNum_currentPage(dataNum_currentPage); // 현재 페이지의 데이터 개수
 
+                    // setSenderActive
+                    for (History history : historyList) {
+                        int typeIdx = history.getTypeIdx();
+
+                        switch (history.getType()) {
+                            case "letter" :
+                                history.setSenderActive(historyDao.getSenderActive_letter(typeIdx));
+                                break;
+                            case "reply" :
+                                history.setSenderActive(historyDao.getSenderActive_reply(typeIdx));
+                                break;
+                        }
+                    }
                     historyListRes.setList(historyList);
                 }
 
@@ -385,6 +398,7 @@ public class HistoryProvider {
         } catch (NullPointerException exception) {
             throw new BaseException(EMPTY_RESULT); // 검색 결과 없음
         } catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
