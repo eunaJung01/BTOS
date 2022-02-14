@@ -48,4 +48,15 @@ public class GetHistoryRes {
         this.senderFontIdx = senderFontIdx;
     }
 
+    // replyList
+    public GetHistoryRes(String type, int typeIdx, String content, String sendAt_raw, String sendAt, String senderNickName, int senderFontIdx) {
+        this.type = type;
+        this.typeIdx = typeIdx;
+        this.content = content;
+        this.sendAt_raw = sendAt_raw;
+        this.sendAt = sendAt;
+        this.senderNickName = senderNickName;
+        this.senderFontIdx = senderFontIdx;
+    }
+
 }
