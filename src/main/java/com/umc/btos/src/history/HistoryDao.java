@@ -424,10 +424,11 @@ public class HistoryDao {
     // 편지 (LetterSendList.receiverIdx = userIdx)
     public List<History> getLetterList(int userIdx) {
         String query = "SELECT Letter.letterIdx                                  AS typeIdx, " +
-                "       User.nickName                                     AS senderNickName, " +
                 "       Letter.content                                    AS content, " +
                 "       LetterSendList.createdAt                          AS sendAt_raw, " +
-                "       date_format(LetterSendList.createdAt, '%Y.%m.%d') AS sendAt " +
+                "       date_format(LetterSendList.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       User.nickName                                     AS senderNickName, " +
+                "       User.fontIdx                                      AS senderFontIdx " +
                 "FROM LetterSendList " +
                 "         INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "         INNER JOIN User ON Letter.userIdx = User.userIdx " +
@@ -478,10 +479,11 @@ public class HistoryDao {
     // 답장 (Reply.receiverIdx = userIdx)
     public List<History> getReplyList(int userIdx) {
         String query = "SELECT Reply.replyIdx                           AS typeIdx, " +
-                "       User.nickName                            AS senderNickName, " +
                 "       Reply.content                            AS content, " +
                 "       Reply.createdAt                          AS sendAt_raw, " +
-                "       date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
+                "       date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       User.nickName                            AS senderNickName, " +
+                "       User.fontIdx                             AS senderFontIdx " +
                 "FROM Reply " +
                 "         INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.receiverIdx = ? " +
@@ -503,10 +505,11 @@ public class HistoryDao {
     // 답장 (Reply.receiverIdx = userIdx AND User.nickName = senderNickName)
     public List<History> getReplyList(int userIdx, String senderNickName) {
         String query = "SELECT Reply.replyIdx                           AS typeIdx, " +
-                "       User.nickName                            AS senderNickName, " +
                 "       Reply.content                            AS content, " +
                 "       Reply.createdAt                          AS sendAt_raw, " +
-                "       date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt " +
+                "       date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       User.nickName                            AS senderNickName, " +
+                "       User.fontIdx                             AS senderFontIdx " +
                 "FROM Reply " +
                 "         INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.receiverIdx = ? " +
