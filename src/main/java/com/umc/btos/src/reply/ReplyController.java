@@ -51,7 +51,7 @@ public class ReplyController {
 
     @ResponseBody
     @PatchMapping("/{replyIdx}")
-    // Path-variable
+    // Path-variable // 답장삭제 - status -> deleted로 변경
     public BaseResponse<String> deleteReply(@PathVariable("replyIdx") int replyIdx) {
         try {
 
