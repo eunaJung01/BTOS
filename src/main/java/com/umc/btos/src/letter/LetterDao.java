@@ -83,6 +83,12 @@ public class LetterDao {
         return this.jdbcTemplate.update(query, letterIdx, receiverIdx);
     }
 
+    // 수신인 User.fcmToken 반환
+    public String getFcmToken(int userIdx) {
+        String query = "SELECT fcmToken FROM User WHERE userIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
+    }
+
     // ================================================================================================================
 
 
