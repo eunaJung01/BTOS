@@ -80,27 +80,32 @@ public class DiaryDao {
     // 일기 수정
     public int modifyDiary(PutDiaryReq putDiaryReq) {
         String query = "UPDATE Diary SET emotionIdx = ?, diaryDate = ?, isPublic = ?, content = ? WHERE diaryIdx = ?";
-        Object[] params = new Object[]{putDiaryReq.getEmotionIdx(), putDiaryReq.getDiaryDate(), putDiaryReq.getIsPublic(), putDiaryReq.getDiaryContent(), putDiaryReq.getDiaryIdx()};
+        Object[] params = new Object[]{putDiaryReq.getEmotionIdx(), putDiaryReq.getDiaryDate(), putDiaryReq.getIsPublic_int(), putDiaryReq.getDiaryContent(), putDiaryReq.getDiaryIdx()};
         return this.jdbcTemplate.update(query, params);
     }
 
     // 해당 일기의 모든 doneIdx를 List 형태로 반환
-    public List getDoneIdxList(PutDiaryReq putDiaryReq) {
+    public List<Integer> getDoneIdxList(PutDiaryReq putDiaryReq) {
         String query = "SELECT doneIdx FROM Done WHERE diaryIdx = ?";
         return this.jdbcTemplate.queryForList(query, int.class, putDiaryReq.getDiaryIdx());
     }
 
-    // done list 수정
-    public int modifyDoneList(PutDiaryReq putDiaryReq, List doneIdxList) {
-        String query = "UPDATE Done SET content = ? WHERE doneIdx = ?";
-        for (int i = 0; i < doneIdxList.size(); i++) {
-            int result = this.jdbcTemplate.update(query, putDiaryReq.getDoneList().get(i), doneIdxList.get(i));
+    // done 수정 - UPDATE
+    public int modifyDone(int doneIdx, String doneContent) {
+        String query = "UPDATE Done SET content = ?, status = 'active' WHERE doneIdx = ?";
+        return this.jdbcTemplate.update(query, doneContent, doneIdx);
+    }
 
-            if (result == 0) { // MODIFY_FAIL_DONELIST(일기 수정 실패 - done list) 에러 반환
-                return 0;
-            }
-        }
-        return 1;
+    // done 수정 - INSERT
+    public int modifyDone_insert(int diaryIdx, String doneContent) {
+        String query = "INSERT INTO Done(diaryIdx, content) VALUE(?,?)";
+        return this.jdbcTemplate.update(query, diaryIdx, doneContent);
+    }
+
+    // done 수정 - status = 'deleted'
+    public int modifyDone_modifyStatus(int doneIdx) {
+        String query = "UPDATE Done SET status = 'deleted' WHERE doneIdx = ?";
+        return this.jdbcTemplate.update(query, doneIdx);
     }
 
     // =================================== 일기 삭제 ===================================
@@ -240,12 +245,12 @@ public class DiaryDao {
     @Scheduled(cron = "00 00 19 * * *")
 //    @Scheduled(cron = "30 23 19 * * *") // test
     public void modifyIsSend() {
-        LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
+        String yesterday = LocalDate.now().minusDays(1).toString().replaceAll("-", "."); // 어제 날짜 (yyyy.MM.dd)
 
         String query = "UPDATE Diary SET isSend = 1 " +
-                "WHERE left(createdAt, 10) = ? AND isPublic = 1 AND status = 'active'";
+                "WHERE diaryDate = ? AND isPublic = 1 AND status = 'active'";
 
-        this.jdbcTemplate.update(query, now.toString());
+        this.jdbcTemplate.update(query, yesterday);
     }
 
 }

@@ -6,11 +6,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GetCalendarRes {
-    private String diaryDate; // YYYY.MM.DD
+    private int diaryIdx;
+    private String diaryDate; // yyyy.MM.dd
     private int doneListNum; // 하루에 저장되어 있는 done list 개수
-    private int emotionIdx;
+    private int emotionIdx; // 감정 이모티콘 식별자 (1~8)
 
-    public GetCalendarRes(String diaryDate) {
+    public GetCalendarRes(int diaryIdx, String diaryDate) {
+        this.diaryIdx = diaryIdx;
         this.diaryDate = diaryDate;
     }
 

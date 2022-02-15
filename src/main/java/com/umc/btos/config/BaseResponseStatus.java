@@ -106,6 +106,8 @@ public enum BaseResponseStatus {
     NO_ALARM(false, 6021, "해당 회원에게 띄워줄 알림이 없습니다."),
     ALARM_MODIFY_FAIL_STATUS(false, 6022, "Alarm.status = 'checked' 변환에 실패하였습니다."),
 
+    POST_FAIL_ALARM(false, 6023, "알림 저장에 실패하였습니다."),
+
 
     // 7000 : 자몽
     TEMP3(false, 9000, "conflict 방지용 3"),
@@ -142,6 +144,7 @@ public enum BaseResponseStatus {
     NOTICE_DATABASE_ERROR(false, 8006,"공지 조회 실패"),
     MODIFY_LETTERSENDLIST_ISCHECKED_ERROR(false,8008,"편지 열람여부 변경 실패"),
     POST_REPORT_REASON(false,8009,"신고의 사유가 정해진 사유를 벗어납니다."),
+    LETTER_INVALID_USERIDX(false,8010,"편지를 보내려는 회원이 존재하지 않습니다."),
     TEMP4(false, 9000, "conflict 방지용 4");
 
 

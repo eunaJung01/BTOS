@@ -17,8 +17,6 @@ import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
 
 public class BlocklistProvider {
     private final BlocklistDao blocklistDao;
-
-
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
@@ -30,7 +28,7 @@ public class BlocklistProvider {
     // userIdx를 Query String로 받아 차단들을 반환
     public List<GetBlocklistRes> getBlockList(int userIdx) throws BaseException {
         try {
-            List<GetBlocklistRes> getBlocklistRes = blocklistDao.getBlockList(userIdx);
+            List<GetBlocklistRes> getBlocklistRes = blocklistDao.getBlockListNickName(userIdx);
             return getBlocklistRes;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);

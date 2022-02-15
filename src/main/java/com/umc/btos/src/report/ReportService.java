@@ -17,40 +17,33 @@ import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
 public class ReportService {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-
     private final ReportDao reportDao;
     private final ReportProvider reportProvider;
-
-
 
     @Autowired
     public ReportService(ReportDao reportDao, ReportProvider reportProvider) {
         this.reportDao = reportDao;
         this.reportProvider = reportProvider;
-
-
     }
-    // ******************************************************************************
-    // 신고 작성(POST)
 
-    public PostReportRes createReport(PostReportReq postReportReq) throws BaseException {
+    // ******************************************************************************
+
+    // 신고 작성(POST)
+    public int createReport(PostReportReq postReportReq) throws BaseException {
         try {
             int reportIdx = reportDao.createReport(postReportReq);
-            return new PostReportRes(reportIdx);
-        } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
-
+            return reportIdx;
+        } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
+    // 신고당한 유저의 userIdx
     public int getUserIdx(PostReportReq postReportReq) throws BaseException {
-
         try {
             int userIdx = reportDao.getUserIdx(postReportReq);
             return userIdx;
-
-        } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
-            System.out.println(exception);
+        } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
     }

@@ -25,12 +25,13 @@ public class NoticeProvider {
         this.noticeDao = noticeDao;
     }
 
-    // 공지들 조회
+    // 모든 공지 조회
     public List<GetNoticeRes> getNotices() throws BaseException {
         try {
             List<GetNoticeRes> getNoticeRes = noticeDao.getNotices();
             return getNoticeRes;
-        } catch (Exception exception) { // 에러가 발생하였다면 : 8006 : 공지 조회 실패
+        } catch (Exception exception) {
+            // 에러가 발생하였다면 : 8006 : 공지 조회 실패
             throw new BaseException(NOTICE_DATABASE_ERROR);
         }
     }
