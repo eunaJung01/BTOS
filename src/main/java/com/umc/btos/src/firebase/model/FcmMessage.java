@@ -1,12 +1,19 @@
-package com.umc.btos.src.firebase;
+package com.umc.btos.src.firebase.model;
 
 import lombok.*;
+
+/*@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)*/
 
 @Builder
 @AllArgsConstructor
 @Getter
-public class FcmMessage { // FCM Request Body
-   /* private boolean validate_only;
+// FCM Server 로 요청할 request model
+public class FcmMessage {
+
+    private boolean validate_only;
     private Message message;
 
     @Builder
@@ -24,9 +31,7 @@ public class FcmMessage { // FCM Request Body
         private String title;
         private String body;
         private String image;
-    }*/
+    }
 
-    private String to;
-    private String project_id;
-    private String notification;
+
 }
