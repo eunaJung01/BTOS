@@ -1,19 +1,14 @@
 package com.umc.btos.src.letter;
 
-
 import com.umc.btos.src.letter.model.*;
-
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.util.List;
 
-
-@EnableScheduling // 추가
 @Repository
 public class LetterDao {
     private JdbcTemplate jdbcTemplate;
@@ -62,7 +57,7 @@ public class LetterDao {
         // 편지를 수신할 유저의 userIdx들
         // 휴먼상태가 아니고, 타인의 편지를 수신하는 유저이고, 나이대가 +-5년의 유저 중 (편지를 보내는 유저 제외) 랜덤으로 5명을 선택
         String getUserIdx = "select U.userIdx from User U where U.status='active' and U.userIdx != ? and U.recOthers = 1 and ( (?-5) <= U.birth and U.birth <=(?+5))  order by rand() limit 5";
-        List<Integer> userIdx_Similar = this.jdbcTemplate.queryForList(getUserIdx, int.class,getUserIdxParam, userBirth, userBirth);
+        List<Integer> userIdx_Similar = this.jdbcTemplate.queryForList(getUserIdx, int.class, getUserIdxParam, userBirth, userBirth);
 
         return userIdx_Similar;
     }
@@ -73,23 +68,23 @@ public class LetterDao {
         // 랜덤으로 조건에 해당하는 모든 유저의 userIdx를 뽑는 쿼리문
         // 이미 편지를 보낸 유저가 존재할 수 있으므로 넉넉하게 10명을 뽑음
         String getUserIdx = "select U.userIdx from User U where U.status='active' and U.userIdx != ? and U.recOthers = 1 order by rand() limit 10";
-        List<Integer> userIdx_Random = this.jdbcTemplate.queryForList(getUserIdx, int.class,postLetterUserSimilarIdx.getUserIdx());
+        List<Integer> userIdx_Random = this.jdbcTemplate.queryForList(getUserIdx, int.class, postLetterUserSimilarIdx.getUserIdx());
 
         return userIdx_Random;
     }
 
     // LetterSendList 테이블에 편지 발송 목록 생성
-    public void createLetterSendList(int letterIdx, List<Integer> userIdx_list,int i){
+    public void createLetterSendList(int letterIdx, List<Integer> userIdx_list, int i) {
         String createLetterSendListQuery = "insert into LetterSendList (letterIdx,receiverIdx) VALUES (?,?)";
         Object[] createLetterSendListParams = new Object[]{letterIdx, userIdx_list.get(i)};
         this.jdbcTemplate.update(createLetterSendListQuery, createLetterSendListParams);
     }
 
     // 편지를 수신할 유저의 userIdx들 랜덤으로 5명 선택하여 (list형태)로 반환
-    public List<Integer> getLetterUserIdx (PostLetterUserSimilarIdx postLetterUserSimilarIdx) {
+    public List<Integer> getLetterUserIdx(PostLetterUserSimilarIdx postLetterUserSimilarIdx) {
         // 편지를 수신할 유저 선택 // 휴먼상태가 아니고, 타인의 편지를 수신하는 유저 중 (편지를 보내는 유저 제외)
         String getUserIdx = "select U.userIdx from User U where U.status='active' and U.userIdx != ? and recOthers = 1 order by rand() limit 5";
-        List<Integer> userIdx_unSimilar = this.jdbcTemplate.queryForList(getUserIdx, int.class,postLetterUserSimilarIdx.getUserIdx());
+        List<Integer> userIdx_unSimilar = this.jdbcTemplate.queryForList(getUserIdx, int.class, postLetterUserSimilarIdx.getUserIdx());
 
         return userIdx_unSimilar;
     }

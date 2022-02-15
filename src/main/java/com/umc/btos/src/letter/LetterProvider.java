@@ -7,8 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
-import static com.umc.btos.config.BaseResponseStatus.MODIFY_LETTERSENDLIST_ISCHECKED_ERROR;
+import static com.umc.btos.config.BaseResponseStatus.*;
 
 @Service
 public class LetterProvider {
@@ -38,7 +37,7 @@ public class LetterProvider {
     }
 
     /*
-    편지를 보내는 회원 - 회원여부 확인
+     * 편지를 보내는 회원 - 회원여부 확인
     */
     public int checkUserIdx(int userIdx) throws BaseException {
         try {
