@@ -3,109 +3,129 @@ package com.umc.btos.src.firebase;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.common.net.HttpHeaders;
+import com.umc.btos.src.firebase.model.FcmMessage;
+import com.umc.btos.src.firebase.model.FcmRequest;
+import com.umc.btos.src.firebase.model.FcmResponse;
 import lombok.RequiredArgsConstructor;
 import okhttp3.*;
+import org.apache.http.HttpHeaders;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
 
 @Component
 @RequiredArgsConstructor
 @Service
 public class FirebaseCloudMessageService {
-    public static final String apiKey = "AAAA4ageO_g:APA91bGMNBpRuyibDVwa9RptTRXZb5wFmMXk1Z9VE_tVyb0zl5re63CGQUgudTuXBaJnXTQzP__2m-YwSQ7Mefca20Fo_OWaRK23NMGKUQhGtwtP3kblibvqHapWqlYaptwhYXIqqhBw";
-    public static final String senderId = "969188195320";
-    // String deviceToken = "e9GMuSZ_Q7WUGLa0GacSeC:APA91bHzWlP8fBhDnqfNbCBfXAZe3rQWHAb61qn5R2CLAkg_CNtuJnals4--2vRedNXiqBUNrnp9HFkIxMg2bTAXOL_4mXu5TOj1vjrk6YX69_TLBgse3G3weBEpI50N-5RGAPBQc9mx";
 
-    private final String API_URL
+    /*private final String API_URL
             = "https://fcm.googleapis.com/fcm/send";
-            //= "https://fcm.googleapis.com/v1/projects/btos-7c7ee/messages:send";
-    private final ObjectMapper objectMapper;
 
-    public void sendMessageTo(String to, String project_id, String notification) throws IOException {
-        // String message = makeMessage(targetToken, title, body);
-        //targetToken : device 토큰, title
+    public FcmResponse sendMessageTo(FcmRequest fcmRequest) throws IOException {
         OkHttpClient client = new OkHttpClient.Builder().build();
 
         okhttp3.RequestBody requestBody
-                //= RequestBody.create(message, MediaType.get("application/json; charset=utf-8"));
                 = new FormBody.Builder()
-                .add("to", to)
-                .add("project_id",project_id)
-                .add("notification", notification)
+                .add("to", fcmRequest.getToken())
+                .add("project_id", fcmRequest.getTitle())
+                .add("notification", fcmRequest.getBody())
                 .add("data", "람쥐썬더")
                 .build();
 
         Request request = new Request.Builder()
                 .url(API_URL)
                 .addHeader(HttpHeaders.AUTHORIZATION, "key=" + getAccessToken()) // server key
-                //.addHeader(HttpHeaders.CONTENT_TYPE, "application/json; UTF-8")
                 .post(requestBody)
                 .build();
 
-        /*client.newCall(request).enqueue(new Callback(){
-            @Override
-            public void onFailure(Call call, IOException e) {
-                System.out.println(e.getMessage() + "\n     ERROR");
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    System.out.println(response.code() + "\n" + response.body().string() + "\n     SUCCESS");
-                }
-                else {
-                    System.out.println(response.body().string());
-                }
-            }
-        });*/
-
         Response response = client.newCall(request).execute();
         System.out.println("code : "+ response.code() + "\n" + response.body().string());
+
+        return new FcmResponse(
+                fcmRequest.getTitle(),
+                fcmRequest.getBody(),
+                "LikeFirst_BTOS",
+                "LikeFirst_BTOS");
     }
 
-    /*private String makeMessage(String targetToken, String title, String body) throws JsonProcessingException {
+
+    private String getAccessToken() throws IOException {
+        //String firebaseConfigPath = "firebase/firebase_service_key.json";
+
+        String token =
+                "AAAA4ageO_g:APA91bGMNBpRuyibDVwa9RptTRXZb5wFmMXk1Z9VE_tVyb0zl5re63CGQUgudTuXBaJnXTQzP__2m-YwSQ7Mefca20Fo_OWaRK23NMGKUQhGtwtP3kblibvqHapWqlYaptwhYXIqqhBw";
+        // TODO : 서버 키 Secret.java 파일에 숨기고 가져오는 걸로 변경하기
+        return token;
+    }*/
+
+    // HTTP v1 Method
+    private final String API_URL = "https://fcm.googleapis.com/v1/projects/btos-7c7ee/messages:send";
+    private final ObjectMapper objectMapper;
+
+    public FcmResponse sendMessageTo(FcmRequest fcmRequest) throws IOException {
+        String message = makeMessage(fcmRequest.getToken(),
+                fcmRequest.getTitle(),
+                fcmRequest.getBody());
+
+        OkHttpClient client = new OkHttpClient();
+        RequestBody requestBody = RequestBody.create(message,
+                MediaType.get("application/json; charset=utf-8"));
+        Request request = new Request.Builder()
+                .url(API_URL)
+                .post(requestBody)
+                .addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + getAccessToken())
+                .addHeader(HttpHeaders.CONTENT_TYPE, "application/json; UTF-8")
+                .build();
+
+        Response response = client.newCall(request)
+                .execute();
+
+        System.out.println("code" + response.code() +
+                "body : "+ response.body().string());
+
+        return new FcmResponse(
+                fcmRequest.getTitle(),
+                fcmRequest.getBody(),
+                "LikeFirst_BTOS",
+                "LikeFirst_BTOS");
+    }
+
+    private String makeMessage(String targetToken, String title, String body) throws JsonProcessingException {
         FcmMessage fcmMessage = FcmMessage.builder()
                 .message(FcmMessage.Message.builder()
-                        .token(targetToken)
-                        .notification(FcmMessage.Notification.builder()
-                                .title(title)
-                                .body(body)
-                                .image(null)
-                                .build()
-                        )
+                    .token(targetToken)
+                .notification(FcmMessage.Notification.builder()
+                    .title(title)
+                    .body(body)
+                    .image(null)
+                    .build()
+                )
                         .build()
                 )
                 .validate_only(false)
                 .build();
+
         return objectMapper.writeValueAsString(fcmMessage);
-    }*/
+    }
+
 
     private String getAccessToken() throws IOException {
-        String firebaseConfigPath = "firebase/firebase_service_key.json";
+        String firebaseConfigPath = "firebase/firebase_secret_key.json";
 
-        String token =
-                "AAAA4ageO_g:APA91bGMNBpRuyibDVwa9RptTRXZb5wFmMXk1Z9VE_tVyb0zl5re63CGQUgudTuXBaJnXTQzP__2m-YwSQ7Mefca20Fo_OWaRK23NMGKUQhGtwtP3kblibvqHapWqlYaptwhYXIqqhBw";
-
-        /*List<String> list = new ArrayList<>();
-        list.add("https://www.googleapis.com/auth/cloud-platform"); // 범위 설정
+        List<String> scopeUrl = new ArrayList<>();
+        scopeUrl.add("https://www.googleapis.com/auth/firebase.messaging");
 
         GoogleCredentials googleCredentials = GoogleCredentials.fromStream(
                 new ClassPathResource(firebaseConfigPath).getInputStream())
-                        .createScoped(list);*/
+                    .createScoped(scopeUrl);
 
-        //googleCredentials.refreshIfExpired();
-        //googleCredentials.refreshAccessToken();
-        //return googleCredentials.getAccessToken().getTokenValue();
-        return token;
+        googleCredentials.refreshIfExpired();
+        return googleCredentials.getAccessToken().getTokenValue();
     }
+
 
 }
