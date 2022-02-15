@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.*;
+
 import static com.umc.btos.config.BaseResponseStatus.*;
 
 @Service
@@ -112,20 +114,101 @@ public class LetterService {
      */
     public PostLetterRes postLetter(PostLetterReq postLetterReq) throws BaseException {
         try {
+            int senderUserIdx = postLetterReq.getUserIdx(); // 발신인 userIdx
 
+            // 1. 편지 저장
+            int letterIdx = letterDao.postLetter(postLetterReq);
+            String senderNickName = letterDao.getNickName(senderUserIdx); // 발신인 닉네임
+
+            // 2. 편지 발송
+            List<Receiver> receiverList = new ArrayList<>(); // ArrayList : 데이터 검색에 유리
+            // 5명 뽑기 (본인 제외)
+            // 3명은 비슷한 나이대에서 전송
+            int totalNum = 5;
+            int similarNum = 3;
+            int leftNum = totalNum - similarNum;
+            // 나머지 2명은 랜덤
+            // 바로 이전에 발송받았던 회원에게서는 최대한 편지를 받지 못하도록 하자
+            // Map보단 DTO 사용?
+
+            // 보낼 후보 userIdxList - 본인 제외
+            List<User> userList = letterDao.getUserList(senderUserIdx); // 편지 발송 가능한 회원들의 목록 (본인 제외)
+            System.out.println(userList);
+            Map<Integer, Boolean> userIdx_sendMap = new HashMap<>(); // key = userIdx, value = 편지 발송 유무 (발송되었다면 true, 아직 안 되었다면 false)
+            for (User user : userList) {
+                userIdx_sendMap.put(user.getUserIdx(), false); // 편지 발송 가능한 회원마다 저장 공간 생성
+            }
+
+            // 가장 최근에 수신한 편지의 발신인 userIdx 저장
+            for (User user : userList) {
+                // 편지 하나도 발송받지 못한 유저라면?
+                if (letterDao.hasReceivedLetter(user.getUserIdx()) == 1) {
+                    int userIdx_recentReceived = letterDao.getUserIdx_recentReceived(user.getUserIdx());
+                    user.setUserIdx_recentReceived(userIdx_recentReceived);
+                } else {
+                    user.setUserIdx_recentReceived(0);
+                }
+            }
+            System.out.println(1);
+
+            // 비슷한 나이대에 해당되는 회원 목록 생성
+            // recSimilarAge = 1
+            // 비슷한 나이대 : 발신인의 나이 -5 ~ +5
+            // 가장 최근에 수신한 편지 != 발신인의 편지
+            List<User> userList_similarAge = new LinkedList<>();
+            int senderBirth = letterDao.getSenderBirth(senderUserIdx); // 발신인 생년
+            System.out.println(senderBirth);
+            int similarAge_min = senderBirth - 5; // 비슷한 나이대로 불러올 최소 생년
+            int similarAge_max = senderBirth + 5; // 비슷한 나이대로 불러올 최대 생년
+
+            // 발신인이 생년을 입력하지 않은 경우?
+
+            for (User user : userList) {
+                if (user.getUserIdx_recentReceived() != senderUserIdx) {
+                    int userBirth = user.getBirth();
+                    if (user.getRecSimilarAge() == 1 && userBirth >= similarAge_min && userBirth <= similarAge_max) {
+                        userList_similarAge.add(user);
+                    }
+                }
+            }
+
+            int userNum_similarAge = userList_similarAge.size();
+            if (userNum_similarAge <= 3) {
+                // 전부 발송 ㄱㄱ
+                for (User user : userList_similarAge) {
+                    letterDao.sendLetter(letterIdx, user.getUserIdx()); // 편지 발송
+                    userIdx_sendMap.put(user.getUserIdx(), true); // Map.value = false -> true (해당 회원에게 편지가 발송됨을 체크)
+                }
+                leftNum = totalNum - userNum_similarAge;
+
+            } else { // userNum_similarAge > 3
+                // 3명 랜덤으로 뽑기
+                for (int i = 0; i < 3; i++) {
+                    int idx = (int) (Math.random() * userNum_similarAge);
+                    letterDao.sendLetter(letterIdx, userList_similarAge.get(idx).getUserIdx()); // 편지 발송
+                    userIdx_sendMap.put(userList_similarAge.get(idx).getUserIdx(), true); // Map.value = false -> true (해당 회원에게 편지가 발송됨을 체크)
+                    userList_similarAge.remove(idx); // 발송 후 목록에서 제거
+                }
+            }
+            // leftNum만큼 랜덤으로 뽑기
+            List<User> userList_random = new LinkedList<>();
+            for (User user : userList) {
+                if (user.getUserIdx_recentReceived() != senderUserIdx && !userIdx_sendMap.get(user.getUserIdx())) { // 발송인 아닐 경우, 편지 아직 발송 안된 사람 중
+                    userList_random.add(user);
+                }
+            }
+
+            for (int i = 0; i < leftNum; i++) {
+                int idx = (int) (Math.random() * userList_random.size());
+                letterDao.sendLetter(letterIdx, userList_random.get(idx).getUserIdx()); // 편지 발송
+                userIdx_sendMap.put(userList_random.get(idx).getUserIdx(), true); // Map.value = false -> true (해당 회원에게 편지가 발송됨을 체크)
+                userList_random.remove(idx); // 발송 후 목록에서 제거
+            }
+
+            return new PostLetterRes(letterIdx, senderNickName, receiverList);
 
         } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
-
-    // 편지 발송 유저의 닉네임 반환
-    public String getNickName(int userIdx) throws BaseException {
-        try {
-            String nickName = letterDao.getNickName(userIdx);
-            return nickName;
-        } catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }

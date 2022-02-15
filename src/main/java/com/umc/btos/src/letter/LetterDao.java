@@ -18,34 +18,73 @@ public class LetterDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    // =================================== 편지 생성 ===================================
+    // ============================================== 편지 저장 및 발송 ===============================================
 
-    //Letter 테이블에 편지 생성 // 생성한 letterIdx 반환
-    public int createLetter(PostLetterReq postLetterReq) {
-        // DB의 Letter Table에 (userIdx,content)값을 가지는 편지 데이터를 삽입(생성)
-        String createLetterQuery = "insert into Letter (userIdx,content) VALUES (?,?)";
-        Object[] createLetterParams = new Object[]{postLetterReq.getUserIdx(), postLetterReq.getContent()};
-        this.jdbcTemplate.update(createLetterQuery, createLetterParams);
+    // 편지 저장
+    public int postLetter(PostLetterReq postLetterReq) {
+        String query = "INSERT INTO Letter (userIdx,content) VALUES (?,?)";
+        this.jdbcTemplate.update(query, postLetterReq.getUserIdx(), postLetterReq.getContent());
 
-        // 가장 마지막에 삽입된(생성된) letterIdx값 반환
-        String lastInsertIdQuery = "select last_insert_id()";
-        return this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class);
+        // letterIdx 반환
+        String query_getLetterIdx = "SELECT last_insert_id()";
+        return this.jdbcTemplate.queryForObject(query_getLetterIdx, int.class);
     }
 
-    //편지를 전송하는 사람의 userIdx와 similarAge의 여부 반환
-    public PostLetterUserSimilarIdx getIdx_Similar(int letterIdx) {
-        // 편지 전송 유저의 userIdx
-        String getUserIdxQuery = "SELECT L.userIdx FROM Letter L WHERE L.letterIdx=?";
-        int userIdx = this.jdbcTemplate.queryForObject(getUserIdxQuery, int.class, letterIdx);
-
-        // 편지 발송 유저의 또래 편지 수신 여부
-        String getSimilarAgeQuery = "SELECT U.recSimilarAge FROM User U WHERE userIdx=?";
-        int userSimilarAge = this.jdbcTemplate.queryForObject(getSimilarAgeQuery, int.class, userIdx);
-
-        //userIdx, 또래 편지 수신 여부를 PostLetterUserSimilarIdx 객체를 만들어 반환
-        PostLetterUserSimilarIdx userIdx_SimilarAge = new PostLetterUserSimilarIdx(userIdx, userSimilarAge);
-        return userIdx_SimilarAge;
+    // 발신인 User.nickName 반환
+    public String getNickName(int userIdx) {
+        String query = "SELECT nickName FROM User WHERE userIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
     }
+
+    // 발신인 User.birth 반환
+    public int getSenderBirth(int senderUserIdx) {
+        String query = "SELECT birth FROM User WHERE userIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, int.class, senderUserIdx);
+    }
+
+    // 회원마다 가장 최근에 받은 편지 letterIdx 반환
+    public int getUserIdx_recentReceived(int userIdx) {
+        String query = "SELECT userIdx " +
+                "FROM LetterSendList " +
+                "         INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
+                "WHERE receiverIdx = ? " +
+                "  AND LetterSendList.status = 'active' " +
+                "ORDER BY LetterSendList.createdAt " +
+                "LIMIT 1"; // 상위 첫번째 값
+
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
+    }
+
+    // 발송 가능한 회원들의 목록
+    public List<User> getUserList(int senderUserIdx) {
+        String query = "SELECT userIdx, birth, recSimilarAge " +
+                "FROM User " +
+                "WHERE userIdx != ? " +
+                "  AND recOthers = 1 " +
+                "  AND status = 'active'";
+
+        return this.jdbcTemplate.query(query,
+                (rs, rowNum) -> new User(
+                        rs.getInt("userIdx"),
+                        rs.getInt("birth"),
+                        rs.getInt("recSimilarAge")
+                ), senderUserIdx);
+    }
+
+    // 편지 수신 유무
+    public int hasReceivedLetter(int userIdx) {
+        String query = "SELECT EXISTS (SELECT * FROM LetterSendList WHERE receiverIdx = ?)";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
+    }
+
+    // 편지 발송
+    public int sendLetter(int letterIdx, int receiverIdx) {
+        String query = "INSERT LetterSendList (letterIdx, receiverIdx) VALUE(?,?)";
+        return this.jdbcTemplate.update(query, letterIdx, receiverIdx);
+    }
+
+    // ================================================================================================================
+
 
     // [또래유저] 편지를 수신할 유저의 userIdx들 (list형태)로 반환 // +-5살의 유저(또래 유저)만 선택
     public List<Integer> getLetterUserIdx_Similar(PostLetterUserSimilarIdx postLetterUserSimilarIdx) {
@@ -111,12 +150,6 @@ public class LetterDao {
                         rs.getInt("letterIdx"),
                         rs.getString("content")),
                 letterIdx, receiverIdx);
-    }
-
-    // 해당 userIdx를 갖는 유저의 nickName을 반환
-    public String getNickName(int userIdx) {
-        String getNickNameQuery = "select nickName from User where userIdx = ?;";
-        return this.jdbcTemplate.queryForObject(getNickNameQuery, String.class, userIdx);
     }
 
     //편지 조회 여부 변경 // 해당 letterIdx를 갖는 편지의 isChecked를 1로 update
