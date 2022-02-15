@@ -49,7 +49,7 @@ public class LetterDao {
                 "         INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "WHERE receiverIdx = ? " +
                 "  AND LetterSendList.status = 'active' " +
-                "ORDER BY LetterSendList.createdAt " +
+                "ORDER BY LetterSendList.createdAt DESC " +
                 "LIMIT 1"; // 상위 첫번째 값
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
