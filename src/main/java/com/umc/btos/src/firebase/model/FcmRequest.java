@@ -6,10 +6,8 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-
-public class RequestDTO {
-    private String to; // deviceToken
-    private String project_id;
-    private String notification;
-
+public class FcmRequest {
+    private String token;
+    private String title;
+    private String body;
 }
