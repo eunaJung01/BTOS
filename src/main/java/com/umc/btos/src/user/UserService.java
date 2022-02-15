@@ -43,6 +43,11 @@ public class UserService {
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }
 
+        // 닉네임 중복 체크
+        if (userProvider.checkNickName(postUserReq.getNickName()) == 1) {
+            throw new BaseException(PATCH_USERS_EXISTS_NICKNAME);
+        }
+
         try{
             int userIdx = userDao.createUser(postUserReq);
             return new PostUserRes(userIdx);
