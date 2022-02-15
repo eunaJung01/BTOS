@@ -6,7 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PostLetterReq {
-    private int letterIdx;
-    private int userIdx;
-    private String content;
+    private int userIdx; // 발신인 식별자
+    private String content; // 편지 내용
 }
