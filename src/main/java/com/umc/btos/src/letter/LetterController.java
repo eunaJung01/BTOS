@@ -40,7 +40,7 @@ public class LetterController {
         try {
             // TODO : 형식적 validation - 회원 존재 여부 확인
             if (letterProvider.checkUserIdx(postLetterReq.getUserIdx()) == 0) {
-                throw new BaseException(LETTER_INVALID_USERIDX); // 존재하지 않는 회원입니다.
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
             }
 
             // 편지 저장 및 발송
