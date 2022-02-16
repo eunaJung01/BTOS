@@ -25,11 +25,11 @@ public class ReplyService {
     }
 
     // 답장 작성(POST)
-    public PostReplyFinalRes createReply(PostReplyReq postReplyReq) throws BaseException {
+    public PostReplyRes createReply(PostReplyReq postReplyReq) throws BaseException {
 
         try {
             int replyIdx = replyDao.createReply(postReplyReq);
-            PostReplyFinalRes postReplyFinalRes = getReplyreceiverNickname(replyIdx, postReplyReq); // 받는 유저의 userIdx, 답장을 보내는 사람의 닉네임 반환
+            PostReplyRes postReplyFinalRes = getReplyreceiverNickname(replyIdx, postReplyReq); // 받는 유저의 userIdx, 답장을 보내는 사람의 닉네임 반환
 
             alarmService.postAlarm_reply(postReplyFinalRes.getReplyIdx(), postReplyFinalRes.getSenderNickName(), postReplyFinalRes.getReceiverIdx()); // 알림 저장
             return postReplyFinalRes;
@@ -42,12 +42,12 @@ public class ReplyService {
 
     // 답장 작성자의 정보 반환
     // POST API - nickName, ReceiverIdx를 PostReplyFinalRes 객체를 만들어 반환
-    public PostReplyFinalRes getReplyreceiverNickname(int replyIdx, PostReplyReq postReplyReq) throws BaseException {
+    public PostReplyRes getReplyreceiverNickname(int replyIdx, PostReplyReq postReplyReq) throws BaseException {
 
         try {
             // 답장 발송 유저의 닉네임
             String senderNickName = replyDao.getNickname(postReplyReq.getReplierIdx());
-            PostReplyFinalRes postReplyFinalRes = new PostReplyFinalRes(replyIdx, postReplyReq.getReceiverIdx(), senderNickName);
+            PostReplyRes postReplyFinalRes = new PostReplyRes(replyIdx, postReplyReq.getReceiverIdx(), senderNickName);
             return postReplyFinalRes;
 
         } catch (Exception exception) {

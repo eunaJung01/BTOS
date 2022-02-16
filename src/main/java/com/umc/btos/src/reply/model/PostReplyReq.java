@@ -1,20 +1,16 @@
 package com.umc.btos.src.reply.model;
 
-
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostReplyReq {
-    private int replyIdx;
-    private int replierIdx; // 편지를 보내는 사람의 userIdx
-    private int receiverIdx; // 편지를 받는 사람의 userIdx
-    private int isChecked; // default = 0
-    private String firstHistoryType; // 시작점 구분 // diary : 일기, letter : 편지
+    private int replierIdx; // 발신인 userIdx
+    private int receiverIdx; // 수신인 userIdx
+    private String firstHistoryType; // 답장의 시작점 type (diary : 일기 / letter : 편지)
     private int sendIdx; // DiarySendList.sendIdx, LetterSendList.sendIdx
-    private String content; // 편지의 내용
-
-
+    private String content; // 답장 내용
 }

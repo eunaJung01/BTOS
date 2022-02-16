@@ -9,5 +9,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GetReplyRes {
     private int replyIdx;
-    private String content; // 답장의 내용
+    private String content; // 답장 내용
 }

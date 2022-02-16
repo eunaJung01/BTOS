@@ -29,10 +29,9 @@ public class ReplyController {
      */
     @ResponseBody
     @PostMapping("")
-    // 답장 생성
-    public BaseResponse<PostReplyFinalRes> createReply(@RequestBody PostReplyReq postReplyReq) {
+    public BaseResponse<PostReplyRes> createReply(@RequestBody PostReplyReq postReplyReq) {
         try {
-            PostReplyFinalRes postReplyFinalRes = replyService.createReply(postReplyReq);
+            PostReplyRes postReplyFinalRes = replyService.createReply(postReplyReq);
             return new BaseResponse<>(postReplyFinalRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
