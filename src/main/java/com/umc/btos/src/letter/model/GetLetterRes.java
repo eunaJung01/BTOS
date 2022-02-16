@@ -9,5 +9,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GetLetterRes {
     private int letterIdx;
-    private String content; // 조회된 편지의 내용
+    private String content;
 }
