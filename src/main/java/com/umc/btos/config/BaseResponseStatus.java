@@ -138,6 +138,7 @@ public enum BaseResponseStatus {
     INVALID_LETTERIDX(false, 8000, "존재하지 않는 편지입니다."),
     INVALID_USER_ABOUT_LETTER(false, 8001, "해당 편지에 접근 권한이 없는 회원입니다."),
     MODIFY_FAIL_LETTER_STATUS(false, 8002, "편지 삭제에 실패하였습니다."),
+    MODIFY_FAIL_ISCHECKED(false, 8003, "열람 여부 변경에 실패하였습니다."),
 
     MODIFY_FAIL_BLOCK_STATUS(false, 8002, "차단 해제 실패"),
     GET_FAIL_USERIDX(false, 8003, "해당 유저의 인덱스가 입력되지않았습니다."),
@@ -145,9 +146,8 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_REPLY_STATUS(false, 8005, "답장 삭제 실패"),
     MODIFY_REPLY_ISCHECKED_ERROR(false, 8007, "답장의 열람여부 변경 실패"),
     NOTICE_DATABASE_ERROR(false, 8006, "공지 조회 실패"),
-    MODIFY_LETTERSENDLIST_ISCHECKED_ERROR(false, 8008, "편지 열람여부 변경 실패"),
+
     POST_REPORT_REASON(false, 8009, "신고의 사유가 정해진 사유를 벗어납니다."),
-    LETTER_INVALID_USERIDX(false, 8010, "편지를 보내려는 회원이 존재하지 않습니다."),
 
     TEMP4(false, 9000, "conflict 방지용 4");
 
