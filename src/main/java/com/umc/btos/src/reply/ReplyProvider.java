@@ -2,15 +2,13 @@ package com.umc.btos.src.reply;
 
 import com.umc.btos.config.BaseException;
 
-
 import com.umc.btos.src.reply.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
-import static com.umc.btos.config.BaseResponseStatus.MODIFY_REPLY_ISCHECKED_ERROR;
+import static com.umc.btos.config.BaseResponseStatus.*;
 
 @Service
 public class ReplyProvider {

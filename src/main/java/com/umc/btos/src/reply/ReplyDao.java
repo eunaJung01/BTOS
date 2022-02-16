@@ -1,7 +1,5 @@
 package com.umc.btos.src.reply;
 
-
-
 import com.umc.btos.src.reply.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,12 +17,11 @@ public class ReplyDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-
     // 답장 생성 // replyIdx를 반환
     public int createReply(PostReplyReq postReplyReq) {
         // DB의 Reply Table에 (replierIdx,receiverIdx,firstHistoryType,sendIdx,content)값을 가지는 답장 데이터를 삽입(생성)한다.
         String createReplyQuery = "insert into Reply (replierIdx,receiverIdx,firstHistoryType,sendIdx,content) VALUES (?,?,?,?,?)";
-        Object[] createReplyParams = new Object[]{postReplyReq.getReplierIdx(),postReplyReq.getReceiverIdx(),postReplyReq.getFirstHistoryType(),postReplyReq.getSendIdx(),postReplyReq.getContent()};
+        Object[] createReplyParams = new Object[]{postReplyReq.getReplierIdx(), postReplyReq.getReceiverIdx(), postReplyReq.getFirstHistoryType(), postReplyReq.getSendIdx(), postReplyReq.getContent()};
         this.jdbcTemplate.update(createReplyQuery, createReplyParams);
 
         // 가장 마지막에 생성된 replyIdx
@@ -46,7 +43,7 @@ public class ReplyDao {
         return this.jdbcTemplate.update(modifyReplyStatusQuery, modifyReplyStatusParams);
     }
 
-    // =================================== 우편 조회 - 답장 ===================================
+    // =============================================== 우편 조회 - 답장 ===============================================
 
     // 해당 replyIdx를 갖는 답장 조회
     public GetReplyRes getReply(int replyIdx) {
