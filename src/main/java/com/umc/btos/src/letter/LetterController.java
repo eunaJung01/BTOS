@@ -47,7 +47,7 @@ public class LetterController {
             PostLetterRes postLetterRes = letterService.postLetter(postLetterReq);
 
             // 화분 점수 증가
-            postLetterRes.setPlantRes(plantService.modifyScore_plus(postLetterReq.getUserIdx(), Constant.PLANT_LEVELUP_LETTER,"letter"));
+            postLetterRes.setPlantRes(plantService.modifyScore_plus(postLetterReq.getUserIdx(), Constant.PLANT_LEVELUP_LETTER, "letter"));
 
             return new BaseResponse<>(postLetterRes);
 
@@ -65,9 +65,8 @@ public class LetterController {
     @PatchMapping("/{letterIdx}")
     public BaseResponse<String> deleteLetter(@PathVariable("letterIdx") int letterIdx) {
         try {
-            PatchLetterReq patchLetterReq = new PatchLetterReq(letterIdx);
-            letterService.modifyLetterStatus(patchLetterReq);
-            String result = "편지가 삭제되었습니다.";
+            letterService.deleteLetter(letterIdx);
+            String result = "편지(letterIdx = " + letterIdx + ")가 삭제되었습니다.";
             return new BaseResponse<>(result);
 
         } catch (BaseException exception) {

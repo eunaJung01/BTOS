@@ -97,11 +97,12 @@ public class LetterDao {
         return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
     }
 
-    //편지 삭제 // 해당 letterIdx의 편지 status를 deleted로 변경
-    public int modifyLetterStatus(PatchLetterReq patchLetterReq) {
-        String modifyLetterStatusQuery = "update Letter set status = ? where letterIdx = ? ";
-        Object[] modifyLetterStatusParams = new Object[]{"deleted", patchLetterReq.getLetterIdx()};
-        return this.jdbcTemplate.update(modifyLetterStatusQuery, modifyLetterStatusParams);
+    // ================================================== 편지 삭제 ===================================================
+
+    // Letter.status : active -> deleted
+    public int deleteLetter(int letterIdx) {
+        String query = "UPDATE Letter SET status = 'deleted' WHERE letterIdx = ?";
+        return this.jdbcTemplate.update(query, int.class, letterIdx);
     }
 
     // =================================== 우편 조회 - 편지 ===================================

@@ -190,13 +190,18 @@ public class LetterService {
         }
     }
 
-    // 편지 삭제 - status를 deleted로 변경 (Patch)
-    public void modifyLetterStatus(PatchLetterReq patchLetterReq) throws BaseException {
+    /*
+     * 편지 삭제
+     * [PATCH] /letters/:letterIdx
+     */
+    public void deleteLetter(int letterIdx) throws BaseException {
         try {
-            // result값이 0이면 과정이 실패 - 8001 ERROR
-            int result = letterDao.modifyLetterStatus(patchLetterReq);
-            if (result == 0) throw new BaseException(MODIFY_FAIL_LETTER_STATUS);
+            if (letterDao.deleteLetter(letterIdx) == 0) {
+                throw new BaseException(MODIFY_FAIL_LETTER_STATUS); // 편지 삭제에 실패하였습니다.
+            }
 
+        } catch (BaseException exception) {
+            throw new BaseException(MODIFY_FAIL_LETTER_STATUS); // 편지 삭제에 실패하였습니다.
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
