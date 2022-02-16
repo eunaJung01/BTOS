@@ -195,15 +195,8 @@ public class LetterService {
      * [PATCH] /letters/:letterIdx
      */
     public void deleteLetter(int letterIdx) throws BaseException {
-        try {
-            if (letterDao.deleteLetter(letterIdx) == 0) {
-                throw new BaseException(MODIFY_FAIL_LETTER_STATUS); // 편지 삭제에 실패하였습니다.
-            }
-
-        } catch (BaseException exception) {
+        if (letterDao.deleteLetter(letterIdx) == 0) {
             throw new BaseException(MODIFY_FAIL_LETTER_STATUS); // 편지 삭제에 실패하였습니다.
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
         }
     }
 
