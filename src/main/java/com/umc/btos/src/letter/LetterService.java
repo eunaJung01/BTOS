@@ -1,6 +1,7 @@
 package com.umc.btos.src.letter;
 
 import com.umc.btos.config.BaseException;
+import com.umc.btos.config.Constant;
 import com.umc.btos.src.letter.model.*;
 
 import org.slf4j.Logger;
@@ -70,8 +71,8 @@ public class LetterService {
              *          5명 - 편지 발송이 가능한 전체 집단에서 무작위로 발송
              */
 
-            int totalNum = 5; // 총 편지를 발송해야 하는 횟수
-            int similarNum = 3; // 비슷한 나이대의 회원들에게 편지를 발송할 횟수
+            int totalNum = Constant.LETTER_SEND_TOTAL_NUM; // 편지를 발송해야 하는 총 횟수 (5회)
+            int similarNum = Constant.LETTER_SEND_SIMILAR_AGE_NUM; // 비슷한 나이대의 회원들에게 편지를 발송할 횟수 (3회)
             int leftNum = totalNum - similarNum; // 비슷한 나이대 회원들을 제외한 집단에서 무작위로 편지를 발송해야 하는 횟수
 
             List<User> userList = letterDao.getUserList(senderUserIdx); // 편지 발송 가능한 회원들의 목록 (본인 제외)
@@ -101,8 +102,8 @@ public class LetterService {
             // 발신인 생년 정보가 존재하는 경우
             if (senderBirth != 0) {
                 // 비슷한 나이대 : 발신인의 생년 -5 ~ +5
-                int similarAge_min = senderBirth - 5; // 비슷한 나이대로 불러올 최소 생년
-                int similarAge_max = senderBirth + 5; // 비슷한 나이대로 불러올 최대 생년
+                int similarAge_min = senderBirth - Constant.SIMILAR_AGE_STANDARD; // 비슷한 나이대로 불러올 최소 생년
+                int similarAge_max = senderBirth + Constant.SIMILAR_AGE_STANDARD; // 비슷한 나이대로 불러올 최대 생년
 
                 for (User user : userList) {
                     if (user.getUserIdx_recentReceived() != senderUserIdx) { // 가장 최근에 수신한 편지 != 발신인의 편지
