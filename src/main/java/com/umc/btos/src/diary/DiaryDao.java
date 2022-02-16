@@ -1,5 +1,6 @@
 package com.umc.btos.src.diary;
 
+import com.umc.btos.config.Constant;
 import com.umc.btos.src.diary.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -213,7 +214,7 @@ public class DiaryDao {
                 "AND (birth >= ? OR birth <= ?)" +
                 "AND status = 'active'";
 
-        return this.jdbcTemplate.queryForList(query, int.class, userIdx, senderBirth - 5, senderBirth + 5);
+        return this.jdbcTemplate.queryForList(query, int.class, userIdx, senderBirth - Constant.SIMILAR_AGE_STANDARD, senderBirth + Constant.SIMILAR_AGE_STANDARD);
     }
 
     // 일기 발송 (DiarySendList)
