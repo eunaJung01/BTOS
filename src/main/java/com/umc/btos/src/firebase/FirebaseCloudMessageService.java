@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.umc.btos.src.firebase.model.*;
-import com.umc.btos.src.firebase.model.FcmRequest;
-import com.umc.btos.src.firebase.model.FcmResponse;
 import lombok.RequiredArgsConstructor;
 import okhttp3.*;
 import org.apache.http.HttpHeaders;
@@ -44,8 +42,8 @@ public class FirebaseCloudMessageService {
         Response response = client.newCall(request)
                 .execute();
 
-        System.out.println("code" + response.code() +
-                "body : "+ response.body().string());
+        /*System.out.println("code " + response.code() +
+                "body : "+ response.body().string());*/
 
         return new FcmResponse(
                 fcmRequest.getTitle(),
