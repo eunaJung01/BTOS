@@ -18,6 +18,26 @@ public class LetterDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    // ================================================== validation ==================================================
+
+    // 회원 존재 여부 확인
+    public int checkUserIdx(int userIdx) {
+        String query = "SELECT EXISTS (SELECT userIdx FROM User WHERE userIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
+    }
+
+    // 편지 존재 여부 확인
+    public int checkLetterIdx(int letterIdx) {
+        String query = "SELECT EXISTS (SELECT letterIdx FROM Letter WHERE letterIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, int.class, letterIdx);
+    }
+
+    // 해당 회원이 작성한 편지인지 확인
+    public int checkUserAboutLetter(int userIdx, int letterIdx) {
+        String query = "SELECT EXISTS (SELECT letterIdx FROM Letter WHERE userIdx = ? AND letterIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx, letterIdx);
+    }
+
     // ============================================== 편지 저장 및 발송 ===============================================
 
     // 편지 저장 (INSERT Letter)
@@ -102,7 +122,7 @@ public class LetterDao {
     // Letter.status : active -> deleted
     public int deleteLetter(int letterIdx) {
         String query = "UPDATE Letter SET status = 'deleted' WHERE letterIdx = ?";
-        return this.jdbcTemplate.update(query, int.class, letterIdx);
+        return this.jdbcTemplate.update(query, letterIdx);
     }
 
     // =================================== 우편 조회 - 편지 ===================================
@@ -126,12 +146,6 @@ public class LetterDao {
     public int modifyIsChecked(int letterIdx, int receiverIdx) {
         String getReplyQuery = "UPDATE LetterSendList SET isChecked = 1 WHERE letterIdx = ? AND receiverIdx = ?";
         return this.jdbcTemplate.update(getReplyQuery, letterIdx, receiverIdx); // 대응시켜 매핑시켜 쿼리 요청 (성공했으면 1, 실패했으면 0)
-    }
-
-    // 형식적 validation - 회원 존재 여부 확인
-    public int checkUserIdx(int userIdx) {
-        String query = "SELECT EXISTS (SELECT userIdx FROM User WHERE userIdx = ? AND status = 'active')";
-        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
     // ================================================================================================================
