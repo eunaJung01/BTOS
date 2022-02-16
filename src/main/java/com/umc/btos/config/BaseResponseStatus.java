@@ -112,16 +112,16 @@ public enum BaseResponseStatus {
     // 7000 : 자몽
     TEMP3(false, 9000, "conflict 방지용 3"),
 
-//    MODIFY_FAIL_STATUS(false, 7010, "화분 상태 변경에 실패하였습니다."),
-    INSERT_FAIL_PLANT(false,7000,"해당 유저의 화분 초기화에 실패하였습니다."),
+    //    MODIFY_FAIL_STATUS(false, 7010, "화분 상태 변경에 실패하였습니다."),
+    INSERT_FAIL_PLANT(false, 7000, "해당 유저의 화분 초기화에 실패하였습니다."),
 
-    MODIFY_FAIL_BUY_PLANT(false,7011, "화분 선택에 실패하였습니다."),
+    MODIFY_FAIL_BUY_PLANT(false, 7011, "화분 선택에 실패하였습니다."),
     MODIFY_FAIL_SCORE(false, 7012, "화분 점수 변경에 실패하였습니다."),
     MODIFY_FAIL_LEVEL(false, 7013, "화분 단계 변경에 실패하였습니다."),
 
 
-    INVALID_SCORE_PLANT(false,7014, "선택한 화분의 점수가 0점입니다. 점수를 감소시킬 수 없습니다."),
-    INVALID_LEVEL_PLANT(false,7015,"동작을 수행할 화분의 단계가 0단계이므로 더 이상 단계와 점수를 감소시킬 수 없습니다."),
+    INVALID_SCORE_PLANT(false, 7014, "선택한 화분의 점수가 0점입니다. 점수를 감소시킬 수 없습니다."),
+    INVALID_LEVEL_PLANT(false, 7015, "동작을 수행할 화분의 단계가 0단계이므로 더 이상 단계와 점수를 감소시킬 수 없습니다."),
 
     INVALID_IDX_PLANT(false, 7016, "이미 선택된 화분입니다."),
     DUPLICATE_IDX_PLANT(false, 7017, "이미 보유한 화분입니다."),
@@ -129,24 +129,27 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_PREMIUM(false, 7020, "프리미엄 계정 변경에 실패하였습니다."),
     MODIFY_FAIL_WITHDRAW(false, 7021, "청약철회에 실패하였습니다."),
 
-    PREMIUM_USER(false,7030,"프리미엄 계정 회원은 화분 성장치가 감소하지 않습니다."),
-    MAXLEVEL_PLANT(false,7031, "성장치가 MAX 단계에 도달한 화분은 성장치가 감소하지 않습니다."),
-    SAD_STATUS_PLANT(false,7032, "화분이 시무룩 상태입니다. 화분의 성장치를 증가시킬 수 없습니다."),
+    PREMIUM_USER(false, 7030, "프리미엄 계정 회원은 화분 성장치가 감소하지 않습니다."),
+    MAXLEVEL_PLANT(false, 7031, "성장치가 MAX 단계에 도달한 화분은 성장치가 감소하지 않습니다."),
+    SAD_STATUS_PLANT(false, 7032, "화분이 시무룩 상태입니다. 화분의 성장치를 증가시킬 수 없습니다."),
 
 
-    // 8000 : 잭
-    MODIFY_FAIL_LETTER_STATUS(false,8001,"편지 삭제에 실패하였습니다."),
-    MODIFY_FAIL_BLOCK_STATUS(false,8002,"차단 해제 실패"),
-    GET_FAIL_USERIDX(false, 8003,"해당 유저의 인덱스가 입력되지않았습니다."),
-    REPLY_DATABASE_ERROR(false,8004,"답장 생성 과정에서 DB에 문제가 있습니다."),
-    MODIFY_FAIL_REPLY_STATUS(false, 8005,"답장 삭제 실패"),
-    MODIFY_REPLY_ISCHECKED_ERROR(false, 8007,"답장의 열람여부 변경 실패"),
-    NOTICE_DATABASE_ERROR(false, 8006,"공지 조회 실패"),
-    MODIFY_LETTERSENDLIST_ISCHECKED_ERROR(false,8008,"편지 열람여부 변경 실패"),
-    POST_REPORT_REASON(false,8009,"신고의 사유가 정해진 사유를 벗어납니다."),
-    LETTER_INVALID_USERIDX(false,8010,"편지를 보내려는 회원이 존재하지 않습니다."),
+    // 8000 : 잭, 레마
+    INVALID_LETTERIDX(false, 8000, "존재하지 않는 편지입니다."),
+    INVALID_USER_ABOUT_LETTER(false, 8001, "해당 편지에 접근 권한이 없는 회원입니다."),
+    MODIFY_FAIL_LETTER_STATUS(false, 8002, "편지 삭제에 실패하였습니다."),
+
+    MODIFY_FAIL_BLOCK_STATUS(false, 8002, "차단 해제 실패"),
+    GET_FAIL_USERIDX(false, 8003, "해당 유저의 인덱스가 입력되지않았습니다."),
+    REPLY_DATABASE_ERROR(false, 8004, "답장 생성 과정에서 DB에 문제가 있습니다."),
+    MODIFY_FAIL_REPLY_STATUS(false, 8005, "답장 삭제 실패"),
+    MODIFY_REPLY_ISCHECKED_ERROR(false, 8007, "답장의 열람여부 변경 실패"),
+    NOTICE_DATABASE_ERROR(false, 8006, "공지 조회 실패"),
+    MODIFY_LETTERSENDLIST_ISCHECKED_ERROR(false, 8008, "편지 열람여부 변경 실패"),
+    POST_REPORT_REASON(false, 8009, "신고의 사유가 정해진 사유를 벗어납니다."),
+    LETTER_INVALID_USERIDX(false, 8010, "편지를 보내려는 회원이 존재하지 않습니다."),
+
     TEMP4(false, 9000, "conflict 방지용 4");
-
 
 
     private final boolean isSuccess;
