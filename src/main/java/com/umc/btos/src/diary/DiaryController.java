@@ -123,7 +123,7 @@ public class DiaryController {
 
             diaryService.deleteDiary(diaryIdx); // 일기 삭제
 
-            String result = "일기-diaryIdx=" + diaryIdx + " 삭제 완료";
+            String result = "일기(diaryIdx=" + diaryIdx + ") 삭제 완료";
             return new BaseResponse<>(result);
 
         } catch (BaseException exception) {
