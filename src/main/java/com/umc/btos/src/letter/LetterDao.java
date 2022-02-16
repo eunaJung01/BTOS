@@ -106,9 +106,9 @@ public class LetterDao {
     }
 
     // 편지 발송 (INSERT LetterSendList)
-    public int sendLetter(int letterIdx, int receiverIdx) {
+    public void sendLetter(int letterIdx, int receiverIdx) {
         String query = "INSERT LetterSendList (letterIdx, receiverIdx) VALUE(?,?)";
-        return this.jdbcTemplate.update(query, letterIdx, receiverIdx);
+        this.jdbcTemplate.update(query, letterIdx, receiverIdx);
     }
 
     // 수신인 User.fcmToken 반환
@@ -142,10 +142,10 @@ public class LetterDao {
                 letterIdx, receiverIdx);
     }
 
-    //편지 조회 여부 변경 // 해당 letterIdx를 갖는 편지의 isChecked를 1로 update
+    // 편지 조회 시 LetterSendList.isChecked : 0 -> 1
     public int modifyIsChecked(int letterIdx, int receiverIdx) {
-        String getReplyQuery = "UPDATE LetterSendList SET isChecked = 1 WHERE letterIdx = ? AND receiverIdx = ?";
-        return this.jdbcTemplate.update(getReplyQuery, letterIdx, receiverIdx); // 대응시켜 매핑시켜 쿼리 요청 (성공했으면 1, 실패했으면 0)
+        String query = "UPDATE LetterSendList SET isChecked = 1 WHERE letterIdx = ? AND receiverIdx = ?";
+        return this.jdbcTemplate.update(query, letterIdx, receiverIdx);
     }
 
     // ================================================================================================================

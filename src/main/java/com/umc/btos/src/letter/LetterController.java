@@ -104,7 +104,7 @@ public class LetterController {
                 throw new BaseException(INVALID_USER_ABOUT_LETTER); // 해당 편지에 접근 권한이 없는 회원입니다.
             }
 
-            GetLetterRes getLetterRes = letterProvider.getLetter(letterIdx, userIdx);
+            GetLetterRes getLetterRes = letterProvider.getLetter(userIdx, letterIdx);
             return new BaseResponse<>(getLetterRes);
 
         } catch (BaseException exception) {
