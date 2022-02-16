@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class GetLetterRes {
-    private int letterIdx;
-    private String content;
+    private int letterIdx; // 조회하는 편지의 식별자
+    private String content; // 편지 내용
 }

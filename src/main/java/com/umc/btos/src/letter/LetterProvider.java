@@ -20,16 +20,14 @@ public class LetterProvider {
         this.letterDao = letterDao;
     }
 
-    // 해당 letterIdx를 갖는 Letter 조회
-    public GetLetterRes getLetter(int userIdx, int letterIdx) throws BaseException {
+    // ================================================== validation ==================================================
+
+    /*
+     * 존재하는 회원인지 확인
+     */
+    public int checkUserIdx(int userIdx) throws BaseException {
         try {
-            GetLetterRes getLetterRes = letterDao.getLetter(letterIdx, userIdx);
-            // 열람여부 변경 성공 여부 반환 : 성공 시 1, 실패 시 0을 반환
-            int isSuccess = letterDao.modifyIsChecked(letterIdx, userIdx);
-            if (isSuccess == 0) {
-                throw new BaseException(MODIFY_LETTERSENDLIST_ISCHECKED_ERROR);
-            }
-            return getLetterRes;
+            return letterDao.checkUserIdx(userIdx); // 존재하면 1, 존재하지 않는다면 0 반환
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
@@ -37,12 +35,46 @@ public class LetterProvider {
     }
 
     /*
-     * 편지를 보내는 회원 - 회원여부 확인
-    */
-    public int checkUserIdx(int userIdx) throws BaseException {
+     * 존재하는 편지인지 확인
+     */
+    public int checkLetterIdx(int letterIdx) throws BaseException {
         try {
-            // 존재하면 1, 존재하지 않는다면 0 반환
-            return letterDao.checkUserIdx(userIdx);
+            return letterDao.checkLetterIdx(letterIdx); // 존재하면 1, 존재하지 않는다면 0 반환
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /*
+     * 해당 회원이 작성한 편지인지 확인
+     */
+    public int checkUserAboutLetter(int userIdx, int letterIdx) throws BaseException {
+        try {
+            return letterDao.checkUserAboutLetter(userIdx, letterIdx); // 존재하면 1, 존재하지 않는다면 0 반환
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // ================================================== 편지 조회 ===================================================
+
+    /*
+     * 편지 조회
+     * [GET] /letters/:letterIdx?userIdx
+     */
+    public GetLetterRes getLetter(int userIdx, int letterIdx) throws BaseException {
+        try {
+            GetLetterRes getLetterRes = letterDao.getLetter(letterIdx, userIdx);
+
+            if (letterDao.modifyIsChecked(letterIdx, userIdx) == 0) { // LetterSendList.isChecked : 0 -> 1
+                throw new BaseException(MODIFY_FAIL_ISCHECKED);
+            }
+            return getLetterRes;
+
+        } catch (BaseException exception) {
+            throw new BaseException(MODIFY_FAIL_ISCHECKED); // 열람 여부 변경에 실패하였습니다.
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

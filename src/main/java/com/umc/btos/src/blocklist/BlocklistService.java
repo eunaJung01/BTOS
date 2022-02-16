@@ -2,8 +2,6 @@ package com.umc.btos.src.blocklist;
 import com.umc.btos.config.BaseException;
 import com.umc.btos.src.blocklist.model.*;
 
-import com.umc.btos.src.letter.model.PatchLetterReq;
-import com.umc.btos.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

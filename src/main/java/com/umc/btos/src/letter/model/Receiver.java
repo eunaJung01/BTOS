@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class Receiver {
     private int userIdx; // 수신인 식별자
-    private String fcmToken;
+    private String fcmToken; // 수신인 fcm token
 
     public Receiver(int userIdx) {
         this.userIdx = userIdx;

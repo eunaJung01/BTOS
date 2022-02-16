@@ -187,19 +187,16 @@ public class DiaryService {
      * [PATCH] /diaries/delete/:diaryIdx
      */
     public void deleteDiary(int diaryIdx) throws BaseException {
-        try {
-            // Diary.status 수정
-            if (diaryDao.deleteDiary(diaryIdx) == 0) {
-                throw new BaseException(DELETE_FAIL_DIARY); // 일기 삭제에 실패하였습니다.
-            }
-
+        // Diary.status 수정
+        if (diaryDao.deleteDiary(diaryIdx) == 0) {
+            throw new BaseException(DELETE_FAIL_DIARY); // 일기 삭제에 실패하였습니다.
+        }
+        // done list 존재 유무 확인
+        if (diaryDao.hasDone(diaryIdx) == 1) { // done list 존재할 경우
             // Done.status 수정
             if (diaryDao.deleteDone(diaryIdx) == 0) {
                 throw new BaseException(DELETE_FAIL_DONE); // done list 삭제에 실패하였습니다.
             }
-
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
         }
     }
 

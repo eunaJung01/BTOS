@@ -113,16 +113,20 @@ public class DiaryDao {
 
     // 일기 삭제 - Diary.status : active -> deleted
     public int deleteDiary(int diaryIdx) {
-        String query = "UPDATE Diary SET status = ? WHERE diaryIdx = ?";
-        Object[] params = new Object[]{"deleted", diaryIdx};
-        return this.jdbcTemplate.update(query, params);
+        String query = "UPDATE Diary SET status = 'deleted' WHERE diaryIdx = ?";
+        return this.jdbcTemplate.update(query, diaryIdx);
+    }
+
+    // done list 유무 반환
+    public int hasDone(int diaryIdx) {
+        String query = "SELECT EXISTS (SELECT * FROM Done WHERE diaryIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx); // 존재하면 1, 존재하지 않으면 0 반환
     }
 
     // done list 삭제 - Done.status : active -> deleted
     public int deleteDone(int diaryIdx) {
-        String query = "UPDATE Done SET status = ? WHERE diaryIdx = ?";
-        Object[] params = new Object[]{"deleted", diaryIdx};
-        return this.jdbcTemplate.update(query, params);
+        String query = "UPDATE Done SET status = 'deleted' WHERE diaryIdx = ?";
+        return this.jdbcTemplate.update(query, diaryIdx);
     }
 
     // =================================== 일기 조회 ===================================
@@ -229,7 +233,7 @@ public class DiaryDao {
 
     // 일기 발송 리스트 반환
     public List<Integer> getReceiverIdxList(int diaryIdx, String diaryDate) {
-        String query  = "SELECT receiverIdx " +
+        String query = "SELECT receiverIdx " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "WHERE Diary.diaryIdx = ? " +

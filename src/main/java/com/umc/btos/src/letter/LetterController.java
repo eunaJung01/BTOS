@@ -40,14 +40,14 @@ public class LetterController {
         try {
             // TODO : 형식적 validation - 회원 존재 여부 확인
             if (letterProvider.checkUserIdx(postLetterReq.getUserIdx()) == 0) {
-                throw new BaseException(LETTER_INVALID_USERIDX); // 존재하지 않는 회원입니다.
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
             }
 
             // 편지 저장 및 발송
             PostLetterRes postLetterRes = letterService.postLetter(postLetterReq);
 
             // 화분 점수 증가
-            postLetterRes.setPlantRes(plantService.modifyScore_plus(postLetterReq.getUserIdx(), Constant.PLANT_LEVELUP_LETTER,"letter"));
+            postLetterRes.setPlantRes(plantService.modifyScore_plus(postLetterReq.getUserIdx(), Constant.PLANT_LEVELUP_LETTER, "letter"));
 
             return new BaseResponse<>(postLetterRes);
 
@@ -59,15 +59,25 @@ public class LetterController {
 
     /*
      * 편지 삭제
-     * [PATCH] /letters/:letterIdx
+     * [PATCH] /letters/delete/:letterIdx?userIdx
      */
     @ResponseBody
-    @PatchMapping("/{letterIdx}")
-    public BaseResponse<String> deleteLetter(@PathVariable("letterIdx") int letterIdx) {
+    @PatchMapping("/delete/{letterIdx}")
+    public BaseResponse<String> deleteLetter(@PathVariable("letterIdx") int letterIdx, @RequestParam("userIdx") int userIdx) {
         try {
-            PatchLetterReq patchLetterReq = new PatchLetterReq(letterIdx);
-            letterService.modifyLetterStatus(patchLetterReq);
-            String result = "편지가 삭제되었습니다.";
+            // TODO : 형식적 validation - 존재하는 회원인가? / 존재하는 편지인가? / 해당 회원이 작성한 편지인가?
+            if (letterProvider.checkUserIdx(userIdx) == 0) {
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+            }
+            if (letterProvider.checkLetterIdx(letterIdx) == 0) {
+                throw new BaseException(INVALID_LETTERIDX); // 존재하지 않는 편지입니다.
+            }
+            if (letterProvider.checkUserAboutLetter(userIdx, letterIdx) == 0) {
+                throw new BaseException(INVALID_USER_ABOUT_LETTER); // 해당 편지에 접근 권한이 없는 회원입니다.
+            }
+
+            letterService.deleteLetter(letterIdx);
+            String result = "편지(letterIdx = " + letterIdx + ")가 삭제되었습니다.";
             return new BaseResponse<>(result);
 
         } catch (BaseException exception) {
@@ -77,13 +87,24 @@ public class LetterController {
 
     /*
      * 편지 조회
-     * [GET] /letters/:letterIdx/:userIdx
+     * [GET] /letters/:letterIdx?userIdx
      */
-    @ResponseBody // userIdx는 이 API를 호출하는 편지를 읽는 유저
-    @GetMapping("/{letterIdx}/{userIdx}")
-    public BaseResponse<GetLetterRes> getLetter(@PathVariable("letterIdx") int letterIdx, @PathVariable("userIdx") int userIdx) {
+    @ResponseBody
+    @GetMapping("/{letterIdx}")
+    public BaseResponse<GetLetterRes> getLetter(@PathVariable("letterIdx") int letterIdx, @RequestParam("userIdx") int userIdx) {
         try {
-            GetLetterRes getLetterRes = letterProvider.getLetter(letterIdx, userIdx);
+            // TODO : 형식적 validation - 존재하는 회원인가? / 존재하는 편지인가? / 해당 회원이 작성한 편지인가?
+            if (letterProvider.checkUserIdx(userIdx) == 0) {
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+            }
+            if (letterProvider.checkLetterIdx(letterIdx) == 0) {
+                throw new BaseException(INVALID_LETTERIDX); // 존재하지 않는 편지입니다.
+            }
+            if (letterProvider.checkUserAboutLetter(userIdx, letterIdx) == 0) {
+                throw new BaseException(INVALID_USER_ABOUT_LETTER); // 해당 편지에 접근 권한이 없는 회원입니다.
+            }
+
+            GetLetterRes getLetterRes = letterProvider.getLetter(userIdx, letterIdx);
             return new BaseResponse<>(getLetterRes);
 
         } catch (BaseException exception) {
