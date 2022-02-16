@@ -99,9 +99,9 @@ public class LetterDao {
                 ), senderUserIdx);
     }
 
-    // 편지 수신 유무
+    // 편지 수신 유무 반환
     public int hasReceivedLetter(int userIdx) {
-        String query = "SELECT EXISTS (SELECT * FROM LetterSendList WHERE receiverIdx = ?)"; // 수신한 적이 있다면 1, 없다면 0 반환
+        String query = "SELECT EXISTS (SELECT * FROM LetterSendList WHERE receiverIdx = ?)"; // 편지를 수신한 적이 있다면 1, 없다면 0 반환
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
@@ -125,7 +125,7 @@ public class LetterDao {
         return this.jdbcTemplate.update(query, letterIdx);
     }
 
-    // =================================== 우편 조회 - 편지 ===================================
+    // =============================================== 우편 조회 - 편지 ===============================================
 
     // 해당 letterIdx를 갖는 편지조회
     public GetLetterRes getLetter(int letterIdx, int receiverIdx) {
@@ -142,56 +142,10 @@ public class LetterDao {
                 letterIdx, receiverIdx);
     }
 
-    // 편지 조회 시 LetterSendList.isChecked : 0 -> 1
+    // LetterSendList.isChecked : 0 -> 1
     public int modifyIsChecked(int letterIdx, int receiverIdx) {
         String query = "UPDATE LetterSendList SET isChecked = 1 WHERE letterIdx = ? AND receiverIdx = ?";
         return this.jdbcTemplate.update(query, letterIdx, receiverIdx);
     }
-
-    // ================================================================================================================
-
-    /*
-    // [또래유저] 편지를 수신할 유저의 userIdx들 (list형태)로 반환 // +-5살의 유저(또래 유저)만 선택
-    public List<Integer> getLetterUserIdx_Similar(PostLetterUserSimilarIdx postLetterUserSimilarIdx) {
-        // 편지를 발송하는 유저의 출생년도
-        String getBirthQuery = "SELECT U.birth FROM User U WHERE userIdx=?";
-        int getUserIdxParam = postLetterUserSimilarIdx.getUserIdx();
-        int userBirth = this.jdbcTemplate.queryForObject(getBirthQuery, int.class, getUserIdxParam);
-
-        // 편지를 수신할 유저의 userIdx들
-        // 휴먼상태가 아니고, 타인의 편지를 수신하는 유저이고, 나이대가 +-5년의 유저 중 (편지를 보내는 유저 제외) 랜덤으로 5명을 선택
-        String getUserIdx = "select U.userIdx from User U where U.status='active' and U.userIdx != ? and U.recOthers = 1 and ( (?-5) <= U.birth and U.birth <=(?+5))  order by rand() limit 5";
-        List<Integer> userIdx_Similar = this.jdbcTemplate.queryForList(getUserIdx, int.class, getUserIdxParam, userBirth, userBirth);
-
-        return userIdx_Similar;
-    }
-
-    // 편지를 수신할 유저가 5명 이하일 경우 편지를 보낼 유저를 랜덤으로 선택 // 편지를 수신할 유저의 userIdx들 (list형태)로 반환
-    public List<Integer> getLetterUserIdx_Random(PostLetterUserSimilarIdx postLetterUserSimilarIdx) { // 편지를 수신할 유저의 userIdx들을 list형태로 반환
-        // 휴먼상태가 아니고, 타인의 편지를 수신하는 유저를 list형태로 모두 반환  (편지를 보내는 유저 제외)
-        // 랜덤으로 조건에 해당하는 모든 유저의 userIdx를 뽑는 쿼리문
-        // 이미 편지를 보낸 유저가 존재할 수 있으므로 넉넉하게 10명을 뽑음
-        String getUserIdx = "select U.userIdx from User U where U.status='active' and U.userIdx != ? and U.recOthers = 1 order by rand() limit 10";
-        List<Integer> userIdx_Random = this.jdbcTemplate.queryForList(getUserIdx, int.class, postLetterUserSimilarIdx.getUserIdx());
-
-        return userIdx_Random;
-    }
-
-    // LetterSendList 테이블에 편지 발송 목록 생성
-    public void createLetterSendList(int letterIdx, List<Integer> userIdx_list, int i) {
-        String createLetterSendListQuery = "insert into LetterSendList (letterIdx,receiverIdx) VALUES (?,?)";
-        Object[] createLetterSendListParams = new Object[]{letterIdx, userIdx_list.get(i)};
-        this.jdbcTemplate.update(createLetterSendListQuery, createLetterSendListParams);
-    }
-
-    // 편지를 수신할 유저의 userIdx들 랜덤으로 5명 선택하여 (list형태)로 반환
-    public List<Integer> getLetterUserIdx(PostLetterUserSimilarIdx postLetterUserSimilarIdx) {
-        // 편지를 수신할 유저 선택 // 휴먼상태가 아니고, 타인의 편지를 수신하는 유저 중 (편지를 보내는 유저 제외)
-        String getUserIdx = "select U.userIdx from User U where U.status='active' and U.userIdx != ? and recOthers = 1 order by rand() limit 5";
-        List<Integer> userIdx_unSimilar = this.jdbcTemplate.queryForList(getUserIdx, int.class, postLetterUserSimilarIdx.getUserIdx());
-
-        return userIdx_unSimilar;
-    }
-     */
 
 }
