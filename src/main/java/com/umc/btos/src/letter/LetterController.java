@@ -87,11 +87,11 @@ public class LetterController {
 
     /*
      * 편지 조회
-     * [GET] /letters/:letterIdx/:userIdx
+     * [GET] /letters/:letterIdx?userIdx
      */
-    @ResponseBody // userIdx는 이 API를 호출하는 편지를 읽는 유저
-    @GetMapping("/{letterIdx}/{userIdx}")
-    public BaseResponse<GetLetterRes> getLetter(@PathVariable("letterIdx") int letterIdx, @PathVariable("userIdx") int userIdx) {
+    @ResponseBody
+    @GetMapping("/{letterIdx}")
+    public BaseResponse<GetLetterRes> getLetter(@PathVariable("letterIdx") int letterIdx, @RequestParam("userIdx") int userIdx) {
         try {
             GetLetterRes getLetterRes = letterProvider.getLetter(letterIdx, userIdx);
             return new BaseResponse<>(getLetterRes);
