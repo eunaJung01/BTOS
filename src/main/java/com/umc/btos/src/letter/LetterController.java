@@ -59,10 +59,10 @@ public class LetterController {
 
     /*
      * 편지 삭제
-     * [PATCH] /letters/:letterIdx
+     * [PATCH] /letters/delete/:letterIdx
      */
     @ResponseBody
-    @PatchMapping("/{letterIdx}")
+    @PatchMapping("/delete/{letterIdx}")
     public BaseResponse<String> deleteLetter(@PathVariable("letterIdx") int letterIdx) {
         try {
             letterService.deleteLetter(letterIdx);
