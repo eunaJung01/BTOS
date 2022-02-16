@@ -59,12 +59,23 @@ public class LetterController {
 
     /*
      * 편지 삭제
-     * [PATCH] /letters/delete/:letterIdx
+     * [PATCH] /letters/delete/:letterIdx?userIdx
      */
     @ResponseBody
     @PatchMapping("/delete/{letterIdx}")
-    public BaseResponse<String> deleteLetter(@PathVariable("letterIdx") int letterIdx) {
+    public BaseResponse<String> deleteLetter(@PathVariable("letterIdx") int letterIdx, @RequestParam("userIdx") int userIdx) {
         try {
+            // TODO : 형식적 validation - 존재하는 회원인가? / 존재하는 편지인가? / 해당 회원이 작성한 편지인가?
+            if (letterProvider.checkUserIdx(userIdx) == 0) {
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+            }
+            if (letterProvider.checkLetterIdx(letterIdx) == 0) {
+                throw new BaseException(INVALID_LETTERIDX); // 존재하지 않는 편지입니다.
+            }
+            if (letterProvider.checkUserAboutLetter(userIdx, letterIdx) == 0) {
+                throw new BaseException(INVALID_USER_ABOUT_LETTER); // 해당 편지에 접근 권한이 없는 회원입니다.
+            }
+
             letterService.deleteLetter(letterIdx);
             String result = "편지(letterIdx = " + letterIdx + ")가 삭제되었습니다.";
             return new BaseResponse<>(result);
