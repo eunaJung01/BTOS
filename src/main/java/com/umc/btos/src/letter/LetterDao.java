@@ -38,8 +38,16 @@ public class LetterDao {
 
     // 발신인 User.birth 반환
     public int getSenderBirth(int senderUserIdx) {
-        String query = "SELECT birth FROM User WHERE userIdx = ?";
-        return this.jdbcTemplate.queryForObject(query, int.class, senderUserIdx);
+        String query = "SELECT CASE " +
+                "           WHEN (SELECT birth FROM User WHERE userIdx = ?) IS NULL " +
+                "               THEN " +
+                "                   (SELECT 0) " +
+                "           WHEN (SELECT birth FROM User WHERE userIdx = ?) IS NOT NULL " +
+                "               THEN " +
+                "                   (SELECT birth FROM User WHERE userIdx = ?) " +
+                "           END";
+
+        return this.jdbcTemplate.queryForObject(query, int.class, senderUserIdx, senderUserIdx, senderUserIdx);
     }
 
     // 회원마다 가장 최근에 받은 편지 letterIdx 반환
