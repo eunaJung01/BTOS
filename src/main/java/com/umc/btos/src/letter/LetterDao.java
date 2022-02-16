@@ -20,7 +20,7 @@ public class LetterDao {
 
     // ============================================== 편지 저장 및 발송 ===============================================
 
-    // 편지 저장
+    // 편지 저장 (INSERT Letter)
     public int postLetter(PostLetterReq postLetterReq) {
         String query = "INSERT INTO Letter (userIdx,content) VALUES (?,?)";
         this.jdbcTemplate.update(query, postLetterReq.getUserIdx(), postLetterReq.getContent());
@@ -39,12 +39,12 @@ public class LetterDao {
     // 발신인 User.birth 반환
     public int getSenderBirth(int senderUserIdx) {
         String query = "SELECT CASE " +
-                "           WHEN (SELECT birth FROM User WHERE userIdx = ?) IS NULL " +
+                "           WHEN (SELECT birth FROM User WHERE userIdx = ?) IS NULL " + // User.birth == null
                 "               THEN " +
-                "                   (SELECT 0) " +
-                "           WHEN (SELECT birth FROM User WHERE userIdx = ?) IS NOT NULL " +
+                "                   (SELECT 0) " + // 0 반환
+                "           WHEN (SELECT birth FROM User WHERE userIdx = ?) IS NOT NULL " + // User.birth != null
                 "               THEN " +
-                "                   (SELECT birth FROM User WHERE userIdx = ?) " +
+                "                   (SELECT birth FROM User WHERE userIdx = ?) " + // User.birth 반환
                 "           END";
 
         return this.jdbcTemplate.queryForObject(query, int.class, senderUserIdx, senderUserIdx, senderUserIdx);
@@ -57,7 +57,7 @@ public class LetterDao {
                 "         INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "WHERE receiverIdx = ? " +
                 "  AND LetterSendList.status = 'active' " +
-                "ORDER BY LetterSendList.createdAt DESC " +
+                "ORDER BY LetterSendList.createdAt DESC " + // createdAt 기준 내림차순 정렬
                 "LIMIT 1"; // 상위 첫번째 값
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
@@ -67,7 +67,7 @@ public class LetterDao {
     public List<User> getUserList(int senderUserIdx) {
         String query = "SELECT userIdx, birth, recSimilarAge " +
                 "FROM User " +
-                "WHERE userIdx != ? " +
+                "WHERE userIdx != ? " + // 발신인 제외
                 "  AND recOthers = 1 " +
                 "  AND status = 'active'";
 
@@ -81,11 +81,11 @@ public class LetterDao {
 
     // 편지 수신 유무
     public int hasReceivedLetter(int userIdx) {
-        String query = "SELECT EXISTS (SELECT * FROM LetterSendList WHERE receiverIdx = ?)";
+        String query = "SELECT EXISTS (SELECT * FROM LetterSendList WHERE receiverIdx = ?)"; // 수신한 적이 있다면 1, 없다면 0 반환
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
-    // 편지 발송
+    // 편지 발송 (INSERT LetterSendList)
     public int sendLetter(int letterIdx, int receiverIdx) {
         String query = "INSERT LetterSendList (letterIdx, receiverIdx) VALUE(?,?)";
         return this.jdbcTemplate.update(query, letterIdx, receiverIdx);
@@ -97,9 +97,45 @@ public class LetterDao {
         return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
     }
 
+    //편지 삭제 // 해당 letterIdx의 편지 status를 deleted로 변경
+    public int modifyLetterStatus(PatchLetterReq patchLetterReq) {
+        String modifyLetterStatusQuery = "update Letter set status = ? where letterIdx = ? ";
+        Object[] modifyLetterStatusParams = new Object[]{"deleted", patchLetterReq.getLetterIdx()};
+        return this.jdbcTemplate.update(modifyLetterStatusQuery, modifyLetterStatusParams);
+    }
+
+    // =================================== 우편 조회 - 편지 ===================================
+
+    // 해당 letterIdx를 갖는 편지조회
+    public GetLetterRes getLetter(int letterIdx, int receiverIdx) {
+        String getLetterQuery = "SELECT Letter.letterIdx, Letter.content " +
+                "FROM Letter " +
+                "INNER JOIN LetterSendList ON Letter.letterIdx = LetterSendList.letterIdx " +
+                "WHERE Letter.letterIdx = ? " +
+                "AND LetterSendList.receiverIdx = ?";
+
+        return this.jdbcTemplate.queryForObject(getLetterQuery,
+                (rs, rowNum) -> new GetLetterRes(
+                        rs.getInt("letterIdx"),
+                        rs.getString("content")),
+                letterIdx, receiverIdx);
+    }
+
+    //편지 조회 여부 변경 // 해당 letterIdx를 갖는 편지의 isChecked를 1로 update
+    public int modifyIsChecked(int letterIdx, int receiverIdx) {
+        String getReplyQuery = "UPDATE LetterSendList SET isChecked = 1 WHERE letterIdx = ? AND receiverIdx = ?";
+        return this.jdbcTemplate.update(getReplyQuery, letterIdx, receiverIdx); // 대응시켜 매핑시켜 쿼리 요청 (성공했으면 1, 실패했으면 0)
+    }
+
+    // 형식적 validation - 회원 존재 여부 확인
+    public int checkUserIdx(int userIdx) {
+        String query = "SELECT EXISTS (SELECT userIdx FROM User WHERE userIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
+    }
+
     // ================================================================================================================
 
-
+    /*
     // [또래유저] 편지를 수신할 유저의 userIdx들 (list형태)로 반환 // +-5살의 유저(또래 유저)만 선택
     public List<Integer> getLetterUserIdx_Similar(PostLetterUserSimilarIdx postLetterUserSimilarIdx) {
         // 편지를 발송하는 유저의 출생년도
@@ -141,41 +177,6 @@ public class LetterDao {
 
         return userIdx_unSimilar;
     }
-
-    //편지 삭제 // 해당 letterIdx의 편지 status를 deleted로 변경
-    public int modifyLetterStatus(PatchLetterReq patchLetterReq) {
-        String modifyLetterStatusQuery = "update Letter set status = ? where letterIdx = ? ";
-        Object[] modifyLetterStatusParams = new Object[]{"deleted", patchLetterReq.getLetterIdx()};
-        return this.jdbcTemplate.update(modifyLetterStatusQuery, modifyLetterStatusParams);
-    }
-
-    // =================================== 우편 조회 - 편지 ===================================
-
-    // 해당 letterIdx를 갖는 편지조회
-    public GetLetterRes getLetter(int letterIdx, int receiverIdx) {
-        String getLetterQuery = "SELECT Letter.letterIdx, Letter.content " +
-                "FROM Letter " +
-                "INNER JOIN LetterSendList ON Letter.letterIdx = LetterSendList.letterIdx " +
-                "WHERE Letter.letterIdx = ? " +
-                "AND LetterSendList.receiverIdx = ?";
-
-        return this.jdbcTemplate.queryForObject(getLetterQuery,
-                (rs, rowNum) -> new GetLetterRes(
-                        rs.getInt("letterIdx"),
-                        rs.getString("content")),
-                letterIdx, receiverIdx);
-    }
-
-    //편지 조회 여부 변경 // 해당 letterIdx를 갖는 편지의 isChecked를 1로 update
-    public int modifyIsChecked(int letterIdx, int receiverIdx) {
-        String getReplyQuery = "UPDATE LetterSendList SET isChecked = 1 WHERE letterIdx = ? AND receiverIdx = ?";
-        return this.jdbcTemplate.update(getReplyQuery, letterIdx, receiverIdx); // 대응시켜 매핑시켜 쿼리 요청 (성공했으면 1, 실패했으면 0)
-    }
-
-    // 형식적 validation - 회원 존재 여부 확인
-    public int checkUserIdx(int userIdx) {
-        String query = "SELECT EXISTS (SELECT userIdx FROM User WHERE userIdx = ? AND status = 'active')";
-        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
-    }
+     */
 
 }
