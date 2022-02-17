@@ -71,12 +71,12 @@ public class ReplyController {
 
     /*
      * 답장 조회
-     * [GET] /replies/:replyIdx
+     * [GET] /replies/:replyIdx?userIdx=
      * 답장 열람 여부 변경 (Reply.isChecked : 0 -> 1)
      */
     @ResponseBody
     @GetMapping("/{replyIdx}")
-    public BaseResponse<GetReplyRes> getReply(@PathVariable("replyIdx") int replyIdx) {
+    public BaseResponse<GetReplyRes> getReply(@PathVariable("replyIdx") int replyIdx, @RequestParam("userIdx") int userIdx) {
         try {
             GetReplyRes getReplyRes = replyProvider.getReply(replyIdx);
             return new BaseResponse<>(getReplyRes);

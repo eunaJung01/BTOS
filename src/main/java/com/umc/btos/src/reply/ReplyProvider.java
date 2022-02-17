@@ -64,7 +64,7 @@ public class ReplyProvider {
 
     /*
      * 답장 조회
-     * [GET] /replies/:replyIdx
+     * [GET] /replies/:replyIdx?userIdx=
      * 답장 열람 여부 변경 (Reply.isChecked : 0 -> 1)
      */
     public GetReplyRes getReply(int replyIdx) throws BaseException {
@@ -75,7 +75,7 @@ public class ReplyProvider {
                 throw new BaseException(MODIFY_FAIL_ISCHECKED);
             }
             return getReplyRes;
-            
+
         } catch (BaseException exception) {
             throw new BaseException(MODIFY_FAIL_ISCHECKED); // 열람 여부 변경에 실패하였습니다.
         } catch (Exception exception) {
