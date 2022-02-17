@@ -221,7 +221,7 @@ public class DiaryDao {
         return this.jdbcTemplate.queryForList(query, int.class, userIdx, senderBirth - Constant.SIMILAR_AGE_STANDARD, senderBirth + Constant.SIMILAR_AGE_STANDARD);
     }
 
-    // 일기 발송 (DiarySendList)
+    // 일기 발송 (INSERT DiarySendList)
     public void setDiarySendList(int diaryIdx, int receiverIdx) {
         String query = "INSERT INTO DiarySendList(diaryIdx, receiverIdx) VALUES(?,?)";
 
