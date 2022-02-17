@@ -35,7 +35,7 @@ public class LetterController {
      */
     @ResponseBody
     @PostMapping("")
-    public BaseResponse<PostLetterRes> postLetter(@RequestBody PostLetterReq postLetterReq) {
+    public BaseResponse<String> postLetter(@RequestBody PostLetterReq postLetterReq) {
 
         try {
             // TODO : 형식적 validation - 회원 존재 여부 확인
@@ -44,12 +44,13 @@ public class LetterController {
             }
 
             // 편지 저장 및 발송
-            PostLetterRes postLetterRes = letterService.postLetter(postLetterReq);
+            int letterIdx = letterService.postLetter(postLetterReq);
 
             // 화분 점수 증가
-            postLetterRes.setPlantRes(plantService.modifyScore_plus(postLetterReq.getUserIdx(), Constant.PLANT_LEVELUP_LETTER, "letter"));
+            plantService.modifyScore_plus(postLetterReq.getUserIdx(), Constant.PLANT_LEVELUP_LETTER, "letter");
 
-            return new BaseResponse<>(postLetterRes);
+            String result = "편지 저장 및 발송이 완료되었습니다. (letterIdx = " + letterIdx + ")";
+            return new BaseResponse<>(result);
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());

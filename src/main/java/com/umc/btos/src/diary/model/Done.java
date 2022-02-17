@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class GetDoneRes {
+public class Done {
     private int doneIdx;
     private String content;
 }

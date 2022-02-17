@@ -98,6 +98,7 @@ public class MailboxProvider {
         try {
             // 우편 내용 저장
             GetMailRes mail = new GetMailRes();
+            mail.setFirstHistoryType(type);
 
             if (type.compareTo("diary") == 0) {
                 mail.setMail(diaryProvider.getDiary(userIdx, typeIdx)); // 일기 정보 저장
@@ -106,6 +107,7 @@ public class MailboxProvider {
                 mail.setMail(letterProvider.getLetter(userIdx, typeIdx)); // 편지 정보 저장
 
             } else {
+                mail.setFirstHistoryType(mailboxDao.getFirstHistoryType(typeIdx));
                 mail.setMail(replyProvider.getReply(typeIdx)); // 답장 정보 저장
             }
 
@@ -132,7 +134,6 @@ public class MailboxProvider {
             return mail;
 
         } catch (Exception exception) {
-            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }

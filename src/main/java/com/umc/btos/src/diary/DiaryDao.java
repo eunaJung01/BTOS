@@ -144,10 +144,10 @@ public class DiaryDao {
     }
 
     // Done
-    public List<GetDoneRes> getDoneList(int diaryIdx) {
+    public List<Done> getDoneList(int diaryIdx) {
         String query = "SELECT * FROM Done WHERE diaryIdx = ? AND status = 'active'";
         return this.jdbcTemplate.query(query,
-                (rs, rowNum) -> new GetDoneRes(
+                (rs, rowNum) -> new Done(
                         rs.getInt("doneIdx"),
                         rs.getString("content")
                 ), diaryIdx);
@@ -177,6 +177,29 @@ public class DiaryDao {
     public List<Integer> getUserIdxList_total() {
         String query = "SELECT userIdx FROM User WHERE recOthers = 1 AND status = 'active'";
         return this.jdbcTemplate.queryForList(query, int.class);
+    }
+
+    // 일기 발송 가능한 회원 목록 반환 (User.recOthers = 1)
+    public List<User> getUserList_total() {
+        String query = "SELECT userIdx FROM User WHERE recOthers = 1 AND status = 'active'";
+
+        return this.jdbcTemplate.query(query,
+                (rs, rowNum) -> new User(
+                        rs.getInt("userIdx")
+                ));
+    }
+
+    // 회원마다 가장 최근에 받은 일기의 발신인(userIdx) 반환
+    public int getUserIdx_recentReceived(int userIdx) {
+        String query = "SELECT userIdx " +
+                "FROM DiarySendList " +
+                "         INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                "WHERE receiverIdx = ? " +
+                "  AND DiarySendList.status = 'active' " +
+                "ORDER BY DiarySendList.createdAt DESC " + // createdAt 기준 내림차순 정렬
+                "LIMIT 1"; // 상위 첫번째 값
+
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
     // 비슷한 나이대 수신 동의한 회원 수 반환 (recSimilarAge = 1)
@@ -221,7 +244,7 @@ public class DiaryDao {
         return this.jdbcTemplate.queryForList(query, int.class, userIdx, senderBirth - Constant.SIMILAR_AGE_STANDARD, senderBirth + Constant.SIMILAR_AGE_STANDARD);
     }
 
-    // 일기 발송 (DiarySendList)
+    // 일기 발송 (INSERT DiarySendList)
     public void setDiarySendList(int diaryIdx, int receiverIdx) {
         String query = "INSERT INTO DiarySendList(diaryIdx, receiverIdx) VALUES(?,?)";
 

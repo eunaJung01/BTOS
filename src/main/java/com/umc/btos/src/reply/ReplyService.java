@@ -30,7 +30,7 @@ public class ReplyService {
      * 답장 저장 및 발송
      * [POST] /replies
      */
-    public PostReplyRes postReply(PostReplyReq postReplyReq) throws BaseException {
+    public int postReply(PostReplyReq postReplyReq) throws BaseException {
         try {
             int replierIdx = postReplyReq.getReplierIdx(); // 발신인 userIdx
             int receiverIdx = postReplyReq.getReceiverIdx(); // 수신인 userIdx
@@ -38,12 +38,11 @@ public class ReplyService {
             // 답장 저장
             int replyIdx = replyDao.postReply(postReplyReq);
             String senderNickName = replyDao.getNickName(replierIdx); // 발신인 닉네임
-            String fcmToken = replyDao.getFcmToken(receiverIdx); // 수신인 fcm token
 
             // 알림 저장
             alarmService.postAlarm_reply(replyIdx, senderNickName, receiverIdx);
 
-            return new PostReplyRes(replyIdx, senderNickName, receiverIdx, fcmToken);
+            return replyIdx;
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);

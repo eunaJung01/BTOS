@@ -12,7 +12,7 @@ public class GetDiaryRes {
     private int emotionIdx;
     private String diaryDate; // yyyy.MM.dd
     private String content;
-    private List<GetDoneRes> doneList;
+    private List<Done> doneList;
 
     public GetDiaryRes(int diaryIdx, int emotionIdx, String diaryDate, String content) {
         this.diaryIdx = diaryIdx;

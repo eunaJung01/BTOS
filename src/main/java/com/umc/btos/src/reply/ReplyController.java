@@ -31,10 +31,12 @@ public class ReplyController {
      */
     @ResponseBody
     @PostMapping("")
-    public BaseResponse<PostReplyRes> postReply(@RequestBody PostReplyReq postReplyReq) {
+    public BaseResponse<String> postReply(@RequestBody PostReplyReq postReplyReq) {
         try {
-            PostReplyRes postReplyRes = replyService.postReply(postReplyReq);
-            return new BaseResponse<>(postReplyRes);
+            int replyIdx = replyService.postReply(postReplyReq);
+
+            String result = "답장 저장 및 발송이 완료되었습니다. (replyIdx = " + replyIdx + ")";
+            return new BaseResponse<>(result);
 
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));

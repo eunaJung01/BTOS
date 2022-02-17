@@ -33,7 +33,7 @@ public class LetterService {
      * 편지 저장 및 발송
      * [POST] /letters
      */
-    public PostLetterRes postLetter(PostLetterReq postLetterReq) throws BaseException {
+    public int postLetter(PostLetterReq postLetterReq) throws BaseException {
         try {
             int senderUserIdx = postLetterReq.getUserIdx(); // 발신인 userIdx
 
@@ -42,7 +42,7 @@ public class LetterService {
             String senderNickName = letterDao.getNickName(senderUserIdx); // 발신인 닉네임
 
             // 2. 편지 발송 (INSERT LetterSendList)
-            List<Receiver> receiverList = new ArrayList<>(); // Receiver 객체 - 해당 편지를 발송받은 회원의 정보 저장 (userIdx, fcmToken)
+//            List<Receiver> receiverList = new ArrayList<>(); // Receiver 객체 - 해당 편지를 발송받은 회원의 정보 저장 (userIdx, fcmToken)
             List<Integer> receiverIdxList = new ArrayList<>(); // 해당 편지를 발송받은 회원들의 목록 (userIdx)
 
             /*
@@ -180,16 +180,17 @@ public class LetterService {
 //            System.out.println();
 
             // set receiverList
-            for (int userIdx : receiverIdxList) {
-                Receiver receiver = new Receiver(userIdx);
-                receiver.setFcmToken(letterDao.getFcmToken(userIdx));
-                receiverList.add(receiver);
-            }
+//            for (int userIdx : receiverIdxList) {
+//                Receiver receiver = new Receiver(userIdx);
+//                receiver.setFcmToken(letterDao.getFcmToken(userIdx));
+//                receiverList.add(receiver);
+//            }
 
             // 알림 저장
             alarmService.postAlarm_letter(letterIdx, senderNickName, receiverIdxList);
 
-            return new PostLetterRes(letterIdx, senderNickName, receiverList);
+//            return new PostLetterRes(letterIdx, senderNickName, receiverList);
+            return letterIdx;
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
