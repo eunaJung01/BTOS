@@ -78,6 +78,17 @@ public class ReplyController {
     @GetMapping("/{replyIdx}")
     public BaseResponse<GetReplyRes> getReply(@PathVariable("replyIdx") int replyIdx, @RequestParam("userIdx") int userIdx) {
         try {
+            // TODO : 형식적 validation - 존재하는 회원인가? / 존재하는 답장인가? / 해당 회원이 작성한 답장인가?
+            if (replyProvider.checkUserIdx(userIdx) == 0) {
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+            }
+            if (replyProvider.checkReplyIdx(replyIdx) == 0) {
+                throw new BaseException(INVALID_LETTERIDX); // 존재하지 않는 답장입니다.
+            }
+            if (replyProvider.checkUserAboutReply(userIdx, replyIdx) == 0) {
+                throw new BaseException(INVALID_USER_ABOUT_REPLY); // 해당 답장에 접근 권한이 없는 회원입니다.
+            }
+
             GetReplyRes getReplyRes = replyProvider.getReply(replyIdx);
             return new BaseResponse<>(getReplyRes);
 
