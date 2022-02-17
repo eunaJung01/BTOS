@@ -29,10 +29,11 @@ public class ReplyController {
      */
     @ResponseBody
     @PostMapping("")
-    public BaseResponse<PostReplyRes> createReply(@RequestBody PostReplyReq postReplyReq) {
+    public BaseResponse<PostReplyRes> postReply(@RequestBody PostReplyReq postReplyReq) {
         try {
-            PostReplyRes postReplyFinalRes = replyService.createReply(postReplyReq);
-            return new BaseResponse<>(postReplyFinalRes);
+            PostReplyRes postReplyRes = replyService.postReply(postReplyReq);
+            return new BaseResponse<>(postReplyRes);
+
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
