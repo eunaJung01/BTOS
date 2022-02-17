@@ -96,20 +96,6 @@ public class MailboxDao {
                 ), userIdx);
     }
 
-    // ======================================== 우편 조회 ========================================
-
-    // 답장 조회
-    public GetReplyRes getReply(int replyIdx) {
-        String query = "SELECT * FROM Reply WHERE replyIdx = ? AND status = 'active'";
-        return this.jdbcTemplate.queryForObject(query,
-                (rs, rowNum) -> new GetReplyRes(
-                        rs.getInt("replyIdx"),
-                        rs.getInt("replierIdx"),
-                        rs.getInt("receiverIdx"),
-                        rs.getString("content")
-                ), replyIdx);
-    }
-
     // --------------------------------------- User.fontIdx ---------------------------------------
 
     // 일기
