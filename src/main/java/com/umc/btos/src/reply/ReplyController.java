@@ -49,6 +49,17 @@ public class ReplyController {
     @PatchMapping("/{replyIdx}")
     public BaseResponse<String> deleteReply(@PathVariable("replyIdx") int replyIdx, @RequestParam("userIdx") int userIdx) {
         try {
+            // TODO : 형식적 validation - 존재하는 회원인가? / 존재하는 답장인가? / 해당 회원이 작성한 답장인가?
+            if (replyProvider.checkUserIdx(userIdx) == 0) {
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+            }
+            if (replyProvider.checkReplyIdx(replyIdx) == 0) {
+                throw new BaseException(INVALID_LETTERIDX); // 존재하지 않는 답장입니다.
+            }
+            if (replyProvider.checkUserAboutReply(userIdx, replyIdx) == 0) {
+                throw new BaseException(INVALID_USER_ABOUT_REPLY); // 해당 답장에 접근 권한이 없는 회원입니다.
+            }
+
             replyService.deleteReply(replyIdx);
             String result = "답장(replyIdx = "+replyIdx+")이 삭제되었습니다.";
             return new BaseResponse<>(result);

@@ -17,6 +17,26 @@ public class ReplyDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    // ================================================== validation ==================================================
+
+    // 회원 존재 여부 확인
+    public int checkUserIdx(int userIdx) {
+        String query = "SELECT EXISTS (SELECT userIdx FROM User WHERE userIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
+    }
+
+    // 답장 존재 여부 확인
+    public int checkReplyIdx(int replyIdx) {
+        String query = "SELECT EXISTS (SELECT replyIdx FROM Reply WHERE replyIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, int.class, replyIdx);
+    }
+
+    // 해당 회원이 작성한 답장인지 확인
+    public int checkUserAboutReply(int userIdx, int replyIdx) {
+        String query = "SELECT EXISTS (SELECT replyIdx FROM Reply WHERE userIdx = ? AND replyIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx, replyIdx);
+    }
+
     // ============================================== 답장 저장 및 발송 ===============================================
 
     // 답장 저장
