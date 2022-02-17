@@ -70,7 +70,7 @@ public class LetterDao {
         return this.jdbcTemplate.queryForObject(query, int.class, senderUserIdx, senderUserIdx, senderUserIdx);
     }
 
-    // 회원마다 가장 최근에 받은 편지 letterIdx 반환
+    // 회원마다 가장 최근에 받은 편지의 발신인(userIdx) 반환
     public int getUserIdx_recentReceived(int userIdx) {
         String query = "SELECT userIdx " +
                 "FROM LetterSendList " +
