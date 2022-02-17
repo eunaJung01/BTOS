@@ -70,8 +70,9 @@ public class ReplyController {
     }
 
     /*
-     * 답장 조회 API
+     * 답장 조회
      * [GET] /replies/:replyIdx
+     * 답장 열람 여부 변경 (Reply.isChecked : 0 -> 1)
      */
     @ResponseBody
     @GetMapping("/{replyIdx}")

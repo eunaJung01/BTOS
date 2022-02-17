@@ -62,18 +62,22 @@ public class ReplyProvider {
 
     // ================================================== 답장 조회 ===================================================
 
-    // 해당 replyIdx를 갖는 Reply 조회
-    // 열람 여부 (ischecked 변경) 변경
+    /*
+     * 답장 조회
+     * [GET] /replies/:replyIdx
+     * 답장 열람 여부 변경 (Reply.isChecked : 0 -> 1)
+     */
     public GetReplyRes getReply(int replyIdx) throws BaseException {
         try {
-            // 열람여부 변경 성공 여부 반환 // 성공 시 1, 실패 시 0을 반환
-            int isSuccess = replyDao.modifyIsChecked(replyIdx);
-            if (isSuccess == 0) {
-                throw new BaseException(MODIFY_REPLY_ISCHECKED_ERROR);
-            }
-            // 답장 조회
             GetReplyRes getReplyRes = replyDao.getReply(replyIdx);
+
+            if (replyDao.modifyIsChecked(replyIdx) == 0) { // Reply.isChecked : 0 -> 1
+                throw new BaseException(MODIFY_FAIL_ISCHECKED);
+            }
             return getReplyRes;
+            
+        } catch (BaseException exception) {
+            throw new BaseException(MODIFY_FAIL_ISCHECKED); // 열람 여부 변경에 실패하였습니다.
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

@@ -72,21 +72,21 @@ public class ReplyDao {
 
     // =============================================== 우편 조회 - 답장 ===============================================
 
-    // 해당 replyIdx를 갖는 답장 조회
+    // 답장 조회
     public GetReplyRes getReply(int replyIdx) {
-        String getReplyQuery = "SELECT replyIdx, content FROM Reply WHERE replyIdx = ?";
+        String query = "SELECT replyIdx, content FROM Reply WHERE replyIdx = ?";
 
-        return this.jdbcTemplate.queryForObject(getReplyQuery,
+        return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new GetReplyRes(
                         rs.getInt("replyIdx"),
                         rs.getString("content")),
                 replyIdx);
     }
 
-    // 답장 열람 여부 // 해당 replyIdx를 갖는 답장의 isChecked를 1로 update
+    // Reply.isChecked : 0 -> 1
     public int modifyIsChecked(int replyIdx) {
-        String getReplyQuery = "UPDATE Reply SET isChecked = 1 WHERE replyIdx = ? ";
-        return this.jdbcTemplate.update(getReplyQuery, replyIdx);
+        String query = "UPDATE Reply SET isChecked = 1 WHERE replyIdx = ?";
+        return this.jdbcTemplate.update(query, replyIdx);
     }
 
 }
