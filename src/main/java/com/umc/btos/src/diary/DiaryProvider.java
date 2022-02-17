@@ -181,11 +181,18 @@ public class DiaryProvider {
             diaryIdx_sendNumMap.put(diaryIdx, 0); // 당일 발송해야 하는 일기마다 저장 공간 생성
         }
 
-        List<Integer> userIdxList_total = diaryDao.getUserIdxList_total(); // 일기 발송 가능한 회원들의 목록 (userIdx)
-        int totalUserNum = userIdxList_total.size(); // 일기를 발송받을 총 회원 수
+        List<User> userList_total = diaryDao.getUserList_total(); // 일기 발송 가능한 회원들의 목록 (userIdx)
+        // set userIdx_recentReceived
+        for (User user : userList_total) {
+            int userIdx = user.getUserIdx();
+            user.setUserIdx_recentReceived(diaryDao.getUserIdx_recentReceived(userIdx));
+        }
+
+        int totalUserNum = userList_total.size(); // 일기를 발송받을 총 회원 수
 
         Map<Integer, Boolean> userIdx_sendMap = new HashMap<>(); // key = userIdx, value = 일기 발송 유무 (발송되었다면 true, 아직 안 되었다면 false)
-        for (int userIdx : userIdxList_total) {
+        for (User user : userList_total) {
+            int userIdx = user.getUserIdx();
             userIdx_sendMap.put(userIdx, false); // 일기 발송이 가능한 회원마다 저장 공간 생성
         }
 
@@ -199,7 +206,8 @@ public class DiaryProvider {
             int diaryIdx = diaryIdxList.get(0);
             int senderUserIdx = diaryDao.getSenderUserIdx(diaryIdx); // 발신인 userIdx
 
-            for (int userIdx : userIdxList_total) {
+            for (User user : userList_total) {
+                int userIdx = user.getUserIdx();
                 if (userIdx != senderUserIdx) {
                     diaryDao.setDiarySendList(diaryIdx, userIdx); // 일기 발송
                 }
@@ -268,15 +276,18 @@ public class DiaryProvider {
 
             // List<Integer> userIdxList_total = diaryDao.getUserIdxList_total(); // 수신 동의한 모든 userIdx (User.recOthers = 1)
             // -> 일기를 발송 받아야 하는 userIdx 리스트로 갱신
-            List<Integer> userIdxList_total_updated = new ArrayList<>();
-            for (int userIdx : userIdxList_total) {
+            List<User> userList_total_updated = new ArrayList<>();
+            for (User user : userList_total) {
+                int userIdx = user.getUserIdx();
                 if (!userIdx_sendMap.get(userIdx)) { // 회원마다 일기 발송 유무 확인 (Map.value = false -> add)
-                    userIdxList_total_updated.add(userIdx);
+                    userList_total_updated.add(user);
                 }
             }
-            userIdxList_total = userIdxList_total_updated; // 갱신
+            userList_total = userList_total_updated; // 갱신
 
-            for (int userIdx : userIdxList_total) { // 일기를 발송 받아야 하는 회원 수만큼
+            for (User user : userList_total) { // 일기를 발송 받아야 하는 회원 수만큼
+                int userIdx = user.getUserIdx();
+
                 List<Integer> diaryIdxList_updated = new ArrayList<>(); // 현재 발송되어야 하는 diaryIdx 목록 (diaryIdxList 갱신)
                 for (int diaryIdx : diaryIdxList) {
                     if (diaryIdx_sendNumMap.get(diaryIdx) < sendNum) { // 일기마다 발송된 횟수 확인 (Map.value < 발송되어야 하는 최소 횟수 -> add)
@@ -297,18 +308,21 @@ public class DiaryProvider {
             // TODO : (3) 일반 발송 처리 후 나머지 발송
             // (비슷한 나이대 발송 후 나머지 회원 수 / 총 일기 개수)의 나머지 부분 발송
 
-            userIdxList_total_updated = new ArrayList<>(); // 일기를 발송 받아야 하는 모든 userIdx
-            for (int userIdx : userIdxList_total) {
+            userList_total_updated = new ArrayList<>(); // 일기를 발송 받아야 하는 모든 userIdx
+            for (User user : userList_total) {
+                int userIdx = user.getUserIdx();
+
                 if (!userIdx_sendMap.get(userIdx)) { // 회원마다 일기 발송 유무 확인 (Map.value = false -> add)
-                    userIdxList_total_updated.add(userIdx);
+                    userList_total_updated.add(user);
                 }
             }
-            userIdxList_total = userIdxList_total_updated; // 갱신
+            userList_total = userList_total_updated; // 갱신
 
-            if (userIdxList_total.size() != 0) {
-                for (int userIdx : userIdxList_total) { // 일기를 발송 받아야 하는 회원 수만큼
+            if (userList_total.size() != 0) {
+                for (User user : userList_total) { // 일기를 발송 받아야 하는 회원 수만큼
+                    int userIdx = user.getUserIdx();
+
                     List<Integer> diaryIdxList_updated = new ArrayList<>(); // 발송해야 하는 diaryIdx 목록
-
                     for (int diaryIdx : diaryIdxList) { // 당일 발송해야 하는 모든 일기 개수만큼
                         if (diaryIdx_sendNumMap.get(diaryIdx) <= sendNum) { // 일기마다 발송된 횟수 확인 (Map.value <= 발송되어야 하는 최소 횟수 -> add)
                             diaryIdxList_updated.add(diaryIdx);
