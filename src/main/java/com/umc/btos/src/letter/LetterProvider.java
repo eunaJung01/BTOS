@@ -62,7 +62,8 @@ public class LetterProvider {
 
     /*
      * 편지 조회
-     * [GET] /letters/:letterIdx?userIdx
+     * [GET] /letters/:letterIdx?userIdx=
+     * 편지 열람 여부 변경 (LetterSendList.isChecked : 0 -> 1)
      */
     public GetLetterRes getLetter(int userIdx, int letterIdx) throws BaseException {
         try {

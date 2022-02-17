@@ -99,9 +99,9 @@ public class LetterDao {
                 ), senderUserIdx);
     }
 
-    // 편지 수신 유무 반환
+    // 편지 수신 유무 반환 (편지를 수신한 적이 있다면 1, 없다면 0)
     public int hasReceivedLetter(int userIdx) {
-        String query = "SELECT EXISTS (SELECT * FROM LetterSendList WHERE receiverIdx = ?)"; // 편지를 수신한 적이 있다면 1, 없다면 0 반환
+        String query = "SELECT EXISTS (SELECT * FROM LetterSendList WHERE receiverIdx = ?)";
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
@@ -127,7 +127,7 @@ public class LetterDao {
 
     // =============================================== 우편 조회 - 편지 ===============================================
 
-    // 해당 letterIdx를 갖는 편지조회
+    // 편지 조회
     public GetLetterRes getLetter(int letterIdx, int receiverIdx) {
         String getLetterQuery = "SELECT Letter.letterIdx, Letter.content " +
                 "FROM Letter " +

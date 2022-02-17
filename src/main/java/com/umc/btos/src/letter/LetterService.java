@@ -2,6 +2,7 @@ package com.umc.btos.src.letter;
 
 import com.umc.btos.config.BaseException;
 import com.umc.btos.config.Constant;
+import com.umc.btos.src.alarm.AlarmService;
 import com.umc.btos.src.letter.model.*;
 
 import org.slf4j.Logger;
@@ -18,12 +19,12 @@ public class LetterService {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final LetterDao letterDao;
-    private final LetterProvider letterProvider;
+    private final AlarmService alarmService;
 
     @Autowired
-    public LetterService(LetterDao letterDao, LetterProvider letterProvider) {
+    public LetterService(LetterDao letterDao, AlarmService alarmService) {
         this.letterDao = letterDao;
-        this.letterProvider = letterProvider;
+        this.alarmService = alarmService;
     }
 
     // ================================================================================================================
@@ -184,6 +185,9 @@ public class LetterService {
                 receiver.setFcmToken(letterDao.getFcmToken(userIdx));
                 receiverList.add(receiver);
             }
+
+            // 알림 저장
+            alarmService.postAlarm_letter(letterIdx, senderNickName, receiverIdxList);
 
             return new PostLetterRes(letterIdx, senderNickName, receiverList);
 

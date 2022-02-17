@@ -7,7 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class GetReplyRes {
+public class PostReplyRes {
     private int replyIdx; // 답장 식별자
-    private String content; // 답장 내용
+    private String senderNickName; // 발신인 닉네임
+    private int receiverIdx; // 수신인 userIdx
+    private String fcmToken; // 수신인 fcm token
 }
