@@ -160,4 +160,12 @@ public class MailboxDao {
         return this.jdbcTemplate.queryForObject(query, String.class, replyIdx);
     }
 
+    // =================================== 우편 조회 ===================================
+
+    // Reply.firstHistoryType 반환
+    public String getFirstHistoryType(int replyIdx) {
+        String query = "SELECT firstHistoryType FROM Reply WHERE replyIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, String.class, replyIdx);
+    }
+
 }
