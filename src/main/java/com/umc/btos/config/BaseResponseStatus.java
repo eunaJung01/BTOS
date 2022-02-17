@@ -145,7 +145,6 @@ public enum BaseResponseStatus {
 
     MODIFY_FAIL_BLOCK_STATUS(false, 8002, "차단 해제 실패"),
     GET_FAIL_USERIDX(false, 8003, "해당 유저의 인덱스가 입력되지않았습니다."),
-    MODIFY_REPLY_ISCHECKED_ERROR(false, 8007, "답장의 열람여부 변경 실패"),
     NOTICE_DATABASE_ERROR(false, 8006, "공지 조회 실패"),
 
     POST_REPORT_REASON(false, 8009, "신고의 사유가 정해진 사유를 벗어납니다."),
