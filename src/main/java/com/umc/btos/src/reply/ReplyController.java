@@ -61,7 +61,7 @@ public class ReplyController {
             }
 
             replyService.deleteReply(replyIdx);
-            String result = "답장(replyIdx = "+replyIdx+")이 삭제되었습니다.";
+            String result = "답장(replyIdx = " + replyIdx + ")이 삭제되었습니다.";
             return new BaseResponse<>(result);
 
         } catch (BaseException exception) {

@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class GetReplyRes {
-    private int replyIdx;
+    private int replyIdx; // 답장 식별자
     private String content; // 답장 내용
 }

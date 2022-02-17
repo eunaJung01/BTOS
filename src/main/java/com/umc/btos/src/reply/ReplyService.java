@@ -54,7 +54,7 @@ public class ReplyService {
 
     /*
      * 답장 삭제
-     * [PATCH] /replies/:replyIdx
+     * [PATCH] /replies/:replyIdx?userIdx=
      */
     public void deleteReply(int replyIdx) throws BaseException {
         if (replyDao.deleteReply(replyIdx) == 0) {

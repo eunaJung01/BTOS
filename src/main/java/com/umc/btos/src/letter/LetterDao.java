@@ -127,7 +127,7 @@ public class LetterDao {
 
     // =============================================== 우편 조회 - 편지 ===============================================
 
-    // 해당 letterIdx를 갖는 편지조회
+    // 편지 조회
     public GetLetterRes getLetter(int letterIdx, int receiverIdx) {
         String getLetterQuery = "SELECT Letter.letterIdx, Letter.content " +
                 "FROM Letter " +
