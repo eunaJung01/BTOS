@@ -114,7 +114,7 @@ public class DiaryProvider {
             diary.setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent));
 
             // Done.content
-            List<GetDoneRes> doneList = diary.getDoneList();
+            List<Done> doneList = diary.getDoneList();
             for (int j = 0; j < doneList.size(); j++) {
                 String doneContent = diary.getDoneList().get(j).getContent();
                 diary.getDoneList().get(j).setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
