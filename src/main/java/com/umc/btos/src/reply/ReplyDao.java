@@ -45,10 +45,9 @@ public class ReplyDao {
     // ================================================== 답장 삭제 ===================================================
 
     // Reply.status : active -> deleted
-    public int modifyReplyStatus(PatchReplyReq patchReplyReq) {
-        String modifyReplyStatusQuery = "update Reply set status = ? where replyIdx = ? ";
-        Object[] modifyReplyStatusParams = new Object[]{"deleted", patchReplyReq.getReplyIdx()};
-        return this.jdbcTemplate.update(modifyReplyStatusQuery, modifyReplyStatusParams);
+    public int deleteReply(int replyIdx) {
+        String query = "UPDATE Reply SET status = 'deleted' WHERE replyIdx = ?";
+        return this.jdbcTemplate.update(query, replyIdx);
     }
 
     // =============================================== 우편 조회 - 답장 ===============================================

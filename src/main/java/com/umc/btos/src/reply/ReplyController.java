@@ -47,8 +47,7 @@ public class ReplyController {
     @PatchMapping("/{replyIdx}")
     public BaseResponse<String> deleteReply(@PathVariable("replyIdx") int replyIdx) {
         try {
-            PatchReplyReq patchReplyReq = new PatchReplyReq(replyIdx);
-            replyService.modifyReplyStatus(patchReplyReq);
+            replyService.deleteReply(replyIdx);
             String result = "답장(replyIdx = "+replyIdx+")이 삭제되었습니다.";
             return new BaseResponse<>(result);
 
@@ -56,7 +55,6 @@ public class ReplyController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
-
 
     /*
      * 답장 조회 API

@@ -50,17 +50,15 @@ public class ReplyService {
         }
     }
 
-    // 답장삭제 - status를 deleted로 변경
-    public void modifyReplyStatus(PatchReplyReq patchReplyReq) throws BaseException {
-        try {
-            // Success = 1,  Fail = 0
-            int result = replyDao.modifyReplyStatus(patchReplyReq);
-            if (result == 0) {
-                //ERROR - 8005 : 답장 삭제 실패
-                throw new BaseException(MODIFY_FAIL_REPLY_STATUS);
-            }
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
+    // ================================================================================================================
+
+    /*
+     * 답장 삭제
+     * [PATCH] /replies/:replyIdx
+     */
+    public void deleteReply(int replyIdx) throws BaseException {
+        if (replyDao.deleteReply(replyIdx) == 0) {
+            throw new BaseException(MODIFY_FAIL_REPLY_STATUS); // 답장 삭제에 실패하였습니다.
         }
     }
 
