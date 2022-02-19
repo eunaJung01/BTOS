@@ -131,39 +131,39 @@ public class DiaryDao {
 
     // =================================== 일기 조회 ===================================
 
-    // Diary
-    public GetDiaryRes getDiary(int diaryIdx) {
-        String query = "SELECT * FROM Diary WHERE diaryIdx = ? AND status = 'active'";
-        return this.jdbcTemplate.queryForObject(query,
-                (rs, rowNum) -> new GetDiaryRes(
-                        rs.getInt("diaryIdx"),
-                        rs.getInt("emotionIdx"),
-                        rs.getString("diaryDate"),
-                        rs.getString("content")
-                ), diaryIdx);
-    }
-
-    // Done
-    public List<Done> getDoneList(int diaryIdx) {
-        String query = "SELECT * FROM Done WHERE diaryIdx = ? AND status = 'active'";
-        return this.jdbcTemplate.query(query,
-                (rs, rowNum) -> new Done(
-                        rs.getInt("doneIdx"),
-                        rs.getString("content")
-                ), diaryIdx);
-    }
-
-    // Diary.isPublic 반환
-    public int getIsPublic(int diaryIdx) {
-        String query = "SELECT isPublic FROM Diary WHERE diaryIdx = ?";
-        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
-    }
-
-    // DiarySendList.isChecked = 1로 변환
-    public void modifyIsChecked(int userIdx, int diaryIdx) {
-        String query = "UPDATE DiarySendList SET isChecked = 1 WHERE receiverIdx = ? AND diaryIdx = ?";
-        this.jdbcTemplate.update(query, userIdx, diaryIdx);
-    }
+//    // Diary
+//    public GetDiaryRes getDiary(int diaryIdx) {
+//        String query = "SELECT * FROM Diary WHERE diaryIdx = ? AND status = 'active'";
+//        return this.jdbcTemplate.queryForObject(query,
+//                (rs, rowNum) -> new GetDiaryRes(
+//                        rs.getInt("diaryIdx"),
+//                        rs.getInt("emotionIdx"),
+//                        rs.getString("diaryDate"),
+//                        rs.getString("content")
+//                ), diaryIdx);
+//    }
+//
+//    // Done
+//    public List<Done> getDoneList(int diaryIdx) {
+//        String query = "SELECT * FROM Done WHERE diaryIdx = ? AND status = 'active'";
+//        return this.jdbcTemplate.query(query,
+//                (rs, rowNum) -> new Done(
+//                        rs.getInt("doneIdx"),
+//                        rs.getString("content")
+//                ), diaryIdx);
+//    }
+//
+//    // Diary.isPublic 반환
+//    public int getIsPublic(int diaryIdx) {
+//        String query = "SELECT isPublic FROM Diary WHERE diaryIdx = ?";
+//        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
+//    }
+//
+//    // DiarySendList.isChecked = 1로 변환
+//    public void modifyIsChecked(int userIdx, int diaryIdx) {
+//        String query = "UPDATE DiarySendList SET isChecked = 1 WHERE receiverIdx = ? AND diaryIdx = ?";
+//        this.jdbcTemplate.update(query, userIdx, diaryIdx);
+//    }
 
     // =================================== 일기 발송 ===================================
 

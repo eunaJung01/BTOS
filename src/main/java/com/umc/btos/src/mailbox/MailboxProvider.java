@@ -22,16 +22,10 @@ public class MailboxProvider {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final MailboxDao mailboxDao;
-    private final DiaryProvider diaryProvider;
-    private final LetterProvider letterProvider;
-    private final ReplyProvider replyProvider;
 
     @Autowired
-    public MailboxProvider(MailboxDao mailboxDao, DiaryProvider diaryProvider, LetterProvider letterProvider, ReplyProvider replyProvider) {
+    public MailboxProvider(MailboxDao mailboxDao) {
         this.mailboxDao = mailboxDao;
-        this.diaryProvider = diaryProvider;
-        this.letterProvider = letterProvider;
-        this.replyProvider = replyProvider;
     }
 
     /*
@@ -96,40 +90,38 @@ public class MailboxProvider {
      */
     public GetMailRes getMail(int userIdx, String type, int typeIdx) throws BaseException {
         try {
-            // 우편 내용 저장
-            GetMailRes mail = new GetMailRes();
-            mail.setFirstHistoryType(type);
+            GetMailRes mail;
 
+            // type = diary
             if (type.compareTo("diary") == 0) {
-                mail.setMail(diaryProvider.getDiary(userIdx, typeIdx)); // 일기 정보 저장
+                mail = mailboxDao.getMail_diary(userIdx, typeIdx);
+                if (mailboxDao.hasDoneList(typeIdx)) { // done list 유무 확인
+                    mail.setDoneList(mailboxDao.getDoneList(typeIdx));
+                }
 
-            } else if (type.compareTo("letter") == 0) {
-                mail.setMail(letterProvider.getLetter(userIdx, typeIdx)); // 편지 정보 저장
+                // 열람 여부 변경
+                mailboxDao.modifyIsChecked_diary(userIdx, typeIdx); // DiarySendList.isChecked = 1로 변환
 
-            } else {
-                mail.setFirstHistoryType(mailboxDao.getFirstHistoryType(typeIdx));
-                mail.setMail(replyProvider.getReply(typeIdx)); // 답장 정보 저장
             }
 
-            // 발신인 정보 (User.nickName, User.fontIdx) 저장
-            int senderFontIdx = 0;
-            String senderNickName = "";
+            // type = letter
+            else if (type.compareTo("letter") == 0) {
+                mail = mailboxDao.getMail_letter(userIdx, typeIdx);
 
-            if (type.compareTo("diary") == 0) { // 일기
-                senderNickName = mailboxDao.getSenderNickName_diary(typeIdx);
-                senderFontIdx = mailboxDao.getFontIdx_diary(typeIdx);
-
-            } else if (type.compareTo("letter") == 0) { // 편지
-                senderNickName = mailboxDao.getSenderNickName_letter(typeIdx);
-                senderFontIdx = mailboxDao.getFontIdx_letter(typeIdx);
-
-            } else { // 답장
-                senderNickName = mailboxDao.getSenderNickName_reply(typeIdx);
-                senderFontIdx = mailboxDao.getFontIdx_reply(typeIdx);
+                // 열람 여부 변경
+                mailboxDao.modifyIsChecked_letter(userIdx, typeIdx); // LetterSendList.isChecked = 1로 변환
             }
 
-            mail.setSenderNickName(senderNickName);
-            mail.setSenderFontIdx(senderFontIdx);
+            // type = reply
+            else {
+                mail = mailboxDao.getMail_reply(userIdx, typeIdx);
+
+                // 열람 여부 변경
+                mailboxDao.modifyIsChecked_reply(userIdx, typeIdx); // Reply.isChecked = 1로 변환
+            }
+
+            // set senderActive
+            mail.setSenderActive(mailboxDao.getSenderActive(type, typeIdx)); // User.status 확인
 
             return mail;
 

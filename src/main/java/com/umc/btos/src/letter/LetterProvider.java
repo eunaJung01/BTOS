@@ -65,20 +65,20 @@ public class LetterProvider {
      * [GET] /letters/:letterIdx?userIdx=
      * 편지 열람 여부 변경 (LetterSendList.isChecked : 0 -> 1)
      */
-    public GetLetterRes getLetter(int userIdx, int letterIdx) throws BaseException {
-        try {
-            GetLetterRes getLetterRes = letterDao.getLetter(letterIdx, userIdx);
-
-            if (letterDao.modifyIsChecked(letterIdx, userIdx) == 0) { // LetterSendList.isChecked : 0 -> 1
-                throw new BaseException(MODIFY_FAIL_ISCHECKED);
-            }
-            return getLetterRes;
-
-        } catch (BaseException exception) {
-            throw new BaseException(MODIFY_FAIL_ISCHECKED); // 열람 여부 변경에 실패하였습니다.
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
+//    public GetLetterRes getLetter(int userIdx, int letterIdx) throws BaseException {
+//        try {
+//            GetLetterRes getLetterRes = letterDao.getLetter(letterIdx, userIdx);
+//
+//            if (letterDao.modifyIsChecked(letterIdx, userIdx) == 0) { // LetterSendList.isChecked : 0 -> 1
+//                throw new BaseException(MODIFY_FAIL_ISCHECKED);
+//            }
+//            return getLetterRes;
+//
+//        } catch (BaseException exception) {
+//            throw new BaseException(MODIFY_FAIL_ISCHECKED); // 열람 여부 변경에 실패하였습니다.
+//        } catch (Exception exception) {
+//            throw new BaseException(DATABASE_ERROR);
+//        }
+//    }
 
 }
