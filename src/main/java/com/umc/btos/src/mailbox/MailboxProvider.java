@@ -60,6 +60,26 @@ public class MailboxProvider {
         }
     }
 
+    /*
+     * 해당 우편을 받은 회원(userIdx == receiverIdx)인지 확인
+     */
+    public int checkUserAboutMail(int userIdx, String type, int typeIdx) throws BaseException {
+        try {
+            if (type.compareTo("diary") == 0) {
+                return mailboxDao.checkUserAboutMail_diary(userIdx, typeIdx);
+
+            } else if (type.compareTo("letter") == 0) {
+                return mailboxDao.checkUserAboutMail_letter(userIdx, typeIdx);
+
+            } else {
+                return mailboxDao.checkUserAboutMail_reply(userIdx, typeIdx);
+            }
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     // ================================================================================
 
     /*

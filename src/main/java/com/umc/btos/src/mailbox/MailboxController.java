@@ -56,7 +56,7 @@ public class MailboxController {
     @GetMapping("/mail")
     public BaseResponse<GetMailRes> getMail(@RequestParam("userIdx") int userIdx, @RequestParam("type") String type, @RequestParam("typeIdx") int typeIdx) {
         try {
-            // TODO : 형식적 validation - 존재하는 회원인가? & User.status = 'active' / type(diary, letter, reply) 입력 확인 / 해당 type에 존재하는 typeIdx인가?
+            // TODO : 형식적 validation - 존재하는 회원인가? & User.status = 'active' / type(diary, letter, reply) 입력 확인 / 해당 type에 존재하는 typeIdx인가? / 해당 회원이 수신한 일기/편지/답장인가?
             if (mailboxProvider.checkUserIdx(userIdx) == 0) {
                 throw new BaseException(INVALID_USERIDX); // 존재하지 않거나 탈퇴한 회원입니다.
             }
@@ -65,6 +65,9 @@ public class MailboxController {
             }
             if (mailboxProvider.checkTypeIdx(type, typeIdx) == 0) {
                 throw new BaseException(INVALID_TYPEIDX_ABOUT_TYPE); // 해당 type에 존재하지 않는 typeIdx 입니다.
+            }
+            if (mailboxProvider.checkUserAboutMail(userIdx, type, typeIdx) == 0) {
+                throw new BaseException(INVALID_USER_ABOUT_MAIL); // 해당 우편에 접근 권한이 없는 회원입니다.
             }
 
             GetMailRes mail = mailboxProvider.getMail(userIdx, type, typeIdx); // 우편 내용, 발신인 정보 저장

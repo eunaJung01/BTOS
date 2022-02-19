@@ -108,6 +108,8 @@ public enum BaseResponseStatus {
 
     POST_FAIL_ALARM(false, 6023, "알림 저장에 실패하였습니다."),
 
+    INVALID_USER_ABOUT_MAIL(false, 6024, "해당 우편에 접근 권한이 없는 회원입니다."),
+
 
     // 7000 : 자몽
     TEMP3(false, 9000, "conflict 방지용 3"),
