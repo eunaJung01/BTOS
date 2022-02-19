@@ -58,7 +58,7 @@ public class MailboxController {
         try {
             // TODO : 형식적 validation - 존재하는 회원인가? & User.status = 'active' / type(diary, letter, reply) 입력 확인 / 해당 type에 존재하는 typeIdx인가? / 해당 회원이 수신한 일기/편지/답장인가?
             if (mailboxProvider.checkUserIdx(userIdx) == 0) {
-                throw new BaseException(INVALID_USERIDX); // 존재하지 않거나 탈퇴한 회원입니다.
+                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
             }
             if (type.compareTo("diary") == 0 && type.compareTo("letter") == 0 && type.compareTo("reply") == 0) {
                 throw new BaseException(INVALID_TYPE); // 잘못된 type 입니다. (diary, letter, reply 중 1)
