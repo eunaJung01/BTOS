@@ -42,6 +42,24 @@ public class MailboxDao {
         return this.jdbcTemplate.queryForObject(query, int.class, replyIdx);
     }
 
+    // 해당 회원이 받은 일기인지 확인
+    public int checkUserAboutMail_diary(int receiverIdx, int diaryIdx) {
+        String query = "SELECT EXISTS (SELECT sendIdx FROM DiarySendList WHERE receiverIdx = ? AND diaryIdx = ?)";
+        return this.jdbcTemplate.queryForObject(query, int.class, receiverIdx, diaryIdx);
+    }
+
+    // 해당 회원이 받은 편지인지 확인
+    public int checkUserAboutMail_letter(int receiverIdx, int letterIdx) {
+        String query = "SELECT EXISTS (SELECT sendIdx FROM LetterSendList WHERE receiverIdx = ? AND letterIdx = ?)";
+        return this.jdbcTemplate.queryForObject(query, int.class, receiverIdx, letterIdx);
+    }
+
+    // 해당 회원이 받은 답장인지 확인
+    public int checkUserAboutMail_reply(int receiverIdx, int replyIdx) {
+        String query = "SELECT EXISTS (SELECT replyIdx FROM Reply WHERE receiverIdx = ? AND replyIdx = ?)";
+        return this.jdbcTemplate.queryForObject(query, int.class, receiverIdx, replyIdx);
+    }
+
     // =================================== 우편함 조회 ===================================
 
     // 우편함 조회 - 일기 수신 목록

@@ -60,11 +60,31 @@ public class MailboxProvider {
         }
     }
 
+    /*
+     * 해당 우편을 받은 회원(userIdx == receiverIdx)인지 확인
+     */
+    public int checkUserAboutMail(int userIdx, String type, int typeIdx) throws BaseException {
+        try {
+            if (type.compareTo("diary") == 0) {
+                return mailboxDao.checkUserAboutMail_diary(userIdx, typeIdx);
+
+            } else if (type.compareTo("letter") == 0) {
+                return mailboxDao.checkUserAboutMail_letter(userIdx, typeIdx);
+
+            } else {
+                return mailboxDao.checkUserAboutMail_reply(userIdx, typeIdx);
+            }
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     // ================================================================================
 
     /*
      * 우편함 목록 조회
-     * [GET] /mailboxes/:userIdx
+     * [GET] /mailboxes?userIdx
      */
     public List<GetMailboxRes> getMailbox(int userIdx) throws BaseException {
         try {
@@ -83,7 +103,7 @@ public class MailboxProvider {
 
     /*
      * 우편함 - 일기 / 편지 / 답장 조회
-     * [GET] /mailboxes/mail/:userIdx?type=&typeIdx=
+     * [GET] /mailboxes/mail?userIdx?type=&typeIdx=
      * userIdx = 해당 우편을 조회하는 회원 식별자
      * type = 일기, 편지, 답장 구분 (diary / letter / reply)
      * typeIdx = 식별자 정보 (type-typeIdx : diary-diaryIdx / letter-letterIdx / reply-replyIdx)
