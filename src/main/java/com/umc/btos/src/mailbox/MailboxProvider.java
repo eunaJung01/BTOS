@@ -84,7 +84,7 @@ public class MailboxProvider {
 
     /*
      * 우편함 목록 조회
-     * [GET] /mailboxes/:userIdx
+     * [GET] /mailboxes?userIdx
      */
     public List<GetMailboxRes> getMailbox(int userIdx) throws BaseException {
         try {

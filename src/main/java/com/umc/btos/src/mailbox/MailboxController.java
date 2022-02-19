@@ -26,11 +26,11 @@ public class MailboxController {
 
     /*
      * 우편함 목록 조회
-     * [GET] /mailboxes/:userIdx
+     * [GET] /mailboxes?userIdx
      */
     @ResponseBody
-    @GetMapping("/{userIdx}")
-    public BaseResponse<List<GetMailboxRes>> getMailbox(@PathVariable("userIdx") int userIdx) {
+    @GetMapping("")
+    public BaseResponse<List<GetMailboxRes>> getMailbox(@RequestParam("userIdx") int userIdx) {
         try {
             // TODO : 형식적 validation - 존재하는 회원인가? & User.status = 'active'
             if (mailboxProvider.checkUserIdx(userIdx) == 0) {
