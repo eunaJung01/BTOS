@@ -22,16 +22,10 @@ public class MailboxProvider {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final MailboxDao mailboxDao;
-    private final DiaryProvider diaryProvider;
-    private final LetterProvider letterProvider;
-    private final ReplyProvider replyProvider;
 
     @Autowired
-    public MailboxProvider(MailboxDao mailboxDao, DiaryProvider diaryProvider, LetterProvider letterProvider, ReplyProvider replyProvider) {
+    public MailboxProvider(MailboxDao mailboxDao) {
         this.mailboxDao = mailboxDao;
-        this.diaryProvider = diaryProvider;
-        this.letterProvider = letterProvider;
-        this.replyProvider = replyProvider;
     }
 
     /*

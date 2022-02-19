@@ -128,24 +128,24 @@ public class LetterDao {
     // =============================================== 우편 조회 - 편지 ===============================================
 
     // 편지 조회
-    public GetLetterRes getLetter(int letterIdx, int receiverIdx) {
-        String getLetterQuery = "SELECT Letter.letterIdx, Letter.content " +
-                "FROM Letter " +
-                "INNER JOIN LetterSendList ON Letter.letterIdx = LetterSendList.letterIdx " +
-                "WHERE Letter.letterIdx = ? " +
-                "AND LetterSendList.receiverIdx = ?";
-
-        return this.jdbcTemplate.queryForObject(getLetterQuery,
-                (rs, rowNum) -> new GetLetterRes(
-                        rs.getInt("letterIdx"),
-                        rs.getString("content")),
-                letterIdx, receiverIdx);
-    }
-
-    // LetterSendList.isChecked : 0 -> 1
-    public int modifyIsChecked(int letterIdx, int receiverIdx) {
-        String query = "UPDATE LetterSendList SET isChecked = 1 WHERE letterIdx = ? AND receiverIdx = ?";
-        return this.jdbcTemplate.update(query, letterIdx, receiverIdx);
-    }
+//    public GetLetterRes getLetter(int letterIdx, int receiverIdx) {
+//        String getLetterQuery = "SELECT Letter.letterIdx, Letter.content " +
+//                "FROM Letter " +
+//                "INNER JOIN LetterSendList ON Letter.letterIdx = LetterSendList.letterIdx " +
+//                "WHERE Letter.letterIdx = ? " +
+//                "AND LetterSendList.receiverIdx = ?";
+//
+//        return this.jdbcTemplate.queryForObject(getLetterQuery,
+//                (rs, rowNum) -> new GetLetterRes(
+//                        rs.getInt("letterIdx"),
+//                        rs.getString("content")),
+//                letterIdx, receiverIdx);
+//    }
+//
+//    // LetterSendList.isChecked : 0 -> 1
+//    public int modifyIsChecked(int letterIdx, int receiverIdx) {
+//        String query = "UPDATE LetterSendList SET isChecked = 1 WHERE letterIdx = ? AND receiverIdx = ?";
+//        return this.jdbcTemplate.update(query, letterIdx, receiverIdx);
+//    }
 
 }

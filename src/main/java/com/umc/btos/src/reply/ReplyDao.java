@@ -73,20 +73,20 @@ public class ReplyDao {
     // =============================================== 우편 조회 - 답장 ===============================================
 
     // 답장 조회
-    public GetReplyRes getReply(int replyIdx) {
-        String query = "SELECT replyIdx, content FROM Reply WHERE replyIdx = ?";
-
-        return this.jdbcTemplate.queryForObject(query,
-                (rs, rowNum) -> new GetReplyRes(
-                        rs.getInt("replyIdx"),
-                        rs.getString("content")),
-                replyIdx);
-    }
-
-    // Reply.isChecked : 0 -> 1
-    public int modifyIsChecked(int replyIdx) {
-        String query = "UPDATE Reply SET isChecked = 1 WHERE replyIdx = ?";
-        return this.jdbcTemplate.update(query, replyIdx);
-    }
+//    public GetReplyRes getReply(int replyIdx) {
+//        String query = "SELECT replyIdx, content FROM Reply WHERE replyIdx = ?";
+//
+//        return this.jdbcTemplate.queryForObject(query,
+//                (rs, rowNum) -> new GetReplyRes(
+//                        rs.getInt("replyIdx"),
+//                        rs.getString("content")),
+//                replyIdx);
+//    }
+//
+//    // Reply.isChecked : 0 -> 1
+//    public int modifyIsChecked(int replyIdx) {
+//        String query = "UPDATE Reply SET isChecked = 1 WHERE replyIdx = ?";
+//        return this.jdbcTemplate.update(query, replyIdx);
+//    }
 
 }

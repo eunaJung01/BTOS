@@ -91,27 +91,27 @@ public class LetterController {
      * [GET] /letters/:letterIdx?userIdx=
      * 편지 열람 여부 변경 (LetterSendList.isChecked : 0 -> 1)
      */
-    @ResponseBody
-    @GetMapping("/{letterIdx}")
-    public BaseResponse<GetLetterRes> getLetter(@PathVariable("letterIdx") int letterIdx, @RequestParam("userIdx") int userIdx) {
-        try {
-            // TODO : 형식적 validation - 존재하는 회원인가? / 존재하는 편지인가? / 해당 회원이 작성한 편지인가?
-            if (letterProvider.checkUserIdx(userIdx) == 0) {
-                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
-            }
-            if (letterProvider.checkLetterIdx(letterIdx) == 0) {
-                throw new BaseException(INVALID_LETTERIDX); // 존재하지 않는 편지입니다.
-            }
-            if (letterProvider.checkUserAboutLetter(userIdx, letterIdx) == 0) {
-                throw new BaseException(INVALID_USER_ABOUT_LETTER); // 해당 편지에 접근 권한이 없는 회원입니다.
-            }
-
-            GetLetterRes getLetterRes = letterProvider.getLetter(userIdx, letterIdx);
-            return new BaseResponse<>(getLetterRes);
-
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
+//    @ResponseBody
+//    @GetMapping("/{letterIdx}")
+//    public BaseResponse<GetLetterRes> getLetter(@PathVariable("letterIdx") int letterIdx, @RequestParam("userIdx") int userIdx) {
+//        try {
+//            // TODO : 형식적 validation - 존재하는 회원인가? / 존재하는 편지인가? / 해당 회원이 작성한 편지인가?
+//            if (letterProvider.checkUserIdx(userIdx) == 0) {
+//                throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
+//            }
+//            if (letterProvider.checkLetterIdx(letterIdx) == 0) {
+//                throw new BaseException(INVALID_LETTERIDX); // 존재하지 않는 편지입니다.
+//            }
+//            if (letterProvider.checkUserAboutLetter(userIdx, letterIdx) == 0) {
+//                throw new BaseException(INVALID_USER_ABOUT_LETTER); // 해당 편지에 접근 권한이 없는 회원입니다.
+//            }
+//
+//            GetLetterRes getLetterRes = letterProvider.getLetter(userIdx, letterIdx);
+//            return new BaseResponse<>(getLetterRes);
+//
+//        } catch (BaseException exception) {
+//            return new BaseResponse<>((exception.getStatus()));
+//        }
+//    }
 
 }
