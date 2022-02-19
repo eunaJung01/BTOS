@@ -83,7 +83,7 @@ public class MailboxProvider {
 
     /*
      * 우편함 - 일기 / 편지 / 답장 조회
-     * [GET] /mailboxes/mail/:userIdx?type=&typeIdx=
+     * [GET] /mailboxes/mail?userIdx?type=&typeIdx=
      * userIdx = 해당 우편을 조회하는 회원 식별자
      * type = 일기, 편지, 답장 구분 (diary / letter / reply)
      * typeIdx = 식별자 정보 (type-typeIdx : diary-diaryIdx / letter-letterIdx / reply-replyIdx)

@@ -47,14 +47,14 @@ public class MailboxController {
 
     /*
      * 우편함 - 일기 / 편지 / 답장 조회
-     * [GET] /mailboxes/mail/:userIdx?type=&typeIdx=
+     * [GET] /mailboxes/mail?userIdx?type=&typeIdx=
      * userIdx = 해당 우편을 조회하는 회원 식별자
      * type = 일기, 편지, 답장 구분 (diary / letter / reply)
      * typeIdx = 식별자 정보 (type-typeIdx : diary-diaryIdx / letter-letterIdx / reply-replyIdx)
      */
     @ResponseBody
-    @GetMapping("/mail/{userIdx}")
-    public BaseResponse<GetMailRes> getMail(@PathVariable("userIdx") int userIdx, @RequestParam("type") String type, @RequestParam("typeIdx") int typeIdx) {
+    @GetMapping("/mail")
+    public BaseResponse<GetMailRes> getMail(@RequestParam("userIdx") int userIdx, @RequestParam("type") String type, @RequestParam("typeIdx") int typeIdx) {
         try {
             // TODO : 형식적 validation - 존재하는 회원인가? & User.status = 'active' / type(diary, letter, reply) 입력 확인 / 해당 type에 존재하는 typeIdx인가?
             if (mailboxProvider.checkUserIdx(userIdx) == 0) {
