@@ -189,6 +189,26 @@ public class MailboxDao {
                 ), receiverIdx, replyIdx);
     }
 
+    // ------------------------------------ modifyIsChecked ------------------------------------
+
+    // DiarySendList.isChecked = 1로 변환
+    public void modifyIsChecked_diary(int receiverIdx, int diaryIdx) {
+        String query = "UPDATE DiarySendList SET isChecked = 1 WHERE receiverIdx = ? AND diaryIdx = ?";
+        this.jdbcTemplate.update(query, receiverIdx, diaryIdx);
+    }
+
+    // LetterSendList.isChecked : 0 -> 1
+    public void modifyIsChecked_letter(int receiverIdx, int letterIdx) {
+        String query = "UPDATE LetterSendList SET isChecked = 1 WHERE receiverIdx = ? AND letterIdx = ?";
+        this.jdbcTemplate.update(query, receiverIdx, letterIdx);
+    }
+
+    // Reply.isChecked : 0 -> 1
+    public void modifyIsChecked_reply(int receiverIdx, int replyIdx) {
+        String query = "UPDATE Reply SET isChecked = 1 WHERE receiverIdx = ? AND replyIdx = ?";
+        this.jdbcTemplate.update(query, receiverIdx, replyIdx);
+    }
+
     // -------------------------------------------------------------------------------------------
 
     // 발신인 계정 상태 반환

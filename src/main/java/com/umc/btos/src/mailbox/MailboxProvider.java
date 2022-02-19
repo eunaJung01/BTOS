@@ -98,14 +98,26 @@ public class MailboxProvider {
                 if (mailboxDao.hasDoneList(typeIdx)) { // done list 유무 확인
                     mail.setDoneList(mailboxDao.getDoneList(typeIdx));
                 }
+
+                // 열람 여부 변경
+                mailboxDao.modifyIsChecked_diary(userIdx, typeIdx); // DiarySendList.isChecked = 1로 변환
+
             }
+
             // type = letter
             else if (type.compareTo("letter") == 0) {
                 mail = mailboxDao.getMail_letter(userIdx, typeIdx);
+
+                // 열람 여부 변경
+                mailboxDao.modifyIsChecked_letter(userIdx, typeIdx); // LetterSendList.isChecked = 1로 변환
             }
+
             // type = reply
             else {
                 mail = mailboxDao.getMail_reply(userIdx, typeIdx);
+
+                // 열람 여부 변경
+                mailboxDao.modifyIsChecked_reply(userIdx, typeIdx); // Reply.isChecked = 1로 변환
             }
 
             // set senderActive
