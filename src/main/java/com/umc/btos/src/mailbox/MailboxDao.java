@@ -121,8 +121,8 @@ public class MailboxDao {
     public GetMailRes getMail_diary(int receiverIdx, int diaryIdx) {
         String query = "SELECT Diary.content, " +
                 "       Diary.emotionIdx, " +
-                "       Diary.diaryDate, " +
-                "       date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       Diary.diaryDate AS sendAt, " +
+//                "       date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt, " +
                 "       User.nickName                                    AS senderNickName, " +
                 "       User.fontIdx                                     AS senderFontIdx " +
                 "FROM DiarySendList " +
@@ -138,7 +138,7 @@ public class MailboxDao {
                         diaryIdx,
                         rs.getString("content"),
                         rs.getInt("emotionIdx"),
-                        rs.getString("diaryDate"),
+//                        rs.getString("diaryDate"),
                         rs.getString("sendAt"),
                         rs.getString("senderNickName"),
                         rs.getInt("senderFontIdx")
