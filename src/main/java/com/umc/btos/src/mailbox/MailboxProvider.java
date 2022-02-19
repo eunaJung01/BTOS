@@ -98,38 +98,30 @@ public class MailboxProvider {
         try {
             // 우편 내용 저장
             GetMailRes mail = new GetMailRes();
-            mail.setFirstHistoryType(type);
 
-            if (type.compareTo("diary") == 0) {
-                mail.setMail(diaryProvider.getDiary(userIdx, typeIdx)); // 일기 정보 저장
 
-            } else if (type.compareTo("letter") == 0) {
-                mail.setMail(letterProvider.getLetter(userIdx, typeIdx)); // 편지 정보 저장
+//            if (type.compareTo("diary") == 0) {
+//                mail.setMail(diaryProvider.getDiary(userIdx, typeIdx)); // 일기 정보 저장
+//
+//            } else if (type.compareTo("letter") == 0) {
+//                mail.setMail(letterProvider.getLetter(userIdx, typeIdx)); // 편지 정보 저장
+//
+//            } else {
+//                mail.setFirstHistoryType(mailboxDao.getFirstHistoryType(typeIdx));
+//                mail.setMail(replyProvider.getReply(typeIdx)); // 답장 정보 저장
+//            }
 
-            } else {
+            // set firstHistoryType
+            if (type.compareTo("reply") == 0) {
                 mail.setFirstHistoryType(mailboxDao.getFirstHistoryType(typeIdx));
-                mail.setMail(replyProvider.getReply(typeIdx)); // 답장 정보 저장
+            } else {
+                mail.setFirstHistoryType(type);
             }
 
-            // 발신인 정보 (User.nickName, User.fontIdx) 저장
-            int senderFontIdx = 0;
-            String senderNickName = "";
-
-            if (type.compareTo("diary") == 0) { // 일기
-                senderNickName = mailboxDao.getSenderNickName_diary(typeIdx);
-                senderFontIdx = mailboxDao.getFontIdx_diary(typeIdx);
-
-            } else if (type.compareTo("letter") == 0) { // 편지
-                senderNickName = mailboxDao.getSenderNickName_letter(typeIdx);
-                senderFontIdx = mailboxDao.getFontIdx_letter(typeIdx);
-
-            } else { // 답장
-                senderNickName = mailboxDao.getSenderNickName_reply(typeIdx);
-                senderFontIdx = mailboxDao.getFontIdx_reply(typeIdx);
-            }
-
-            mail.setSenderNickName(senderNickName);
-            mail.setSenderFontIdx(senderFontIdx);
+            // 발신인 정보 저장
+            mail.setSenderNickName(mailboxDao.getSenderNickName(type, typeIdx)); // User.nickName
+            mail.setSenderActive(mailboxDao.getSenderActive(type, typeIdx)); // senderActive (User.status 확인)
+            mail.setSenderFontIdx(mailboxDao.getFontIdx(type, typeIdx)); // User.fontIdx
 
             return mail;
 

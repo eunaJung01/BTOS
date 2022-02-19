@@ -96,76 +96,110 @@ public class MailboxDao {
                 ), userIdx);
     }
 
-    // --------------------------------------- User.fontIdx ---------------------------------------
-
-    // 일기
-    public int getFontIdx_diary(int diaryIdx) {
-        String query = "SELECT User.fontIdx " +
-                "FROM Diary " +
-                "INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                "WHERE diaryIdx = ?";
-
-        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
-    }
-
-    // 편지
-    public int getFontIdx_letter(int letterIdx) {
-        String query = "SELECT User.fontIdx " +
-                "FROM Letter " +
-                "INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                "WHERE letterIdx = ?";
-
-        return this.jdbcTemplate.queryForObject(query, int.class, letterIdx);
-    }
-
-    // 답장
-    public int getFontIdx_reply(int replyIdx) {
-        String query = "SELECT User.fontIdx " +
-                "FROM Reply " +
-                "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
-                "WHERE replyIdx = ?";
-
-        return this.jdbcTemplate.queryForObject(query, int.class, replyIdx);
-    }
-
-    // --------------------------------------- User.nickName ---------------------------------------
-
-    // 일기
-    public String getSenderNickName_diary(int diaryIdx) {
-        String query = "SELECT User.nickName " +
-                "FROM Diary " +
-                "INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                "WHERE diaryIdx = ?";
-
-        return this.jdbcTemplate.queryForObject(query, String.class, diaryIdx);
-    }
-
-    // 편지
-    public String getSenderNickName_letter(int letterIdx) {
-        String query = "SELECT User.nickName " +
-                "FROM Letter " +
-                "INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                "WHERE letterIdx = ?";
-
-        return this.jdbcTemplate.queryForObject(query, String.class, letterIdx);
-    }
-
-    // 답장
-    public String getSenderNickName_reply(int replyIdx) {
-        String query = "SELECT User.nickName " +
-                "FROM Reply " +
-                "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
-                "WHERE replyIdx = ?";
-
-        return this.jdbcTemplate.queryForObject(query, String.class, replyIdx);
-    }
-
     // =================================== 우편 조회 ===================================
 
     // Reply.firstHistoryType 반환
     public String getFirstHistoryType(int replyIdx) {
         String query = "SELECT firstHistoryType FROM Reply WHERE replyIdx = ?";
         return this.jdbcTemplate.queryForObject(query, String.class, replyIdx);
+    }
+
+    // 발신인 User.nickName 반환
+    public String getSenderNickName(String type, int typeIdx) {
+        String query = "";
+
+        switch (type) {
+            case ("diary"):
+                query = "SELECT User.nickName " +
+                        "FROM Diary " +
+                        "INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                        "WHERE diaryIdx = ?";
+                break;
+
+            case ("letter"):
+                query = "SELECT User.nickName " +
+                        "FROM Letter " +
+                        "INNER JOIN User ON Letter.userIdx = User.userIdx " +
+                        "WHERE letterIdx = ?";
+                break;
+
+            case ("reply"):
+                query = "SELECT User.nickName " +
+                        "FROM Reply " +
+                        "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
+                        "WHERE replyIdx = ?";
+                break;
+        }
+
+        return this.jdbcTemplate.queryForObject(query, String.class, typeIdx);
+    }
+
+    // 발신인 계정 상태 반환
+    public boolean getSenderActive(String type, int typeIdx) {
+        String query = "";
+
+        switch (type) {
+            case ("diary"):
+                query = "SELECT User.status " +
+                        "FROM DiarySendList " +
+                        "         INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                        "         INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                        "WHERE Diary.diaryIdx = ? " +
+                        "  AND Diary.isSend = 1 " +
+                        "  AND DiarySendList.status = 'active' " +
+                        "GROUP BY User.status";
+                break;
+
+            case ("letter"):
+                query = "SELECT User.status " +
+                        "FROM LetterSendList " +
+                        "         INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
+                        "         INNER JOIN User ON Letter.userIdx = User.userIdx " +
+                        "WHERE LetterSendList.letterIdx = ? " +
+                        "  AND LetterSendList.status = 'active' " +
+                        "GROUP BY User.status";
+                break;
+
+            case ("reply"):
+                query = "SELECT User.status " +
+                        "FROM Reply " +
+                        "         INNER JOIN User ON Reply.replierIdx = User.userIdx " +
+                        "WHERE Reply.replyIdx = ? " +
+                        "  AND Reply.status = 'active'";
+                break;
+        }
+
+        String senderStatus = this.jdbcTemplate.queryForObject(query, String.class, typeIdx);
+        return senderStatus.compareTo("deleted") != 0; // User.status = delete -> false
+    }
+
+    public int getFontIdx(String type, int typeIdx) {
+        String query = "";
+
+        switch (type) {
+            case ("diary"):
+                query = "SELECT User.fontIdx " +
+                        "FROM Diary " +
+                        "INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                        "WHERE diaryIdx = ?";
+                break;
+
+            case ("letter"):
+                query = "SELECT User.fontIdx " +
+                        "FROM Letter " +
+                        "INNER JOIN User ON Letter.userIdx = User.userIdx " +
+                        "WHERE letterIdx = ?";
+                break;
+
+            case ("reply"):
+                query = "SELECT User.fontIdx " +
+                        "FROM Reply " +
+                        "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
+                        "WHERE replyIdx = ?";
+                break;
+        }
+
+        return this.jdbcTemplate.queryForObject(query, int.class, typeIdx);
     }
 
 }
