@@ -8,12 +8,11 @@ public class Constant {
     // 화분 - 점수 증감 원인
     public static final int PLANT_LEVELUP_DIARY = 5;
     public static final int PLANT_LEVELUP_LETTER = 3;
-    public static final int PLANT_LEVELDOWN_DIARY = -10;
     public static final int PLANT_LEVELDOWN_REPORT_SEX_HATE = -100;
     public static final int PLANT_LEVELDOWN_REPORT_SPAM_DISLIKE = -30;
 
     // 화분 - 단계 별 성장치 [LEVEL_0, LEVEL_1, LEVEL_2, LEVEL_3]
-    public static final int[] PLANT_LEVEL = new int[] {15, 30, 50, 50};
+    public static final int[] PLANT_LEVEL = new int[] {20, 30, 50, 50};
 
     // 일기 & 편지 - 비슷한 나이대 기준 (-n ~ +n)
     public static final int SIMILAR_AGE_STANDARD = 5;
