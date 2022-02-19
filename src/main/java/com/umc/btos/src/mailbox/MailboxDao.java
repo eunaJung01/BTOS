@@ -1,5 +1,6 @@
 package com.umc.btos.src.mailbox;
 
+import com.umc.btos.src.diary.model.Done;
 import com.umc.btos.src.mailbox.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -98,41 +99,97 @@ public class MailboxDao {
 
     // =================================== 우편 조회 ===================================
 
-    // Reply.firstHistoryType 반환
-    public String getFirstHistoryType(int replyIdx) {
-        String query = "SELECT firstHistoryType FROM Reply WHERE replyIdx = ?";
-        return this.jdbcTemplate.queryForObject(query, String.class, replyIdx);
+    // type = diary
+    public GetMailRes getMail_diary(int receiverIdx, int diaryIdx) {
+        String query = "SELECT Diary.content, " +
+                "       Diary.emotionIdx, " +
+                "       Diary.diaryDate, " +
+                "       date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       User.nickName                                    AS senderNickName, " +
+                "       User.fontIdx                                     AS senderFontIdx " +
+                "FROM DiarySendList " +
+                "         INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                "         INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                "WHERE DiarySendList.receiverIdx = ? " +
+                "  AND Diary.diaryIdx = ?";
+
+        return this.jdbcTemplate.queryForObject(query,
+                (rs, rowNum) -> new GetMailRes(
+                        "diary",
+                        "diary",
+                        diaryIdx,
+                        rs.getString("content"),
+                        rs.getInt("emotionIdx"),
+                        rs.getString("diaryDate"),
+                        rs.getString("sendAt"),
+                        rs.getString("senderNickName"),
+                        rs.getInt("senderFontIdx")
+                ), receiverIdx, diaryIdx);
     }
 
-    // 발신인 User.nickName 반환
-    public String getSenderNickName(String type, int typeIdx) {
-        String query = "";
-
-        switch (type) {
-            case ("diary"):
-                query = "SELECT User.nickName " +
-                        "FROM Diary " +
-                        "INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                        "WHERE diaryIdx = ?";
-                break;
-
-            case ("letter"):
-                query = "SELECT User.nickName " +
-                        "FROM Letter " +
-                        "INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                        "WHERE letterIdx = ?";
-                break;
-
-            case ("reply"):
-                query = "SELECT User.nickName " +
-                        "FROM Reply " +
-                        "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
-                        "WHERE replyIdx = ?";
-                break;
-        }
-
-        return this.jdbcTemplate.queryForObject(query, String.class, typeIdx);
+    // done list 유무 반환
+    public boolean hasDoneList(int diaryIdx) {
+        String query = "SELECT EXISTS (SELECT COUNT(*) FROM Done WHERE diaryIdx = ? AND status = 'active')";
+        return this.jdbcTemplate.queryForObject(query, boolean.class, diaryIdx);
     }
+
+    // done list
+    public List<String> getDoneList(int diaryIdx) {
+        String query = "SELECT content FROM Done WHERE diaryIdx = ? AND status = 'active'";
+        return this.jdbcTemplate.queryForList(query, String.class, diaryIdx);
+    }
+
+    // type = letter
+    public GetMailRes getMail_letter(int receiverIdx, int letterIdx) {
+        String query = "SELECT Letter.letterIdx, " +
+                "       Letter.content, " +
+                "       date_format(LetterSendList.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       User.nickName                                     AS senderNickName, " +
+                "       User.fontIdx                                      AS senderFontIdx " +
+                "FROM LetterSendList " +
+                "         INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
+                "         INNER JOIN User ON Letter.userIdx = User.userIdx " +
+                "WHERE LetterSendList.receiverIdx = ? " +
+                "  AND Letter.letterIdx = ?";
+
+        return this.jdbcTemplate.queryForObject(query,
+                (rs, rowNum) -> new GetMailRes(
+                        "letter",
+                        "letter",
+                        letterIdx,
+                        rs.getString("content"),
+                        rs.getString("sendAt"),
+                        rs.getString("senderNickName"),
+                        rs.getInt("senderFontIdx")
+                ), receiverIdx, letterIdx);
+    }
+
+    // type = reply
+    public GetMailRes getMail_reply(int receiverIdx, int replyIdx) {
+        String query = "SELECT Reply.firstHistoryType, " +
+                "       Reply.replyIdx, " +
+                "       Reply.content, " +
+                "       date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       User.nickName                            AS senderNickName, " +
+                "       User.fontIdx                             AS senderFontIdx " +
+                "FROM Reply " +
+                "         INNER JOIN User ON Reply.replierIdx = User.userIdx " +
+                "WHERE Reply.receiverIdx = ? " +
+                "  AND Reply.replyIdx = ?";
+
+        return this.jdbcTemplate.queryForObject(query,
+                (rs, rowNum) -> new GetMailRes(
+                        rs.getString("firstHistoryType"),
+                        "reply",
+                        replyIdx,
+                        rs.getString("content"),
+                        rs.getString("sendAt"),
+                        rs.getString("senderNickName"),
+                        rs.getInt("senderFontIdx")
+                ), receiverIdx, replyIdx);
+    }
+
+    // -------------------------------------------------------------------------------------------
 
     // 발신인 계정 상태 반환
     public boolean getSenderActive(String type, int typeIdx) {
@@ -171,35 +228,6 @@ public class MailboxDao {
 
         String senderStatus = this.jdbcTemplate.queryForObject(query, String.class, typeIdx);
         return senderStatus.compareTo("deleted") != 0; // User.status = delete -> false
-    }
-
-    public int getFontIdx(String type, int typeIdx) {
-        String query = "";
-
-        switch (type) {
-            case ("diary"):
-                query = "SELECT User.fontIdx " +
-                        "FROM Diary " +
-                        "INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                        "WHERE diaryIdx = ?";
-                break;
-
-            case ("letter"):
-                query = "SELECT User.fontIdx " +
-                        "FROM Letter " +
-                        "INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                        "WHERE letterIdx = ?";
-                break;
-
-            case ("reply"):
-                query = "SELECT User.fontIdx " +
-                        "FROM Reply " +
-                        "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
-                        "WHERE replyIdx = ?";
-                break;
-        }
-
-        return this.jdbcTemplate.queryForObject(query, int.class, typeIdx);
     }
 
 }

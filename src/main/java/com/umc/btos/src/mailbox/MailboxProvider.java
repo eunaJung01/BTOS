@@ -96,32 +96,26 @@ public class MailboxProvider {
      */
     public GetMailRes getMail(int userIdx, String type, int typeIdx) throws BaseException {
         try {
-            // 우편 내용 저장
-            GetMailRes mail = new GetMailRes();
+            GetMailRes mail;
 
-
-//            if (type.compareTo("diary") == 0) {
-//                mail.setMail(diaryProvider.getDiary(userIdx, typeIdx)); // 일기 정보 저장
-//
-//            } else if (type.compareTo("letter") == 0) {
-//                mail.setMail(letterProvider.getLetter(userIdx, typeIdx)); // 편지 정보 저장
-//
-//            } else {
-//                mail.setFirstHistoryType(mailboxDao.getFirstHistoryType(typeIdx));
-//                mail.setMail(replyProvider.getReply(typeIdx)); // 답장 정보 저장
-//            }
-
-            // set firstHistoryType
-            if (type.compareTo("reply") == 0) {
-                mail.setFirstHistoryType(mailboxDao.getFirstHistoryType(typeIdx));
-            } else {
-                mail.setFirstHistoryType(type);
+            // type = diary
+            if (type.compareTo("diary") == 0) {
+                mail = mailboxDao.getMail_diary(userIdx, typeIdx);
+                if (mailboxDao.hasDoneList(typeIdx)) { // done list 유무 확인
+                    mail.setDoneList(mailboxDao.getDoneList(typeIdx));
+                }
+            }
+            // type = letter
+            else if (type.compareTo("letter") == 0) {
+                mail = mailboxDao.getMail_letter(userIdx, typeIdx);
+            }
+            // type = reply
+            else {
+                mail = mailboxDao.getMail_reply(userIdx, typeIdx);
             }
 
-            // 발신인 정보 저장
-            mail.setSenderNickName(mailboxDao.getSenderNickName(type, typeIdx)); // User.nickName
-            mail.setSenderActive(mailboxDao.getSenderActive(type, typeIdx)); // senderActive (User.status 확인)
-            mail.setSenderFontIdx(mailboxDao.getFontIdx(type, typeIdx)); // User.fontIdx
+            // set senderActive
+            mail.setSenderActive(mailboxDao.getSenderActive(type, typeIdx)); // User.status 확인
 
             return mail;
 
