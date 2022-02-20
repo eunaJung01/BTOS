@@ -26,6 +26,28 @@ public class DiaryService {
         this.diaryDao = diaryDao;
     }
 
+    // ================================================== validation ==================================================
+
+    // 일기는 하루에 하나씩만 작성 가능
+    public void checkDiaryDate(int userIdx, String diaryDate) throws BaseException {
+        if (diaryDao.checkDiaryDate(userIdx, diaryDate) == 1) {
+            throw new BaseException(DIARY_EXISTS); // 일기는 하루에 하나만 작성 가능합니다.
+        }
+    }
+
+    // 당일에 작성한 일기가 아니라면 발송 불가
+    public void checkPublicDate(String diaryDate, int isPublic) throws BaseException {
+        LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
+        String now_formatted = now.toString().replaceAll("-", "."); // ex) 2022-02-02 -> 2022.02.02
+
+        // 작성일과 일기의 해당 날짜가 다를 경우 발송(isPublic == 1) 불가
+        if (diaryDate.compareTo(now_formatted) != 0 && isPublic == 1) {
+            throw new BaseException(UNPRIVATE_DATE); // 당일에 작성한 일기만 발송 가능합니다.
+        }
+    }
+
+    // ================================================================================================================
+
     /*
      * 일기 저장
      * [POST] /diaries
@@ -55,47 +77,7 @@ public class DiaryService {
         }
     }
 
-    // 일기 작성 또는 수정 시 의미적 validaion - 일기는 하루에 하나씩만 작성 가능
-    public void checkDiaryDate(int userIdx, String diaryDate) throws BaseException {
-        if (diaryDao.checkDiaryDate(userIdx, diaryDate) == 1) {
-            throw new BaseException(DIARY_EXISTS); // 일기는 하루에 하나만 작성 가능합니다.
-        }
-    }
-
-    // 일기 작성 또는 수정 시 의미적 validaion - 당일에 작성한 일기가 아니라면 발송 불가
-    public void checkPublicDate(String diaryDate, int isPublic) throws BaseException {
-        LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
-        String now_formatted = now.toString().replaceAll("-", "."); // ex) 2022-02-02 -> 2022.02.02
-
-        // 작성일과 일기의 해당 날짜가 다를 경우 발송(isPublic == 1) 불가
-        if (diaryDate.compareTo(now_formatted) != 0 && isPublic == 1) {
-            throw new BaseException(UNPRIVATE_DATE); // 당일에 작성한 일기만 발송 가능합니다.
-        }
-    }
-
-    // private 일기 암호화 - Diary.content
-    public String encryptDiaryContent(String diaryContent) throws BaseException {
-        try {
-            return new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(diaryContent);
-
-        } catch (Exception ignored) {
-            throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 암호화에 실패하였습니다.
-        }
-    }
-
-    // private 일기 암호화 - Done.content
-    public List encryptDoneContents(List doneList) throws BaseException {
-        try {
-            List doneList_encrypted = new ArrayList(); // 암호화된 done list 내용들을 저장하는 리스트
-            for (int i = 0; i < doneList.size(); i++) {
-                doneList_encrypted.add(new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(doneList.get(i).toString()));
-            }
-            return doneList_encrypted;
-
-        } catch (Exception ignored) {
-            throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 암호화에 실패하였습니다.
-        }
-    }
+    // ================================================================================================================
 
     /*
      * 일기 수정
@@ -181,6 +163,34 @@ public class DiaryService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    // ============================================= private 일기 암호화 ==============================================
+
+    // Diary.content
+    public String encryptDiaryContent(String diaryContent) throws BaseException {
+        try {
+            return new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(diaryContent);
+
+        } catch (Exception ignored) {
+            throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 암호화에 실패하였습니다.
+        }
+    }
+
+    // Done.content
+    public List encryptDoneContents(List doneList) throws BaseException {
+        try {
+            List doneList_encrypted = new ArrayList(); // 암호화된 done list 내용들을 저장하는 리스트
+            for (int i = 0; i < doneList.size(); i++) {
+                doneList_encrypted.add(new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(doneList.get(i).toString()));
+            }
+            return doneList_encrypted;
+
+        } catch (Exception ignored) {
+            throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 암호화에 실패하였습니다.
+        }
+    }
+
+    // ================================================================================================================
 
     /*
      * 일기 삭제
