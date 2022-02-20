@@ -107,7 +107,7 @@ public class AlarmProvider {
              * alarmType = notice -> reqParamIdx = noticeIdx (해당 공지사항 조회)
              */
 
-            if (alarmType.compareTo("reply") == 0) {
+            if (alarmType.compareTo("report") == 0) {
                 String reportType = alarmDao.getReportType(alarmIdx, reqParamIdx); // Report.reportType
                 switch (reportType) {
                     case "diary":
