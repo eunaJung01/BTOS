@@ -40,6 +40,14 @@ public class UserDao {
 
         this.jdbcTemplate.update(selectDefaultPlantQuery, userIdx); // 기본 식물 선택
 
+        // 최초 회원가입 시 시스템 메일 받음
+        String content  = "";
+        String query = "INSERT INTO Reply (replierIdx, receiverIdx, content) VALUES (1,?,?)";
+        Object[] params = new Object[] {
+                userIdx,
+                content};
+        this.jdbcTemplate.update(query, params);
+
         return userIdx; // 유저 식별자 반환
     }
 
