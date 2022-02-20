@@ -77,7 +77,7 @@ public class HistoryDao {
                 "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.receiverIdx = ? " +
                 "AND Reply.status = 'active' " +
-                "ORDER BY sendAt DESC " +
+                "ORDER BY sendAt DESC " + // createAt 기준 내림차순 정렬
                 ") senderNickName";
 
         return this.jdbcTemplate.queryForList(query, String.class, userIdx, userIdx, userIdx);
@@ -295,7 +295,7 @@ public class HistoryDao {
                 "       Diary.emotionIdx                                 AS emotionIdx, " +
                 "       COUNT(Done.diaryIdx)                             AS doneListNum, " +
                 "       DiarySendList.createdAt                          AS sendAt_raw, " +
-                "       date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       date_format(Diary.createdAt, '%Y.%m.%d') AS sendAt, " +
                 "       User.nickName                                    AS senderNickName, " +
                 "       User.fontIdx                                     AS senderFontIdx " +
                 "FROM DiarySendList " +
@@ -328,7 +328,7 @@ public class HistoryDao {
                 "       Diary.content                                    AS content, " +
                 "       Diary.emotionIdx                                 AS emotionIdx, " +
                 "       DiarySendList.createdAt                          AS sendAt_raw, " +
-                "       date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       date_format(Diary.createdAt, '%Y.%m.%d') AS sendAt, " +
                 "       User.nickName                                    AS senderNickName, " +
                 "       User.fontIdx                                     AS senderFontIdx " +
                 "FROM DiarySendList " +
@@ -361,7 +361,7 @@ public class HistoryDao {
                 "       Diary.emotionIdx                                 AS emotionIdx, " +
                 "       COUNT(Done.diaryIdx)                             AS doneListNum, " +
                 "       DiarySendList.createdAt                          AS sendAt_raw, " +
-                "       date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       date_format(Diary.createdAt, '%Y.%m.%d') AS sendAt, " +
                 "       User.fontIdx                                     AS senderFontIdx " +
                 "FROM DiarySendList " +
                 "         INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
@@ -395,7 +395,7 @@ public class HistoryDao {
                 "       Diary.content                                    AS content, " +
                 "       Diary.emotionIdx                                 AS emotionIdx, " +
                 "       DiarySendList.createdAt                          AS sendAt_raw, " +
-                "       date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       date_format(Diary.createdAt, '%Y.%m.%d') AS sendAt, " +
                 "       User.fontIdx                                     AS senderFontIdx " +
                 "FROM DiarySendList " +
                 "         INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
@@ -426,7 +426,7 @@ public class HistoryDao {
         String query = "SELECT Letter.letterIdx                                  AS typeIdx, " +
                 "       Letter.content                                    AS content, " +
                 "       LetterSendList.createdAt                          AS sendAt_raw, " +
-                "       date_format(LetterSendList.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       date_format(Letter.createdAt, '%Y.%m.%d') AS sendAt, " +
                 "       User.nickName                                     AS senderNickName, " +
                 "       User.fontIdx                                      AS senderFontIdx " +
                 "FROM LetterSendList " +
@@ -453,7 +453,7 @@ public class HistoryDao {
         String query = "SELECT Letter.letterIdx                                  AS typeIdx, " +
                 "       Letter.content                                    AS content, " +
                 "       LetterSendList.createdAt                          AS sendAt_raw, " +
-                "       date_format(LetterSendList.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       date_format(Letter.createdAt, '%Y.%m.%d') AS sendAt, " +
                 "       User.nickName                                     AS senderNickName, " +
                 "       User.fontIdx                                      AS senderFontIdx " +
                 "FROM LetterSendList " +
@@ -559,7 +559,7 @@ public class HistoryDao {
                 "       Diary.emotionIdx                                 AS emotionIdx, " +
                 "       COUNT(Done.diaryIdx)                             AS doneListNum, " +
                 "       DiarySendList.createdAt                          AS sendAt_raw, " +
-                "       date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       date_format(Diary.createdAt, '%Y.%m.%d') AS sendAt, " +
                 "       User.nickName                                    AS senderNickName, " +
                 "       User.fontIdx                                     AS senderFontIdx " +
                 "FROM DiarySendList " +
@@ -593,7 +593,7 @@ public class HistoryDao {
                 "       Diary.emotionIdx                                 AS emotionIdx, " +
                 "       COUNT(Done.diaryIdx)                             AS doneListNum, " +
                 "       DiarySendList.createdAt                          AS sendAt_raw, " +
-                "       date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       date_format(Diary.createdAt, '%Y.%m.%d') AS sendAt, " +
                 "User.fontIdx                                     AS senderFontIdx " +
                 "FROM DiarySendList " +
                 "         INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
@@ -627,7 +627,7 @@ public class HistoryDao {
                 "       Diary.content                                    AS content, " +
                 "       Diary.emotionIdx                                 AS emotionIdx, " +
                 "       DiarySendList.createdAt                          AS sendAt_raw, " +
-                "       date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       date_format(Diary.createdAt, '%Y.%m.%d') AS sendAt, " +
                 "       User.fontIdx                                     AS senderFontIdx " +
                 "FROM DiarySendList " +
                 "         INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
@@ -659,7 +659,7 @@ public class HistoryDao {
         String query = "SELECT Letter.letterIdx                                  AS typeIdx, " +
                 "       Letter.content                                    AS content, " +
                 "       LetterSendList.createdAt                          AS sendAt_raw, " +
-                "       date_format(LetterSendList.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       date_format(Letter.createdAt, '%Y.%m.%d') AS sendAt, " +
                 "       User.nickName                                     AS senderNickName, " +
                 "       User.fontIdx                                      AS senderFontIdx " +
                 "FROM LetterSendList " +
@@ -687,7 +687,7 @@ public class HistoryDao {
         String query = "SELECT Letter.letterIdx                                  AS typeIdx, " +
                 "       Letter.content                                    AS content, " +
                 "       LetterSendList.createdAt                          AS sendAt_raw, " +
-                "       date_format(LetterSendList.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       date_format(Letter.createdAt, '%Y.%m.%d') AS sendAt, " +
                 "       User.nickName                                     AS senderNickName, " +
                 "       User.fontIdx                                      AS senderFontIdx " +
                 "FROM LetterSendList " +
@@ -775,12 +775,12 @@ public class HistoryDao {
     // diaryIdx 리스트 반환 : filtering = sender
     public List<Integer> getDiaryIdxList(int userIdx, String senderNickName) {
         String query = "SELECT idx FROM (" +
-                "SELECT Diary.diaryIdx AS idx, DiarySendList.createdAt AS sendAt " +
+                "SELECT Diary.diaryIdx AS idx, DiarySendList.createdAt AS sendAt_raw " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
                 "WHERE DiarySendList.receiverIdx = ? AND User.nickName = ? AND Diary.isSend = 1 AND DiarySendList.status = 'active' " +
-                "ORDER BY sendAt DESC) idx";
+                "ORDER BY sendAt_raw DESC) idx";
 
         return this.jdbcTemplate.queryForList(query, int.class, userIdx, senderNickName);
     }
@@ -788,12 +788,12 @@ public class HistoryDao {
     // letterIdx 리스트 반환 : filtering = sender
     public List<Integer> getLetterIdxList(int userIdx, String senderNickName) {
         String query = "SELECT idx FROM (" +
-                "SELECT Letter.letterIdx AS idx, LetterSendList.createdAt AS sendAt " +
+                "SELECT Letter.letterIdx AS idx, LetterSendList.createdAt AS sendAt_raw " +
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
                 "WHERE LetterSendList.receiverIdx = ? AND User.nickName = ? AND LetterSendList.status = 'active' " +
-                "ORDER BY sendAt DESC) idx";
+                "ORDER BY sendAt_raw DESC) idx";
 
         return this.jdbcTemplate.queryForList(query, int.class, userIdx, senderNickName);
     }
@@ -801,11 +801,11 @@ public class HistoryDao {
     // replyIdx 리스트 반환 : filtering = sender
     public List<Integer> getReplyIdxList(int userIdx, String senderNickName) {
         String query = "SELECT idx FROM (" +
-                "SELECT Reply.replyIdx AS idx, Reply.createdAt AS sendAt " +
+                "SELECT Reply.replyIdx AS idx, Reply.createdAt AS sendAt_raw " +
                 "FROM Reply " +
                 "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.receiverIdx = ? AND User.nickName = ? AND Reply.status = 'active' " +
-                "ORDER BY sendAt DESC) idx";
+                "ORDER BY sendAt_raw DESC) idx";
 
         return this.jdbcTemplate.queryForList(query, int.class, userIdx, senderNickName);
     }
@@ -813,12 +813,12 @@ public class HistoryDao {
     // diaryIdx 리스트 반환 : filtering = diary
     public List<Integer> getDiaryIdxList(int userIdx) {
         String query = "SELECT idx FROM (" +
-                "SELECT Diary.diaryIdx AS idx, DiarySendList.createdAt AS sendAt " +
+                "SELECT Diary.diaryIdx AS idx, DiarySendList.createdAt AS sendAt_raw " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
                 "WHERE DiarySendList.receiverIdx = ? AND Diary.isSend = 1 AND DiarySendList.status = 'active' " +
-                "ORDER BY sendAt DESC) idx";
+                "ORDER BY sendAt_raw DESC) idx";
 
         return this.jdbcTemplate.queryForList(query, int.class, userIdx);
     }
@@ -829,12 +829,12 @@ public class HistoryDao {
         int endDataIdx = pageNum * Constant.HISTORY_DATA_NUM;
 
         String query = "SELECT idx FROM (" +
-                "SELECT Diary.diaryIdx AS idx, DiarySendList.createdAt AS sendAt " +
+                "SELECT Diary.diaryIdx AS idx, DiarySendList.createdAt AS sendAt_raw " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "INNER JOIN User ON Diary.userIdx = User.userIdx " +
                 "WHERE DiarySendList.receiverIdx = ? AND Diary.isSend = 1 AND DiarySendList.status = 'active' " +
-                "ORDER BY sendAt DESC) idx " +
+                "ORDER BY sendAt_raw DESC) idx " +
                 "LIMIT ?, ?";
 
         return this.jdbcTemplate.queryForList(query, int.class, userIdx, startDataIdx, endDataIdx);
@@ -844,12 +844,12 @@ public class HistoryDao {
     public List<Integer> getLetterIdxList(int userIdx) {
 
         String query = "SELECT idx FROM (" +
-                "SELECT Letter.letterIdx AS idx, LetterSendList.createdAt AS sendAt " +
+                "SELECT Letter.letterIdx AS idx, LetterSendList.createdAt AS sendAt_raw " +
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
                 "WHERE LetterSendList.receiverIdx = ? AND LetterSendList.status = 'active' " +
-                "ORDER BY sendAt DESC) idx";
+                "ORDER BY sendAt_raw DESC) idx";
 
         return this.jdbcTemplate.queryForList(query, int.class, userIdx);
     }
@@ -858,11 +858,11 @@ public class HistoryDao {
     public List<Integer> getReplyIdxList(int userIdx) {
 
         String query = "SELECT idx FROM (" +
-                "SELECT Reply.replyIdx AS idx, Reply.createdAt AS sendAt " +
+                "SELECT Reply.replyIdx AS idx, Reply.createdAt AS sendAt_raw " +
                 "FROM Reply " +
                 "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.receiverIdx = ? AND Reply.status = 'active' " +
-                "ORDER BY sendAt DESC) idx";
+                "ORDER BY sendAt_raw DESC) idx";
 
         return this.jdbcTemplate.queryForList(query, int.class, userIdx);
     }
@@ -899,12 +899,12 @@ public class HistoryDao {
     // letterIdx (createAt 기준 내림차순 정렬 시 상위 1번째 항목)
     public int getLetterIdx_sender(int userIdx, String senderNickName) {
         String query = "SELECT idx FROM (" +
-                "SELECT Letter.letterIdx AS idx, LetterSendList.createdAt AS sendAt " +
+                "SELECT Letter.letterIdx AS idx, LetterSendList.createdAt AS sendAt_raw " +
                 "FROM LetterSendList " +
                 "INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "INNER JOIN User ON Letter.userIdx = User.userIdx " +
                 "WHERE LetterSendList.receiverIdx = ? AND User.nickName = ? AND LetterSendList.status = 'active' " +
-                "ORDER BY sendAt DESC) idx " +
+                "ORDER BY sendAt_raw DESC) idx " +
                 "LIMIT 1";
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, senderNickName);
@@ -913,11 +913,11 @@ public class HistoryDao {
     // replyIdx (createAt 기준 내림차순 정렬 시 상위 1번째 항목)
     public int getReplyIdx_sender(int userIdx, String senderNickName) {
         String query = "SELECT idx FROM (" +
-                "SELECT Reply.replyIdx AS idx, Reply.createdAt AS sendAt " +
+                "SELECT Reply.replyIdx AS idx, Reply.createdAt AS sendAt_raw " +
                 "FROM Reply " +
                 "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.receiverIdx = ? AND User.nickName = ? AND Reply.status = 'active' " +
-                "ORDER BY sendAt DESC) idx " +
+                "ORDER BY sendAt_raw DESC) idx " +
                 "LIMIT 1";
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, senderNickName);
@@ -953,7 +953,7 @@ public class HistoryDao {
                 "       Diary.content, " +
                 "       Diary.emotionIdx, " +
                 "       DiarySendList.createdAt                          AS sendAt_raw, " +
-                "       date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       date_format(Diary.createdAt, '%Y.%m.%d') AS sendAt, " +
                 "       User.nickName                                    AS senderNickName, " +
                 "       User.fontIdx                                     AS senderFontIdx " +
                 "FROM DiarySendList " +
@@ -1021,7 +1021,7 @@ public class HistoryDao {
         String query = "SELECT Letter.letterIdx                                  AS typeIdx, " +
                 "       Letter.content, " +
                 "       LetterSendList.createdAt                          AS sendAt_raw, " +
-                "       date_format(LetterSendList.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       date_format(Letter.createdAt, '%Y.%m.%d') AS sendAt, " +
                 "       User.nickName                                     AS senderNickName, " +
                 "       User.fontIdx                                      AS senderFontIdx " +
                 "FROM LetterSendList " +
