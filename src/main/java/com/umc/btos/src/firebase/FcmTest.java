@@ -2,17 +2,13 @@ package com.umc.btos.src.firebase;
 
 import com.umc.btos.config.*;
 import com.umc.btos.src.firebase.model.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
 @RestController
-//@RequiredArgsConstructor
+@RequestMapping("/fcm")
 public class FcmTest {
 
     @Autowired
@@ -23,7 +19,7 @@ public class FcmTest {
     }
 
     @ResponseBody
-    @PostMapping("/fcm")
+    @PostMapping("")
     public BaseResponse<FcmResponse> pushMessage(@RequestBody FcmRequest fcmRequest) throws IOException, BaseException {
 
         FcmResponse fcmResponse = fcmService.sendMessageTo(fcmRequest);
