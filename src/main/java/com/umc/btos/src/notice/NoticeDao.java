@@ -20,14 +20,14 @@ public class NoticeDao {
 
     // Notice 테이블에 존재하는 전체 공지들 조회
     public List<GetNoticeRes> getNotices() {
-        // 생성 시간 Format = "년.월.일.시.분.초"
-        String getNoticesQuery = "select noticeIdx,title,content,date_format(createdAt, '%Y.%m.%d.%H:%i:%s') from Notice";
+        // 생성 시간 Format = "년.월.일"
+        String getNoticesQuery = "select noticeIdx,title,content,date_format(createdAt, '%Y.%m.%d') from Notice";
         return this.jdbcTemplate.query(getNoticesQuery,
                 (rs, rowNum) -> new GetNoticeRes(
                         rs.getInt("noticeIdx"),
                         rs.getString("title"),
                         rs.getString("content"),
-                        rs.getString("date_format(createdAt, '%Y.%m.%d.%H:%i:%s')"))
+                        rs.getString("date_format(createdAt, '%Y.%m.%d')"))
         );
     }
 }
