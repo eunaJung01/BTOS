@@ -1,8 +1,12 @@
 package com.umc.btos.src.diary;
 
 import com.umc.btos.config.BaseException;
+import com.umc.btos.config.Constant;
 import com.umc.btos.config.secret.Secret;
 import com.umc.btos.src.diary.model.*;
+import com.umc.btos.src.plant.PlantDao;
+import com.umc.btos.src.plant.PlantService;
+import com.umc.btos.src.plant.model.PatchModifyScoreRes;
 import com.umc.btos.utils.AES128;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +24,14 @@ public class DiaryService {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final DiaryDao diaryDao;
+    private final PlantService plantService;
+    private final PlantDao plantDao;
 
     @Autowired
-    public DiaryService(DiaryDao diaryDao) {
+    public DiaryService(DiaryDao diaryDao, PlantService plantService, PlantDao plantDao) {
         this.diaryDao = diaryDao;
+        this.plantService = plantService;
+        this.plantDao = plantDao;
     }
 
     // ================================================== validation ==================================================
@@ -74,6 +82,21 @@ public class DiaryService {
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 화분 점수 증가
+    public PatchModifyScoreRes modifyPlantScore(int userIdx, String diaryDate) throws BaseException {
+        LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
+        String now_formatted = now.toString().replaceAll("-", "."); // ex) 2022-02-02 -> 2022.02.02
+
+        // 당일에 작성한 일기만 화분 점수 증가
+        if (diaryDate.compareTo(now_formatted) == 0) {
+            return plantService.modifyScore_plus(userIdx, Constant.PLANT_LEVELUP_DIARY, "diary"); // 화분 점수 증가
+        }
+        // 당일 작성한 일기가 아닐 경우 status = null, levelChanged = false
+        else {
+            return new PatchModifyScoreRes("diary", null, false, plantDao.getScore(userIdx));
         }
     }
 
