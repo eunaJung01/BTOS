@@ -2,7 +2,6 @@ package com.umc.btos.src.diary;
 
 import com.umc.btos.config.*;
 import com.umc.btos.src.diary.model.*;
-import com.umc.btos.src.plant.PlantService;
 import com.umc.btos.src.plant.model.PatchModifyScoreRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,13 +21,10 @@ public class DiaryController {
     private final DiaryProvider diaryProvider;
     @Autowired
     private final DiaryService diaryService;
-    @Autowired
-    private final PlantService plantService;
 
-    public DiaryController(DiaryProvider diaryProvider, DiaryService diaryService, PlantService plantService) {
+    public DiaryController(DiaryProvider diaryProvider, DiaryService diaryService) {
         this.diaryProvider = diaryProvider;
         this.diaryService = diaryService;
-        this.plantService = plantService;
     }
 
     /*
@@ -61,8 +57,9 @@ public class DiaryController {
             }
 
             diaryService.saveDiary(postDiaryReq); // 일기 저장
-            PatchModifyScoreRes plantRes = plantService.modifyScore_plus(postDiaryReq.getUserIdx(), Constant.PLANT_LEVELUP_DIARY, "diary"); // 화분 점수 증가
 
+            // 당일에 작성한 일기만 화분 점수 증가
+            PatchModifyScoreRes plantRes = diaryService.modifyPlantScore(postDiaryReq.getUserIdx(), postDiaryReq.getDiaryDate());
             return new BaseResponse<>(plantRes);
 
         } catch (BaseException exception) {
