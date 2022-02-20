@@ -32,23 +32,10 @@ public class DiaryProvider {
         this.alarmService = alarmService;
     }
 
-    /*
-     * 일기 작성 여부 확인
-     * [GET] /diaries/:date
-     */
-    public GetCheckDiaryRes checkDiaryDate(int userIdx, String date) throws BaseException {
-        try {
-            return new GetCheckDiaryRes(diaryDao.checkDiaryDate(userIdx, date));
-
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
-    // ================================================================================
+    // ================================================== validation ==================================================
 
     /*
-     * 존재하는 회원인지 확인
+     * 회원 확인 (존재 유무, status)
      */
     public int checkUserIdx(int userIdx) throws BaseException {
         try {
@@ -60,7 +47,7 @@ public class DiaryProvider {
     }
 
     /*
-     * 존재하는 일기인지 확인
+     * 일기 확인 (존재 유무, status)
      */
     public int checkDiaryIdx(int diaryIdx) throws BaseException {
         try {
@@ -83,7 +70,22 @@ public class DiaryProvider {
         }
     }
 
-    // ================================================================================
+    // ================================================================================================================
+
+    /*
+     * 일기 작성 여부 확인
+     * [GET] /diaries/:date
+     */
+    public GetCheckDiaryRes checkDiaryDate(int userIdx, String date) throws BaseException {
+        try {
+            return new GetCheckDiaryRes(diaryDao.checkDiaryDate(userIdx, date));
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // ================================================================================================================
 
     /*
      * 일기 조회 - 우편함
