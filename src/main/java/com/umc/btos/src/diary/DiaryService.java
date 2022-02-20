@@ -100,7 +100,7 @@ public class DiaryService {
         }
         // 당일 작성한 일기가 아닐 경우 status = null, levelChanged = false
         else {
-            return new PatchModifyScoreRes("diary", null, false, plantDao.getScore(userIdx));
+            return new PatchModifyScoreRes("diary", null, false, plantDao.getLevel(userIdx));
         }
     }
 
