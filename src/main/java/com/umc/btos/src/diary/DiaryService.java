@@ -72,7 +72,7 @@ public class DiaryService {
             String diaryContent_encrypted = encryptDiaryContent(postDiaryReq.getDiaryContent()); // Diary.content 암호화
             postDiaryReq.setDiaryContent(diaryContent_encrypted);
 
-            List doneList_encrypted = encryptDoneContents(postDiaryReq.getDoneList()); // Done.content 암호화
+            List<String> doneList_encrypted = encryptDoneContents(postDiaryReq.getDoneList()); // Done.content 암호화
             postDiaryReq.setDoneList(doneList_encrypted);
         }
 
@@ -194,21 +194,21 @@ public class DiaryService {
         try {
             return new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(diaryContent);
 
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
             throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 암호화에 실패하였습니다.
         }
     }
 
     // Done.content
-    public List encryptDoneContents(List doneList) throws BaseException {
+    public List<String> encryptDoneContents(List<String> doneList) throws BaseException {
         try {
-            List doneList_encrypted = new ArrayList(); // 암호화된 done list 내용들을 저장하는 리스트
-            for (int i = 0; i < doneList.size(); i++) {
-                doneList_encrypted.add(new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(doneList.get(i).toString()));
+            List<String> doneList_encrypted = new ArrayList(); // 암호화된 done list 내용들을 저장하는 리스트
+            for (String done : doneList) {
+                doneList_encrypted.add(new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(done.toString()));
             }
             return doneList_encrypted;
 
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
             throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 암호화에 실패하였습니다.
         }
     }
