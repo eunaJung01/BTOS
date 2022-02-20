@@ -119,7 +119,7 @@ public class DiaryDao {
 
     // done list 유무 반환
     public int hasDone(int diaryIdx) {
-        String query = "SELECT EXISTS (SELECT * FROM Done WHERE diaryIdx = ?";
+        String query = "SELECT EXISTS (SELECT * FROM Done WHERE diaryIdx = ?)";
         return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx); // 존재하면 1, 존재하지 않으면 0 반환
     }
 
