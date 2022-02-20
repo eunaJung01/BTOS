@@ -72,13 +72,17 @@ public class DiaryService {
             String diaryContent_encrypted = encryptDiaryContent(postDiaryReq.getDiaryContent()); // Diary.content 암호화
             postDiaryReq.setDiaryContent(diaryContent_encrypted);
 
-            List<String> doneList_encrypted = encryptDoneContents(postDiaryReq.getDoneList()); // Done.content 암호화
-            postDiaryReq.setDoneList(doneList_encrypted);
+            if (postDiaryReq.getDoneList() != null) {
+                List<String> doneList_encrypted = encryptDoneContents(postDiaryReq.getDoneList()); // Done.content 암호화
+                postDiaryReq.setDoneList(doneList_encrypted);
+            }
         }
 
         try {
             int diaryIdx = diaryDao.saveDiary(postDiaryReq);
-            diaryDao.saveDoneList(diaryIdx, postDiaryReq.getDoneList());
+            if (postDiaryReq.getDoneList() != null) {
+                diaryDao.saveDoneList(diaryIdx, postDiaryReq.getDoneList());
+            }
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
