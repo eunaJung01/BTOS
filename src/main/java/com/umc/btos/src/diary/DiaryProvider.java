@@ -1,13 +1,13 @@
 package com.umc.btos.src.diary;
 
 import com.umc.btos.config.*;
-import com.umc.btos.config.secret.Secret;
 import com.umc.btos.src.alarm.AlarmService;
 import com.umc.btos.src.diary.model.*;
 import com.umc.btos.utils.AES128;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +23,8 @@ public class DiaryProvider {
     private final DiaryDao diaryDao;
     private final AlarmService alarmService;
 
-//    @Value("${secret.private-diary-key}")
-//    String PRIVATE_DIARY_KEY;
+    @Value("${secret.private-diary-key}")
+    String PRIVATE_DIARY_KEY;
 
     @Autowired
     public DiaryProvider(DiaryDao diaryDao, AlarmService alarmService) {
