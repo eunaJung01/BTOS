@@ -1,65 +1,83 @@
-spring:
-  profiles:
-    group:
-      "local": "devDB, devPort, secret"
-      "dev": "devDB, devPort, secret"
-      "prod": "prodDB, prodPort, secret"
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: "devDB"
-
-  datasource:
-    platform: mysql
-    url: ${DATASOURCE_URL_DEV_DB}
-    username: ${DATASOURCE_USERNAME}
-    password: ${DATASOURCE_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: "prodDB"
-
-  datasource:
-    platform: mysql
-    url: ${DATASOURCE_URL_PROD_DB}
-    username: ${DATASOURCE_USERNAME}
-    password: ${DATASOURCE_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: "devPort"
+#spring:
+#  profiles:
+#    group:
+#      "local": "devDB, devPort, secret"
+#      "dev": "devDB, devPort, secret"
+#      "prod": "prodDB, prodPort, secret"
+#
+#---
+#
+#spring:
+#  config:
+#    activate:
+#      on-profile: "devDB"
+#
+#  datasource:
+#    platform: mysql
+#    url: ${DATASOURCE_URL_DEV_DB}
+#    username: ${DATASOURCE_USERNAME}
+#    password: ${DATASOURCE_PASSWORD}
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#
+#---
+#
+#spring:
+#  config:
+#    activate:
+#      on-profile: "prodDB"
+#
+#  datasource:
+#    platform: mysql
+#    url: ${DATASOURCE_URL_PROD_DB}
+#    username: ${DATASOURCE_USERNAME}
+#    password: ${DATASOURCE_PASSWORD}
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#
+#---
+#
+#spring:
+#  config:
+#    activate:
+#      on-profile: "devPort"
+#
+#server:
+#  port: 9000
+#
+#---
+#
+#spring:
+#  config:
+#    activate:
+#      on-profile: "prodPort"
+#
+#server:
+#  port: 9001
+#
+#---
+#
+#spring:
+#  config:
+#    activate:
+#      on-profile: "secret"
+#
+#secret:
+#  private-diary-key: ${PRIVATE_DIARY_KEY}
+#  jwt-secret-key: ${JWT_SECRET_KEY}
 
 server:
   port: 9000
 
----
-
 spring:
-  config:
-    activate:
-      on-profile: "prodPort"
+  application:
+    name: demo
 
-server:
-  port: 9001
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: "secret"
+  datasource:
+    platform: mysql
+    url: jdbc:mysql://btos.cp3evafquu7f.ap-northeast-2.rds.amazonaws.com:3306/BTOS
+    username: btos
+    password: btos1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
 secret:
-  private-diary-key: ${PRIVATE_DIARY_KEY}
-  jwt-secret-key: ${JWT_SECRET_KEY}
+  private-diary-key: o9pqYVC9-F8_.PEzEiwL9F6.AYj9jcfVJ*_i.ifXYnyE68kix@Q2dL6rw*bV-rpdZYwcqZG-jPF-fw3CiJyKsfZ778ks-*jnZn
+  jwt-secret-key: UwKYibQQgkW7g-*k.ap9kje-wxBHb9wdXoBT4vnt4P3sJWt-Nu
