@@ -59,8 +59,8 @@ public class DiaryController {
             diaryService.saveDiary(postDiaryReq); // 일기 저장
 
             // 당일에 작성한 일기만 화분 점수 증가
-            PatchModifyScoreRes plantRes = diaryService.modifyPlantScore(postDiaryReq.getUserIdx(), postDiaryReq.getDiaryDate());
-            return new BaseResponse<>(plantRes);
+            PatchModifyScoreRes plantResult = diaryService.modifyPlantScore(postDiaryReq.getUserIdx(), postDiaryReq.getDiaryDate());
+            return new BaseResponse<>(plantResult);
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
