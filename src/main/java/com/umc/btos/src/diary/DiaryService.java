@@ -2,7 +2,7 @@ package com.umc.btos.src.diary;
 
 import com.umc.btos.config.BaseException;
 import com.umc.btos.config.Constant;
-import com.umc.btos.config.secret.Secret;
+//import com.umc.btos.config.secret.Secret;
 import com.umc.btos.src.diary.model.*;
 import com.umc.btos.src.plant.PlantDao;
 import com.umc.btos.src.plant.PlantService;
