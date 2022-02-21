@@ -55,16 +55,16 @@ public class ReportController {
 
             // reason = sex, hate
             if (reason.equals("sex") || reason.equals("hate")) {
-                postReportRes.setPatchModifyScoreRes(plantService.modifyScore_minus(reportedUserIdx, Constant.PLANT_LEVELDOWN_REPORT_SEX_HATE, "report"));
+                postReportRes.setPlantResult(plantService.modifyScore_minus(reportedUserIdx, Constant.PLANT_LEVELDOWN_REPORT_SEX_HATE, "report"));
             }
             // reason = spam, dislike
             else if (reason.equals("spam") || reason.equals("dislike")) {
-                postReportRes.setPatchModifyScoreRes(plantService.modifyScore_minus(reportedUserIdx, Constant.PLANT_LEVELDOWN_REPORT_SPAM_DISLIKE, "report"));
+                postReportRes.setPlantResult(plantService.modifyScore_minus(reportedUserIdx, Constant.PLANT_LEVELDOWN_REPORT_SPAM_DISLIKE, "report"));
             }
             // reason = etc
             else {
                 int plantLevel = plantDao.getLevel(reportedUserIdx);
-                postReportRes.setPatchModifyScoreRes(new PatchModifyScoreRes("reply", null, false, plantLevel));
+                postReportRes.setPlantResult(new PatchModifyScoreRes("reply", null, false, plantLevel));
             }
 
             return new BaseResponse<>(postReportRes);
