@@ -1,21 +1,11 @@
 package com.umc.btos.src.report;
 
-import com.umc.btos.config.BaseException;
-import com.umc.btos.src.letter.model.PostLetterReq;
-
-import com.umc.btos.src.plant.PlantService;
-import com.umc.btos.src.reply.model.PostReplyReq;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import com.umc.btos.src.report.model.*;
 
 import javax.sql.DataSource;
-
-import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
-import static com.umc.btos.config.Constant.*;
-
 
 @Repository
 public class ReportDao {
@@ -27,41 +17,36 @@ public class ReportDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    // 신고 당한 UserIdx 반환
-    public int getUserIdx(PostReportReq postReportReq) {
-        // 신고의 Type 반환  // diary:일기, letter : 편지, reply : 답장
-        String getType = postReportReq.getReportType();
+    // 신고 저장
+    public int postReport(PostReportReq postReportReq) {
+        String query = "INSERT INTO Report (type, typeIdx, reason, content) VALUES (?,?,?,?)";
+        Object[] params = new Object[]{postReportReq.getType(), postReportReq.getTypeIdx(), postReportReq.getReason(), postReportReq.getContent()};
+        this.jdbcTemplate.update(query, params);
 
-        // TYPE : 일기
-        if (getType.equals("diary")) {
-            String selectQuery_diary = "SELECT Diary.userIdx FROM Diary WHERE diaryIdx=?";
-            int param = postReportReq.getIdx();
-            return this.jdbcTemplate.queryForObject(selectQuery_diary, int.class, param);
+        // replyIdx 반환
+        String query_getReplyIdx = "SELECT last_insert_id()";
+        return this.jdbcTemplate.queryForObject(query_getReplyIdx, int.class);
+    }
+
+    // 신고를 당한 회원 식별자 반환
+    public int getReportedUserIdx(String type, int typeIdx) {
+        /*
+         * type - typeIdx
+         * diary - diaryIdx / letter - letterIdx / reply - replyIdx
+         */
+        String query;
+        if (type.equals("diary")) {
+            query = "SELECT Diary.userIdx FROM Diary WHERE diaryIdx = ?";
         }
         // TYPE : 편지
-        else if (getType.equals("letter")) {
-            String selectQuery_letter = "SELECT Letter.userIdx FROM Letter WHERE letterIdx= ?";
-            int param = postReportReq.getIdx();
-            return this.jdbcTemplate.queryForObject(selectQuery_letter, int.class, param);
+        else if (type.equals("letter")) {
+            query = "SELECT Letter.userIdx FROM Letter WHERE letterIdx = ?";
         }
-        // TYPE : 답장
-        else if (getType.equals("reply")) {
-            String selectQuery_reply = "SELECT Reply.replierIdx FROM Reply WHERE replyIdx=?";
-            int param = postReportReq.getIdx();
-            return this.jdbcTemplate.queryForObject(selectQuery_reply, int.class, param);
+        else {
+            query = "SELECT Reply.replierIdx FROM Reply WHERE replyIdx = ?";
         }
-        return 1;
+
+        return this.jdbcTemplate.queryForObject(query, int.class, typeIdx);
     }
 
-    // 신고 생성 // Report 테이블에 값 추가
-    public int createReport(PostReportReq postReportReq) {
-        // DB의 Report Table에 (reportType,reason,idx,content)값을 가지는 신고 데이터를 생성한다.
-        String createReportQuery = "insert into Report (reportType,reason,idx,content) VALUES (?,?,?,?)";
-        Object[] createReportParams = new Object[]{postReportReq.getReportType(), postReportReq.getReason(), postReportReq.getIdx(), postReportReq.getContent()};
-        this.jdbcTemplate.update(createReportQuery, createReportParams);
-
-        // 가장 마지막에 삽입된 reportIdx값을 가져온다.
-        String lastInsertIdQuery = "select last_insert_id()";
-        return this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class);
-    }
 }
