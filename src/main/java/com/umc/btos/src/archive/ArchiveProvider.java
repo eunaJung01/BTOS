@@ -62,9 +62,9 @@ public class ArchiveProvider {
      */
     public List<GetCalendarRes> getCalendar(int userIdx, String date, String type) throws BaseException {
         // TODO : 의미적 validation - 프리미엄 미가입자는 감정 이모티콘으로 조회 불가
-        if (type.compareTo("emotion") == 0 && archiveDao.isPremium(userIdx).compareTo("free") == 0) {
-            throw new BaseException(DIARY_NONPREMIUM_USER); // 프리미엄 가입이 필요합니다.
-        }
+//        if (type.compareTo("emotion") == 0 && archiveDao.isPremium(userIdx).compareTo("free") == 0) {
+//            throw new BaseException(DIARY_NONPREMIUM_USER); // 프리미엄 가입이 필요합니다.
+//        }
 
         try {
             // 달력 : 한달 단위로 날짜마다 저장된 일기에 대한 정보(done list 개수 또는 감정 이모티콘 식별자)를 저장

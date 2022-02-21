@@ -13,5 +13,5 @@ import java.util.List;
 @AllArgsConstructor
 public class PostDiaryRes {
 //    private List<UserIdx> diarySendList;
-    private PatchModifyScoreRes plantRes;
+    private PatchModifyScoreRes plantResult;
 }

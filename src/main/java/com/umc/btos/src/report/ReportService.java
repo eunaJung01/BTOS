@@ -1,17 +1,13 @@
 package com.umc.btos.src.report;
+
 import com.umc.btos.config.BaseException;
-
 import com.umc.btos.src.report.model.*;
-
-import com.umc.btos.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import static com.umc.btos.config.BaseResponseStatus.DATABASE_ERROR;
-
+import static com.umc.btos.config.BaseResponseStatus.*;
 
 @Service
 public class ReportService {
@@ -26,23 +22,15 @@ public class ReportService {
         this.reportProvider = reportProvider;
     }
 
-    // ******************************************************************************
-
-    // 신고 작성(POST)
-    public int createReport(PostReportReq postReportReq) throws BaseException {
+    /*
+     * 일기/편지/답장 신고
+     * [POST] /reports
+     */
+    public PostReportRes postReport(PostReportReq postReportReq, int reportedUserIdx) throws BaseException {
         try {
-            int reportIdx = reportDao.createReport(postReportReq);
-            return reportIdx;
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
+            int reportIdx = reportDao.postReport(postReportReq); // 신고 저장 -> reportIdx 반환
+            return new PostReportRes(reportIdx, postReportReq.getType(), reportedUserIdx);
 
-    // 신고당한 유저의 userIdx
-    public int getUserIdx(PostReportReq postReportReq) throws BaseException {
-        try {
-            int userIdx = reportDao.getUserIdx(postReportReq);
-            return userIdx;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
