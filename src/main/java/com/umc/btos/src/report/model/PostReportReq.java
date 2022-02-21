@@ -4,12 +4,10 @@ import lombok.*;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostReportReq {
     private int reportIdx;
-    private String reportType; // 신고구분  // diary:일기, letter : 편지, reply : 답장
-    private String reason; // 신고사유 // spam : 스팸 / sex : 성적 / hate : 혐오 / dislike : 마음에 안듦 / etc : 기타
-    private int idx; // 신고구분의 식별자
-    private String content; // null 가능 // 기타를 선택한 경우
-
+    private String type; // 신고 구분 (Tables - diary : 일기 / letter : 편지 / reply : 답장)
+    private int typeIdx; // 신고 구분 식별자 (PKs - diaryIdx / letterIdx / replyIdx)
+    private String reason; // 신고 사유 (spam : 스팸 / sex : 성적 컨텐츠 / hate : 혐오 발언 또는 괴롭힘 / dislike : 마음에 들지 않습니다 / etc : 기타)
+    private String content; // 내용 (reason = etc만 작성, 나머지는 null)
 }
