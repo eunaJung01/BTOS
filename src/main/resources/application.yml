@@ -1,25 +1,22 @@
 spring:
   profiles:
     group:
-      "local": "testDB, common"
-      "dev": "testDB, common"
-      "prod": "testDB, prod" # "prodDB, prod"
+      "local": "devDB, devPort"
+      "dev": "devDB, devPort"
+      "prod": "prodDB, prodPort"
 
 ---
 
 spring:
   config:
     activate:
-      on-profile: "testDB"
+      on-profile: "devDB"
   datasource:
     platform: mysql
-    url: ${DATASOURCE_URL_TESTDB}
+    url: ${DATASOURCE_URL_DEV_DB}
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
-
-server:
-  port: 9000
 
 ---
 
@@ -29,9 +26,9 @@ spring:
       on-profile: "prodDB"
   datasource:
     platform: mysql
-#    url:
-#    username:
-#    password:
+    url: ${DATASOURCE_URL_PROD_DB}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 ---
@@ -39,7 +36,7 @@ spring:
 spring:
   config:
     activate:
-      on-profile: "common"
+      on-profile: "devPort"
 
 server:
   port: 9000
@@ -49,7 +46,7 @@ server:
 spring:
   config:
     activate:
-      on-profile: "prod"
+      on-profile: "prodPort"
 
 server:
   port: 9001
