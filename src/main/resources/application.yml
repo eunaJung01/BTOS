@@ -1,9 +1,9 @@
 spring:
   profiles:
     group:
-      "local": "devDB, devPort"
-      "dev": "devDB, devPort"
-      "prod": "prodDB, prodPort"
+      "local": "devDB, devPort, secret"
+      "dev": "devDB, devPort, secret"
+      "prod": "prodDB, prodPort, secret"
 
 ---
 
@@ -11,6 +11,7 @@ spring:
   config:
     activate:
       on-profile: "devDB"
+
   datasource:
     platform: mysql
     url: ${DATASOURCE_URL_DEV_DB}
@@ -24,6 +25,7 @@ spring:
   config:
     activate:
       on-profile: "prodDB"
+
   datasource:
     platform: mysql
     url: ${DATASOURCE_URL_PROD_DB}
@@ -50,3 +52,14 @@ spring:
 
 server:
   port: 9001
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "secret"
+
+secret:
+  private-diary-key: ${PRIVATE_DIARY_KEY}
+  jwt-secret-key: ${JWT_SECRET_KEY}

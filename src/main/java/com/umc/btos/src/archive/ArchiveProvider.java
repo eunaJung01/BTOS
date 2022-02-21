@@ -2,12 +2,12 @@ package com.umc.btos.src.archive;
 
 import com.umc.btos.config.BaseException;
 import com.umc.btos.config.*;
-import com.umc.btos.config.secret.*;
 import com.umc.btos.src.archive.model.*;
 import com.umc.btos.utils.AES128;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,6 +25,9 @@ public class ArchiveProvider {
     public ArchiveProvider(ArchiveDao archiveDao) {
         this.archiveDao = archiveDao;
     }
+
+    @Value("${secret.private-diary-key}")
+    String PRIVATE_DIARY_KEY;
 
     // ================================================== validation ==================================================
 
@@ -144,7 +147,8 @@ public class ArchiveProvider {
                 for (int diaryIdx : diaryIdxList_all) {
                     String diaryContent = archiveDao.getDiaryContent(diaryIdx);
                     if (archiveDao.getIsPublic(diaryIdx) == 0) { // private 일기일 경우 content 복호화
-                        diaryContent = new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent);
+//                        diaryContent = new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent);
+                        diaryContent = new AES128(PRIVATE_DIARY_KEY).decrypt(diaryContent);
                     }
 
                     if (searchString(diaryContent, search)) { // 문자열 검색 -> 찾는 값이 존재하는 일기들만 저장
@@ -174,7 +178,8 @@ public class ArchiveProvider {
                     for (Diary diary : diaryList) {
                         String diaryContent = diary.getContent();
                         if (archiveDao.getIsPublic(diary.getDiaryIdx()) == 0) { // private 일기일 경우 content 복호화
-                            diaryContent = new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent);
+//                            diaryContent = new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent);
+                            diaryContent = new AES128(PRIVATE_DIARY_KEY).decrypt(diaryContent);
                         }
 
                         if (searchString(diaryContent, search)) { // 문자열 검색 -> 찾는 값이 존재하는 일기들만 저장
@@ -306,7 +311,8 @@ public class ArchiveProvider {
         try {
             // Diary.content
             String diaryContent = diary.getContent();
-            diary.setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent));
+//            diary.setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent));
+            diary.setContent(new AES128(PRIVATE_DIARY_KEY).decrypt(diaryContent));
 
         } catch (Exception ignored) {
             throw new BaseException(DIARY_DECRYPTION_ERROR); // 일기 복호화에 실패하였습니다.
@@ -319,7 +325,8 @@ public class ArchiveProvider {
             // Done.content
             List<String> doneList_decrypted = new ArrayList<>();
             for (String doneContent : doneList) {
-                doneList_decrypted.add(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
+//                doneList_decrypted.add(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
+                doneList_decrypted.add(new AES128(PRIVATE_DIARY_KEY).decrypt(doneContent));
             }
             return doneList_decrypted;
 

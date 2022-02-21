@@ -37,3 +37,5 @@ out/
 .vscode/
 
 BTOS.pem
+
+/src/main/java/com/umc/btos/config/secret/Secret.java

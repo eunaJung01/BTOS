@@ -11,6 +11,7 @@ import com.umc.btos.utils.AES128;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -33,6 +34,9 @@ public class DiaryService {
         this.plantService = plantService;
         this.plantDao = plantDao;
     }
+
+    @Value("${secret.private-diary-key}")
+    String PRIVATE_DIARY_KEY;
 
     // ================================================== validation ==================================================
 
@@ -196,7 +200,8 @@ public class DiaryService {
     // Diary.content
     public String encryptDiaryContent(String diaryContent) throws BaseException {
         try {
-            return new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(diaryContent);
+//            return new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(diaryContent);
+            return new AES128(PRIVATE_DIARY_KEY).encrypt(diaryContent);
 
         } catch (Exception exception) {
             throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 암호화에 실패하였습니다.
@@ -208,7 +213,8 @@ public class DiaryService {
         try {
             List<String> doneList_encrypted = new ArrayList(); // 암호화된 done list 내용들을 저장하는 리스트
             for (String done : doneList) {
-                doneList_encrypted.add(new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(done.toString()));
+//                doneList_encrypted.add(new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(done.toString()));
+                doneList_encrypted.add(new AES128(PRIVATE_DIARY_KEY).encrypt(done.toString()));
             }
             return doneList_encrypted;
 
