@@ -27,7 +27,7 @@ public class PlantService {
     // TODO : private final PlantFcmService plantFcmService;
 
     @Autowired
-    public PlantService(PlantDao plantDao, PlantProvider plantProvider, AlarmService alarmService, PlantFcmService plantFcmService) {
+    public PlantService(PlantDao plantDao, PlantProvider plantProvider, AlarmService alarmService/*TODO, PlantFcmService plantFcmService*/) {
         this.plantDao = plantDao;
         this.plantProvider = plantProvider;
         this.alarmService = alarmService;
