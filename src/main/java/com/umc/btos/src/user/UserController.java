@@ -246,6 +246,7 @@ public class UserController {
         }
     }
 
+
     /**
      * 비슷한 연령대 수신 설정  API
      * [PATCH] /users/:userIdx/receive/age
@@ -306,6 +307,7 @@ public class UserController {
         }
     }
 
+
     /**
      * 폰트 선택 API
      * [PATCH] /users/:userIdx/font
@@ -322,7 +324,7 @@ public class UserController {
             }
             //같다면 변경
 
-            if (font.getFontIdx() < 1) { // 유효하지 않은 폰트 idx validation
+            if (font.getFontIdx() < 0) { // 유효하지 않은 폰트 idx validation
                 return new BaseResponse<>(INVALID_FONT);
             }
 
