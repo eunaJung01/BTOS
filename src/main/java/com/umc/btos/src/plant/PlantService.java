@@ -5,6 +5,7 @@ import com.umc.btos.config.BaseResponseStatus;
 import com.umc.btos.config.Constant;
 import com.umc.btos.src.alarm.AlarmService;
 import com.umc.btos.src.plant.model.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +24,14 @@ public class PlantService {
     private final PlantDao plantDao;
     private final PlantProvider plantProvider;
     private final AlarmService alarmService;
+    private final PlantFcmService plantFcmService;
 
     @Autowired
-    public PlantService(PlantDao plantDao, PlantProvider plantProvider, AlarmService alarmService) {
+    public PlantService(PlantDao plantDao, PlantProvider plantProvider, AlarmService alarmService, PlantFcmService plantFcmService) {
         this.plantDao = plantDao;
         this.plantProvider = plantProvider;
         this.alarmService = alarmService;
+        this.plantFcmService = plantFcmService;
     }
 
 
@@ -115,6 +118,11 @@ public class PlantService {
                 }
                 result.setLevelChanged(true); // 단계가 변경되었다는 정보를 response에 넣기
                 alarmService.postAlarm_plant("plus", userIdx, plantDao.getUPlantIdx(userIdx), plantLevel); // 알림 저장
+                // TODO : 알림 발송
+                // PlantFcmService 새로 만들어서 호출(import)
+                // plantFcmService.sendMessageTo();
+                // DB에 저장된 fcmToken 꺼내와서 매개 변수로 전달해야됨.
+
             }
 
             if (plantDao.setScore(userIdx, plantScore) == 0) { // 변경된 점수 반영
