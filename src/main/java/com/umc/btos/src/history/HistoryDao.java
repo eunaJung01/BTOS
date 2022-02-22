@@ -826,7 +826,7 @@ public class HistoryDao {
     // diaryIdx 리스트 반환 : filtering = diary
     public List<Integer> getDiaryIdxList(int userIdx, int pageNum) {
         int startDataIdx = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
-        int endDataIdx = pageNum * Constant.HISTORY_DATA_NUM;
+//        int endDataIdx = pageNum * Constant.HISTORY_DATA_NUM;
 
         String query = "SELECT idx FROM (" +
                 "SELECT Diary.diaryIdx AS idx, DiarySendList.createdAt AS sendAt_raw " +
@@ -837,7 +837,7 @@ public class HistoryDao {
                 "ORDER BY sendAt_raw DESC) idx " +
                 "LIMIT ?, ?";
 
-        return this.jdbcTemplate.queryForList(query, int.class, userIdx, startDataIdx, endDataIdx);
+        return this.jdbcTemplate.queryForList(query, int.class, userIdx, startDataIdx, Constant.HISTORY_DATA_NUM);
     }
 
     // letterIdx 리스트 반환 : filtering = letter

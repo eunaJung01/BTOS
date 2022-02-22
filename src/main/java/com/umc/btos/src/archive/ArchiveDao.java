@@ -109,7 +109,7 @@ public class ArchiveDao {
     // 1. 전체 조회 (diaryDate 기준 내림차순 정렬)
     public List<Diary> getDiaryList(int userIdx, int pageNum) {
         int startData = (pageNum - 1) * Constant.DIARYLIST_DATA_NUM;
-        int endData = pageNum * Constant.DIARYLIST_DATA_NUM;
+//        int endData = pageNum * Constant.DIARYLIST_DATA_NUM;
 
         String query = "SELECT * FROM Diary " +
                 "WHERE userIdx = ? AND status = 'active' " +
@@ -121,13 +121,13 @@ public class ArchiveDao {
                         rs.getInt("emotionIdx"),
                         rs.getString("diaryDate"),
                         rs.getString("content")
-                ), userIdx, startData, endData);
+                ), userIdx, startData, Constant.DIARYLIST_DATA_NUM);
     }
 
     // 3. 기간 설정 조회 / 4. 문자열 검색 & 기간 설정 조회 (diaryDate 기준 내림차순 정렬)
     public List<Diary> getDiaryListByDate(int userIdx, String startDate, String endDate, int pageNum) {
         int startData = (pageNum - 1) * Constant.DIARYLIST_DATA_NUM;
-        int endData = pageNum * Constant.DIARYLIST_DATA_NUM;
+//        int endData = pageNum * Constant.DIARYLIST_DATA_NUM;
 
         String query = "SELECT * FROM Diary " +
                 "WHERE userIdx = ? " +
@@ -142,7 +142,7 @@ public class ArchiveDao {
                         rs.getInt("emotionIdx"),
                         rs.getString("diaryDate"),
                         rs.getString("content")
-                ), userIdx, startDate, endDate, startData, endData);
+                ), userIdx, startDate, endDate, startData, Constant.DIARYLIST_DATA_NUM);
     }
 
     // --------------------------------------- COUNT(List<Diary>) ---------------------------------------
@@ -203,7 +203,7 @@ public class ArchiveDao {
     // 1. 전체 조회
     public List<String> getMonthList(int userIdx, int pageNum) {
         int startData = (pageNum - 1) * Constant.DIARYLIST_DATA_NUM;
-        int endData = pageNum * Constant.DIARYLIST_DATA_NUM;
+//        int endData = pageNum * Constant.DIARYLIST_DATA_NUM;
 
         String query = "SELECT DISTINCT parsed_diaryDate " +
                 "FROM (SELECT left(diaryDate, 7) AS parsed_diaryDate, diaryDate " +
@@ -213,7 +213,7 @@ public class ArchiveDao {
                 "      ORDER BY diaryDate DESC " +
                 "      LIMIT ?, ?) parsed_diaryDate";
 
-        return this.jdbcTemplate.queryForList(query, String.class, userIdx, startData, endData);
+        return this.jdbcTemplate.queryForList(query, String.class, userIdx, startData, Constant.DIARYLIST_DATA_NUM);
     }
 
     // 2. 문자열 검색 / 4. 문자열 검색 & 기간 설정 조회 (search != null)
@@ -237,7 +237,7 @@ public class ArchiveDao {
     // 3. 기간 설정 조회 (paging)
     public List<String> getMonthList(int userIdx, String startDate, String endDate, int pageNum) {
         int startData = (pageNum - 1) * Constant.DIARYLIST_DATA_NUM;
-        int endData = pageNum * Constant.DIARYLIST_DATA_NUM;
+//        int endData = pageNum * Constant.DIARYLIST_DATA_NUM;
 
         String query = "SELECT DISTINCT parsed_diaryDate " +
                 "FROM (SELECT left(diaryDate, 7) AS parsed_diaryDate, diaryDate FROM Diary " +
@@ -248,7 +248,7 @@ public class ArchiveDao {
                 "ORDER BY diaryDate DESC " +
                 "LIMIT ?, ?) parsed_diaryDate ";
 
-        return this.jdbcTemplate.queryForList(query, String.class, userIdx, startDate, endDate, startData, endData);
+        return this.jdbcTemplate.queryForList(query, String.class, userIdx, startDate, endDate, startData, Constant.DIARYLIST_DATA_NUM);
     }
 
     // =================================== 일기 조회 ===================================
