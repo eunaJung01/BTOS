@@ -1,11 +1,12 @@
 package com.umc.btos.utils;
 
 import com.umc.btos.config.*;
-import com.umc.btos.config.secret.Secret;
+//import com.umc.btos.config.secret.Secret;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -17,6 +18,9 @@ import static com.umc.btos.config.BaseResponseStatus.*;
 
 @Service
 public class JwtService {
+
+    @Value("${secret.jwt-secret-key}")
+    String JWT_SECRET_KEY;
 
     /**
      * JWT 생성
@@ -30,7 +34,8 @@ public class JwtService {
                 .setHeaderParam("type", "jwt")
                 .claim("userIdx", userIdx)
                 .setIssuedAt(now)
-                .signWith(SignatureAlgorithm.HS256, Secret.JWT_SECRET_KEY)
+//                .signWith(SignatureAlgorithm.HS256, Secret.JWT_SECRET_KEY)
+                .signWith(SignatureAlgorithm.HS256, JWT_SECRET_KEY)
                 .setExpiration(new Date(System.currentTimeMillis() + 1 * (1000 * 60 * 60 * 24 * 365)))
                 .compact();
     }
@@ -62,7 +67,8 @@ public class JwtService {
         Jws<Claims> claims;
         try {
             claims = Jwts.parser()
-                    .setSigningKey(Secret.JWT_SECRET_KEY)
+//                    .setSigningKey(Secret.JWT_SECRET_KEY)
+                    .setSigningKey(JWT_SECRET_KEY)
                     .parseClaimsJws(accessToken);
         } catch (Exception ignored) {
             throw new BaseException(INVALID_JWT);

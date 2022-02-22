@@ -121,7 +121,6 @@ public class MailboxProvider {
 
                 // 열람 여부 변경
                 mailboxDao.modifyIsChecked_diary(userIdx, typeIdx); // DiarySendList.isChecked = 1로 변환
-
             }
 
             // type = letter

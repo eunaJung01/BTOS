@@ -1,12 +1,17 @@
 package com.umc.btos.src.diary;
 
 import com.umc.btos.config.BaseException;
-import com.umc.btos.config.secret.Secret;
+import com.umc.btos.config.Constant;
+//import com.umc.btos.config.secret.Secret;
 import com.umc.btos.src.diary.model.*;
+import com.umc.btos.src.plant.PlantDao;
+import com.umc.btos.src.plant.PlantService;
+import com.umc.btos.src.plant.model.PatchModifyScoreRes;
 import com.umc.btos.utils.AES128;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,11 +25,40 @@ public class DiaryService {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final DiaryDao diaryDao;
+    private final PlantService plantService;
+    private final PlantDao plantDao;
 
     @Autowired
-    public DiaryService(DiaryDao diaryDao) {
+    public DiaryService(DiaryDao diaryDao, PlantService plantService, PlantDao plantDao) {
         this.diaryDao = diaryDao;
+        this.plantService = plantService;
+        this.plantDao = plantDao;
     }
+
+    @Value("${secret.private-diary-key}")
+    String PRIVATE_DIARY_KEY;
+
+    // ================================================== validation ==================================================
+
+    // 일기는 하루에 하나씩만 작성 가능
+    public void checkDiaryDate(int userIdx, String diaryDate) throws BaseException {
+        if (diaryDao.checkDiaryDate(userIdx, diaryDate) == 1) {
+            throw new BaseException(DIARY_EXISTS); // 일기는 하루에 하나만 작성 가능합니다.
+        }
+    }
+
+    // 당일에 작성한 일기가 아니라면 발송 불가
+    public void checkPublicDate(String diaryDate, int isPublic) throws BaseException {
+        LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
+        String now_formatted = now.toString().replaceAll("-", "."); // ex) 2022-02-02 -> 2022.02.02
+
+        // 작성일과 일기의 해당 날짜가 다를 경우 발송(isPublic == 1) 불가
+        if (diaryDate.compareTo(now_formatted) != 0 && isPublic == 1) {
+            throw new BaseException(UNPRIVATE_DATE); // 당일에 작성한 일기만 발송 가능합니다.
+        }
+    }
+
+    // ================================================================================================================
 
     /*
      * 일기 저장
@@ -42,60 +76,39 @@ public class DiaryService {
             String diaryContent_encrypted = encryptDiaryContent(postDiaryReq.getDiaryContent()); // Diary.content 암호화
             postDiaryReq.setDiaryContent(diaryContent_encrypted);
 
-            List doneList_encrypted = encryptDoneContents(postDiaryReq.getDoneList()); // Done.content 암호화
-            postDiaryReq.setDoneList(doneList_encrypted);
+            if (postDiaryReq.getDoneList() != null) {
+                List<String> doneList_encrypted = encryptDoneContents(postDiaryReq.getDoneList()); // Done.content 암호화
+                postDiaryReq.setDoneList(doneList_encrypted);
+            }
         }
 
         try {
             int diaryIdx = diaryDao.saveDiary(postDiaryReq);
-            diaryDao.saveDoneList(diaryIdx, postDiaryReq.getDoneList());
+            if (postDiaryReq.getDoneList() != null) {
+                diaryDao.saveDoneList(diaryIdx, postDiaryReq.getDoneList());
+            }
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
-    // 일기 작성 또는 수정 시 의미적 validaion - 일기는 하루에 하나씩만 작성 가능
-    public void checkDiaryDate(int userIdx, String diaryDate) throws BaseException {
-        if (diaryDao.checkDiaryDate(userIdx, diaryDate) == 1) {
-            throw new BaseException(DIARY_EXISTS); // 일기는 하루에 하나만 작성 가능합니다.
-        }
-    }
-
-    // 일기 작성 또는 수정 시 의미적 validaion - 당일에 작성한 일기가 아니라면 발송 불가
-    public void checkPublicDate(String diaryDate, int isPublic) throws BaseException {
+    // 화분 점수 증가
+    public PatchModifyScoreRes modifyPlantScore(int userIdx, String diaryDate) throws BaseException {
         LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
         String now_formatted = now.toString().replaceAll("-", "."); // ex) 2022-02-02 -> 2022.02.02
 
-        // 작성일과 일기의 해당 날짜가 다를 경우 발송(isPublic == 1) 불가
-        if (diaryDate.compareTo(now_formatted) != 0 && isPublic == 1) {
-            throw new BaseException(UNPRIVATE_DATE); // 당일에 작성한 일기만 발송 가능합니다.
+        // 당일에 작성한 일기만 화분 점수 증가
+        if (diaryDate.compareTo(now_formatted) == 0) {
+            return plantService.modifyScore_plus(userIdx, Constant.PLANT_LEVELUP_DIARY, "diary"); // 화분 점수 증가
+        }
+        // 당일 작성한 일기가 아닐 경우 status = null, levelChanged = false
+        else {
+            return new PatchModifyScoreRes("diary", null, false, plantDao.getLevel(userIdx));
         }
     }
 
-    // private 일기 암호화 - Diary.content
-    public String encryptDiaryContent(String diaryContent) throws BaseException {
-        try {
-            return new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(diaryContent);
-
-        } catch (Exception ignored) {
-            throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 암호화에 실패하였습니다.
-        }
-    }
-
-    // private 일기 암호화 - Done.content
-    public List encryptDoneContents(List doneList) throws BaseException {
-        try {
-            List doneList_encrypted = new ArrayList(); // 암호화된 done list 내용들을 저장하는 리스트
-            for (int i = 0; i < doneList.size(); i++) {
-                doneList_encrypted.add(new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(doneList.get(i).toString()));
-            }
-            return doneList_encrypted;
-
-        } catch (Exception ignored) {
-            throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 암호화에 실패하였습니다.
-        }
-    }
+    // ================================================================================================================
 
     /*
      * 일기 수정
@@ -181,6 +194,36 @@ public class DiaryService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    // ============================================= private 일기 암호화 ==============================================
+
+    // Diary.content
+    public String encryptDiaryContent(String diaryContent) throws BaseException {
+        try {
+//            return new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(diaryContent);
+            return new AES128(PRIVATE_DIARY_KEY).encrypt(diaryContent);
+
+        } catch (Exception exception) {
+            throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 암호화에 실패하였습니다.
+        }
+    }
+
+    // Done.content
+    public List<String> encryptDoneContents(List<String> doneList) throws BaseException {
+        try {
+            List<String> doneList_encrypted = new ArrayList(); // 암호화된 done list 내용들을 저장하는 리스트
+            for (String done : doneList) {
+//                doneList_encrypted.add(new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(done.toString()));
+                doneList_encrypted.add(new AES128(PRIVATE_DIARY_KEY).encrypt(done.toString()));
+            }
+            return doneList_encrypted;
+
+        } catch (Exception exception) {
+            throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 암호화에 실패하였습니다.
+        }
+    }
+
+    // ================================================================================================================
 
     /*
      * 일기 삭제

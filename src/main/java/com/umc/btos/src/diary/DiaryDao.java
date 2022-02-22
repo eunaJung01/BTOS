@@ -26,13 +26,13 @@ public class DiaryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, date);
     }
 
-    // 존재하는 회원인지 확인
+    // 회원 확인 (존재 유무, status)
     public int checkUserIdx(int userIdx) {
         String query = "SELECT EXISTS (SELECT userIdx FROM User WHERE userIdx = ? AND status = 'active')";
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
-    // 존재하는 일기인지 확인
+    // 일기 확인 (존재 유무, status)
     public int checkDiaryIdx(int diaryIdx) {
         String query = "SELECT EXISTS (SELECT diaryIdx FROM Diary WHERE diaryIdx = ? AND status = 'active')";
         return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
@@ -119,7 +119,7 @@ public class DiaryDao {
 
     // done list 유무 반환
     public int hasDone(int diaryIdx) {
-        String query = "SELECT EXISTS (SELECT * FROM Done WHERE diaryIdx = ?";
+        String query = "SELECT EXISTS (SELECT * FROM Done WHERE diaryIdx = ?)";
         return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx); // 존재하면 1, 존재하지 않으면 0 반환
     }
 

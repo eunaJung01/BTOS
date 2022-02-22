@@ -16,8 +16,8 @@ public class GetHistoryRes {
     private String content; // 내용 - createdAt 기준 내림차순 정렬 시 첫 항목
     private int emotionIdx = 0; // 일기일 경우 감정 이모티콘이 없다면 0, 아니면 1~8 / 편지 또는 답장일 경우 0
     private List<Done> doneList = null; // 일기일 경우 done list 배열 / 편지 또는 답장일 경우 null
-    private String sendAt_raw; // 발신일(== 수신일) (yyyy-MM-dd HH:mm:ss)
-    private String sendAt; // 발신일 (yyyy.MM.dd)
+    private String sendAt_raw; // 정렬용 날짜 (yyyy-MM-dd HH:mm:ss) - 수신일
+    private String sendAt; // 화면 출력용 날짜 (yyyy.MM.dd) - 일기일 경우 일기 작성일(== 발신일) / 편지 또는 답장일 경우 수신일(== 발신일)
     private String senderNickName; // 발신인 User.senderNickName
     private boolean senderActive; // 발신인 계정 상태 1. true : 활성 또는 휴면 2. false : 탈퇴 -> 답장 불가
     private int senderFontIdx; // 발신인 User.fontIdx

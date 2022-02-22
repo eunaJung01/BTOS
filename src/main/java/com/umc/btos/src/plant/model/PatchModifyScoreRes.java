@@ -17,5 +17,4 @@ public class PatchModifyScoreRes {
         this.type = type;
         this.levelChanged = levelChanged;
     }
-
 }

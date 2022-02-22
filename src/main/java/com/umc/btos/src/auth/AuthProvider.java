@@ -1,7 +1,7 @@
 package com.umc.btos.src.auth;
 
 import com.umc.btos.config.BaseException;
-import com.umc.btos.config.secret.Secret;
+//import com.umc.btos.config.secret.Secret;
 import com.umc.btos.src.auth.model.*;
 import com.umc.btos.utils.*;
 import com.umc.btos.utils.JwtService;

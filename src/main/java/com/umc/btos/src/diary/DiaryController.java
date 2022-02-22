@@ -2,7 +2,6 @@ package com.umc.btos.src.diary;
 
 import com.umc.btos.config.*;
 import com.umc.btos.src.diary.model.*;
-import com.umc.btos.src.plant.PlantService;
 import com.umc.btos.src.plant.model.PatchModifyScoreRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,13 +21,10 @@ public class DiaryController {
     private final DiaryProvider diaryProvider;
     @Autowired
     private final DiaryService diaryService;
-    @Autowired
-    private final PlantService plantService;
 
-    public DiaryController(DiaryProvider diaryProvider, DiaryService diaryService, PlantService plantService) {
+    public DiaryController(DiaryProvider diaryProvider, DiaryService diaryService) {
         this.diaryProvider = diaryProvider;
         this.diaryService = diaryService;
-        this.plantService = plantService;
     }
 
     /*
@@ -55,15 +51,16 @@ public class DiaryController {
     @PostMapping("")
     public BaseResponse<PatchModifyScoreRes> saveDiary(@RequestBody PostDiaryReq postDiaryReq) {
         try {
-            // TODO : 형식적 validation - 존재하는 회원인가? & User.status = 'active'
+            // TODO : 형식적 validation - 회원 확인 (존재 유무, status)
             if (diaryProvider.checkUserIdx(postDiaryReq.getUserIdx()) == 0) {
                 throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
             }
 
             diaryService.saveDiary(postDiaryReq); // 일기 저장
-            PatchModifyScoreRes plantRes = plantService.modifyScore_plus(postDiaryReq.getUserIdx(), Constant.PLANT_LEVELUP_DIARY, "diary"); // 화분 점수 증가
 
-            return new BaseResponse<>(plantRes);
+            // 당일에 작성한 일기만 화분 점수 증가
+            PatchModifyScoreRes plantResult = diaryService.modifyPlantScore(postDiaryReq.getUserIdx(), postDiaryReq.getDiaryDate());
+            return new BaseResponse<>(plantResult);
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
@@ -81,7 +78,7 @@ public class DiaryController {
             int userIdx = putDiaryReq.getUserIdx();
             int diaryIdx = putDiaryReq.getDiaryIdx();
 
-            // TODO : 형식적 validation - 존재하는 회원인가? & User.status = 'active' / 존재하는 일기인가? / 해당 회원이 작성한 일기인가?
+            // TODO : 형식적 validation - 회원 확인 (존재 유무, status) / 일기 확인 (존재 유무, status) / 해당 회원이 작성한 일기인지 확인
             if (diaryProvider.checkUserIdx(userIdx) == 0) {
                 throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
             }
@@ -110,7 +107,7 @@ public class DiaryController {
     @PatchMapping("/delete/{diaryIdx}")
     public BaseResponse<String> deleteDiary(@PathVariable("diaryIdx") int diaryIdx, @RequestParam("userIdx") int userIdx) {
         try {
-            // TODO : 형식적 validation - 존재하는 회원인가? & User.status = 'active' / 존재하는 일기인가? / 해당 회원이 작성한 일기인가?
+            // TODO : 형식적 validation - 회원 확인 (존재 유무, status) / 일기 확인 (존재 유무, status) / 해당 회원이 작성한 일기인지 확인
             if (diaryProvider.checkUserIdx(userIdx) == 0) {
                 throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
             }
@@ -133,7 +130,6 @@ public class DiaryController {
 
     /*
      * 일기 발송 리스트 조회
-     * 매일 18:59:59 Firebase에서 호출
      * [GET] /diaries/diarySendList
      */
     @ResponseBody
