@@ -1,7 +1,6 @@
 package com.umc.btos.src.notice;
 
 import com.umc.btos.config.BaseException;
-import com.umc.btos.src.blocklist.BlocklistDao;
 import com.umc.btos.src.notice.model.GetNoticeRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,6 @@ public class NoticeProvider {
 
     private final NoticeDao noticeDao;
 
-
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
@@ -25,14 +23,17 @@ public class NoticeProvider {
         this.noticeDao = noticeDao;
     }
 
-    // 모든 공지 조회
-    public List<GetNoticeRes> getNotices() throws BaseException {
+    /*
+     * 공지사항 전체 조회
+     * [GET] /notices
+     */
+    public List<GetNoticeRes> getNotice() throws BaseException {
         try {
-            List<GetNoticeRes> getNoticeRes = noticeDao.getNotices();
-            return getNoticeRes;
+            return noticeDao.getNotice();
+
         } catch (Exception exception) {
-            // 에러가 발생하였다면 : 8006 : 공지 조회 실패
             throw new BaseException(NOTICE_DATABASE_ERROR);
         }
     }
+
 }

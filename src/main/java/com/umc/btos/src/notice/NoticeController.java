@@ -28,19 +28,15 @@ public class NoticeController {
         this.noticeService = noticeService;
     }
 
-    /**
-     * 공지사항 목록 조회 API
+    /*
+     * 공지사항 전체 조회
      * [GET] /notices
-     *
-     *
      */
     @ResponseBody
     @GetMapping("")
-    // 공지사항 조회
     public BaseResponse<List<GetNoticeRes>> getNotices() {
         try {
-            //조회 성공 시 : List<GetBlocklistRes> 형태로 결과(공지사항 목록) 반환
-            List<GetNoticeRes> getNoticeRes = noticeProvider.getNotices();
+            List<GetNoticeRes> getNoticeRes = noticeProvider.getNotice();
             return new BaseResponse<>(getNoticeRes);
 
         } catch (BaseException exception) {
