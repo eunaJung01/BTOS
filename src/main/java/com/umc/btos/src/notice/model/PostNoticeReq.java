@@ -7,9 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class GetNoticeRes {
-    private int noticeIdx;
+public class PostNoticeReq {
     private String title; // 제목
     private String content; // 내용
-    private String createdAt; // 공지 작성일
 }
