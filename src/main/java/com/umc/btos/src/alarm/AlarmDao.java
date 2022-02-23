@@ -146,7 +146,7 @@ public class AlarmDao {
 
     // type = notice
     public int postAlarm_notice(int noticeIdx, String title) {
-        String get_userIdxList_query = "SELECT userIdx FROM User WHERE pushAlarm = 1 AND status = 'active'";
+        String get_userIdxList_query = "SELECT userIdx FROM User WHERE status = 'active'";
         List<Integer> userIdxList = this.jdbcTemplate.queryForList(get_userIdxList_query, int.class);
 
         String query;
