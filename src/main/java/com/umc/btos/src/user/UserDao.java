@@ -1,5 +1,6 @@
 package com.umc.btos.src.user;
 
+import com.umc.btos.config.Constant;
 import com.umc.btos.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -33,7 +34,7 @@ public class UserDao {
         // UserPlantList에 유저 화분 정보 삽입(유저 식별자, 기본 식물 식별자, 선택 상태)
         String selectDefaultPlantQuery = "insert into UserPlantList (userIdx, plantIdx, status) VALUES (?, 1, 'selected')";
         
-        
+
         // 회원 가입 시 기본 식물 알로카시아로 선택되게 함
         // 회원가입시 유저 식별자 반환 필요하므로 저장해둠 -> UserPlantList 식별자를 가져오지 않기 하기 위해서 먼저 저장해둠
         int userIdx = this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class);
@@ -41,7 +42,11 @@ public class UserDao {
         this.jdbcTemplate.update(selectDefaultPlantQuery, userIdx); // 기본 식물 선택
 
         // 최초 회원가입 시 시스템 메일 받음
-        String content  = "";
+        String get_createdAt_query = "SELECT date_format(createdAt, '%Y.%m.%d') AS createdAt FROM User WHERE userIdx = ?";
+        String createdAt = this.jdbcTemplate.queryForObject(get_createdAt_query, String.class, userIdx);
+
+        String content = Constant.SYSTEM_MAIL_GREETINGS + "“"+postUserReq.getNickName()+"”님!!" + Constant.SYSTEM_MAIL_MAIN + createdAt;
+        
         String query = "INSERT INTO Reply (replierIdx, receiverIdx, content) VALUES (1,?,?)";
         Object[] params = new Object[] {
                 userIdx,
