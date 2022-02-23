@@ -160,6 +160,17 @@ public class AlarmService {
 
 
     // type = notice
+    public void postAlarm_notice(int noticeIdx, String title) throws BaseException {
+        try {
+            if (alarmDao.postAlarm_notice(noticeIdx, title) == 0) {
+                throw new BaseException(POST_FAIL_ALARM);
+            }
 
+        } catch (BaseException exception) {
+            throw new BaseException(POST_FAIL_ALARM); // 알림 저장에 실패하였습니다.
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 }

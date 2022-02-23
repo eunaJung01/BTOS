@@ -144,4 +144,22 @@ public class AlarmDao {
         return this.jdbcTemplate.update(query, alarm);
     }
 
+    // type = notice
+    public int postAlarm_notice(int noticeIdx, String title) {
+        String get_userIdxList_query = "SELECT userIdx FROM User WHERE pushAlarm = 1 AND status = 'active'";
+        List<Integer> userIdxList = this.jdbcTemplate.queryForList(get_userIdxList_query, int.class);
+
+        String query;
+        Object[] alarm;
+        for (int userIdx : userIdxList) {
+            query = "INSERT INTO Alarm (userIdx, type, typeIdx, content) VALUES(?,?,?,?)";
+            alarm = new Object[]{userIdx, "notice", noticeIdx, title};
+
+            if (this.jdbcTemplate.update(query, alarm) == 0) { // 알림 저장 실패 시 0 반환
+                return 0;
+            }
+        }
+        return 1; // 알림 저장 전부 성공 시 1 반환
+    }
+
 }
