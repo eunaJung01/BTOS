@@ -34,7 +34,7 @@ public class AuthController {
     }
 
     /**
-     * 소셜(구글) 로그인 API : 클라에서 받은 정보 body로 받고 회원 상태에 따라 메시지, jwt 반환
+     * 소셜(구글) 로그인 API : 클라에서 받은 정보 body로 받고 회원 상태에 따라 메시지, jwt 반환, fcm 토큰 저장
      * [POST] /auth/google
      */
 
@@ -70,6 +70,24 @@ public class AuthController {
         try {
             GetAuthLoginRes getAuthLoginRes = authProvider.authLogIn();
             return new BaseResponse<>(getAuthLoginRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 디바이스 토큰 갱신 API
+     * [PATCH] /auth/token?userIdx=
+     */
+    @ResponseBody
+    @PatchMapping("/token")
+    public BaseResponse<String> updateToken(@RequestParam int userIdx, @RequestBody PatchTokenReq patchTokenReq) {
+        try {
+            PatchTokenReq tokenReq = new PatchTokenReq(patchTokenReq.getFcmToken());
+            authService.updateToken(tokenReq, userIdx);
+            String result = "디바이스 토큰이 갱신되었습니다.";
+
+            return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }

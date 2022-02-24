@@ -30,6 +30,7 @@ public class JwtService {
      */
     public String createJwt(int userIdx) {
         Date now = new Date();
+        System.out.println("jwt key :"+ JWT_SECRET_KEY);
         return Jwts.builder()
                 .setHeaderParam("type", "jwt")
                 .claim("userIdx", userIdx)

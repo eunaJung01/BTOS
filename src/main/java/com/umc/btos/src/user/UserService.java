@@ -19,14 +19,17 @@ public class UserService {
     private final UserDao userDao;
     private final UserProvider userProvider;
     private final JwtService jwtService;
+    private final UserFcmService fcmService;
 
     @Autowired
     public UserService(UserDao userDao,
                        UserProvider userProvider,
-                       JwtService jwtService) {
+                       JwtService jwtService,
+                       UserFcmService fcmService) {
         this.userDao = userDao;
         this.userProvider = userProvider;
         this.jwtService = jwtService;
+        this.fcmService = fcmService;
 
     }
 
@@ -48,10 +51,18 @@ public class UserService {
             throw new BaseException(PATCH_USERS_EXISTS_NICKNAME);
         }
 
+        // 회원 가입
         try{
             int userIdx = userDao.createUser(postUserReq);
-            return new PostUserRes(userIdx);
 
+            // 푸시 알림 전송
+            // 해당 유저의 fcmToken을 가져옴
+            String token = userDao.getToken(userIdx);
+            String title = "저편너머로부터 편지가 도착했습니다.";
+            String body = "당신께 전해주고 싶은 말이 있는 것 같네요.";
+            fcmService.sendMessageTo(token, title, body);
+
+            return new PostUserRes(userIdx);
         } catch (Exception ignored){
             throw new BaseException(DATABASE_ERROR);
         }
@@ -151,4 +162,8 @@ public class UserService {
         }
     }
 
+    /*// 디바이스 토큰 저장(POST)
+    public void saveToken(PostTokenReq postTokenReq){
+        userDao.saveToken(postTokenReq.getFcmToken());
+    }*/
 }

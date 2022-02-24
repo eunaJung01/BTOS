@@ -1,4 +1,4 @@
-package com.umc.btos.src.firebase;
+package com.umc.btos.src.plant;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,17 +18,15 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Service
-public class FirebaseCloudMessageService {
+public class PlantFcmService {
 
     // HTTP v1 Method
     private final String API_URL = "https://fcm.googleapis.com/v1/projects/btos-7c7ee/messages:send";
     private final ObjectMapper objectMapper;
     private final String IMAGE_URL = "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/f8e3655e-b372-4971-937f-89a5722483f6/app_icon.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220224%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220224T001544Z&X-Amz-Expires=86400&X-Amz-Signature=c3b7bb368be3c4d3c2b754a8dece7156a596a49a5ae9e425a6dfbe6eb63f3d33&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22app%2520icon.png%22&x-id=GetObject";
 
-    public FcmResponse sendMessageTo(FcmRequest fcmRequest) throws IOException {
-        String message = makeMessage(fcmRequest.getToken(),
-                fcmRequest.getTitle(),
-                fcmRequest.getBody());
+    public FcmResponse sendMessageTo(String targetToken, String title, String body) throws IOException {
+        String message = makeMessage(targetToken, title, body);
 
         OkHttpClient client = new OkHttpClient();
         RequestBody requestBody = RequestBody.create(message,
@@ -40,15 +38,16 @@ public class FirebaseCloudMessageService {
                 .addHeader(HttpHeaders.CONTENT_TYPE, "application/json; UTF-8")
                 .build();
 
+        /*
         Response response = client.newCall(request)
                 .execute();
 
-        /*System.out.println("code " + response.code() +
+        System.out.println("code " + response.code() +
                 "body : "+ response.body().string());*/
 
         return new FcmResponse(
-                fcmRequest.getTitle(),
-                fcmRequest.getBody(),
+                title,
+                body,
                 "LikeFirst_BTOS",
                 "LikeFirst_BTOS");
     }
@@ -56,16 +55,16 @@ public class FirebaseCloudMessageService {
     private String makeMessage(String targetToken, String title, String body) throws JsonProcessingException {
         FcmMessage fcmMessage = FcmMessage.builder()
                 .message(FcmMessage.Message.builder()
-                    .token(targetToken)
-                .notification(FcmMessage.Notification.builder()
-                    .title(title)
-                    .body(body)
-                    .image(IMAGE_URL)
-                    .build()
-                )
+                        .token(targetToken)
+                        .notification(FcmMessage.Notification.builder()
+                                .title(title)
+                                .body(body)
+                                .image(IMAGE_URL) // Android 1MB 이미지 제한 존재
+                                .build()
+                        )
                         .build()
                 )
-                .validate_only(false) // true면 fcm 요청만 테스트 / false 면 푸시 알림 보냄
+                .validate_only(false)
                 .build();
 
         return objectMapper.writeValueAsString(fcmMessage);
@@ -79,8 +78,8 @@ public class FirebaseCloudMessageService {
         scopeUrl.add("https://www.googleapis.com/auth/firebase.messaging");
 
         GoogleCredentials googleCredentials = GoogleCredentials.fromStream(
-                new ClassPathResource(firebaseConfigPath).getInputStream())
-                    .createScoped(scopeUrl);
+                        new ClassPathResource(firebaseConfigPath).getInputStream())
+                .createScoped(scopeUrl);
 
         googleCredentials.refreshIfExpired();
         return googleCredentials.getAccessToken().getTokenValue();

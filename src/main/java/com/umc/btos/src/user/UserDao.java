@@ -41,7 +41,7 @@ public class UserDao {
 
         this.jdbcTemplate.update(selectDefaultPlantQuery, userIdx); // 기본 식물 선택
 
-        // 최초 회원가입 시 시스템 메일 받음
+        // 최초 회원가입 시 시스템 메일 받음 + 푸시 알림
         String get_createdAt_query = "SELECT date_format(createdAt, '%Y.%m.%d') AS createdAt FROM User WHERE userIdx = ?";
         String createdAt = this.jdbcTemplate.queryForObject(get_createdAt_query, String.class, userIdx);
 
@@ -54,6 +54,12 @@ public class UserDao {
         this.jdbcTemplate.update(query, params);
 
         return userIdx; // 유저 식별자 반환
+    }
+
+    // 디바이스 토큰 반환
+    public String getToken(int userIdx){
+        String query = "SELECT fcmToken from User where userIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
     }
 
     // 이메일 확인
@@ -202,5 +208,6 @@ public class UserDao {
             this.jdbcTemplate.update(changeStatusQuery, userIdx);
 
     }
+
 
 }
