@@ -30,6 +30,7 @@ public class AuthService {
 
     }
 
+    // 소셜 로그인
     public AuthGoogleRes logInGoogle(AuthGoogleReq authGoogleReq) throws BaseException {
 
         // 신규일 경우 회원가입 msg
@@ -56,4 +57,15 @@ public class AuthService {
         }
     }
 
+    // 디바이스 토큰 갱신
+    public void updateToken(PatchTokenReq patchTokenReq, int userIdx) throws BaseException{
+        try {
+            int result = authDao.updateToken(patchTokenReq.getFcmToken(), userIdx);
+            if (result == 0) throw new BaseException(MODIFY_FAIL_FCM_TOKEN);
+        }
+        //
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
