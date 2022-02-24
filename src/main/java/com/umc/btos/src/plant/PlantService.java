@@ -24,14 +24,14 @@ public class PlantService {
     private final PlantDao plantDao;
     private final PlantProvider plantProvider;
     private final AlarmService alarmService;
-    // TODO : private final PlantFcmService plantFcmService;
+    private final PlantFcmService plantFcmService;
 
     @Autowired
-    public PlantService(PlantDao plantDao, PlantProvider plantProvider, AlarmService alarmService/*TODO, PlantFcmService plantFcmService*/) {
+    public PlantService(PlantDao plantDao, PlantProvider plantProvider, AlarmService alarmService, PlantFcmService plantFcmService) {
         this.plantDao = plantDao;
         this.plantProvider = plantProvider;
         this.alarmService = alarmService;
-        // TODO : this.plantFcmService = plantFcmService;
+        this.plantFcmService = plantFcmService;
     }
 
 
@@ -118,13 +118,15 @@ public class PlantService {
                 }
                 result.setLevelChanged(true); // 단계가 변경되었다는 정보를 response에 넣기
                 alarmService.postAlarm_plant("plus", userIdx, plantDao.getUPlantIdx(userIdx), plantLevel); // 알림 저장
-                // TODO : 알림 발송
-                // PlantFcmService 새로 만들어서 호출(import)
-                // plantFcmService.sendMessageTo();
-                // DB에 저장된 fcmToken 꺼내와서 매개 변수로 전달해야됨.
 
+                // 레벨업 시 알림 발송 - 유저가 푸시 알림 수신인 경우에만
+                if (plantDao.checkPushAlarm(userIdx) == 1) { // 푸시 알림 수신일 경우
+                    String title = "식물이 성장했습니다!";
+                    String body = "식물 " + plantLevel + "단계 달성!";
+
+                    plantFcmService.sendMessageTo(plantDao.getToken(userIdx), title, body);
+                }
             }
-
             if (plantDao.setScore(userIdx, plantScore) == 0) { // 변경된 점수 반영
                 throw new BaseException(MODIFY_FAIL_SCORE); // 화분 점수 변경에 실패하였습니다.
             }
