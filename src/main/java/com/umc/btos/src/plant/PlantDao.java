@@ -280,6 +280,17 @@ public class PlantDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
     }
 
+    // 푸시 알람 수신 여부 체크
+    public int checkPushAlarm(int userIdx) {
+        String query = "SELECT pushAlarm from User where userIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
+    }
+
+    // fcmToken 반환
+    public String getToken(int userIdx) {
+        String query = "SELECT fcmToken from User where userIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
+    }
     /*
     //화분 점수 더함 (Dao) : 증가, 감소에 쓰임
     //score = score + addScore : 기존 점수에 addScore(양수/음수) 더함
