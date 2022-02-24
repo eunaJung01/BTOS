@@ -74,6 +74,7 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_RECEIVE_OTHERS(false, 5014, "다른 사람의 편지 수신 변경에 실패하였습니다."),
     MODIFY_FAIL_RECEIVE_SIMILAR_AGE(false, 5015, "비슷한 연령대의 편지 수신 변경에 실패하였습니다."),
     CHANGE_FAIL_IS_SAD(false, 5016, "시무룩이 상태 변경에 실패하였습니다."),
+    MODIFY_FAIL_FCM_TOKEN(false, 5017, "디바이스 토큰 갱신에 실패하였습니다."),
 
     // 6000 : 레마
     TEMP2(false, 9000, "conflict 방지용 2"),
