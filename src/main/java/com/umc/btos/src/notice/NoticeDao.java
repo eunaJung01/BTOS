@@ -8,7 +8,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.List;
+
 
 @Repository
 public class NoticeDao {
@@ -40,6 +42,23 @@ public class NoticeDao {
 
         String get_noticeIdx_query = "SELECT last_insert_id()";
         return this.jdbcTemplate.queryForObject(get_noticeIdx_query, int.class);
+    }
+
+    // 푸시 알람을 보낼 유저에게만 푸시 알림
+    public ArrayList<String> pushNotices() {
+        // fcmToken List에서 함수 여러번 호출
+        // 리스트를 반환하고 알림은 서비스에서 호출
+        String query = "select fcmToken from User where pushAlarm = 1";
+        ArrayList<String> pushAlarmToUsers = new ArrayList<>(
+                this.jdbcTemplate.queryForList(query, String.class));
+
+        /*for (String token : pushAlarmToUsers) {
+            System.out.println("token : " + token);
+        }
+        if (pushAlarmToUsers.equals(null)) {
+            System.out.println("fcmToken is null");
+        }*/
+        return pushAlarmToUsers;
     }
 
 }
