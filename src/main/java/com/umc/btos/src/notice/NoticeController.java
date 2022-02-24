@@ -46,7 +46,7 @@ public class NoticeController {
 
     /*
      * 공지사항 저장 및 알림 발송
-     * [POST] / notices
+     * [POST] /notices
      */
     @ResponseBody
     @PostMapping("")
