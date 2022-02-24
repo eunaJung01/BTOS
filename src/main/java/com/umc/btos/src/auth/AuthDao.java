@@ -78,4 +78,11 @@ public class AuthDao {
         // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
     }
 
+    // 디바이스 토큰 갱신
+    public int updateToken(String fcmToken, int userIdx) {
+        String query = "update User set fcmToken = ? where userIdx = ?";
+        Object[] params = new Object[]{fcmToken, userIdx};
+        return this.jdbcTemplate.update(query, params);
+        // 대응시켜 매핑시켜 쿼리 요청(변경했으면 1, 실패했으면 0)
+    }
 }
