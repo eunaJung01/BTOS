@@ -58,8 +58,8 @@ public class UserService {
             // 푸시 알림 전송
             // 해당 유저의 fcmToken을 가져옴
             String token = userDao.getToken(userIdx);
-            String title = "저편너머로부터 편지가 도착했습니다.";
-            String body = "당신께 전해주고 싶은 말이 있는 것 같네요.";
+            String title = "환영합니다" + postUserReq.getNickName();
+            String body = "저편너머로부터 편지가 도착했어요.";
             fcmService.sendMessageTo(token, title, body);
 
             return new PostUserRes(userIdx);
@@ -162,8 +162,5 @@ public class UserService {
         }
     }
 
-    /*// 디바이스 토큰 저장(POST)
-    public void saveToken(PostTokenReq postTokenReq){
-        userDao.saveToken(postTokenReq.getFcmToken());
-    }*/
+
 }
