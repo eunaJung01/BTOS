@@ -48,7 +48,7 @@ public class NoticeDao {
     public ArrayList<String> pushNotices() {
         // fcmToken List에서 함수 여러번 호출
         // 리스트를 반환하고 알림은 서비스에서 호출
-        String query = "select fcmToken from User where pushAlarm = 1";
+        String query = "select fcmToken from User where pushAlarm = 1 AND NOT fcmToken IS NULL";
         ArrayList<String> pushAlarmToUsers = new ArrayList<>(
                 this.jdbcTemplate.queryForList(query, String.class));
 
