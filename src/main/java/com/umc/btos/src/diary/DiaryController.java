@@ -49,18 +49,18 @@ public class DiaryController {
      */
     @ResponseBody
     @PostMapping("")
-    public BaseResponse<PatchModifyScoreRes> saveDiary(@RequestBody PostDiaryReq postDiaryReq) {
+    public BaseResponse<PostDiaryRes> saveDiary(@RequestBody PostDiaryReq postDiaryReq) {
         try {
             // TODO : 형식적 validation - 회원 확인 (존재 유무, status)
             if (diaryProvider.checkUserIdx(postDiaryReq.getUserIdx()) == 0) {
                 throw new BaseException(INVALID_USERIDX); // 존재하지 않는 회원입니다.
             }
 
-            diaryService.saveDiary(postDiaryReq); // 일기 저장
+            PostDiaryRes postDiaryRes = diaryService.saveDiary(postDiaryReq); // 일기 저장
 
             // 당일에 작성한 일기만 화분 점수 증가
-            PatchModifyScoreRes plantResult = diaryService.modifyPlantScore(postDiaryReq.getUserIdx(), postDiaryReq.getDiaryDate());
-            return new BaseResponse<>(plantResult);
+            diaryService.modifyPlantScore(postDiaryReq.getUserIdx(), postDiaryReq.getDiaryDate());
+            return new BaseResponse<>(postDiaryRes);
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
