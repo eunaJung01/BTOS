@@ -64,7 +64,7 @@ public class DiaryService {
      * 일기 저장
      * [POST] /diaries
      */
-    public void saveDiary(PostDiaryReq postDiaryReq) throws BaseException {
+    public PostDiaryRes saveDiary(PostDiaryReq postDiaryReq) throws BaseException {
         // TODO : 의미적 validation - 일기는 하루에 하나만 작성 가능, 당일에 작성한 일기가 아니라면 발송 불가
         // 1. 일기는 하루에 하나씩만 작성 가능
         checkDiaryDate(postDiaryReq.getUserIdx(), postDiaryReq.getDiaryDate());
@@ -87,6 +87,8 @@ public class DiaryService {
             if (postDiaryReq.getDoneList() != null) {
                 diaryDao.saveDoneList(diaryIdx, postDiaryReq.getDoneList());
             }
+            
+            return new PostDiaryRes(diaryIdx);
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
