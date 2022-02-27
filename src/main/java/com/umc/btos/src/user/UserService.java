@@ -55,13 +55,6 @@ public class UserService {
         try{
             int userIdx = userDao.createUser(postUserReq);
 
-            // 푸시 알림 전송
-            // 해당 유저의 fcmToken을 가져옴
-            String token = userDao.getToken(userIdx);
-            String title = "환영합니다. " + postUserReq.getNickName() + "님";
-            String body = "저편너머로부터 편지가 도착했어요.";
-            fcmService.sendMessageTo(token, title, body);
-
             return new PostUserRes(userIdx);
         } catch (Exception ignored){
             System.out.println(ignored);
@@ -163,5 +156,17 @@ public class UserService {
         }
     }
 
-
+    // 푸시 알람 요청(POST)
+    public void pushAlarm(int userIdx) throws BaseException {
+        try {
+        // 푸시 알림 전송
+        // 해당 유저의 fcmToken을 가져옴
+            String token = userDao.getToken(userIdx);
+            String title = "환영합니다. " + userDao.getNickName(userIdx) + "님";
+            String body = "저편너머로부터 편지가 도착했어요.";
+            fcmService.sendMessageTo(token, title, body);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

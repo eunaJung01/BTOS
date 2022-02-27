@@ -62,6 +62,12 @@ public class UserDao {
         return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
     }
 
+    // 닉네임 반환
+    public String getNickName(int userIdx) {
+        String query = "SELECT nickName from User where userIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
+    }
+
     // 이메일 확인
     public int checkEmail(String email) {
         String checkEmailQuery = "select exists(select email from User where email = ? and status IN ('active', 'dormant'))"; // 이메일 중복되는 지 확인(탈퇴 후 재가입 고려하여 active인 유저 중에서만 고려)
@@ -79,8 +85,11 @@ public class UserDao {
         if (patchUserReq.getStatus().equals("active")) // 재 활성화의 경우
             changeStatusQuery = "update User set status = ?, recOthers = 1, recSimilarAge = 1 where userIdx = ?";
 
-        else if (patchUserReq.getStatus().equals("dormant") || patchUserReq.getStatus().equals("deleted")) // 휴면 or 탈퇴의 경우
+        else if (patchUserReq.getStatus().equals("dormant")) // 휴면 or 탈퇴의 경우
             changeStatusQuery = "update User set status = ?, recOthers = 0, recSimilarAge = 0 where userIdx = ?";
+        else if (patchUserReq.getStatus().equals("deleted"))
+            changeStatusQuery = "update User set status = ?, recOthers = 0, recSimilarAge = 0 where userIdx = ?";
+            this.jdbcTemplate.update("update UserPlantList set status = 'deleted' where userIdx = ?", patchUserReq.getUserIdx());
 
         return this.jdbcTemplate.update(changeStatusQuery, changeStatusParams);
         // 대응시켜 매핑시켜 쿼리 요청(생성했으면 1, 실패했으면 0)
