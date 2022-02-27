@@ -62,6 +62,12 @@ public class UserDao {
         return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
     }
 
+    // 닉네임 반환
+    public String getNickName(int userIdx) {
+        String query = "SELECT nickName from User where userIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
+    }
+
     // 이메일 확인
     public int checkEmail(String email) {
         String checkEmailQuery = "select exists(select email from User where email = ? and status IN ('active', 'dormant'))"; // 이메일 중복되는 지 확인(탈퇴 후 재가입 고려하여 active인 유저 중에서만 고려)
