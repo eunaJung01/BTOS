@@ -368,5 +368,20 @@ public class UserController {
         }
     }
 
+    /**
+     * 푸시 알람 요청 API
+     * [POST] /users/:userIdx/fcm
+     */
+    @ResponseBody
+    @PostMapping("/{userIdx}/fcm")
+    public BaseResponse<String> fcm(@PathVariable("userIdx") int userIdx) throws BaseException {
+        try {
+            userService.pushAlarm(userIdx);
+            String result = "푸시 알림 요청에 성공했습니다.";
 
+            return new BaseResponse<>(result);
+        } catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }
