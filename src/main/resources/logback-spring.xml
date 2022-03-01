@@ -45,7 +45,7 @@
         <appender-ref ref="STDOUT"/>
     </root>
 
-    <logger name="com.umc.lemma" level="WARN">
+    <logger name="com.umc.btos" level="WARN">
         <appender-ref ref="APP_FILE"/>
         <appender-ref ref="ERROR_FILE"/>
     </logger>
