@@ -123,6 +123,7 @@ public class MailboxDao {
                 "       Diary.emotionIdx, " +
                 "       Diary.diaryDate AS sendAt, " +
 //                "       date_format(DiarySendList.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       User.userIdx                                     AS senderIdx, " +
                 "       User.nickName                                    AS senderNickName, " +
                 "       User.fontIdx                                     AS senderFontIdx " +
                 "FROM DiarySendList " +
@@ -140,6 +141,7 @@ public class MailboxDao {
                         rs.getInt("emotionIdx"),
 //                        rs.getString("diaryDate"),
                         rs.getString("sendAt"),
+                        rs.getInt("senderIdx"),
                         rs.getString("senderNickName"),
                         rs.getInt("senderFontIdx")
                 ), receiverIdx, diaryIdx);
@@ -162,6 +164,7 @@ public class MailboxDao {
         String query = "SELECT Letter.letterIdx, " +
                 "       Letter.content, " +
                 "       date_format(LetterSendList.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       User.userIdx                                      AS senderIdx, " +
                 "       User.nickName                                     AS senderNickName, " +
                 "       User.fontIdx                                      AS senderFontIdx " +
                 "FROM LetterSendList " +
@@ -177,6 +180,7 @@ public class MailboxDao {
                         letterIdx,
                         rs.getString("content"),
                         rs.getString("sendAt"),
+                        rs.getInt("senderIdx"),
                         rs.getString("senderNickName"),
                         rs.getInt("senderFontIdx")
                 ), receiverIdx, letterIdx);
@@ -188,6 +192,7 @@ public class MailboxDao {
                 "       Reply.replyIdx, " +
                 "       Reply.content, " +
                 "       date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       User.userIdx                             AS senderIdx, " +
                 "       User.nickName                            AS senderNickName, " +
                 "       User.fontIdx                             AS senderFontIdx " +
                 "FROM Reply " +
@@ -202,6 +207,7 @@ public class MailboxDao {
                         replyIdx,
                         rs.getString("content"),
                         rs.getString("sendAt"),
+                        rs.getInt("senderIdx"),
                         rs.getString("senderNickName"),
                         rs.getInt("senderFontIdx")
                 ), receiverIdx, replyIdx);
