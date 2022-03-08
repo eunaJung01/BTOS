@@ -38,12 +38,12 @@ public class NoticeService {
 
             // 알림 저장
             alarmService.postAlarm_notice(noticeIdx, postNoticeReq.getTitle());
-
+            
             // 푸시 알림 수신 동의한 유저들에게 푸시 알림 발송
             // 푸시 알림 수신한 유저의 인덱스와 디바이스 토큰 리스트 형태로 반환 후 반복문으로 알림 요청
             ArrayList<String> pushAlarmToUsers =
                     noticeDao.pushNotices();
-
+            
             // 푸시 알림 전송
             for (String token : pushAlarmToUsers) {
                 fcmService.sendMessageTo(token, postNoticeReq.getTitle(), postNoticeReq.getContent());
