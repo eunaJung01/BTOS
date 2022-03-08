@@ -57,6 +57,7 @@ public class UserService {
 
             return new PostUserRes(userIdx);
         } catch (Exception ignored){
+            System.out.println(ignored);
             throw new BaseException(DATABASE_ERROR);
         }
     }
