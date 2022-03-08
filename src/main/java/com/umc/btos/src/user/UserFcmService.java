@@ -6,10 +6,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.umc.btos.src.firebase.model.FcmMessage;
 import com.umc.btos.src.firebase.model.FcmResponse;
 import lombok.RequiredArgsConstructor;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
+import okhttp3.*;
 import org.apache.http.HttpHeaders;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -42,10 +39,9 @@ public class UserFcmService {
                 .addHeader(HttpHeaders.CONTENT_TYPE, "application/json; UTF-8")
                 .build();
 
-        /*
         Response response = client.newCall(request)
                 .execute();
-
+        /*
         System.out.println("code " + response.code() +
                 "body : "+ response.body().string());*/
 
