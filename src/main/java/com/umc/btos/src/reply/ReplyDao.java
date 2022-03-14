@@ -33,7 +33,7 @@ public class ReplyDao {
 
     // 해당 회원이 작성한 답장인지 확인
     public int checkUserAboutReply(int userIdx, int replyIdx) {
-        String query = "SELECT EXISTS (SELECT replyIdx FROM Reply WHERE userIdx = ? AND replyIdx = ? AND status = 'active')";
+        String query = "SELECT EXISTS (SELECT replyIdx FROM Reply WHERE replierIdx = ? AND replyIdx = ? AND status = 'active')";
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, replyIdx);
     }
 
