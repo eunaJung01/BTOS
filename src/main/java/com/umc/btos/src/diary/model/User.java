@@ -9,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class User {
     private int userIdx; // 회원 식별자
-    private int userIdx_recentReceived; // 가장 최근에 수신한 편지의 발신인 userIdx
+    private int userIdx_recentReceived; // 가장 최근에 수신한 일기의 발신인 userIdx
 
     public User(int userIdx) {
         this.userIdx = userIdx;

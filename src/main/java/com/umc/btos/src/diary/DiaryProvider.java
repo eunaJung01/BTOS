@@ -130,15 +130,15 @@ public class DiaryProvider {
 
     // ================================================== 일기 발송 ===================================================
 
-    // Diary - Send Algorithm
+    // TODO: Diary - Send Algorithm
     @Scheduled(cron = "55 59 18 * * *") // 매일 18:59:55에 DiarySendList 생성
-//     @Scheduled(cron = "00 51 13 * * *") // test
+//    @Scheduled(cron = "15 37 17 * * *") // test
     public void sendDiary() throws BaseException {
-
         String yesterday = LocalDate.now().minusDays(1).toString().replaceAll("-", "."); // 어제 날짜 (yyyy.MM.dd)
-//        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(yesterday); // 당일 발송해야 하는 모든 diaryIdx
-        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022.03.17"); // test
-        System.out.println(diaryIdxList);
+        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(yesterday); // 당일 발송해야 하는 모든 diaryIdx
+//        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022.03.17"); // test
+//        System.out.println("diaryIdxList = " + diaryIdxList);
+//        System.out.println();
 
         /*
          * 당일 발송 가능한 회원(User.recOthers = 1) 당 일기 하나씩 발송
@@ -185,10 +185,15 @@ public class DiaryProvider {
         }
 
         List<User> userList_total = diaryDao.getUserList_total(); // 일기 발송 가능한 회원들의 목록 (userIdx)
+//        for (User user : userList_total) {
+//            System.out.println("userIdx = " + user.getUserIdx());
+//        }
+//        System.out.println();
+
         // set userIdx_recentReceived
         for (User user : userList_total) {
             int userIdx = user.getUserIdx();
-            user.setUserIdx_recentReceived(diaryDao.getUserIdx_recentReceived(userIdx));
+            user.setUserIdx_recentReceived(diaryDao.getUserIdx_recentReceived(userIdx)); // 가장 최근에 수신한 일기의 발신인 userIdx 저장 (수신한 일기가 없다면 0)
         }
 
         int totalUserNum = userList_total.size(); // 일기를 발송받을 총 회원 수
@@ -202,6 +207,8 @@ public class DiaryProvider {
         // 일기마다 보내져야 하는 횟수 (sendNum ~ sendNum+1)
         int sendNum = totalUserNum / diaryIdxList.size(); // 총 회원 수 / 총 일기 개수
         // sendNum == 일기마다 발송되어야 하는 최소 횟수
+//        System.out.println("sendNum = " + sendNum);
+//        System.out.println();
 
         // ------------------------------- 2. 당일 발송해야 할 일기의 개수가 1개인 경우 -------------------------------
 
@@ -219,9 +226,9 @@ public class DiaryProvider {
 
         // ---------------------------- 3. 당일 발송해야 할 일기의 개수가 2개 이상인 경우 -----------------------------
 
-        // TODO : (1) 비슷한 나이대 발송
-
         else {
+            // TODO : (1) 비슷한 나이대 발송
+
             // 2차원 가변 배열
             // [diaryIdxList 인덱스 값][해당 일기 발신인과 비슷한 나이대를 갖는 userIdx]
             List<List<Integer>> userIdxList_similarAge = new ArrayList<>();
@@ -231,9 +238,12 @@ public class DiaryProvider {
                 userIdxList_similarAge.add(new ArrayList<>());
 
                 int senderUserIdx = diaryDao.getSenderUserIdx(diaryIdx); // 발신인 userIdx
+//                System.out.println("senderUserIdx = "+ senderUserIdx);
                 int senderBirth = diaryDao.getSenderBirth(diaryIdx); // 발신인 생년
+//                System.out.println("senderBirth = "+ senderBirth);
+//                System.out.println();
 
-                // 발송 가능한(User.recOthers = 1) & 비슷한 나이대를 갖는(senderBirth -5 ~ +5) 모든 userIdx
+                // 발송 가능한(User.recOthers = 1) & 비슷한 나이대를 갖는(senderBirth -5 ~ +5) & 일기를 같은 사람한테서 연속으로 2번 받지 않는 모든 userIdx
                 userIdxList_similarAge.get(i).addAll(diaryDao.getUserIdxList_similarAge(senderUserIdx, senderBirth)); // 발신인 본인 제외
                 i++;
             }
@@ -244,6 +254,7 @@ public class DiaryProvider {
             // 일기마다 비슷한 나이대로 발송할 최소 횟수 = 비슷한 나이대 수신에 동의한 회원 집단 중 실제로 비슷한 나이대로 발송할 최소 회원 수 / 당일 발송해야 하는 일기 개수
             // Constant.DIARY_REC_SIMILAR_AGE_RATIO = 80
             int sendNum_similarAge = userIdxNum_similarAge * Constant.DIARY_REC_SIMILAR_AGE_RATIO / 100 / diaryIdxList.size(); // 일기마다 비슷한 나이대로 발송할 최소 횟수
+//            System.out.println("sendNum_similarAge = " + sendNum_similarAge);
 
             int j = 0;
             for (int diaryIdx : diaryIdxList) { // 당일 발송해야 하는 일기 개수만큼
@@ -261,7 +272,7 @@ public class DiaryProvider {
                     int idx = (int) (Math.random() * userIdxList_similarAge_updated.size()); // 후보 회원 리스트의 인덱스 값을 랜덤으로 반환 (0 ~ 리스트 마지막 인덱스 값)
                     int receiverIdx = userIdxList_similarAge_updated.get(idx); // 수신인 userIdx
 
-                    diaryDao.setDiarySendList(diaryIdx, receiverIdx); // 일기 저장
+                    diaryDao.setDiarySendList(diaryIdx, receiverIdx); // 일기 발송
                     userIdx_sendMap.put(receiverIdx, true); // Map.value = false -> true (해당 회원에게 일기가 발송됨을 체크)
 
                     for (int l = 0; l < userIdxList_similarAge_updated.size(); l++) { // 후보 회원 리스트 갱신
@@ -376,7 +387,7 @@ public class DiaryProvider {
         int senderUserIdx = diaryDao.getSenderUserIdx(diaryIdx); // 발신인 userIdx
 
         if (userIdx != senderUserIdx) {
-            diaryDao.setDiarySendList(diaryIdx, userIdx); // 일기 저장 (발송으로 변경)
+            diaryDao.setDiarySendList(diaryIdx, userIdx); // 일기 발송
             userIdx_sendMap.put(userIdx, true); // 일기 발송 유무 변경 : Map.value = false -> true
 
             int sendNum_diary = diaryIdx_sendNumMap.get(diaryIdx); // 기존 일기 발송 횟수
