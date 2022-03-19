@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -115,6 +116,15 @@ public class LetterDao {
     public String getFcmToken(int userIdx) {
         String query = "SELECT fcmToken FROM User WHERE userIdx = ?";
         return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
+    }
+
+    // 편지를 받을 유저들 중 푸시 알람 수신하는 유저 리스트 반환
+    public ArrayList<Integer> pushUserList(List<Integer> receiverIdxList) {
+        String query = "SELECT userIdx FROM User WHERE userIdx = ? AND pushAlarm = 1";
+        ArrayList<Integer> pushUsers = new ArrayList<>();
+        for (int idx : receiverIdxList)
+            pushUsers.add(jdbcTemplate.queryForObject(query, int.class, idx));
+        return pushUsers;
     }
 
     // ================================================== 편지 삭제 ===================================================
