@@ -44,4 +44,11 @@ public class Constant {
             "\n" +
             "- 저편너머에서 온 편지 -\n";
 
+    // 알림 title
+    public static final String LETTER_TITLE = "편지 도착!";
+    public static final String LETTER_BODY = "님의 편지가 도착했습니다.";
+
+    public static final String REPLY_TITLE = "답장 도착!";
+    public static final String REPLY_BODY = "님의 답장이 도착했습니다.";
+
 }
