@@ -72,7 +72,7 @@ public class ReplyDao {
 
     // 답장 발신인이 푸시 알림을 수신 허용인지 확인
     public int checkPushAlarm(int receiverIdx) {
-        String query = "SELECT exists(SELECT receiverIdx FROM User WHERE userIdx = ?";
+        String query = "SELECT exists(SELECT userIdx FROM User WHERE userIdx = ?)";
         return this.jdbcTemplate.queryForObject(query, int.class, receiverIdx);
     }
 
