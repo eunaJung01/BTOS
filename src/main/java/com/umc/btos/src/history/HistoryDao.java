@@ -77,6 +77,7 @@ public class HistoryDao {
                 "INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.receiverIdx = ? " +
                 "AND Reply.status = 'active' " +
+//                "AND User.status != 'system' " +
                 "ORDER BY sendAt DESC " + // createAt 기준 내림차순 정렬
                 ") senderNickName";
 
@@ -88,12 +89,13 @@ public class HistoryDao {
     // 일기 null 확인 : filtering == sender
     public int hasHistory_diary(int userIdx, String senderNickName) {
         String query = "SELECT EXISTS(SELECT * " +
-                "FROM DiarySendList " +
-                "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
-                "INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                "WHERE DiarySendList.receiverIdx = ? " +
-                "AND User.nickName = ? " +
-                "AND Diary.isSend = 1 AND DiarySendList.status = 'active')";
+                "              FROM DiarySendList " +
+                "                       INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                "                       INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                "              WHERE DiarySendList.receiverIdx = ? " +
+                "                AND User.nickName = ? " +
+                "                AND Diary.isSend = 1 " +
+                "                AND DiarySendList.status = 'active')";
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, senderNickName);
     }
@@ -215,7 +217,6 @@ public class HistoryDao {
                         "FROM DiarySendList " +
                         "         INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                         "         INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                        "         INNER JOIN Done ON Diary.diaryIdx = Done.diaryIdx " +
                         "WHERE DiarySendList.receiverIdx = ? " +
                         "  AND User.nickName = ? " +
                         "  AND Diary.isSend = 1 " +
@@ -224,7 +225,7 @@ public class HistoryDao {
                         "LIMIT 1";
 
         String senderStatus = this.jdbcTemplate.queryForObject(query, String.class, receiverIdx, senderNickName);
-        return senderStatus.compareTo("deleted") != 0; // User.status = delete -> false
+        return senderStatus.compareTo("deleted") != 0; // User.status = deleted -> false
     }
 
     public boolean getSenderActive_letter(int letterIdx) {
@@ -238,7 +239,7 @@ public class HistoryDao {
                         "GROUP BY User.status";
 
         String senderStatus = this.jdbcTemplate.queryForObject(query, String.class, letterIdx);
-        return senderStatus.compareTo("deleted") != 0; // User.status = delete -> false
+        return senderStatus.compareTo("deleted") != 0; // User.status = deleted -> false
     }
 
     public boolean getSenderActive_letter(int receiverIdx, String senderNickName) {
@@ -254,7 +255,7 @@ public class HistoryDao {
                         "LIMIT 1";
 
         String senderStatus = this.jdbcTemplate.queryForObject(query, String.class, receiverIdx, senderNickName);
-        return senderStatus.compareTo("deleted") != 0; // User.status = delete -> false
+        return senderStatus.compareTo("deleted") != 0; // User.status = deleted -> false
     }
 
     public boolean getSenderActive_reply(int replyIdx) {
