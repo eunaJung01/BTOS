@@ -23,14 +23,16 @@ public class DiaryProvider {
 
     private final DiaryDao diaryDao;
     private final AlarmService alarmService;
+    private final DiaryFcmService diaryFcmService;
 
     @Value("${secret.private-diary-key}")
     String PRIVATE_DIARY_KEY;
 
     @Autowired
-    public DiaryProvider(DiaryDao diaryDao, AlarmService alarmService) {
+    public DiaryProvider(DiaryDao diaryDao, AlarmService alarmService, DiaryFcmService diaryFcmService) {
         this.diaryDao = diaryDao;
         this.alarmService = alarmService;
+        this.diaryFcmService = diaryFcmService;
     }
 
     // ================================================== validation ==================================================
@@ -133,7 +135,7 @@ public class DiaryProvider {
 
     // TODO: Diary - Send Algorithm
     @Scheduled(cron = "55 59 18 * * *") // 매일 18:59:55에 DiarySendList 생성
-//    @Scheduled(cron = "30 51 17 * * *") // test
+//    @Scheduled(cron = "15 41 19 * * *") // test
     public void sendDiary() throws BaseException {
         String yesterday = LocalDate.now().minusDays(1).toString().replaceAll("-", "."); // 어제 날짜 (yyyy.MM.dd)
         List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(yesterday); // 당일 발송해야 하는 모든 diaryIdx
@@ -371,12 +373,45 @@ public class DiaryProvider {
         }
         alarmService.postAlarm_diary(diarySendList); // 알림 저장
 
-        /*
-         * TODO : 매일 19:00:00에 당일 발송되는 일기의 Diary.isSend = 1로 변경
-         * diaryDao.modifyIsSend();
-         */
-
     }
+
+    // TODO : 매일 19:00:00에 당일 발송되는 일기의 Diary.isSend = 1로 변경 & 푸시 알림 발송
+    @Scheduled(cron = "00 00 19 * * *")
+//    @Scheduled(cron = "50 56 21 * * *") // test
+    private void sendPushAlarm_diary() throws BaseException {
+        try {
+            // 당일 발송되는 일기의 Diary.isSend = 1로 변경
+            diaryDao.modifyIsSend();
+
+            // 푸시 알림 발송
+            // 일기에 따른 발송 리스트 조회
+            String yesterday = LocalDate.now().minusDays(1).toString().replaceAll("-", "."); // 어제 날짜 (yyyy.MM.dd)
+            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(yesterday); // 당일 발송된 모든 diaryIdx
+
+            List<GetSendListRes> diarySendList = new ArrayList<>();
+            for (int diaryIdx : diaryIdxList) {
+                String senderNickName = diaryDao.getSenderNickName(diaryIdx); // 발신인 nickName
+                GetSendListRes diary = new GetSendListRes(diaryIdx, senderNickName);
+                diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, yesterday));
+                diarySendList.add(diary);
+            }
+
+            // title : 일기 도착!
+            // body : nickName님의 일기가 도착했습니다.
+            for (GetSendListRes diary : diarySendList) {
+                for (int i = 0; i < diary.getReceiverIdxList().size(); i++) {
+                    diaryFcmService.sendMessageTo(
+                            diaryDao.getFcmToken(diary.getReceiverIdxList().get(i)),
+                            Constant.DIARY_TITLE,
+                            diary.getSenderNickName() + Constant.DIARY_BODY);
+                }
+            }
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 
     // 일기 발송 (비슷한 나이대 발송 후 일반 발송 처리)
     private boolean sendDiary_general(Map<Integer, Integer> diaryIdx_sendNumMap, Map<Integer, Boolean> userIdx_sendMap, int userIdx, List<Integer> diaryIdxList_updated) {
