@@ -4,6 +4,7 @@ import com.umc.btos.config.Constant;
 import com.umc.btos.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +12,7 @@ import javax.sql.DataSource;
 import java.util.*;
 
 @Repository
-
+@EnableScheduling
 public class UserDao {
 
     private JdbcTemplate jdbcTemplate;
@@ -204,15 +205,16 @@ public class UserDao {
     }
 
     // 정해진 시간마다 마지막 로그인 기록과 현재 시간과의 차이 계산
-    @Scheduled(cron = "0 0 0 * * *") // 매일 자정에 미접속 기간 체크 하도록 주기 설정
+    @Scheduled(cron = "0 0 0 * * *") // 매일 자정에 미접속 기간 체크 하도록 주기 설정 0 0 0 * * *
     public void checkLastConnect() {
         // 마지막 로그인 시간과 현재 시간이 5일 이상 차이 나는 userIdx 추출
         String checkLastConnectQuery = "select userIdx from User where TIMESTAMPDIFF(day, lastConnect, CURRENT_TIMESTAMP) >= 5";
         // 휴면으로 바꿔야할 userIdx 배열에 저장
         ArrayList<Integer> needToDormantUsers = new ArrayList<>(this.jdbcTemplate.queryForList(checkLastConnectQuery, int.class)); // 쿼리 결과를 배열에 저장하도록함
-
+        System.out.println(needToDormantUsers); // 로그
+        
         // 휴면 처리 -> 수신 차단까지
-        String changeStatusQuery = "update User set status = 'dormant', recOthers = 0, recSimilarAge = 0 where userIdx = ?";
+        String changeStatusQuery = "update User set status = 'dormant', recOthers = 0, recSimilarAge = 0 where userIdx = ? and status = 'active'";
         for (int userIdx : needToDormantUsers)
             this.jdbcTemplate.update(changeStatusQuery, userIdx);
 

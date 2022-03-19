@@ -20,11 +20,13 @@ public class LetterService {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final LetterDao letterDao;
     private final AlarmService alarmService;
+    private final LetterFcmService letterFcmService;
 
     @Autowired
-    public LetterService(LetterDao letterDao, AlarmService alarmService) {
+    public LetterService(LetterDao letterDao, AlarmService alarmService, LetterFcmService letterFcmService) {
         this.letterDao = letterDao;
         this.alarmService = alarmService;
+        this.letterFcmService = letterFcmService;
     }
 
     // ================================================================================================================
@@ -188,6 +190,20 @@ public class LetterService {
 
             // 알림 저장
             alarmService.postAlarm_letter(letterIdx, senderNickName, receiverIdxList);
+
+            // 푸시 알림 수신할 유저 리스트 가져오기
+            ArrayList<Integer> pushUsers = letterDao.pushUserList(receiverIdxList);
+
+            // 푸시 알림 발송 - 알림 수신한 유저에게만 발송
+            // fcmToken : receiverIdx에 해당하는 fcmToken
+            // title : 편지 도착!
+            // body : nickName님의 편지가 도착했습니다.
+            for (int i = 0; i < pushUsers.size(); i++) {
+                letterFcmService.sendMessageTo(
+                        letterDao.getFcmToken(pushUsers.get(i)),
+                        Constant.LETTER_TITLE,
+                        senderNickName + Constant.LETTER_BODY);
+            }
 
 //            return new PostLetterRes(letterIdx, senderNickName, receiverList);
             return letterIdx;

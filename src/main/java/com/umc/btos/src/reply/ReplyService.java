@@ -2,6 +2,7 @@ package com.umc.btos.src.reply;
 
 import com.umc.btos.config.BaseException;
 
+import com.umc.btos.config.Constant;
 import com.umc.btos.src.alarm.AlarmService;
 import com.umc.btos.src.reply.model.*;
 import org.slf4j.Logger;
@@ -17,11 +18,13 @@ public class ReplyService {
 
     private final ReplyDao replyDao;
     private final AlarmService alarmService;
+    private final ReplyFcmService replyFcmService;
 
     @Autowired
-    public ReplyService(ReplyDao replyDao, AlarmService alarmService) {
+    public ReplyService(ReplyDao replyDao, AlarmService alarmService, ReplyFcmService replyFcmService) {
         this.replyDao = replyDao;
         this.alarmService = alarmService;
+        this.replyFcmService = replyFcmService;
     }
 
     // ================================================================================================================
@@ -41,6 +44,13 @@ public class ReplyService {
 
             // 알림 저장
             alarmService.postAlarm_reply(replyIdx, senderNickName, receiverIdx);
+
+            // 푸시 알림 발송 - 알림 수신 허용일 경우에만
+            if (replyDao.checkPushAlarm(receiverIdx) == 1) {
+                replyFcmService.sendMessageTo(replyDao.getFcmToken(receiverIdx),
+                        Constant.REPLY_TITLE,
+                        senderNickName + Constant.REPLY_BODY);
+            }
 
             return replyIdx;
 

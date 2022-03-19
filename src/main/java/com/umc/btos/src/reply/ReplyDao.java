@@ -70,7 +70,13 @@ public class ReplyDao {
         return this.jdbcTemplate.update(query, replyIdx);
     }
 
-    // =============================================== 우편 조회 - 답장 ===============================================
+    // 답장 발신인이 푸시 알림을 수신 허용인지 확인
+    public int checkPushAlarm(int receiverIdx) {
+        String query = "SELECT exists(SELECT receiverIdx FROM User WHERE userIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, int.class, receiverIdx);
+    }
+
+   // =============================================== 우편 조회 - 답장 ===============================================
 
     // 답장 조회
 //    public GetReplyRes getReply(int replyIdx) {
