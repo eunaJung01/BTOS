@@ -105,6 +105,7 @@ public class HistoryProvider {
 
                     // userIdx 회원이 받은 일기, 편지, 답장의 발신인 닉네임 목록 (createdAt 기준 내림차순 정렬)
                     List<String> senderNickNameList = historyDao.getNickNameList_sortedByCreatedAt(userIdx);
+//                    System.out.println(senderNickNameList);
 
                     dataNum_total = senderNickNameList.size(); // 총 데이터 개수
                     if (dataNum_total == 0) {
@@ -398,6 +399,7 @@ public class HistoryProvider {
         } catch (NullPointerException exception) {
             throw new BaseException(EMPTY_RESULT); // 검색 결과 없음
         } catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -405,6 +407,7 @@ public class HistoryProvider {
     // filtering = sender
     private void setHistoryListRes_list(int userIdx, List<History_Sender> historyListRes_list, List<String> senderNickNameList) {
         for (String senderNickName : senderNickNameList) {
+//            System.out.println(senderNickName);
             List<History> historyList = new ArrayList<>(); // HistoryList_Sender.firstContent
 
             // diary

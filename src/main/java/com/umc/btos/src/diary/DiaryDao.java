@@ -174,10 +174,10 @@ public class DiaryDao {
     }
 
     // 수신 동의한 모든 userIdx 반환 (User.recOthers = 1)
-    public List<Integer> getUserIdxList_total() {
-        String query = "SELECT userIdx FROM User WHERE recOthers = 1 AND status = 'active'";
-        return this.jdbcTemplate.queryForList(query, int.class);
-    }
+//    public List<Integer> getUserIdxList_total() {
+//        String query = "SELECT userIdx FROM User WHERE recOthers = 1 AND status = 'active'";
+//        return this.jdbcTemplate.queryForList(query, int.class);
+//    }
 
     // 일기 발송 가능한 회원 목록 반환 (User.recOthers = 1)
     public List<User> getUserList_total() {
@@ -191,15 +191,26 @@ public class DiaryDao {
 
     // 회원마다 가장 최근에 받은 일기의 발신인(userIdx) 반환
     public int getUserIdx_recentReceived(int userIdx) {
-        String query = "SELECT userIdx " +
+        String checkQuery = "SELECT COUNT(userIdx)" +
                 "FROM DiarySendList " +
                 "         INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "WHERE receiverIdx = ? " +
-                "  AND DiarySendList.status = 'active' " +
-                "ORDER BY DiarySendList.createdAt DESC " + // createdAt 기준 내림차순 정렬
-                "LIMIT 1"; // 상위 첫번째 값
+                "  AND DiarySendList.status = 'active'";
 
-        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
+        if (this.jdbcTemplate.queryForObject(checkQuery, int.class, userIdx) == 0) { // 수신한 일기가 없는 경우
+            return 0;
+
+        } else {
+            String query = "SELECT userIdx " +
+                    "FROM DiarySendList " +
+                    "         INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                    "WHERE receiverIdx = ? " +
+                    "  AND DiarySendList.status = 'active' " +
+                    "ORDER BY DiarySendList.createdAt DESC " + // createdAt 기준 내림차순 정렬
+                    "LIMIT 1"; // 상위 첫번째 값
+
+            return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
+        }
     }
 
     // 비슷한 나이대 수신 동의한 회원 수 반환 (recSimilarAge = 1)
@@ -211,7 +222,6 @@ public class DiaryDao {
     // 발신인 userIdx 반환
     public int getSenderUserIdx(int diaryIdx) {
         String query = "SELECT Diary.userIdx FROM Diary WHERE diaryIdx = ?";
-
         return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
     }
 
@@ -233,25 +243,33 @@ public class DiaryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
     }
 
-    // 발송 가능한 & 비슷한 나이대를 갖는(senderBirth -5 ~ +5) 모든 userIdx 반환
+    // 발송 가능한 & 비슷한 나이대를 갖는(senderBirth -5 ~ +5) & 일기를 같은 사람한테서 연속으로 2번 받지 않는 모든 userIdx 반환
     public List<Integer> getUserIdxList_similarAge(int userIdx, int senderBirth) {
-        String query = "SELECT userIdx FROM User " +
-                "WHERE userIdx != ? " + // 발신인 userIdx 제외
-                "AND recOthers = 1 AND recSimilarAge = 1 " +
-                "AND (birth >= ? OR birth <= ?)" +
-                "AND status = 'active'";
+        String query = "SELECT userIdx " +
+                "FROM User " +
+                "WHERE userIdx != ? " +
+                "  AND userIdx != ALL (SELECT receiverIdx " + // 일기 작성자가 전에 작성한 일기를 가장 최근으로 발송받은 사람들은 제외
+                "                      FROM DiarySendList " +
+                "                               INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                "                      WHERE DiarySendList.diaryIdx = " +
+                "                            (SELECT Diary.diaryIdx " +
+                "                             FROM Diary " +
+                "                             WHERE Diary.userIdx = ? " +
+                "                             ORDER BY Diary.createdAt DESC " +
+                "                             LIMIT 1) " +
+                "                      ORDER BY Diary.createdAt DESC) " +
+                "  AND recOthers = 1 " +
+                "  AND recSimilarAge = 1 " +
+                "  AND (birth >= ? OR birth <= ?) " +
+                "  AND status = 'active'";
 
-        return this.jdbcTemplate.queryForList(query, int.class, userIdx, senderBirth - Constant.SIMILAR_AGE_STANDARD, senderBirth + Constant.SIMILAR_AGE_STANDARD);
+        return this.jdbcTemplate.queryForList(query, int.class, userIdx, userIdx, senderBirth - Constant.SIMILAR_AGE_STANDARD, senderBirth + Constant.SIMILAR_AGE_STANDARD);
     }
 
     // 일기 발송 (INSERT DiarySendList)
     public void setDiarySendList(int diaryIdx, int receiverIdx) {
         String query = "INSERT INTO DiarySendList(diaryIdx, receiverIdx) VALUES(?,?)";
-
-        Object[] diarySendList = new Object[]{
-                diaryIdx, receiverIdx
-        };
-        this.jdbcTemplate.update(query, diarySendList);
+        this.jdbcTemplate.update(query, diaryIdx, receiverIdx);
     }
 
     // 일기 발송 리스트 반환
