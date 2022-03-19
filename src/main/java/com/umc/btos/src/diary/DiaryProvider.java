@@ -3,11 +3,11 @@ package com.umc.btos.src.diary;
 import com.umc.btos.config.*;
 import com.umc.btos.src.alarm.AlarmService;
 import com.umc.btos.src.diary.model.*;
-import com.umc.btos.utils.AES128;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +17,7 @@ import java.util.*;
 import static com.umc.btos.config.BaseResponseStatus.*;
 
 @Service
+@EnableScheduling
 public class DiaryProvider {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -132,7 +133,7 @@ public class DiaryProvider {
 
     // TODO: Diary - Send Algorithm
     @Scheduled(cron = "55 59 18 * * *") // 매일 18:59:55에 DiarySendList 생성
-//    @Scheduled(cron = "15 37 17 * * *") // test
+//    @Scheduled(cron = "30 51 17 * * *") // test
     public void sendDiary() throws BaseException {
         String yesterday = LocalDate.now().minusDays(1).toString().replaceAll("-", "."); // 어제 날짜 (yyyy.MM.dd)
         List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(yesterday); // 당일 발송해야 하는 모든 diaryIdx
