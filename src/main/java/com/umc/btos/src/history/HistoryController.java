@@ -35,7 +35,7 @@ public class HistoryController {
      */
     @ResponseBody
     @GetMapping("/list/{userIdx}/{pageNum}")
-    BaseResponsePaging<GetHistoryListRes> getHistoryList(@PathVariable("userIdx") String userIdx, @PathVariable("pageNum") int pageNum, @RequestParam(value = "filtering", defaultValue = "sender") String filtering, @RequestParam(value = "search", required = false) String search) {
+    BaseResponsePaging<GetHistoryListRes> getHistoryList(@PathVariable("userIdx") String userIdx, @PathVariable("pageNum") int pageNum, @RequestParam(value = "filtering", defaultValue = "sender") String filtering, @RequestParam(value = "search", defaultValue = "") String search) {
         try {
             // TODO : 형식적 validation - 존재하는 회원인가? & User.status = 'active' / pageNum == 0인 경우
             if (historyProvider.checkUserIdx(Integer.parseInt(userIdx)) == 0) {
@@ -45,6 +45,7 @@ public class HistoryController {
                 throw new BaseException(PAGENUM_ERROR_0); // 페이지 번호는 1부터 시작합니다.
             }
 
+            search = search.replaceAll("\"", ""); // 따옴표 제거
             String[] params = new String[]{userIdx, filtering, search};
             PagingRes pageInfo = new PagingRes(pageNum, Constant.HISTORY_DATA_NUM); // 페이징 정보
 
