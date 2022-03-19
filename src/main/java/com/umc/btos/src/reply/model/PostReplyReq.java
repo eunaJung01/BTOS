@@ -1,12 +1,11 @@
 package com.umc.btos.src.reply.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostReplyReq {
     private int replierIdx; // 발신인 userIdx
     private int receiverIdx; // 수신인 userIdx
