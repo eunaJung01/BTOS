@@ -56,16 +56,21 @@ public class FirebaseCloudMessageService {
     private String makeMessage(String targetToken, String title, String body) throws JsonProcessingException {
         FcmMessage fcmMessage = FcmMessage.builder()
                 .message(FcmMessage.Message.builder()
-                    .token(targetToken)
-                .notification(FcmMessage.Notification.builder()
-                    .title(title)
-                    .body(body)
-                    .image(IMAGE_URL)
-                    .build()
-                )
+                        .token(targetToken)
+                        .notification(FcmMessage.Notification.builder()
+                                .title(title)
+                                .body(body)
+                                .image(IMAGE_URL) // Android 1MB 이미지 제한 존재
+                                .build()
+                        )
+                        .data(FcmMessage.FcmData.builder()
+                                .title(title)
+                                .body(body)
+                                .build()
+                        )
                         .build()
                 )
-                .validate_only(false) // true면 fcm 요청만 테스트 / false 면 푸시 알림 보냄
+                .validate_only(false)
                 .build();
 
         return objectMapper.writeValueAsString(fcmMessage);

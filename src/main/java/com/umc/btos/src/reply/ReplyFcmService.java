@@ -62,6 +62,11 @@ public class ReplyFcmService {
                                 .image(IMAGE_URL) // Android 1MB 이미지 제한 존재
                                 .build()
                         )
+                        .data(FcmMessage.FcmData.builder()
+                                .title(title)
+                                .body(body)
+                                .build()
+                        )
                         .build()
                 )
                 .validate_only(false)
