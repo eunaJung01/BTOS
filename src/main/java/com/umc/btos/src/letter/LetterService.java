@@ -44,7 +44,6 @@ public class LetterService {
             String senderNickName = letterDao.getNickName(senderUserIdx); // 발신인 닉네임
 
             // 2. 편지 발송 (INSERT LetterSendList)
-//            List<Receiver> receiverList = new ArrayList<>(); // Receiver 객체 - 해당 편지를 발송받은 회원의 정보 저장 (userIdx, fcmToken)
             List<Integer> receiverIdxList = new ArrayList<>(); // 해당 편지를 발송받은 회원들의 목록 (userIdx)
 
             /*

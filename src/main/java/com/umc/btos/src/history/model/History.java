@@ -23,6 +23,18 @@ public class History implements Comparable<History> {
     private boolean senderActive; // 발신인 계정 상태 1. true : 활성 또는 휴면 2. false : 탈퇴 -> 답장 불가
     private int senderFontIdx; // 발신인 User.fontIdx
 
+    // diaryList
+    public History(String type, int typeIdx, String content, int emotionIdx, String sendAt_raw, String sendAt, String senderNickName, int senderFontIdx) {
+        this.type = type;
+        this.typeIdx = typeIdx;
+        this.content = content;
+        this.emotionIdx = emotionIdx;
+        this.sendAt_raw = sendAt_raw;
+        this.sendAt = sendAt;
+        this.senderNickName = senderNickName;
+        this.senderFontIdx = senderFontIdx;
+    }
+
     // letterList, replyList
     public History(String type, int typeIdx, String content, String sendAt_raw, String sendAt, String senderNickName, int senderFontIdx) {
         this.type = type;

@@ -287,9 +287,7 @@ public class DiaryDao {
 
     // ================================================================================
 
-    // TODO : 매일 19:00:00에 당일 발송되는 일기의 Diary.isSend = 1로 변경
-    @Scheduled(cron = "00 00 19 * * *")
-//    @Scheduled(cron = "30 23 19 * * *") // test
+    // 당일 발송되는 일기의 Diary.isSend = 1로 변경
     public void modifyIsSend() {
         String yesterday = LocalDate.now().minusDays(1).toString().replaceAll("-", "."); // 어제 날짜 (yyyy.MM.dd)
 
@@ -297,6 +295,12 @@ public class DiaryDao {
                 "WHERE diaryDate = ? AND isPublic = 1 AND status = 'active'";
 
         this.jdbcTemplate.update(query, yesterday);
+    }
+
+    // 수신인 User.fcmToken 반환
+    public String getFcmToken(int userIdx) {
+        String query = "SELECT fcmToken FROM User WHERE userIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
     }
 
 }
