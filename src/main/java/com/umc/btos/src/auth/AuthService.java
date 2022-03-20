@@ -41,13 +41,15 @@ public class AuthService {
         if (authProvider.checkStatusOfUser(authGoogleReq.getEmail()).equals("deleted")) {
             throw new BaseException(AUTH_REQ_SIGNUP); // 회원가입 필요 메시지
         }
-        // 휴면일 경우
+        /*// 휴면일 경우 -> 자동으로 휴면 해제
         else if (authProvider.checkStatusOfUser(authGoogleReq.getEmail()).equals("dormant")) {
+            authDao.checkStatusOfUser(jwtService.getUserIdx());
             throw new BaseException(POST_USERS_DORMANT); // 회원 상태 변경 필요 메시지
-        }
+        }*/
 
-        // active 유저의 이메일인 경우 로그인 진행
-        else if (authProvider.checkEmail(authGoogleReq.getEmail()) == 1) { // 기존 회원이면 jwt 반환
+        // active or dormant 유저의 이메일인 경우 로그인 진행
+        else if (authProvider.checkEmail(authGoogleReq.getEmail()) == 1 ||
+                authProvider.checkStatusOfUser(authGoogleReq.getEmail()).equals("dormant")) { // 기존 회원이면 jwt 반환
             int userIdx = authDao.idxOfUserWithEmail(authGoogleReq.getEmail()); // userIdx 가져오기
             String jwt = jwtService.createJwt(userIdx);
             return new AuthGoogleRes(userIdx, jwt);
