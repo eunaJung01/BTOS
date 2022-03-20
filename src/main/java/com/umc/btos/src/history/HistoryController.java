@@ -67,7 +67,7 @@ public class HistoryController {
      */
     @ResponseBody
     @GetMapping("/sender/{userIdx}/{senderNickName}/{pageNum}")
-    BaseResponsePaging<List<History>> getHistoryList_sender(@PathVariable("userIdx") String userIdx, @PathVariable("senderNickName") String senderNickName, @PathVariable("pageNum") int pageNum, @RequestParam(value = "search", required = false) String search) {
+    BaseResponsePaging<List<History>> getHistoryList_sender(@PathVariable("userIdx") String userIdx, @PathVariable("senderNickName") String senderNickName, @PathVariable("pageNum") int pageNum, @RequestParam(value = "search", defaultValue = "") String search) {
         try {
             // TODO : 형식적 validation - 존재하는 회원인가? / 존재하는 회원 닉네임인가? / pageNum == 0인 경우
             if (historyProvider.checkUserIdx(Integer.parseInt(userIdx)) == 0) {
