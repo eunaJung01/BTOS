@@ -559,6 +559,12 @@ public class HistoryDao {
 
     // ==============================================  History 본문 조회 ==============================================
 
+    // Reply.replierIdx 반환
+    public int getReplierIdx(int replyIdx) {
+        String query = "SELECT replierIdx FROM Reply WHERE replyIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, int.class, replyIdx);
+    }
+
     public boolean getSenderActive_diary(int diaryIdx) {
         String query =
                 "SELECT User.status " +
@@ -817,6 +823,30 @@ public class HistoryDao {
                 "                       AND Letter.letterIdx = ?))";
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, userIdx, letterIdx);
+    }
+
+    public GetHistoryRes getReply_systemMail(int replyIdx) {
+        String query = "SELECT 'reply'                           AS type, " +
+                "       Reply.replyIdx                           AS typeIdx, " +
+                "       Reply.content                            AS content, " +
+                "       Reply.createdAt                          AS sendAt_raw, " +
+                "       date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt, " +
+                "       User.nickName                            AS senderNickName, " +
+                "       User.fontIdx                             AS senderFontIdx " +
+                "FROM Reply " +
+                "         INNER JOIN User ON Reply.replierIdx = User.userIdx " +
+                "WHERE Reply.replyIdx = ?";
+
+        return this.jdbcTemplate.queryForObject(query,
+                (rs, rowNum) -> new GetHistoryRes(
+                        "reply",
+                        rs.getInt("typeIdx"),
+                        rs.getString("content"),
+                        rs.getString("sendAt_raw"),
+                        rs.getString("sendAt"),
+                        rs.getString("senderNickName"),
+                        rs.getInt("senderFontIdx")
+                ), replyIdx);
     }
 
 }
