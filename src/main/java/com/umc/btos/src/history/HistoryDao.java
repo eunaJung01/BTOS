@@ -50,8 +50,10 @@ public class HistoryDao {
 
     // ==============================================  History 목록 조회 ==============================================
 
-    // 수신한 모든 항목(일기, 편지, 답장)에 대한 발신인 명수 반환
-    public int getNickNameNum(int userIdx) {
+    // 수신한 모든 항목(일기, 편지, 답장)에 대한 발신인 명수 반환 (닉네임 검색)
+    public int getNickNameNum(int userIdx, String search) {
+        search = "%" + search + "%";
+
         String query = "SELECT COUNT(DISTINCT senderNickName) " +
                 "FROM ( " +
                 // Diary
@@ -62,6 +64,7 @@ public class HistoryDao {
                 "         WHERE DiarySendList.receiverIdx = ? " +
                 "           AND Diary.isSend = 1 " +
                 "           AND DiarySendList.status = 'active' " +
+                "           AND REPLACE(User.nickName, ' ', '') LIKE REPLACE(?, ' ', '') " +
                 "         UNION " +
                 // Letter
                 "         SELECT User.nickName AS senderNickName, Letter.createdAt AS sendAt " +
@@ -70,6 +73,7 @@ public class HistoryDao {
                 "                             ON User.userIdx = Letter.userIdx " +
                 "         WHERE LetterSendList.receiverIdx = ? " +
                 "           AND LetterSendList.status = 'active' " +
+                "           AND REPLACE(User.nickName, ' ', '') LIKE REPLACE(?, ' ', '') " +
                 "         UNION " +
                 // Reply
                 "         SELECT User.nickName AS senderNickName, Reply.createdAt As sendAt " +
@@ -77,10 +81,11 @@ public class HistoryDao {
                 "                  INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "         WHERE Reply.receiverIdx = ? " +
                 "           AND Reply.status = 'active' " +
+                "           AND REPLACE(User.nickName, ' ', '') LIKE REPLACE(?, ' ', '') " +
 //                "           AND User.status != 'system' " + // 저편너머 시스템 계정 표시 유무
                 "     ) senderNickName";
 
-        return this.jdbcTemplate.queryForObject(query, int.class, userIdx, userIdx, userIdx);
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx, search, userIdx, search, userIdx, search);
     }
 
     // 수신한 모든 항목(일기, 편지, 답장)에 대한 발신인 닉네임 목록 반환 (createdAt 기준 내림차순 정렬 + 닉네임 검색 + 페이징 처리)

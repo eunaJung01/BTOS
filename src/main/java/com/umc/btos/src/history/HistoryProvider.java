@@ -104,7 +104,7 @@ public class HistoryProvider {
             if (filtering.compareTo("sender") == 0) {
                 List<History_Sender> historyListRes_list = new ArrayList<>(); // GetHistoryListRes.list
 
-                dataNum_total = historyDao.getNickNameNum(userIdx); // 총 데이터 개수
+                dataNum_total = historyDao.getNickNameNum(userIdx, search); // 총 데이터 개수
                 if (dataNum_total == 0) {
                     throw new NullPointerException(); // 검색 결과 없음
                 }
