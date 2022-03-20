@@ -104,17 +104,17 @@ public class HistoryProvider {
             if (filtering.compareTo("sender") == 0) {
                 List<History_Sender> historyListRes_list = new ArrayList<>(); // GetHistoryListRes.list
 
-                dataNum_total = historyDao.getNickNameList_num(userIdx); // 총 데이터 개수
+                dataNum_total = historyDao.getNickNameNum(userIdx); // 총 데이터 개수
                 if (dataNum_total == 0) {
                     throw new NullPointerException(); // 검색 결과 없음
                 }
                 pageInfo.setDataNum_total((int) dataNum_total);
 
-                // userIdx 회원이 받은 일기, 편지, 답장의 발신인 닉네임 목록 (createdAt 기준 내림차순 정렬 + nickName search + 페이징 처리)
+                // userIdx 회원이 수신한 모든 항목(일기, 편지, 답장)에 대한 발신인 닉네임 목록 (createdAt 기준 내림차순 정렬 + 닉네임 검색 + 페이징 처리)
                 List<String> senderNickNameList = historyDao.getNickNameList(userIdx, search, pageNum);
 
                 for (String senderNickName : senderNickNameList) {
-                    int historyListNum = historyDao.getHistoryListNum(userIdx, senderNickName);
+                    int historyListNum = historyDao.getHistoryListNum(userIdx, senderNickName); // 해당 발신인에게서 수신한 모든 항목 개수
                     History firstContent = historyDao.getFirstContent(userIdx, senderNickName); // 수신한 일기, 편지, 답장 중 가장 최근에 받은 값
 
                     // set History.senderActive
@@ -123,6 +123,8 @@ public class HistoryProvider {
                     // type = diary -> set emotionIdx, doneListNum
                     if (firstContent.getType().compareTo("diary") == 0) {
                         int diaryIdx = firstContent.getTypeIdx();
+                        firstContent.setEmotionIdx(historyDao.getEmotionIdx(diaryIdx));
+
                         if (historyDao.hasDone(diaryIdx) == 1) { // 해당 일기에 done list가 있는 경우
                             firstContent.setDoneListNum(historyDao.getDoneListNum(diaryIdx));
                         }

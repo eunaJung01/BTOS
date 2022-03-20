@@ -50,8 +50,8 @@ public class HistoryDao {
 
     // ==============================================  History 목록 조회 ==============================================
 
-    // 일기 & 편지 & 답장 발신인 닉네임 목록 개수 반환
-    public int getNickNameList_num(int userIdx) {
+    // 수신한 모든 항목(일기, 편지, 답장)에 대한 발신인 명수 반환
+    public int getNickNameNum(int userIdx) {
         String query = "SELECT COUNT(DISTINCT senderNickName) " +
                 "FROM ( " +
                 // Diary
@@ -83,7 +83,7 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, userIdx, userIdx);
     }
 
-    // 일기 & 편지 & 답장 발신인 닉네임 목록 반환 (createdAt 기준 내림차순 정렬 + nickName search + 페이징 처리)
+    // 수신한 모든 항목(일기, 편지, 답장)에 대한 발신인 닉네임 목록 반환 (createdAt 기준 내림차순 정렬 + 닉네임 검색 + 페이징 처리)
     public List<String> getNickNameList(int userIdx, String search, int pageNum) {
         int startData = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
         search = "%" + search + "%";
@@ -124,20 +124,6 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForList(query, String.class, userIdx, search, userIdx, search, userIdx, search, startData, Constant.HISTORY_DATA_NUM);
     }
 
-    // 일기 null 확인 : filtering == sender
-    public int hasHistory_diary(int userIdx, String senderNickName) {
-        String query = "SELECT EXISTS(SELECT * " +
-                "              FROM DiarySendList " +
-                "                       INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
-                "                       INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                "              WHERE DiarySendList.receiverIdx = ? " +
-                "                AND User.nickName = ? " +
-                "                AND Diary.isSend = 1 " +
-                "                AND DiarySendList.status = 'active')";
-
-        return this.jdbcTemplate.queryForObject(query, int.class, userIdx, senderNickName);
-    }
-
     // 수신한 일기의 개수
     public int getDiaryNum(int userIdx, String search) {
         search = "%" + search + "%";
@@ -160,7 +146,7 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, userIdx, search);
     }
 
-    // 목록 조회 - filtering = diary
+    // History 목록 조회 (filtering = diary)
     public List<History> getDiaryList(int userIdx, String search, int pageNum) {
         int startData = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
         search = "%" + search + "%";
@@ -195,7 +181,7 @@ public class HistoryDao {
                 ), userIdx, search, startData, Constant.HISTORY_DATA_NUM);
     }
 
-    // History.senderActive
+    // set History.senderActive
     public void setSenderActive(List<History> historyList) {
         String query = "SELECT CASE " +
                 "           WHEN ? = 'diary' THEN (SELECT(IF((SELECT User.status " +
@@ -233,7 +219,7 @@ public class HistoryDao {
         }
     }
 
-    // History.senderActive
+    // set History.senderActive
     public void setSenderActive(History history) {
         String query = "SELECT CASE " +
                 "           WHEN ? = 'diary' THEN (SELECT(IF((SELECT User.status " +
@@ -269,13 +255,29 @@ public class HistoryDao {
         history.setSenderActive(this.jdbcTemplate.queryForObject(query, boolean.class, type, typeIdx, type, typeIdx, type, typeIdx));
     }
 
-    // History.doneListNum
+    // Diary.emotionIdx 반환
+    public int getEmotionIdx(int diaryIdx) {
+        String query = "SELECT emotionIdx FROM Diary WHERE diaryIdx = ?";
+        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
+    }
+
+    // 해당 일기의 done list 유무 반환
+    public int hasDone(int diaryIdx) {
+        String query = "SELECT EXISTS(SELECT * " +
+                "FROM Done " +
+                "WHERE diaryIdx = ? " +
+                "AND status = 'active')";
+
+        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx); // 존재할 경우 1, 존재하지 않을 경우 0
+    }
+
+    // done list 개수 반환
     public int getDoneListNum(int diaryIdx) {
         String query = "SELECT COUNT(*) FROM Done WHERE diaryIdx = ?";
         return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
     }
 
-    // 수신한 편지 & 답장 개수
+    // 수신한 편지 & 답장의 개수 반환
     public int getLetterNum(int userIdx, String search) {
         search = "%" + search + "%";
 
@@ -309,7 +311,7 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, search, userIdx, search);
     }
 
-    // 목록 조회 - filtering = letter
+    // History 목록 조회 (filtering = letter)
     public List<History> getLetterList(int userIdx, String search, int pageNum) {
         int startData = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
         search = "%" + search + "%";
@@ -355,7 +357,7 @@ public class HistoryDao {
                 ), userIdx, search, userIdx, search, startData, Constant.HISTORY_DATA_NUM);
     }
 
-    //
+    // 해당 발신인에게서 수신한 모든 항목(일기, 편지, 답장)의 개수
     public int getHistoryListNum(int userIdx, String senderNickName) {
         String query = "SELECT COUNT(*) " +
                 "FROM (SELECT Diary.diaryIdx AS typeIdx " +
@@ -385,7 +387,7 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, senderNickName, userIdx, senderNickName, userIdx, senderNickName);
     }
 
-    //
+    // 해당 발신인에게서 수신한 모든 항목(일기, 편지, 답장) 중 가장 최근에 받은 값 반환
     public History getFirstContent(int userIdx, String senderNickName) {
         String query = "SELECT 'diary'                           AS type, " +
                 "       Diary.diaryIdx                           AS typeIdx, " +
@@ -400,7 +402,7 @@ public class HistoryDao {
                 "WHERE DiarySendList.receiverIdx = ? " +
                 "  AND Diary.isSend = 1 " +
                 "  AND DiarySendList.status = 'active'" +
-                "  AND User.nickName = ?\n" +
+                "  AND User.nickName = ? " +
                 "UNION " +
                 "SELECT 'letter'                                  AS type, " +
                 "       Letter.letterIdx                          AS typeIdx, " +
@@ -414,7 +416,7 @@ public class HistoryDao {
                 "         INNER JOIN User ON Letter.userIdx = User.userIdx " +
                 "WHERE LetterSendList.receiverIdx = ? " +
                 "  AND LetterSendList.status = 'active' " +
-                "  AND User.nickName = ?\n" +
+                "  AND User.nickName = ? " +
                 "UNION " +
                 "SELECT 'Reply'                                  AS type, " +
                 "       Reply.replyIdx                           AS typeIdx, " +
@@ -427,7 +429,7 @@ public class HistoryDao {
                 "         INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.receiverIdx = ? " +
                 "  AND Reply.status = 'active' " +
-                "  AND User.nickName = ?\n" +
+                "  AND User.nickName = ? " +
                 "ORDER BY sendAt_raw DESC " +
                 "LIMIT 1";
 
@@ -444,6 +446,20 @@ public class HistoryDao {
     }
 
     // =============================================  History 발신인 조회 =============================================
+
+    // 일기 null 확인 : filtering == sender
+    public int hasHistory_diary(int userIdx, String senderNickName) {
+        String query = "SELECT EXISTS(SELECT * " +
+                "              FROM DiarySendList " +
+                "                       INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                "                       INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                "              WHERE DiarySendList.receiverIdx = ? " +
+                "                AND User.nickName = ? " +
+                "                AND Diary.isSend = 1 " +
+                "                AND DiarySendList.status = 'active')";
+
+        return this.jdbcTemplate.queryForObject(query, int.class, userIdx, senderNickName);
+    }
 
     // 편지 null 확인 : filtering == sender
     public int hasHistory_letter(int userIdx, String senderNickName) {
@@ -872,16 +888,6 @@ public class HistoryDao {
                         rs.getInt("doneIdx"),
                         rs.getString("content")
                 ), diaryIdx);
-    }
-
-    // 해당 일기 done list 유무 반환
-    public int hasDone(int diaryIdx) {
-        String query = "SELECT EXISTS(SELECT * " +
-                "FROM Done " +
-                "WHERE diaryIdx = ? " +
-                "AND status = 'active')";
-
-        return this.jdbcTemplate.queryForObject(query, int.class, diaryIdx);
     }
 
     // 해당 일기 done list 유무 반환
