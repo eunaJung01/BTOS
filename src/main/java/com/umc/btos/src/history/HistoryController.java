@@ -80,6 +80,7 @@ public class HistoryController {
                 throw new BaseException(PAGENUM_ERROR_0); // 페이지 번호는 1부터 시작합니다.
             }
 
+            search = search.replaceAll("\"", ""); // 따옴표 제거
             String[] params = new String[]{userIdx, senderNickName, search};
             PagingRes pageInfo = new PagingRes(pageNum, Constant.HISTORY_DATA_NUM); // 페이징 정보
 

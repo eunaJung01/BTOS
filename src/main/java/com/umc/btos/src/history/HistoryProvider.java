@@ -200,12 +200,6 @@ public class HistoryProvider {
         }
     }
 
-    // 문자열 검색
-    public boolean searchString(String content, String search) {
-        content = content.replaceAll(" ", "").toLowerCase(); // 공백 제거, 영문 대소문자 구별 X
-        return content.contains(search); // 문자열 검색 (존재 : true, 미존재 : false)
-    }
-
     /*
      * History 발신인 조회
      * [GET] /histories/sender/:userIdx/:senderNickName/:pageNum?search=
@@ -221,168 +215,17 @@ public class HistoryProvider {
             String senderNickName = params[1];
             String search = params[2];
 
-            // PagingRes
+            // ---------------------------------------------- PagingRes -----------------------------------------------
             int pageNum = pageInfo.getCurrentPage(); // 페이지 번호
             double dataNum_total = 0; // 총 데이터 개수 (후에 Math.ceil 사용하는 연산 때문에 double)
             int dataNum_currentPage = 0; // 현재 페이지의 데이터 개수
 
-            List<History> historyList = new ArrayList<>(); // GetSenderRes.historyList
-
-            if (search == null) {
-                // diary
-                if (historyDao.hasHistory_diary(userIdx, senderNickName) != 0) { // null 확인
-                    List<Integer> diaryIdxList = historyDao.getDiaryIdxList(userIdx, senderNickName); // 수신한 모든 일기 diaryIdx
-                    for (int diaryIdx : diaryIdxList) {
-                        if (historyDao.hasDone(diaryIdx) == 1) { // 해당 일기에 done list가 있는 경우
-                            historyList.add(historyDao.getDiary_done(userIdx, diaryIdx, historyDao.getSenderActive_diary(diaryIdx)));
-                        } else { // 해당 일기에 done list가 없는 경우
-                            historyList.add(historyDao.getDiary_nonDone(userIdx, diaryIdx, historyDao.getSenderActive_diary(diaryIdx)));
-                        }
-                    }
-                }
-                // letter
-                if (historyDao.hasHistory_letter(userIdx, senderNickName) != 0) { // null 확인
-                    historyList.addAll(historyDao.getLetterList(userIdx, senderNickName)); // 편지
-                }
-                // reply
-                if (historyDao.hasHistory_reply(userIdx, senderNickName) != 0) { // null 확인
-                    historyList.addAll(historyDao.getReplyList(userIdx, senderNickName)); // 답장
-                }
-                dataNum_total = historyList.size();
-                if (dataNum_total == 0) {
-                    throw new NullPointerException(); // 검색 결과 없음
-                }
-                pageInfo.setDataNum_total((int) dataNum_total); // 총 데이터 개수
-                Collections.sort(historyList); // createAt 기준 내림차순 정렬
-
-                // 페이징 처리
-                if (dataNum_total > Constant.HISTORY_DATA_NUM) {
-                    int startDataIdx = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
-                    int endDataIdx = pageNum * Constant.HISTORY_DATA_NUM;
-                    if (endDataIdx > dataNum_total) endDataIdx = (int) dataNum_total;
-
-                    List<History> historyList_paging = new ArrayList<>();
-                    for (int i = startDataIdx; i < endDataIdx; i++) {
-                        historyList_paging.add(historyList.get(i));
-                    }
-                    historyList = historyList_paging;
-                }
-                dataNum_currentPage = historyList.size();
-                pageInfo.setDataNum_currentPage(dataNum_currentPage); // 현재 페이지의 데이터 개수
-
-                // setSenderActive
-                for (History history : historyList) {
-                    int typeIdx = history.getTypeIdx();
-
-                    switch (history.getType()) {
-                        case "letter":
-                            history.setSenderActive(historyDao.getSenderActive_letter(typeIdx));
-                            break;
-                        case "reply":
-                            history.setSenderActive(historyDao.getSenderActive_reply(typeIdx));
-                            break;
-                    }
-                }
-
-            } else {
-                /*
-                 * 문자열 검색 (search)
-                 * search && (Diary.content || Letter.content) : 띄어쓰기 모두 제거 후 찾기
-                 */
-
-                search = search.replaceAll("\"", ""); // 따옴표 제거
-                search = search.replaceAll(" ", ""); // 공백 제거
-                search = search.toLowerCase(); // 영문 대소문자 구분 X
-
-                List<Integer> diaryIdxList = new ArrayList<>();
-                List<Integer> letterIdxList = new ArrayList<>();
-                List<Integer> replyIdxList = new ArrayList<>();
-
-                // diaryIdxList
-                if (historyDao.hasHistory_diary(userIdx, senderNickName) != 0) { // 수신한 일기가 있는지 확인
-                    diaryIdxList.addAll(historyDao.getDiaryIdxList(userIdx, senderNickName)); // 수신한 모든 일기 diaryIdx
-
-                    List<Integer> diaryIdxList_searched = new ArrayList<>(); // 임시 list
-                    for (int diaryIdx : diaryIdxList) {
-                        String diaryContent = historyDao.getDiaryContent(diaryIdx);
-
-                        if (searchString(diaryContent, search)) { // 문자열 검색 -> 찾는 값이 존재하면 저장
-                            diaryIdxList_searched.add(diaryIdx);
-                        }
-                    }
-                    diaryIdxList = diaryIdxList_searched; // diaryIdxList 갱신
-                }
-
-                // letterIdxList
-                if (historyDao.hasHistory_letter(userIdx, senderNickName) != 0) { // 수신한 편지가 있는지 확인
-                    letterIdxList.addAll(historyDao.getLetterIdxList(userIdx, senderNickName)); // 수신한 모든 편지 letterIdx
-
-                    List<Integer> letterIdxList_searched = new ArrayList<>(); // 임시 list
-                    for (int letterIdx : letterIdxList) {
-                        String letterContent = historyDao.getLetterContent(letterIdx);
-
-                        if (searchString(letterContent, search)) { // 문자열 검색 -> 찾는 값이 존재하면 저장
-                            letterIdxList_searched.add(letterIdx);
-                        }
-                    }
-                    letterIdxList = letterIdxList_searched; // letterIdxList 갱신
-                }
-
-                // replyIdxList
-                if (historyDao.hasHistory_reply(userIdx, senderNickName) != 0) { // null 확인
-                    replyIdxList.addAll(historyDao.getReplyIdxList(userIdx, senderNickName)); // 수신한 모든 답장 replyIdx
-
-                    List<Integer> replyIdxList_searched = new ArrayList<>(); // 임시 list
-                    for (int replyIdx : replyIdxList) {
-                        String replyContent = historyDao.getReplyContent(replyIdx);
-
-                        if (searchString(replyContent, search)) { // 문자열 검색 -> 찾는 값이 존재하면 저장
-                            replyIdxList_searched.add(replyIdx);
-                        }
-                    }
-                    replyIdxList = replyIdxList_searched; // replyIdxList 갱신
-                }
-
-                if (diaryIdxList.size() != 0 || letterIdxList.size() != 0 || replyIdxList.size() != 0) {
-                    for (int diaryIdx : diaryIdxList) {
-                        if (historyDao.hasDone(diaryIdx) == 1) { // 해당 일기에 done list가 있는 경우
-                            historyList.add(historyDao.getDiary_done(userIdx, diaryIdx, senderNickName, historyDao.getSenderActive_diary(diaryIdx)));
-                        } else { // 해당 일기에 done list가 없는 경우
-                            historyList.add(historyDao.getDiary_nonDone(userIdx, diaryIdx, senderNickName, historyDao.getSenderActive_diary(diaryIdx)));
-                        }
-                    }
-
-                    for (int letterIdx : letterIdxList) {
-                        historyList.add(historyDao.getLetter(userIdx, letterIdx, historyDao.getSenderActive_letter(letterIdx)));
-                    }
-                    for (int replyIdx : replyIdxList) {
-                        historyList.add(historyDao.getReply(userIdx, replyIdx, historyDao.getSenderActive_reply(replyIdx)));
-                    }
-                    Collections.sort(historyList); // createAt 기준 내림차순 정렬
-                }
-                dataNum_total = historyList.size(); // 총 데이터 개수
-                if (dataNum_total == 0) {
-                    throw new NullPointerException(); // 검색 결과 없음
-                }
-                pageInfo.setDataNum_total((int) dataNum_total);
-
-                // 페이징 처리
-                if (dataNum_total > Constant.HISTORY_DATA_NUM) {
-                    int startDataIdx = (pageNum - 1) * Constant.HISTORY_DATA_NUM;
-                    int endDataIdx = pageNum * Constant.HISTORY_DATA_NUM;
-                    if (endDataIdx > dataNum_total) endDataIdx = (int) dataNum_total;
-
-                    List<History> historyList_paging = new ArrayList<>();
-                    for (int i = startDataIdx; i < endDataIdx; i++) {
-                        historyList_paging.add(historyList.get(i));
-                    }
-                    historyList = historyList_paging;
-                }
-                dataNum_currentPage = historyList.size();
-                pageInfo.setDataNum_currentPage(dataNum_currentPage); // 현재 페이지의 데이터 개수
+            dataNum_total = historyDao.getHistoryListNum_sender(userIdx, senderNickName, search); // 총 데이터 개수
+            if (dataNum_total == 0) {
+                throw new NullPointerException(); // 검색 결과 없음
             }
+            pageInfo.setDataNum_total((int) dataNum_total);
 
-            // PagingRes
             int endPage = (int) Math.ceil(dataNum_total / Constant.HISTORY_DATA_NUM); // 마지막 페이지 번호
             if (endPage == 0) endPage = 1;
             if (pageInfo.getCurrentPage() > endPage) {
@@ -390,11 +233,37 @@ public class HistoryProvider {
             }
             pageInfo.setEndPage(endPage);
             pageInfo.setHasNext(pageInfo.getCurrentPage() != endPage); // pageNum == endPage -> hasNext = false
+            // --------------------------------------------------------------------------------------------------------
+
+            // 해당 발신인에게서 수신한 모든 항목(일기, 편지, 답장) 목록 (createdAt 기준 내림차순 정렬 + 문자열 검색 + 페이징 처리)
+            List<History> historyList = historyDao.getHistoryList_sender(userIdx, senderNickName, search, pageNum); // GetSenderRes.historyList
+
+            dataNum_currentPage = historyList.size(); // 현재 페이지의 데이터 개수
+            pageInfo.setDataNum_currentPage(dataNum_currentPage);
+
+            // set senderActive
+            historyDao.setSenderActive(historyList);
+
+            // type = diary -> set emotionIdx, doneListNum
+            for (History history : historyList) {
+                String type = history.getType();
+
+                if (type.compareTo("diary") == 0) {
+                    int diaryIdx = history.getTypeIdx();
+                    history.setEmotionIdx(diaryIdx);
+
+                    if (historyDao.hasDone(diaryIdx) == 1) { // 해당 일기에 done list가 있는 경우
+                        history.setDoneListNum(historyDao.getDoneListNum(diaryIdx));
+                    }
+                }
+            }
 
             return historyList;
 
-        } catch (NullPointerException nullPointerException) {
+        } catch (NullPointerException exception) {
             throw new BaseException(EMPTY_RESULT); // 검색 결과 없음
+        } catch (BaseException exception) {
+            throw new BaseException(PAGENUM_ERROR); // 잘못된 페이지 요청입니다.
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
