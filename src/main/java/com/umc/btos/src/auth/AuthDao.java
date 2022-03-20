@@ -65,9 +65,12 @@ public class AuthDao {
 
     // 해당 이메일을 가진 유저의 식별자 반환
     public int idxOfUserWithEmail(String email) {
-        String idxOfUserWithEmailQuery = "select userIdx from User where email = ? and status = 'active'";
+        String idxOfUserWithEmailQuery = "select userIdx from User where email = ? and status IN ('active', 'dormant')";
         String idxOfUserWithEmailParam = email;
-        return this.jdbcTemplate.queryForObject(idxOfUserWithEmailQuery, int.class, idxOfUserWithEmailParam);
+        int userIdx = this.jdbcTemplate.queryForObject(idxOfUserWithEmailQuery, int.class, idxOfUserWithEmailParam);
+        // 휴면 상태면 재활성화
+        jdbcTemplate.update("update User set status = 'active', recOthers = 1, recSimilarAge = 1 where userIdx = ? and status = 'dormant'", userIdx);
+        return userIdx;
     }
     
     // 로그인 기록 갱신
