@@ -18,13 +18,13 @@ public class FcmTest {
         this.fcmService = fcmService;
     }
 
-    @ResponseBody
+    /*@ResponseBody
     @PostMapping("")
     public BaseResponse<FcmResponse> pushMessage(@RequestBody FcmRequest fcmRequest) throws IOException, BaseException {
 
         FcmResponse fcmResponse = fcmService.sendMessageTo(fcmRequest);
 
         return new BaseResponse<>(fcmResponse);
-    }
+    }*/
 
 }
