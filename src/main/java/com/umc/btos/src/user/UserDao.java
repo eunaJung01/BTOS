@@ -117,7 +117,7 @@ public class UserDao {
 
     // 닉네임 확인
     public int checkNickName(String nickName) {
-        String checkNickNameQuery = "select exists(select nickName from User where nickName = ? and status IN ('active', 'dormant'))";
+        String checkNickNameQuery = "select exists(select nickName from User where nickName = ?)";
         String checkNickNameParams = nickName;
         return this.jdbcTemplate.queryForObject(checkNickNameQuery, int.class, checkNickNameParams);
         //결과(존재하지 않음(False,0),존재함(True, 1))를 int형(0,1)으로 반환
