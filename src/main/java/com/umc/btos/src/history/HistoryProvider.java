@@ -7,10 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import static com.umc.btos.config.BaseResponseStatus.*;
@@ -323,51 +320,64 @@ public class HistoryProvider {
 
             // type = reply
             else {
-                String firstHistoryType = historyDao.getHistoryType(typeIdx); // 답장의 최초 시작점 (diary / letter)
+                int replierIdx = historyDao.getReplierIdx(typeIdx);
 
-                // 시작점이 일기인 경우
-                if (firstHistoryType.compareTo("diary") == 0) {
-                    int diaryIdx = historyDao.getDiaryIdx_main(typeIdx);
-
-                    GetHistoryRes diary = historyDao.getDiary_main(diaryIdx, historyDao.getSenderActive_diary(diaryIdx));
-
-                    if (historyDao.hasDone(typeIdx) == 1) { // 해당 일기에 done list가 있는 경우
-                        diary.setDoneList(historyDao.getDoneList_main(typeIdx));
-                    }
-
-                    historyList.add(diary);
-
-                    // 답장 목록
-                    List<GetHistoryRes> replyList = historyDao.getReplyList_diary(userIdx, diaryIdx);
-                    for (GetHistoryRes reply : replyList) {
-                        // setSenderActive
-                        int replyIdx = reply.getTypeIdx();
-                        reply.setSenderActive(historyDao.getSenderActive_reply(replyIdx));
-
-                        if (replyIdx == typeIdx) { // 사용자가 조회하고자 하는 답장 본문
-                            reply.setPositioning(true);
-                        }
-                    }
-                    historyList.addAll(replyList);
+                // 시스템 메일인 경우
+                if (replierIdx == 1) {
+                    GetHistoryRes systemMail = historyDao.getReply_systemMail(typeIdx);
+                    systemMail.setSenderActive(false);
+                    systemMail.setPositioning(true);
+                    historyList.add(systemMail);
                 }
 
-                // 시작점이 편지인 경우
-                else if (firstHistoryType.compareTo("letter") == 0) {
-                    int letterIdx = historyDao.getLetterIdx_main(typeIdx);
-                    GetHistoryRes letter = historyDao.getLetter_main(letterIdx, historyDao.getSenderActive_letter(letterIdx));
-                    historyList.add(letter);
+                // 일반 답장일 경우
+                else {
+                    String firstHistoryType = historyDao.getHistoryType(typeIdx); // 답장의 최초 시작점 (diary / letter)
 
-                    List<GetHistoryRes> replyList = historyDao.getReplyList_letter(userIdx, letterIdx);
-                    for (GetHistoryRes reply : replyList) {
-                        // setSenderActive
-                        int replyIdx = reply.getTypeIdx();
-                        reply.setSenderActive(historyDao.getSenderActive_reply(replyIdx));
+                    // 시작점이 일기인 경우
+                    if (firstHistoryType.compareTo("diary") == 0) {
+                        int diaryIdx = historyDao.getDiaryIdx_main(typeIdx);
 
-                        if (replyIdx == typeIdx) { // 사용자가 조회하고자 하는 답장 본문
-                            reply.setPositioning(true);
+                        GetHistoryRes diary = historyDao.getDiary_main(diaryIdx, historyDao.getSenderActive_diary(diaryIdx));
+
+                        if (historyDao.hasDone(typeIdx) == 1) { // 해당 일기에 done list가 있는 경우
+                            diary.setDoneList(historyDao.getDoneList_main(typeIdx));
                         }
+
+                        historyList.add(diary);
+
+                        // 답장 목록
+                        List<GetHistoryRes> replyList = historyDao.getReplyList_diary(userIdx, diaryIdx);
+                        for (GetHistoryRes reply : replyList) {
+                            // setSenderActive
+                            int replyIdx = reply.getTypeIdx();
+                            reply.setSenderActive(historyDao.getSenderActive_reply(replyIdx));
+
+                            if (replyIdx == typeIdx) { // 사용자가 조회하고자 하는 답장 본문
+                                reply.setPositioning(true);
+                            }
+                        }
+                        historyList.addAll(replyList);
                     }
-                    historyList.addAll(replyList);
+
+                    // 시작점이 편지인 경우
+                    else if (firstHistoryType.compareTo("letter") == 0) {
+                        int letterIdx = historyDao.getLetterIdx_main(typeIdx);
+                        GetHistoryRes letter = historyDao.getLetter_main(letterIdx, historyDao.getSenderActive_letter(letterIdx));
+                        historyList.add(letter);
+
+                        List<GetHistoryRes> replyList = historyDao.getReplyList_letter(userIdx, letterIdx);
+                        for (GetHistoryRes reply : replyList) {
+                            // setSenderActive
+                            int replyIdx = reply.getTypeIdx();
+                            reply.setSenderActive(historyDao.getSenderActive_reply(replyIdx));
+
+                            if (replyIdx == typeIdx) { // 사용자가 조회하고자 하는 답장 본문
+                                reply.setPositioning(true);
+                            }
+                        }
+                        historyList.addAll(replyList);
+                    }
                 }
             }
 
