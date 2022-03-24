@@ -247,7 +247,7 @@ public class HistoryProvider {
 
                 if (type.compareTo("diary") == 0) {
                     int diaryIdx = history.getTypeIdx();
-                    history.setEmotionIdx(diaryIdx);
+                    history.setEmotionIdx(historyDao.getEmotionIdx(diaryIdx));
 
                     if (historyDao.hasDone(diaryIdx) == 1) { // 해당 일기에 done list가 있는 경우
                         history.setDoneListNum(historyDao.getDoneListNum(diaryIdx));
