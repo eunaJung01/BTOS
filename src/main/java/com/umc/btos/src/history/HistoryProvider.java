@@ -67,7 +67,7 @@ public class HistoryProvider {
         }
     }
 
-    // ================================================================================
+    // ================================================================================================================
 
     /*
      * History 목록 조회
@@ -97,7 +97,7 @@ public class HistoryProvider {
              * History 객체 : 수신한 일기/편지/답장에 대한 상세 정보를 저장
              */
 
-            // 발신인
+            // ----------------------------------------------- 발신인 -------------------------------------------------
             if (filtering.compareTo("sender") == 0) {
                 List<History_Sender> historyListRes_list = new ArrayList<>(); // GetHistoryListRes.list
 
@@ -134,7 +134,7 @@ public class HistoryProvider {
                 historyListRes.setList(historyListRes_list);
             }
 
-            // 일기만
+            // ----------------------------------------------- 일기만 -------------------------------------------------
             else if (filtering.compareTo("diary") == 0) {
                 dataNum_total = historyDao.getDiaryNum(userIdx, search); // 총 데이터 개수
                 if (dataNum_total == 0) {
@@ -159,7 +159,7 @@ public class HistoryProvider {
                 historyListRes.setList(historyList);
             }
 
-            // 편지만
+            // ----------------------------------------------- 편지만 -------------------------------------------------
             else {
                 dataNum_total = historyDao.getLetterNum(userIdx, search); // 총 데이터 개수
                 if (dataNum_total == 0) {
@@ -177,7 +177,7 @@ public class HistoryProvider {
                 historyListRes.setList(historyList);
             }
 
-            // PagingRes
+            // ---------------------------------------------- PagingRes -----------------------------------------------
             int endPage = (int) Math.ceil(dataNum_total / Constant.HISTORY_DATA_NUM); // 마지막 페이지 번호
             if (endPage == 0) endPage = 1;
             if (pageInfo.getCurrentPage() > endPage) {
@@ -185,6 +185,7 @@ public class HistoryProvider {
             }
             pageInfo.setEndPage(endPage);
             pageInfo.setHasNext(pageInfo.getCurrentPage() != endPage); // pageNum == endPage -> hasNext = false
+            // --------------------------------------------------------------------------------------------------------
 
             return historyListRes;
 
@@ -193,7 +194,6 @@ public class HistoryProvider {
         } catch (NullPointerException exception) {
             throw new BaseException(EMPTY_RESULT); // 검색 결과 없음
         } catch (Exception exception) {
-            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }

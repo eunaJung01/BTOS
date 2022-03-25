@@ -284,80 +284,6 @@ public class HistoryDao {
                 ), userIdx, search, startData, Constant.HISTORY_DATA_NUM);
     }
 
-    // set History.senderActive
-    public void setSenderActive(List<History> historyList) {
-        String query = "SELECT CASE " +
-                "           WHEN ? = 'diary' THEN (SELECT(IF((SELECT User.status " +
-                "                                                   FROM DiarySendList " +
-                "                                                            INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
-                "                                                            INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                "                                                   WHERE Diary.diaryIdx = ? " +
-                "                                                     AND Diary.isSend = 1 " +
-                "                                                     AND DiarySendList.status = 'active' " +
-                "                                                   GROUP BY User.status) = 'active', " +
-                "                                                  1, " +
-                "                                                  0))) " +
-                "           WHEN ? = 'letter' THEN (SELECT(IF((SELECT User.status " +
-                "                                                    FROM LetterSendList " +
-                "                                                             INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
-                "                                                             INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                "                                                    WHERE Letter.letterIdx = ? " +
-                "                                                      AND LetterSendList.status = 'active' " +
-                "                                                    GROUP BY User.status) = 'active', " +
-                "                                                   1, " +
-                "                                                   0))) " +
-                "           WHEN ? = 'reply' THEN (SELECT(IF((SELECT User.status " +
-                "                                                   FROM Reply " +
-                "                                                            INNER JOIN User ON Reply.replierIdx = User.userIdx " +
-                "                                                   WHERE Reply.replyIdx = ? " +
-                "                                                     AND Reply.status = 'active' " +
-                "                                                   GROUP BY User.status) = 'active', " +
-                "                                                  1, " +
-                "                                                  0))) END";
-
-        for (History history : historyList) {
-            String type = history.getType();
-            int typeIdx = history.getTypeIdx();
-            history.setSenderActive(this.jdbcTemplate.queryForObject(query, boolean.class, type, typeIdx, type, typeIdx, type, typeIdx));
-        }
-    }
-
-    // set History.senderActive
-    public void setSenderActive(History history) {
-        String query = "SELECT CASE " +
-                "           WHEN ? = 'diary' THEN (SELECT(IF((SELECT User.status " +
-                "                                                   FROM DiarySendList " +
-                "                                                            INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
-                "                                                            INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                "                                                   WHERE Diary.diaryIdx = ? " +
-                "                                                     AND Diary.isSend = 1 " +
-                "                                                     AND DiarySendList.status = 'active' " +
-                "                                                   GROUP BY User.status) = 'active', " +
-                "                                                  1, " +
-                "                                                  0))) " +
-                "           WHEN ? = 'letter' THEN (SELECT(IF((SELECT User.status " +
-                "                                                    FROM LetterSendList " +
-                "                                                             INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
-                "                                                             INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                "                                                    WHERE Letter.letterIdx = ? " +
-                "                                                      AND LetterSendList.status = 'active' " +
-                "                                                    GROUP BY User.status) = 'active', " +
-                "                                                   1, " +
-                "                                                   0))) " +
-                "           WHEN ? = 'reply' THEN (SELECT(IF((SELECT User.status " +
-                "                                                   FROM Reply " +
-                "                                                            INNER JOIN User ON Reply.replierIdx = User.userIdx " +
-                "                                                   WHERE Reply.replyIdx = ? " +
-                "                                                     AND Reply.status = 'active' " +
-                "                                                   GROUP BY User.status) = 'active', " +
-                "                                                  1, " +
-                "                                                  0))) END";
-
-        String type = history.getType();
-        int typeIdx = history.getTypeIdx();
-        history.setSenderActive(this.jdbcTemplate.queryForObject(query, boolean.class, type, typeIdx, type, typeIdx, type, typeIdx));
-    }
-
     // Diary.emotionIdx 반환
     public int getEmotionIdx(int diaryIdx) {
         String query = "SELECT emotionIdx FROM Diary WHERE diaryIdx = ?";
@@ -457,6 +383,82 @@ public class HistoryDao {
                         rs.getString("senderNickName"),
                         rs.getInt("senderFontIdx")
                 ), userIdx, search, userIdx, search, startData, Constant.HISTORY_DATA_NUM);
+    }
+
+    // ------------------------------------------- set History.senderActive -------------------------------------------
+
+    // List<History>
+    public void setSenderActive(List<History> historyList) {
+        String query = "SELECT CASE " +
+                "           WHEN ? = 'diary' THEN (SELECT(IF((SELECT User.status " +
+                "                                                   FROM DiarySendList " +
+                "                                                            INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                "                                                            INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                "                                                   WHERE Diary.diaryIdx = ? " +
+                "                                                     AND Diary.isSend = 1 " +
+                "                                                     AND DiarySendList.status = 'active' " +
+                "                                                   GROUP BY User.status) = 'active', " +
+                "                                                  1, " +
+                "                                                  0))) " +
+                "           WHEN ? = 'letter' THEN (SELECT(IF((SELECT User.status " +
+                "                                                    FROM LetterSendList " +
+                "                                                             INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
+                "                                                             INNER JOIN User ON Letter.userIdx = User.userIdx " +
+                "                                                    WHERE Letter.letterIdx = ? " +
+                "                                                      AND LetterSendList.status = 'active' " +
+                "                                                    GROUP BY User.status) = 'active', " +
+                "                                                   1, " +
+                "                                                   0))) " +
+                "           WHEN ? = 'reply' THEN (SELECT(IF((SELECT User.status " +
+                "                                                   FROM Reply " +
+                "                                                            INNER JOIN User ON Reply.replierIdx = User.userIdx " +
+                "                                                   WHERE Reply.replyIdx = ? " +
+                "                                                     AND Reply.status = 'active' " +
+                "                                                   GROUP BY User.status) = 'active', " +
+                "                                                  1, " +
+                "                                                  0))) END";
+
+        for (History history : historyList) {
+            String type = history.getType();
+            int typeIdx = history.getTypeIdx();
+            history.setSenderActive(this.jdbcTemplate.queryForObject(query, boolean.class, type, typeIdx, type, typeIdx, type, typeIdx));
+        }
+    }
+
+    // History
+    public void setSenderActive(History history) {
+        String query = "SELECT CASE " +
+                "           WHEN ? = 'diary' THEN (SELECT(IF((SELECT User.status " +
+                "                                                   FROM DiarySendList " +
+                "                                                            INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                "                                                            INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                "                                                   WHERE Diary.diaryIdx = ? " +
+                "                                                     AND Diary.isSend = 1 " +
+                "                                                     AND DiarySendList.status = 'active' " +
+                "                                                   GROUP BY User.status) = 'active', " +
+                "                                                  1, " +
+                "                                                  0))) " +
+                "           WHEN ? = 'letter' THEN (SELECT(IF((SELECT User.status " +
+                "                                                    FROM LetterSendList " +
+                "                                                             INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
+                "                                                             INNER JOIN User ON Letter.userIdx = User.userIdx " +
+                "                                                    WHERE Letter.letterIdx = ? " +
+                "                                                      AND LetterSendList.status = 'active' " +
+                "                                                    GROUP BY User.status) = 'active', " +
+                "                                                   1, " +
+                "                                                   0))) " +
+                "           WHEN ? = 'reply' THEN (SELECT(IF((SELECT User.status " +
+                "                                                   FROM Reply " +
+                "                                                            INNER JOIN User ON Reply.replierIdx = User.userIdx " +
+                "                                                   WHERE Reply.replyIdx = ? " +
+                "                                                     AND Reply.status = 'active' " +
+                "                                                   GROUP BY User.status) = 'active', " +
+                "                                                  1, " +
+                "                                                  0))) END";
+
+        String type = history.getType();
+        int typeIdx = history.getTypeIdx();
+        history.setSenderActive(this.jdbcTemplate.queryForObject(query, boolean.class, type, typeIdx, type, typeIdx, type, typeIdx));
     }
 
     // =============================================  History 발신인 조회 =============================================
