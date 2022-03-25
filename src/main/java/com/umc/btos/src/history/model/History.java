@@ -19,40 +19,44 @@ public class History implements Comparable<History> {
     private int doneListNum = 0; // 일기일 경우 done list 개수 / 편지 또는 답장일 경우 0
     private String sendAt_raw; // 정렬용 날짜 (yyyy-MM-dd HH:mm:ss) - 수신일
     private String sendAt; // 화면 출력용 날짜 (yyyy.MM.dd) - 일기일 경우 일기 작성일(== 발신일) / 편지 또는 답장일 경우 수신일(== 발신일)
+    private int senderIdx; // 발신인 User.userIdx
     private String senderNickName; // 발신인 User.senderNickName
     private boolean senderActive; // 발신인 계정 상태 1. true : 활성 또는 휴면 2. false : 탈퇴 -> 답장 불가
     private int senderFontIdx; // 발신인 User.fontIdx
 
     // diaryList
-    public History(String type, int typeIdx, String content, int emotionIdx, String sendAt_raw, String sendAt, String senderNickName, int senderFontIdx) {
+    public History(String type, int typeIdx, String content, int emotionIdx, String sendAt_raw, String sendAt, int senderIdx, String senderNickName, int senderFontIdx) {
         this.type = type;
         this.typeIdx = typeIdx;
         this.content = content;
         this.emotionIdx = emotionIdx;
         this.sendAt_raw = sendAt_raw;
         this.sendAt = sendAt;
+        this.senderIdx = senderIdx;
         this.senderNickName = senderNickName;
         this.senderFontIdx = senderFontIdx;
     }
 
     // letterList, replyList
-    public History(String type, int typeIdx, String content, String sendAt_raw, String sendAt, String senderNickName, int senderFontIdx) {
+    public History(String type, int typeIdx, String content, String sendAt_raw, String sendAt, int senderIdx, String senderNickName, int senderFontIdx) {
         this.type = type;
         this.typeIdx = typeIdx;
         this.content = content;
         this.sendAt_raw = sendAt_raw;
         this.sendAt = sendAt;
+        this.senderIdx = senderIdx;
         this.senderNickName = senderNickName;
         this.senderFontIdx = senderFontIdx;
     }
 
     // letter, reply
-    public History(String type, int typeIdx, String content, String sendAt_raw, String sendAt, String senderNickName, boolean senderActive, int senderFontIdx) {
+    public History(String type, int typeIdx, String content, String sendAt_raw, String sendAt, int senderIdx, String senderNickName, boolean senderActive, int senderFontIdx) {
         this.type = type;
         this.typeIdx = typeIdx;
         this.content = content;
         this.sendAt_raw = sendAt_raw;
         this.sendAt = sendAt;
+        this.senderIdx = senderIdx;
         this.senderNickName = senderNickName;
         this.senderActive = senderActive;
         this.senderFontIdx = senderFontIdx;
