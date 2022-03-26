@@ -461,6 +461,39 @@ public class HistoryDao {
         history.setSenderActive(this.jdbcTemplate.queryForObject(query, boolean.class, type, typeIdx, type, typeIdx, type, typeIdx));
     }
 
+    public boolean setSenderActive(String type, int typeIdx) {
+        String query = "SELECT CASE " +
+                "           WHEN ? = 'diary' THEN (SELECT(IF((SELECT User.status " +
+                "                                                   FROM DiarySendList " +
+                "                                                            INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                "                                                            INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                "                                                   WHERE Diary.diaryIdx = ? " +
+                "                                                     AND Diary.isSend = 1 " +
+                "                                                     AND DiarySendList.status = 'active' " +
+                "                                                   GROUP BY User.status) = 'active', " +
+                "                                                  1, " +
+                "                                                  0))) " +
+                "           WHEN ? = 'letter' THEN (SELECT(IF((SELECT User.status " +
+                "                                                    FROM LetterSendList " +
+                "                                                             INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
+                "                                                             INNER JOIN User ON Letter.userIdx = User.userIdx " +
+                "                                                    WHERE Letter.letterIdx = ? " +
+                "                                                      AND LetterSendList.status = 'active' " +
+                "                                                    GROUP BY User.status) = 'active', " +
+                "                                                   1, " +
+                "                                                   0))) " +
+                "           WHEN ? = 'reply' THEN (SELECT(IF((SELECT User.status " +
+                "                                                   FROM Reply " +
+                "                                                            INNER JOIN User ON Reply.replierIdx = User.userIdx " +
+                "                                                   WHERE Reply.replyIdx = ? " +
+                "                                                     AND Reply.status = 'active' " +
+                "                                                   GROUP BY User.status) = 'active', " +
+                "                                                  1, " +
+                "                                                  0))) END";
+
+        return this.jdbcTemplate.queryForObject(query, boolean.class, type, typeIdx, type, typeIdx, type, typeIdx);
+    }
+
     // =============================================  History 발신인 조회 =============================================
 
     // 해당 발신인에게서 수신한 모든 항목(일기, 편지, 답장)의 개수 (문자열 검색)
@@ -580,35 +613,6 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(query, int.class, replyIdx);
     }
 
-    public boolean getSenderActive_diary(int diaryIdx) {
-        String query =
-                "SELECT User.status " +
-                        "FROM DiarySendList " +
-                        "         INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
-                        "         INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                        "WHERE Diary.diaryIdx = ? " +
-                        "  AND Diary.isSend = 1 " +
-                        "  AND DiarySendList.status = 'active' " +
-                        "GROUP BY User.status";
-
-        String senderStatus = this.jdbcTemplate.queryForObject(query, String.class, diaryIdx);
-        return senderStatus.compareTo("deleted") != 0; // User.status = delete -> false
-    }
-
-    public boolean getSenderActive_letter(int letterIdx) {
-        String query =
-                "SELECT User.status " +
-                        "FROM LetterSendList " +
-                        "         INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
-                        "         INNER JOIN User ON Letter.userIdx = User.userIdx " +
-                        "WHERE LetterSendList.letterIdx = ? " +
-                        "  AND LetterSendList.status = 'active' " +
-                        "GROUP BY User.status";
-
-        String senderStatus = this.jdbcTemplate.queryForObject(query, String.class, letterIdx);
-        return senderStatus.compareTo("deleted") != 0; // User.status = deleted -> false
-    }
-
     public boolean getSenderActive_reply(int replyIdx) {
         String query =
                 "SELECT User.status " +
@@ -658,30 +662,41 @@ public class HistoryDao {
 
     // 일기 done list
     public List<Done> getDoneList_main(int diaryIdx) {
-        String query = "SELECT Done.doneIdx, Done.content " +
-                "FROM DiarySendList " +
-                "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
-                "INNER JOIN User ON Diary.userIdx = User.userIdx " +
-                "INNER JOIN Done ON Diary.diaryIdx = Done.diaryIdx " +
-                "WHERE Diary.diaryIdx = ? AND Diary.isSend = 1 AND DiarySendList.status = 'active' " +
-                "GROUP BY Done.doneIdx";
+        // done list 유무 확인
+        String hasDone_query = "SELECT EXISTS(SELECT *  FROM Done  WHERE diaryIdx = ?  AND status = 'active')";
+        int hasDone = this.jdbcTemplate.queryForObject(hasDone_query, int.class, diaryIdx); // done list 존재할 경우 1, 존재하지 않을 경우 0
 
-        return this.jdbcTemplate.query(query,
-                (rs, rowNum) -> new Done(
-                        rs.getInt("doneIdx"),
-                        rs.getString("content")
-                ), diaryIdx);
+        // 해당 일기에 done list가 있는 경우
+        if (hasDone == 1) {
+            String query = "SELECT Done.doneIdx, Done.content " +
+                    "FROM DiarySendList " +
+                    "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
+                    "INNER JOIN User ON Diary.userIdx = User.userIdx " +
+                    "INNER JOIN Done ON Diary.diaryIdx = Done.diaryIdx " +
+                    "WHERE Diary.diaryIdx = ? AND Diary.isSend = 1 AND DiarySendList.status = 'active' " +
+                    "GROUP BY Done.doneIdx";
+
+            return this.jdbcTemplate.query(query,
+                    (rs, rowNum) -> new Done(
+                            rs.getInt("doneIdx"),
+                            rs.getString("content")
+                    ), diaryIdx);
+        }
+        // 해당 일기에 done list가 없는 경우
+        else {
+            return null;
+        }
     }
 
     // 편지
     public GetHistoryRes getLetter_main(int letterIdx, boolean senderActive) {
-        String query = "SELECT Letter.letterIdx                                  AS typeIdx, " +
+        String query = "SELECT Letter.letterIdx                   AS typeIdx, " +
                 "       Letter.content, " +
-                "       LetterSendList.createdAt                          AS sendAt_raw, " +
+                "       LetterSendList.createdAt                  AS sendAt_raw, " +
                 "       date_format(Letter.createdAt, '%Y.%m.%d') AS sendAt, " +
-                "       User.userIdx                                      AS senderIdx, " +
-                "       User.nickName                                     AS senderNickName, " +
-                "       User.fontIdx                                      AS senderFontIdx " +
+                "       User.userIdx                              AS senderIdx, " +
+                "       User.nickName                             AS senderNickName, " +
+                "       User.fontIdx                              AS senderFontIdx " +
                 "FROM LetterSendList " +
                 "         INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "         INNER JOIN User ON Letter.userIdx = User.userIdx " +
@@ -707,7 +722,7 @@ public class HistoryDao {
 
     // 일기
     public List<GetHistoryRes> getReplyList_diary(int userIdx, int diaryIdx) {
-        String query = "SELECT Reply.replyIdx                           AS typeIdx, " +
+        String query = "SELECT Reply.replyIdx                    AS typeIdx, " +
                 "       Reply.content, " +
                 "       Reply.createdAt                          AS sendAt_raw, " +
                 "       date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt, " +
@@ -742,7 +757,7 @@ public class HistoryDao {
 
     // 편지
     public List<GetHistoryRes> getReplyList_letter(int userIdx, int letterIdx) {
-        String query = "SELECT Reply.replyIdx                           AS typeIdx, " +
+        String query = "SELECT Reply.replyIdx                    AS typeIdx, " +
                 "       Reply.content, " +
                 "       Reply.createdAt                          AS sendAt_raw, " +
                 "       date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt, " +

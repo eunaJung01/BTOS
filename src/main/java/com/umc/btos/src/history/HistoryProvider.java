@@ -278,48 +278,51 @@ public class HistoryProvider {
         try {
             List<GetHistoryRes> historyList = new ArrayList<>();
 
-            // type = diary
+            // ----------------------------------------------- diary --------------------------------------------------
+
             if (type.compareTo("diary") == 0) {
-                GetHistoryRes diary = historyDao.getDiary_main(typeIdx, historyDao.getSenderActive_diary(typeIdx));
+                GetHistoryRes diary = historyDao.getDiary_main(typeIdx, historyDao.setSenderActive(type, typeIdx));
                 diary.setPositioning(true);
-                if (historyDao.hasDone(typeIdx) == 1) { // 해당 일기에 done list가 있는 경우
-                    diary.setDoneList(historyDao.getDoneList_main(typeIdx));
-                }
+
+                // set done list
+                diary.setDoneList(historyDao.getDoneList_main(typeIdx));
                 historyList.add(diary);
 
                 if (historyDao.hasReply_diary(userIdx, typeIdx) == 1) { // 답장 유무 확인
                     historyList.addAll(historyDao.getReplyList_diary(userIdx, typeIdx)); // 답장 목록
 
-                    // setSenderActive
+                    // set senderActive
                     for (GetHistoryRes history : historyList) {
                         if (history.getType().compareTo("reply") == 0) {
                             int replyIdx = history.getTypeIdx();
-                            history.setSenderActive(historyDao.getSenderActive_reply(replyIdx));
+                            history.setSenderActive(historyDao.setSenderActive("reply", replyIdx));
                         }
                     }
                 }
             }
 
-            // type = letter
+            // ---------------------------------------------- letter --------------------------------------------------
+
             else if (type.compareTo("letter") == 0) {
-                GetHistoryRes letter = historyDao.getLetter_main(typeIdx, historyDao.getSenderActive_letter(typeIdx));
+                GetHistoryRes letter = historyDao.getLetter_main(typeIdx, historyDao.setSenderActive(type, typeIdx));
                 letter.setPositioning(true);
                 historyList.add(letter);
 
                 if (historyDao.hasReply_letter(userIdx, typeIdx) == 1) { // 답장 유무 확인
                     historyList.addAll(historyDao.getReplyList_letter(userIdx, typeIdx)); // 답장 목록
 
-                    // setSenderActive
+                    // set senderActive
                     for (GetHistoryRes history : historyList) {
                         if (history.getType().compareTo("reply") == 0) {
                             int replyIdx = history.getTypeIdx();
-                            history.setSenderActive(historyDao.getSenderActive_reply(replyIdx));
+                            history.setSenderActive(historyDao.setSenderActive("reply", replyIdx));
                         }
                     }
                 }
             }
 
-            // type = reply
+            // ----------------------------------------------- reply --------------------------------------------------
+
             else {
                 int replierIdx = historyDao.getReplierIdx(typeIdx);
 
@@ -338,21 +341,18 @@ public class HistoryProvider {
                     // 시작점이 일기인 경우
                     if (firstHistoryType.compareTo("diary") == 0) {
                         int diaryIdx = historyDao.getDiaryIdx_main(typeIdx);
+                        GetHistoryRes diary = historyDao.getDiary_main(diaryIdx, historyDao.setSenderActive(type, typeIdx));
 
-                        GetHistoryRes diary = historyDao.getDiary_main(diaryIdx, historyDao.getSenderActive_diary(diaryIdx));
-
-                        if (historyDao.hasDone(typeIdx) == 1) { // 해당 일기에 done list가 있는 경우
-                            diary.setDoneList(historyDao.getDoneList_main(typeIdx));
-                        }
-
+                        // set done list
+                        diary.setDoneList(historyDao.getDoneList_main(diaryIdx));
                         historyList.add(diary);
 
                         // 답장 목록
                         List<GetHistoryRes> replyList = historyDao.getReplyList_diary(userIdx, diaryIdx);
                         for (GetHistoryRes reply : replyList) {
-                            // setSenderActive
+                            // set senderActive
                             int replyIdx = reply.getTypeIdx();
-                            reply.setSenderActive(historyDao.getSenderActive_reply(replyIdx));
+                            reply.setSenderActive(historyDao.setSenderActive(type, typeIdx));
 
                             if (replyIdx == typeIdx) { // 사용자가 조회하고자 하는 답장 본문
                                 reply.setPositioning(true);
@@ -364,14 +364,14 @@ public class HistoryProvider {
                     // 시작점이 편지인 경우
                     else if (firstHistoryType.compareTo("letter") == 0) {
                         int letterIdx = historyDao.getLetterIdx_main(typeIdx);
-                        GetHistoryRes letter = historyDao.getLetter_main(letterIdx, historyDao.getSenderActive_letter(letterIdx));
+                        GetHistoryRes letter = historyDao.getLetter_main(letterIdx, historyDao.setSenderActive(type, typeIdx));
                         historyList.add(letter);
 
                         List<GetHistoryRes> replyList = historyDao.getReplyList_letter(userIdx, letterIdx);
                         for (GetHistoryRes reply : replyList) {
-                            // setSenderActive
+                            // set senderActive
                             int replyIdx = reply.getTypeIdx();
-                            reply.setSenderActive(historyDao.getSenderActive_reply(replyIdx));
+                            reply.setSenderActive(historyDao.setSenderActive(type, typeIdx));
 
                             if (replyIdx == typeIdx) { // 사용자가 조회하고자 하는 답장 본문
                                 reply.setPositioning(true);
@@ -385,6 +385,7 @@ public class HistoryProvider {
             return historyList;
 
         } catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
