@@ -35,8 +35,8 @@ public class DiaryService {
         this.plantDao = plantDao;
     }
 
-    @Value("${secret.private-diary-key}")
-    String PRIVATE_DIARY_KEY;
+//    @Value("${secret.private-diary-key}")
+//    String PRIVATE_DIARY_KEY;
 
     // ================================================== validation ==================================================
 
@@ -72,15 +72,16 @@ public class DiaryService {
         checkPublicDate(postDiaryReq.getDiaryDate(), postDiaryReq.getIsPublic_int());
 
         // isPublic == 0(private)인 경우 -> Diary.content & Done.content 부분 암호화하여 저장
-        if (postDiaryReq.getIsPublic_int() == 0) {
-            String diaryContent_encrypted = encryptDiaryContent(postDiaryReq.getDiaryContent()); // Diary.content 암호화
-            postDiaryReq.setDiaryContent(diaryContent_encrypted);
-
-            if (postDiaryReq.getDoneList() != null) {
-                List<String> doneList_encrypted = encryptDoneContents(postDiaryReq.getDoneList()); // Done.content 암호화
-                postDiaryReq.setDoneList(doneList_encrypted);
-            }
-        }
+        // -> Archive 검색 기능 개선을 위해서 암호화 삭제
+//        if (postDiaryReq.getIsPublic_int() == 0) {
+//            String diaryContent_encrypted = encryptDiaryContent(postDiaryReq.getDiaryContent()); // Diary.content 암호화
+//            postDiaryReq.setDiaryContent(diaryContent_encrypted);
+//
+//            if (postDiaryReq.getDoneList() != null) {
+//                List<String> doneList_encrypted = encryptDoneContents(postDiaryReq.getDoneList()); // Done.content 암호화
+//                postDiaryReq.setDoneList(doneList_encrypted);
+//            }
+//        }
 
         try {
             int diaryIdx = diaryDao.saveDiary(postDiaryReq);
@@ -126,13 +127,14 @@ public class DiaryService {
         checkPublicDate(putDiaryReq.getDiaryDate(), putDiaryReq.getIsPublic_int());
 
         // isPublic == 0(private)인 경우 -> Diary.content & Done.content 부분 암호화하여 저장
-        if (putDiaryReq.getIsPublic_int() == 0) {
-            String diaryContent_encrypted = encryptDiaryContent(putDiaryReq.getDiaryContent()); // Diary.content 암호화
-            putDiaryReq.setDiaryContent(diaryContent_encrypted);
-
-            List doneList_encrypted = encryptDoneContents(putDiaryReq.getDoneList()); // Done.content 암호화
-            putDiaryReq.setDoneList(doneList_encrypted);
-        }
+        // -> Archive 검색 기능 개선을 위해서 암호화 삭제
+//        if (putDiaryReq.getIsPublic_int() == 0) {
+//            String diaryContent_encrypted = encryptDiaryContent(putDiaryReq.getDiaryContent()); // Diary.content 암호화
+//            putDiaryReq.setDiaryContent(diaryContent_encrypted);
+//
+//            List doneList_encrypted = encryptDoneContents(putDiaryReq.getDoneList()); // Done.content 암호화
+//            putDiaryReq.setDoneList(doneList_encrypted);
+//        }
 
         try {
             // Diary Table 수정
@@ -199,31 +201,31 @@ public class DiaryService {
 
     // ============================================= private 일기 암호화 ==============================================
 
-    // Diary.content
-    public String encryptDiaryContent(String diaryContent) throws BaseException {
-        try {
-//            return new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(diaryContent);
-            return new AES128(PRIVATE_DIARY_KEY).encrypt(diaryContent);
-
-        } catch (Exception exception) {
-            throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 암호화에 실패하였습니다.
-        }
-    }
-
-    // Done.content
-    public List<String> encryptDoneContents(List<String> doneList) throws BaseException {
-        try {
-            List<String> doneList_encrypted = new ArrayList(); // 암호화된 done list 내용들을 저장하는 리스트
-            for (String done : doneList) {
-//                doneList_encrypted.add(new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(done.toString()));
-                doneList_encrypted.add(new AES128(PRIVATE_DIARY_KEY).encrypt(done.toString()));
-            }
-            return doneList_encrypted;
-
-        } catch (Exception exception) {
-            throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 암호화에 실패하였습니다.
-        }
-    }
+//    // Diary.content
+//    public String encryptDiaryContent(String diaryContent) throws BaseException {
+//        try {
+////            return new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(diaryContent);
+//            return new AES128(PRIVATE_DIARY_KEY).encrypt(diaryContent);
+//
+//        } catch (Exception exception) {
+//            throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 암호화에 실패하였습니다.
+//        }
+//    }
+//
+//    // Done.content
+//    public List<String> encryptDoneContents(List<String> doneList) throws BaseException {
+//        try {
+//            List<String> doneList_encrypted = new ArrayList(); // 암호화된 done list 내용들을 저장하는 리스트
+//            for (String done : doneList) {
+////                doneList_encrypted.add(new AES128(Secret.PRIVATE_DIARY_KEY).encrypt(done.toString()));
+//                doneList_encrypted.add(new AES128(PRIVATE_DIARY_KEY).encrypt(done.toString()));
+//            }
+//            return doneList_encrypted;
+//
+//        } catch (Exception exception) {
+//            throw new BaseException(DIARY_ENCRYPTION_ERROR); // 일기 암호화에 실패하였습니다.
+//        }
+//    }
 
     // ================================================================================================================
 

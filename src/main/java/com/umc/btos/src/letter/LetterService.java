@@ -122,7 +122,7 @@ public class LetterService {
 //                System.out.println("userNum_similarAge = " + userNum_similarAge);
 
                 // 발송 비율 2. 비슷한 나이대의 회원이 3명 이하(n)인 경우 -> n명 전부 발송
-                if (userNum_similarAge <= 3) {
+                if (userNum_similarAge <= similarNum) {
                     for (User user : userList_similarAge) {
                         int userIdx = user.getUserIdx();
                         letterDao.sendLetter(letterIdx, userIdx); // 편지 발송
@@ -135,9 +135,9 @@ public class LetterService {
 
                 // 발송 비율 1. 기본 -> 비슷한 나이대의 회원 집단에서 3명 무작위로 발송
                 else { // userNum_similarAge > 3
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < similarNum; i++) {
                         int idx = (int) (Math.random() * userList_similarAge.size());
-//                        System.out.println(userList_similarAge.get(idx).getUserIdx());
+                        System.out.println(userList_similarAge.get(idx).getUserIdx());
                         int userIdx = userList_similarAge.get(idx).getUserIdx();
                         letterDao.sendLetter(letterIdx, userIdx); // 편지 발송
 
@@ -151,13 +151,15 @@ public class LetterService {
 
             // 발송 비율 4. 발신인의 생년 정보가 없는 경우 -> 편지 발송이 가능한 전체 집단에서 무작위로 발송
             else {
-                leftNum = 5; // 무작위로 편지를 발송해야 하는 횟수 갱신
+                leftNum = totalNum; // 무작위로 편지를 발송해야 하는 횟수 갱신
             }
 
             // leftNum 수만큼 무작위로 발송
             List<User> userList_random = new LinkedList<>(); // 편지 발송 가능한 회원들 목록
             for (User user : userList) {
-                if (user.getUserIdx_recentReceived() != senderUserIdx && !userIdx_sendMap.get(user.getUserIdx())) {
+                // 회원 수가 적고 한명만 계속 편지를 발송할 경우 -> 가장 최근에 발신인의 편지를 받은 회원을 제외하면 발송 가능한 회원이 없어서 편지가 아예 발송되지 않는 문제 발생
+//                if (user.getUserIdx_recentReceived() != senderUserIdx && !userIdx_sendMap.get(user.getUserIdx())) {
+                if (!userIdx_sendMap.get(user.getUserIdx())) {
                     userList_random.add(user);
                 }
             }
@@ -180,13 +182,6 @@ public class LetterService {
             }
 //            System.out.println();
 
-            // set receiverList
-//            for (int userIdx : receiverIdxList) {
-//                Receiver receiver = new Receiver(userIdx);
-//                receiver.setFcmToken(letterDao.getFcmToken(userIdx));
-//                receiverList.add(receiver);
-//            }
-
             // 알림 저장
             alarmService.postAlarm_letter(letterIdx, senderNickName, receiverIdxList);
 
@@ -204,7 +199,6 @@ public class LetterService {
                         senderNickName + Constant.LETTER_BODY);
             }
 
-//            return new PostLetterRes(letterIdx, senderNickName, receiverList);
             return letterIdx;
 
         } catch (Exception exception) {
