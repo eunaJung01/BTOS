@@ -61,5 +61,4 @@ spring:
       on-profile: "secret"
 
 secret:
-  private-diary-key: ${PRIVATE_DIARY_KEY}
   jwt-secret-key: ${JWT_SECRET_KEY}
