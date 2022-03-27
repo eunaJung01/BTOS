@@ -25,8 +25,8 @@ public class DiaryProvider {
     private final AlarmService alarmService;
     private final DiaryFcmService diaryFcmService;
 
-    @Value("${secret.private-diary-key}")
-    String PRIVATE_DIARY_KEY;
+//    @Value("${secret.private-diary-key}")
+//    String PRIVATE_DIARY_KEY;
 
     @Autowired
     public DiaryProvider(DiaryDao diaryDao, AlarmService alarmService, DiaryFcmService diaryFcmService) {

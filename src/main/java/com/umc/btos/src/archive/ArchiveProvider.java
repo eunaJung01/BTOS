@@ -26,8 +26,8 @@ public class ArchiveProvider {
         this.archiveDao = archiveDao;
     }
 
-    @Value("${secret.private-diary-key}")
-    String PRIVATE_DIARY_KEY;
+//    @Value("${secret.private-diary-key}")
+//    String PRIVATE_DIARY_KEY;
 
     // ================================================== validation ==================================================
 
@@ -178,9 +178,9 @@ public class ArchiveProvider {
         try {
             // 일기
             Diary diary = archiveDao.getDiary(diaryIdx);
-            if (archiveDao.getIsPublic(diaryIdx) == 0) { // private 일기일 경우 Diary.content 복호화
-                decryptContents(diary);
-            }
+//            if (archiveDao.getIsPublic(diaryIdx) == 0) { // private 일기일 경우 Diary.content 복호화
+//                decryptContents(diary);
+//            }
             int isPublic = archiveDao.getIsPublic(diaryIdx);
 
             // done list
@@ -188,15 +188,15 @@ public class ArchiveProvider {
             if (archiveDao.hasDoneList(diaryIdx)) { // 해당 일기에 done list가 있는 경우
                 doneList.addAll(archiveDao.getDoneList(diaryIdx));
 
-                if (isPublic == 0) { // private 일기일 경우 Done.content 복호화
-                    doneList = decryptContents(doneList); // doneList 갱신
-                }
+//                if (isPublic == 0) { // private 일기일 경우 Done.content 복호화
+//                    doneList = decryptContents(doneList); // doneList 갱신
+//                }
             }
 
             return new GetDiaryRes(diary.getDiaryIdx(), diary.getEmotionIdx(), isPublic, diary.getDiaryDate(), diary.getContent(), doneList);
 
-        } catch (BaseException exception) {
-            throw new BaseException(DIARY_DECRYPTION_ERROR); // 일기 복호화에 실패하였습니다.
+//        } catch (BaseException exception) {
+//            throw new BaseException(DIARY_DECRYPTION_ERROR); // 일기 복호화에 실패하였습니다.
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -204,33 +204,33 @@ public class ArchiveProvider {
 
     // ================================================ content 복호화 ================================================
 
-    // 일기
-    public void decryptContents(Diary diary) throws BaseException {
-        try {
-            // Diary.content
-            String diaryContent = diary.getContent();
-//            diary.setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent));
-            diary.setContent(new AES128(PRIVATE_DIARY_KEY).decrypt(diaryContent));
-
-        } catch (Exception ignored) {
-            throw new BaseException(DIARY_DECRYPTION_ERROR); // 일기 복호화에 실패하였습니다.
-        }
-    }
-
-    // done list
-    public List<String> decryptContents(List<String> doneList) throws BaseException {
-        try {
-            // Done.content
-            List<String> doneList_decrypted = new ArrayList<>();
-            for (String doneContent : doneList) {
-//                doneList_decrypted.add(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
-                doneList_decrypted.add(new AES128(PRIVATE_DIARY_KEY).decrypt(doneContent));
-            }
-            return doneList_decrypted;
-
-        } catch (Exception ignored) {
-            throw new BaseException(DIARY_DECRYPTION_ERROR); // 일기 복호화에 실패하였습니다.
-        }
-    }
+//    // 일기
+//    public void decryptContents(Diary diary) throws BaseException {
+//        try {
+//            // Diary.content
+//            String diaryContent = diary.getContent();
+////            diary.setContent(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent));
+//            diary.setContent(new AES128(PRIVATE_DIARY_KEY).decrypt(diaryContent));
+//
+//        } catch (Exception ignored) {
+//            throw new BaseException(DIARY_DECRYPTION_ERROR); // 일기 복호화에 실패하였습니다.
+//        }
+//    }
+//
+//    // done list
+//    public List<String> decryptContents(List<String> doneList) throws BaseException {
+//        try {
+//            // Done.content
+//            List<String> doneList_decrypted = new ArrayList<>();
+//            for (String doneContent : doneList) {
+////                doneList_decrypted.add(new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(doneContent));
+//                doneList_decrypted.add(new AES128(PRIVATE_DIARY_KEY).decrypt(doneContent));
+//            }
+//            return doneList_decrypted;
+//
+//        } catch (Exception ignored) {
+//            throw new BaseException(DIARY_DECRYPTION_ERROR); // 일기 복호화에 실패하였습니다.
+//        }
+//    }
 
 }
