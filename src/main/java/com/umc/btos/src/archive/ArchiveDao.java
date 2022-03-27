@@ -104,151 +104,103 @@ public class ArchiveDao {
 
     // ====================================== 일기 리스트 조회 ======================================
 
-    // --------------------------------------- List<Diary> ---------------------------------------
+    // dataNum_total
+    public int getDiaryListNum(int userIdx, String search, String startDate, String endDate) {
+        search = "%" + search + "%";
 
-    // 1. 전체 조회 (diaryDate 기준 내림차순 정렬)
-    public List<Diary> getDiaryList(int userIdx, int pageNum) {
-        int startData = (pageNum - 1) * Constant.DIARYLIST_DATA_NUM;
-//        int endData = pageNum * Constant.DIARYLIST_DATA_NUM;
-
-        String query = "SELECT * FROM Diary " +
-                "WHERE userIdx = ? AND status = 'active' " +
-                "ORDER BY diaryDate DESC LIMIT ?, ?";
-
-        return this.jdbcTemplate.query(query,
-                (rs, rowNum) -> new Diary(
-                        rs.getInt("diaryIdx"),
-                        rs.getInt("emotionIdx"),
-                        rs.getString("diaryDate"),
-                        rs.getString("content")
-                ), userIdx, startData, Constant.DIARYLIST_DATA_NUM);
-    }
-
-    // 3. 기간 설정 조회 / 4. 문자열 검색 & 기간 설정 조회 (diaryDate 기준 내림차순 정렬)
-    public List<Diary> getDiaryListByDate(int userIdx, String startDate, String endDate, int pageNum) {
-        int startData = (pageNum - 1) * Constant.DIARYLIST_DATA_NUM;
-//        int endData = pageNum * Constant.DIARYLIST_DATA_NUM;
-
-        String query = "SELECT * FROM Diary " +
+        String query = "SELECT COUNT(*) " +
+                "FROM Diary " +
                 "WHERE userIdx = ? " +
-                "AND DATE_FORMAT(diaryDate, '%Y.%m.%d') >= DATE_FORMAT(?, '%Y.%m.%d') " +
-                "AND DATE_FORMAT(diaryDate, '%Y.%m.%d') <= DATE_FORMAT(?, '%Y.%m.%d') " +
-                "AND status = 'active' " +
-                "ORDER BY diaryDate DESC LIMIT ?, ?";
+                "  AND status = 'active' " +
+                "  AND REPLACE(content, ' ', '') LIKE REPLACE(?, ' ', '') ";
 
-        return this.jdbcTemplate.query(query,
-                (rs, rowNum) -> new Diary(
-                        rs.getInt("diaryIdx"),
-                        rs.getInt("emotionIdx"),
-                        rs.getString("diaryDate"),
-                        rs.getString("content")
-                ), userIdx, startDate, endDate, startData, Constant.DIARYLIST_DATA_NUM);
+        // 기간 설정 조회
+        if (startDate != null && endDate != null) {
+            query += "AND DATE_FORMAT(diaryDate, '%Y.%m.%d') >= DATE_FORMAT(?, '%Y.%m.%d') " +
+                    "AND DATE_FORMAT(diaryDate, '%Y.%m.%d') <= DATE_FORMAT(?, '%Y.%m.%d')";
+        }
+
+        // 기간 설정 조회 포함할 경우
+        if (startDate != null && endDate != null) {
+            return this.jdbcTemplate.queryForObject(query, int.class, userIdx, search, startDate, endDate);
+        }
+        // 나머지 경우
+        else {
+            return this.jdbcTemplate.queryForObject(query, int.class, userIdx, search);
+        }
     }
 
-    // --------------------------------------- COUNT(List<Diary>) ---------------------------------------
-
-    // 1. 전체 조회
-    public int getDiaryList_dataNum(int userIdx) {
-        String query = "SELECT COUNT(*) FROM Diary " +
-                "WHERE userIdx = ? AND status = 'active'";
-
-        return this.jdbcTemplate.queryForObject(query, int.class, userIdx);
-    }
-
-    // 3. 기간 설정 조회 / 4. 문자열 검색 & 기간 설정 조회
-    public int getDiaryListByDate_dataNum(int userIdx, String startDate, String endDate) {
-        String query = "SELECT COUNT(*) FROM Diary " +
-                "WHERE userIdx = ? " +
-                "AND DATE_FORMAT(diaryDate, '%Y.%m.%d') >= DATE_FORMAT(?, '%Y.%m.%d') " +
-                "AND DATE_FORMAT(diaryDate, '%Y.%m.%d') <= DATE_FORMAT(?, '%Y.%m.%d') " +
-                "AND status = 'active'";
-
-        return this.jdbcTemplate.queryForObject(query, int.class, userIdx, startDate, endDate);
-    }
-
-    // --------------------------------------- diaryIdxList ---------------------------------------
-
-    // 2. 문자열 검색
-    // 특정 회원의 모든 일기 diaryIdx (diaryDate 기준 내림차순 정렬)
-    public List<Integer> getDiaryIdxList(int userIdx) {
-        String query = "SELECT diaryIdx FROM Diary " +
-                "WHERE userIdx = ? AND status = 'active' " +
-                "ORDER BY diaryDate DESC";
-
-        return this.jdbcTemplate.queryForList(query, int.class, userIdx);
-    }
-
-    // --------------------------------------- Diary ---------------------------------------
-
-    // 일기 조회
-    public Diary getDiary_diaryList(int diaryIdx) {
-        String query = "SELECT * FROM Diary WHERE diaryIdx = ? AND status = 'active'";
-        return this.jdbcTemplate.queryForObject(query,
-                (rs, rowNum) -> new Diary(
-                        rs.getInt("diaryIdx"),
-                        rs.getInt("emotionIdx"),
-                        rs.getString("diaryDate"),
-                        rs.getString("content")
-                ), diaryIdx);
-    }
-
-    // Diary.content
-    public String getDiaryContent(int diaryIdx) {
-        String query = "SELECT content FROM Diary WHERE diaryIdx = ? AND status = 'active'";
-        return this.jdbcTemplate.queryForObject(query, String.class, diaryIdx);
-    }
-
-    // --------------------------------------- monthList ---------------------------------------
-
-    // 1. 전체 조회
-    public List<String> getMonthList(int userIdx, int pageNum) {
+    // diaryList
+    public List<Diary> getDiaryList(int userIdx, String search, String startDate, String endDate, int pageNum) {
         int startData = (pageNum - 1) * Constant.DIARYLIST_DATA_NUM;
-//        int endData = pageNum * Constant.DIARYLIST_DATA_NUM;
+        search = "%" + search + "%";
+
+        String query = "SELECT * " +
+                "FROM Diary " +
+                "WHERE userIdx = ? " +
+                "  AND status = 'active' " +
+                "  AND REPLACE(content, ' ', '') LIKE REPLACE(?, ' ', '') ";
+
+        // 기간 설정 조회
+        if (startDate != null && endDate != null) {
+            query += "AND DATE_FORMAT(diaryDate, '%Y.%m.%d') >= DATE_FORMAT(?, '%Y.%m.%d') " +
+                    "AND DATE_FORMAT(diaryDate, '%Y.%m.%d') <= DATE_FORMAT(?, '%Y.%m.%d')";
+        }
+
+        query += "ORDER BY diaryDate DESC " + // createAt 기준 내림차순 정렬
+                "LIMIT ?, ?"; // 페이징 처리
+
+        // 기간 설정 조회 포함할 경우
+        if (startDate != null && endDate != null) {
+            return this.jdbcTemplate.query(query,
+                    (rs, rowNum) -> new Diary(
+                            rs.getInt("diaryIdx"),
+                            rs.getInt("emotionIdx"),
+                            rs.getString("diaryDate"),
+                            rs.getString("content")
+                    ), userIdx, search, startDate, endDate, startData, Constant.DIARYLIST_DATA_NUM);
+        }
+        // 나머지 경우
+        else {
+            return this.jdbcTemplate.query(query,
+                    (rs, rowNum) -> new Diary(
+                            rs.getInt("diaryIdx"),
+                            rs.getInt("emotionIdx"),
+                            rs.getString("diaryDate"),
+                            rs.getString("content")
+                    ), userIdx, search, startData, Constant.DIARYLIST_DATA_NUM);
+        }
+    }
+
+    // monthList
+    public List<String> getMonthList(int userIdx, String search, String startDate, String endDate, int pageNum) {
+        int startData = (pageNum - 1) * Constant.DIARYLIST_DATA_NUM;
+        search = "%" + search + "%";
 
         String query = "SELECT DISTINCT parsed_diaryDate " +
                 "FROM (SELECT left(diaryDate, 7) AS parsed_diaryDate, diaryDate " +
                 "      FROM Diary " +
                 "      WHERE userIdx = ? " +
                 "        AND status = 'active' " +
-                "      ORDER BY diaryDate DESC " +
-                "      LIMIT ?, ?) parsed_diaryDate";
+                "        AND REPLACE(content, ' ', '') LIKE REPLACE(?, ' ', '') ";
 
-        return this.jdbcTemplate.queryForList(query, String.class, userIdx, startData, Constant.DIARYLIST_DATA_NUM);
-    }
-
-    // 2. 문자열 검색 / 4. 문자열 검색 & 기간 설정 조회 (search != null)
-    public List<String> getMonthList(int userIdx, List<Integer> idxList) {
-        String WHERE_diaryIdx_query = "";
-        for (Integer diaryIdx : idxList) {
-            WHERE_diaryIdx_query += " OR diaryIdx = " + diaryIdx;
+        // 기간 설정 조회
+        if (startDate != null && endDate != null) {
+            query += "AND DATE_FORMAT(diaryDate, '%Y.%m.%d') >= DATE_FORMAT(?, '%Y.%m.%d') " +
+                    "AND DATE_FORMAT(diaryDate, '%Y.%m.%d') <= DATE_FORMAT(?, '%Y.%m.%d')";
         }
 
-        String query = "SELECT DISTINCT parsed_diaryDate " +
-                "FROM (SELECT left(diaryDate, 7) AS parsed_diaryDate, diaryDate " +
-                "FROM Diary " +
-                "      WHERE userIdx = ?" + WHERE_diaryIdx_query +
-                "        AND status = 'active' " +
-                "      ORDER BY diaryDate DESC " +
-                ") parsed_diaryDate";
+        query += "ORDER BY diaryDate DESC " + // createAt 기준 내림차순 정렬
+                "LIMIT ?, ?) parsed_diaryDate"; // 페이징 처리
 
-        return this.jdbcTemplate.queryForList(query, String.class, userIdx);
-    }
-
-    // 3. 기간 설정 조회 (paging)
-    public List<String> getMonthList(int userIdx, String startDate, String endDate, int pageNum) {
-        int startData = (pageNum - 1) * Constant.DIARYLIST_DATA_NUM;
-//        int endData = pageNum * Constant.DIARYLIST_DATA_NUM;
-
-        String query = "SELECT DISTINCT parsed_diaryDate " +
-                "FROM (SELECT left(diaryDate, 7) AS parsed_diaryDate, diaryDate FROM Diary " +
-                "WHERE userIdx = ? " +
-                "AND DATE_FORMAT(diaryDate, '%Y.%m.%d') >= DATE_FORMAT(?, '%Y.%m.%d') " +
-                "AND DATE_FORMAT(diaryDate, '%Y.%m.%d') <= DATE_FORMAT(?, '%Y.%m.%d') " +
-                "AND status = 'active' " +
-                "ORDER BY diaryDate DESC " +
-                "LIMIT ?, ?) parsed_diaryDate ";
-
-        return this.jdbcTemplate.queryForList(query, String.class, userIdx, startDate, endDate, startData, Constant.DIARYLIST_DATA_NUM);
+        // 기간 설정 조회 포함할 경우
+        if (startDate != null && endDate != null) {
+            return this.jdbcTemplate.queryForList(query, String.class, userIdx, search, startDate, endDate, startData, Constant.DIARYLIST_DATA_NUM);
+        }
+        // 나머지 경우
+        else {
+            return this.jdbcTemplate.queryForList(query, String.class, userIdx, search, startData, Constant.DIARYLIST_DATA_NUM);
+        }
     }
 
     // =================================== 일기 조회 ===================================

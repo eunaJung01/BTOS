@@ -101,11 +101,6 @@ public class ArchiveProvider {
      * 검색 시 띄어쓰기, 영문 대소문자 구분없이 조회됨
      * 최신순 정렬 (diaryDate 기준 내림차순 정렬)
      * 페이징 처리 (무한 스크롤) - 20개씩 조회
-     *
-     * 1. 전체 조회 - default
-     * 2. 문자열 검색 (search)
-     * 3. 기간 설정 조회 (startDate ~ endDate)
-     * 4. 문자열 검색 & 기간 설정 조회 (search, startDate ~ endDate)
      */
     public List<GetDiaryListRes> getDiaryList(String[] params, PagingRes pageInfo) throws BaseException, NullPointerException {
         try {
@@ -118,123 +113,24 @@ public class ArchiveProvider {
             // PagingRes
             int pageNum = pageInfo.getCurrentPage(); // 페이지 번호
             double dataNum_total = 0; // 총 데이터 개수 (후에 Math.ceil 사용하는 연산 때문에 double)
-            int dataNum_currentPage = 0; // 현재 페이지의 데이터 개수
-            boolean needsPaging = false;
 
             List<GetDiaryListRes> result = new ArrayList<>();
-            List<Diary> diaryList = new ArrayList<>(); // 일기 정보 저장 (done list 조회 X, 일기 내용만 조회)
-            List<String> monthList = new ArrayList<>(); // response에 들어가게 되는 날짜들 저장 (yyyy.MM)
-            List<Integer> idxList = new ArrayList<>(); // 문자열 검색을 할 경우 monthList 생성하게 해주는 장치 (찾는 값이 존재하는 일기의 인덱스만 저장)
 
-            // 1. 전체 조회 - default
-//            if (search.isEmpty() && startDate.isEmpty() && endDate.isEmpty()) {
-            if (search == null && startDate == null && endDate == null) {
-                diaryList = archiveDao.getDiaryList(userIdx, pageNum);
-                monthList.addAll(archiveDao.getMonthList(userIdx, pageNum));
-                dataNum_total = archiveDao.getDiaryList_dataNum(userIdx); // 총 데이터 개수
-            }
-
-            // 2. 문자열 검색 (search)
-            // search & Diary.content : 띄어쓰기 모두 제거 -> 찾기
-//            else if (!search.isEmpty() && startDate.isEmpty() && endDate.isEmpty()) {
-            else if (search != null && startDate == null && endDate == null) {
-                search = search.replaceAll("\"", ""); // 따옴표 제거
-                search = search.replaceAll(" ", ""); // 공백 제거
-                search = search.toLowerCase(); // 영문 대소문자 구분 X
-
-                List<Integer> diaryIdxList_all = archiveDao.getDiaryIdxList(userIdx); // 특정 회원의 모든 일기 diaryIdx : List 형태로 저장
-
-                for (int diaryIdx : diaryIdxList_all) {
-                    String diaryContent = archiveDao.getDiaryContent(diaryIdx);
-                    if (archiveDao.getIsPublic(diaryIdx) == 0) { // private 일기일 경우 content 복호화
-//                        diaryContent = new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent);
-                        diaryContent = new AES128(PRIVATE_DIARY_KEY).decrypt(diaryContent);
-                    }
-
-                    if (searchString(diaryContent, search)) { // 문자열 검색 -> 찾는 값이 존재하는 일기들만 저장
-                        diaryList.add(archiveDao.getDiary_diaryList(diaryIdx));
-                        idxList.add(diaryIdx);
-                    }
-                }
-                dataNum_total = diaryList.size();
-                if (dataNum_total > Constant.DIARYLIST_DATA_NUM) { // 페이징 처리 필요
-                    needsPaging = true;
-                }
-
-            } else {
-                // 3. 기간 설정 조회 (startDate ~ endDate)
-                diaryList = archiveDao.getDiaryListByDate(userIdx, startDate, endDate, pageNum);
-                monthList.addAll(archiveDao.getMonthList(userIdx, startDate, endDate, pageNum));
-                dataNum_total = archiveDao.getDiaryListByDate_dataNum(userIdx, startDate, endDate);
-
-                // 4. 문자열 검색 & 날짜 기간 설정 조회 (search, startDate ~ endDate)
-//                if (!search.isEmpty()) {
-                if (search != null) {
-                    search = search.replaceAll("\"", ""); // 따옴표 제거
-                    search = search.replaceAll(" ", ""); // 공백 제거
-                    search = search.toLowerCase(); // 영문 대소문자 구분 X
-
-                    List<Diary> diaryList_searched = new ArrayList<>();
-                    for (Diary diary : diaryList) {
-                        String diaryContent = diary.getContent();
-                        if (archiveDao.getIsPublic(diary.getDiaryIdx()) == 0) { // private 일기일 경우 content 복호화
-//                            diaryContent = new AES128(Secret.PRIVATE_DIARY_KEY).decrypt(diaryContent);
-                            diaryContent = new AES128(PRIVATE_DIARY_KEY).decrypt(diaryContent);
-                        }
-
-                        if (searchString(diaryContent, search)) { // 문자열 검색 -> 찾는 값이 존재하는 일기들만 저장
-                            diaryList_searched.add(diary);
-                            idxList.add(diary.getDiaryIdx());
-                        }
-                        diaryList = diaryList_searched;
-                    }
-                    dataNum_total = diaryList.size();
-                    if (dataNum_total > Constant.DIARYLIST_DATA_NUM) { // 페이징 처리 필요
-                        needsPaging = true;
-                    }
-                }
-            }
-
+            // diaryList
+            dataNum_total = archiveDao.getDiaryListNum(userIdx, search, startDate, endDate);
             if (dataNum_total == 0) {
                 throw new NullPointerException(); // 검색 결과 없음
             }
 
-            // PagingRes
-            pageInfo.setDataNum_total((int) dataNum_total);
-            int endPage = (int) Math.ceil(dataNum_total / Constant.DIARYLIST_DATA_NUM); // 마지막 페이지 번호
-            if (endPage == 0) endPage = 1;
-            if (pageInfo.getCurrentPage() > endPage) {
-                throw new BaseException(PAGENUM_ERROR); // 잘못된 페이지 요청입니다.
+            List<Diary> diaryList = archiveDao.getDiaryList(userIdx, search, startDate, endDate, pageNum); // 일기 정보 저장 (done list 조회 X, 일기 내용만 조회)
+            for (Diary diary : diaryList) { // set doneListNum
+                diary.setDoneListNum(archiveDao.setDoneListNum(diary.getDiaryIdx()));
             }
-            pageInfo.setEndPage(endPage);
-            pageInfo.setHasNext(pageInfo.getCurrentPage() != endPage); // pageNum == endPage -> hasNext = false
+            pageInfo.setDataNum_currentPage(diaryList.size()); // 현재 페이지의 데이터 개수
 
-            // 페이징 처리
-            if (needsPaging) {
-                int startDataIdx = (pageNum - 1) * Constant.DIARYLIST_DATA_NUM;
-                int endDataIdx = pageNum * Constant.DIARYLIST_DATA_NUM;
-                if (endDataIdx > dataNum_total) endDataIdx = (int) dataNum_total;
+            // monthList
+            List<String> monthList = archiveDao.getMonthList(userIdx, search, startDate, endDate, pageNum); // response에 들어가게 되는 날짜들 저장 (yyyy.MM)
 
-                List<Diary> diaryList_paging = new ArrayList<>(); // 일기 정보 저장 (done list 조회 X, 일기 내용만 조회)
-                for (int i = startDataIdx; i < endDataIdx; i++) {
-                    diaryList_paging.add(diaryList.get(i));
-                }
-                diaryList = diaryList_paging;
-            }
-            dataNum_currentPage = diaryList.size();
-            pageInfo.setDataNum_currentPage(dataNum_currentPage);
-
-            // content 복호화
-            for (Diary diary : diaryList) {
-                if (archiveDao.getIsPublic(diary.getDiaryIdx()) == 0) { // private 일기일 경우 content 복호화
-                    decryptContents(diary);
-                }
-            }
-
-//            if (!search.isEmpty()) { // 문자열 검색이 들어간 경우
-            if (search != null) { // 문자열 검색이 들어간 경우
-                monthList = archiveDao.getMonthList(userIdx, idxList); // diaryIdx 리스트로 날짜(yyyy.MM) 리스트 반환 (중복 제거)
-            }
             for (String month : monthList) {
                 List<Diary> diaryList_month = new ArrayList<>(); // 같은 '년도-달'인 일기들을 묶는 리스트
                 for (Diary diary : diaryList) {
@@ -247,13 +143,15 @@ public class ArchiveProvider {
                 }
             }
 
-            // set doneListNum
-            for (GetDiaryListRes getDiaryListRes : result) {
-                for (int j = 0; j < getDiaryListRes.getDiaryList().size(); j++) {
-                    Diary diary = getDiaryListRes.getDiaryList().get(j);
-                    diary.setDoneListNum(archiveDao.setDoneListNum(diary.getDiaryIdx()));
-                }
+            // PagingRes
+            pageInfo.setDataNum_total((int) dataNum_total);
+            int endPage = (int) Math.ceil(dataNum_total / Constant.DIARYLIST_DATA_NUM); // 마지막 페이지 번호
+            if (endPage == 0) endPage = 1;
+            if (pageInfo.getCurrentPage() > endPage) {
+                throw new BaseException(PAGENUM_ERROR); // 잘못된 페이지 요청입니다.
             }
+            pageInfo.setEndPage(endPage);
+            pageInfo.setHasNext(pageInfo.getCurrentPage() != endPage); // pageNum == endPage -> hasNext = false
 
             return result;
 
