@@ -130,7 +130,8 @@ public class MailboxDao {
                 "         INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "         INNER JOIN User ON Diary.userIdx = User.userIdx " +
                 "WHERE DiarySendList.receiverIdx = ? " +
-                "  AND Diary.diaryIdx = ?";
+                "  AND Diary.diaryIdx = ?" +
+                "  AND DiarySendList.status = 'active";
 
         return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new GetMailRes(
@@ -171,7 +172,8 @@ public class MailboxDao {
                 "         INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "         INNER JOIN User ON Letter.userIdx = User.userIdx " +
                 "WHERE LetterSendList.receiverIdx = ? " +
-                "  AND Letter.letterIdx = ?";
+                "  AND Letter.letterIdx = ?" +
+                "  AND LetterSendList.status = 'active'";
 
         return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new GetMailRes(
@@ -198,7 +200,8 @@ public class MailboxDao {
                 "FROM Reply " +
                 "         INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.receiverIdx = ? " +
-                "  AND Reply.replyIdx = ?";
+                "  AND Reply.replyIdx = ?" +
+                "  AND Reply.status = 'active'";
 
         return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new GetMailRes(
