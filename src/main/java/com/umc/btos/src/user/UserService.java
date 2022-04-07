@@ -54,7 +54,7 @@ public class UserService {
         // 회원 가입
         try{
             int userIdx = userDao.createUser(postUserReq);
-
+            pushAlarm(userIdx); // 시스템 메일 푸시 알림
             return new PostUserRes(userIdx);
         } catch (Exception ignored){
             System.out.println(ignored);
