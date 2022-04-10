@@ -120,10 +120,11 @@ public class LetterDao {
 
     // 편지를 받을 유저들 중 푸시 알람 수신하는 유저 리스트 반환
     public ArrayList<Integer> pushUserList(List<Integer> receiverIdxList) {
-        String query = "SELECT userIdx FROM User WHERE userIdx = ? AND pushAlarm = 1";
+        String query = "SELECT pushAlarm FROM User WHERE userIdx = ?";
         ArrayList<Integer> pushUsers = new ArrayList<>();
         for (int idx : receiverIdxList)
-            pushUsers.add(jdbcTemplate.queryForObject(query, int.class, idx));
+            if (jdbcTemplate.queryForObject(query, int.class, idx) == 1) // 푸시 알람을 수신하는 유저만
+                pushUsers.add(idx);
         return pushUsers;
     }
 
