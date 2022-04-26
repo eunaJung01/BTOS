@@ -53,6 +53,7 @@ public class ReplyDao {
                 String get_sendIdx_query = "select sendIdx from Reply where replyIdx = ?";
                 sendIdx = this.jdbcTemplate.queryForObject(get_sendIdx_query, int.class, sendIdx);
             } while (firstHistoryType.compareTo("diary") != 0 && firstHistoryType.compareTo("letter") != 0);
+            firstHistoryType = "reply";
         }
 
         String query = "INSERT INTO Reply (replierIdx, receiverIdx, firstHistoryType, sendIdx, content) VALUES (?,?,?,?,?)";
