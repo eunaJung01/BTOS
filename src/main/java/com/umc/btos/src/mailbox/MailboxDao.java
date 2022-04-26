@@ -131,7 +131,7 @@ public class MailboxDao {
                 "         INNER JOIN User ON Diary.userIdx = User.userIdx " +
                 "WHERE DiarySendList.receiverIdx = ? " +
                 "  AND Diary.diaryIdx = ?" +
-                "  AND DiarySendList.status = 'active";
+                "  AND DiarySendList.status = 'active'";
 
         return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new GetMailRes(
@@ -150,7 +150,7 @@ public class MailboxDao {
 
     // done list 유무 반환
     public boolean hasDoneList(int diaryIdx) {
-        String query = "SELECT EXISTS (SELECT COUNT(*) FROM Done WHERE diaryIdx = ? AND status = 'active')";
+        String query = "SELECT EXISTS (SELECT * FROM Done WHERE diaryIdx = ? AND status = 'active')";
         return this.jdbcTemplate.queryForObject(query, boolean.class, diaryIdx);
     }
 
