@@ -45,16 +45,16 @@ public class ReplyDao {
         int sendIdx = postReplyReq.getSendIdx();
 
         // History에서 답장하는 경우 (firstHistoryType == "reply")
-        if (firstHistoryType.compareTo("reply") == 0) {
-            do {
-                String get_firstHistoryType_query = "select firstHistoryType from Reply where replyIdx = ?";
-                firstHistoryType = this.jdbcTemplate.queryForObject(get_firstHistoryType_query, String.class, sendIdx);
-
-                String get_sendIdx_query = "select sendIdx from Reply where replyIdx = ?";
-                sendIdx = this.jdbcTemplate.queryForObject(get_sendIdx_query, int.class, sendIdx);
-            } while (firstHistoryType.compareTo("diary") != 0 && firstHistoryType.compareTo("letter") != 0);
-            firstHistoryType = "reply";
-        }
+//        if (firstHistoryType.compareTo("reply") == 0) {
+//            do {
+//                String get_firstHistoryType_query = "select firstHistoryType from Reply where replyIdx = ?";
+//                firstHistoryType = this.jdbcTemplate.queryForObject(get_firstHistoryType_query, String.class, sendIdx);
+//
+//                String get_sendIdx_query = "select sendIdx from Reply where replyIdx = ?";
+//                sendIdx = this.jdbcTemplate.queryForObject(get_sendIdx_query, int.class, sendIdx);
+//            } while (firstHistoryType.compareTo("diary") != 0 && firstHistoryType.compareTo("letter") != 0);
+//            firstHistoryType = "reply";
+//        }
 
         String query = "INSERT INTO Reply (replierIdx, receiverIdx, firstHistoryType, sendIdx, content) VALUES (?,?,?,?,?)";
         Object[] params = new Object[]{postReplyReq.getReplierIdx(), postReplyReq.getReceiverIdx(), firstHistoryType, sendIdx, postReplyReq.getContent()};
