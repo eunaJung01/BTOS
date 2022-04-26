@@ -388,24 +388,29 @@ public class DiaryProvider {
             String yesterday = LocalDate.now().minusDays(1).toString().replaceAll("-", "."); // 어제 날짜 (yyyy.MM.dd)
             List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(yesterday); // 당일 발송된 모든 diaryIdx
 
+            List<Integer> pushUserList = new ArrayList<>();
+
             List<GetSendListRes> diarySendList = new ArrayList<>();
             for (int diaryIdx : diaryIdxList) {
                 String senderNickName = diaryDao.getSenderNickName(diaryIdx); // 발신인 nickName
                 GetSendListRes diary = new GetSendListRes(diaryIdx, senderNickName);
                 diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, yesterday));
                 diarySendList.add(diary);
+
             }
 
             // title : 일기 도착!
             // body : nickName님의 일기가 도착했습니다.
-            for (GetSendListRes diary : diarySendList) {
-                for (int i = 0; i < diary.getReceiverIdxList().size(); i++) {
+            for (GetSendListRes diary : diarySendList) { // 각 일기에 대해서
+                pushUserList = diaryDao.pushUserList(diary.getReceiverIdxList());
+                for (int idx : pushUserList) { // 발송할 사람 리스트에 대해서 푸시 알람 수신할 유저 필터링
                     diaryFcmService.sendMessageTo(
-                            diaryDao.getFcmToken(diary.getReceiverIdxList().get(i)),
+                            diaryDao.getFcmToken(idx),
                             Constant.DIARY_TITLE,
                             diary.getSenderNickName() + Constant.DIARY_BODY);
                 }
             }
+
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
