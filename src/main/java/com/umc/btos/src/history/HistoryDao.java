@@ -628,7 +628,12 @@ public class HistoryDao {
     // --------------------------------------- 본문 ---------------------------------------
 
     // 일기
-    public GetHistoryRes getDiary_main(int diaryIdx, boolean senderActive) {
+    public GetHistoryRes getDiary_main(int receiverIdx, int diaryIdx, boolean senderActive) {
+        String get_sendIdx_query = "select DiarySendList.sendIdx " +
+                "from Diary inner join DiarySendList on Diary.diaryIdx = DiarySendList.diaryIdx " +
+                "where Diary.diaryIdx = ? and receiverIdx = ? and DiarySendList.status = 'active'";
+        int sendIdx = this.jdbcTemplate.queryForObject(get_sendIdx_query, int.class, diaryIdx, receiverIdx);
+
         String query = "SELECT Diary.diaryIdx                                   AS typeIdx, " +
                 "       Diary.content, " +
                 "       Diary.emotionIdx, " +
@@ -647,6 +652,8 @@ public class HistoryDao {
 
         return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new GetHistoryRes(
+                        "diary",
+                        sendIdx,
                         "diary",
                         rs.getInt("typeIdx"),
                         rs.getString("content"),
@@ -689,7 +696,12 @@ public class HistoryDao {
     }
 
     // 편지
-    public GetHistoryRes getLetter_main(int letterIdx, boolean senderActive) {
+    public GetHistoryRes getLetter_main(int receiverIdx, int letterIdx, boolean senderActive) {
+        String get_sendIdx_query = "select LetterSendList.sendIdx " +
+                "from Letter inner join LetterSendList on Letter.letterIdx = LetterSendList.letterIdx " +
+                "where Letter.letterIdx = ? and receiverIdx = ? and LetterSendList.status = 'active'";
+        int sendIdx = this.jdbcTemplate.queryForObject(get_sendIdx_query, int.class, letterIdx, receiverIdx);
+
         String query = "SELECT Letter.letterIdx                   AS typeIdx, " +
                 "       Letter.content, " +
                 "       LetterSendList.createdAt                  AS sendAt_raw, " +
@@ -707,6 +719,8 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new GetHistoryRes(
                         "letter",
+                        sendIdx,
+                        "letter",
                         rs.getInt("typeIdx"),
                         rs.getString("content"),
                         rs.getString("sendAt_raw"),
@@ -721,7 +735,13 @@ public class HistoryDao {
     // --------------------------------------- List<Reply> ---------------------------------------
 
     // 일기
-    public List<GetHistoryRes> getReplyList_diary(int userIdx, int diaryIdx) {
+    public List<GetHistoryRes> getReplyList_diary(int userIdx, String firstHistoryType, int diaryIdx) {
+        String get_sendIdx_query = "select DiarySendList.sendIdx " +
+                "from Diary inner join DiarySendList on Diary.diaryIdx = DiarySendList.diaryIdx " +
+                "where Diary.diaryIdx = ? and receiverIdx = ? and DiarySendList.status = 'active'";
+        int sendIdx = this.jdbcTemplate.queryForObject(get_sendIdx_query, int.class, diaryIdx, userIdx);
+
+
         String query = "SELECT Reply.replyIdx                    AS typeIdx, " +
                 "       Reply.content, " +
                 "       Reply.createdAt                          AS sendAt_raw, " +
@@ -744,6 +764,8 @@ public class HistoryDao {
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetHistoryRes(
+                        firstHistoryType,
+                        sendIdx,
                         "reply",
                         rs.getInt("typeIdx"),
                         rs.getString("content"),
@@ -756,7 +778,12 @@ public class HistoryDao {
     }
 
     // 편지
-    public List<GetHistoryRes> getReplyList_letter(int userIdx, int letterIdx) {
+    public List<GetHistoryRes> getReplyList_letter(int userIdx, String firstHistoryType, int letterIdx) {
+        String get_sendIdx_query = "select LetterSendList.sendIdx " +
+                "from Letter inner join LetterSendList on Letter.letterIdx = LetterSendList.letterIdx " +
+                "where Letter.letterIdx = ? and receiverIdx = ? and LetterSendList.status = 'active'";
+        int sendIdx = this.jdbcTemplate.queryForObject(get_sendIdx_query, int.class, letterIdx, userIdx);
+
         String query = "SELECT Reply.replyIdx                    AS typeIdx, " +
                 "       Reply.content, " +
                 "       Reply.createdAt                          AS sendAt_raw, " +
@@ -779,6 +806,8 @@ public class HistoryDao {
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetHistoryRes(
+                        firstHistoryType,
+                        sendIdx,
                         "reply",
                         rs.getInt("typeIdx"),
                         rs.getString("content"),

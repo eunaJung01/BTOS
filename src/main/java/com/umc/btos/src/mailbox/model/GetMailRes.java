@@ -9,6 +9,7 @@ import java.util.List;
 @Setter
 public class GetMailRes {
     private String firstHistoryType; // 시작점 type (diary : 일기 / letter : 편지)
+    private int sendIdx; // 일기일 경우 DiarySendList.sendIdx / 편지일 경우 LetterSendList.sendIdx
     private String type; // 현재 조회하는 우편 type
     private int typeIdx; // 식별자 (diary - diaryIdx / letter - letterIdx / reply - replyIdx)
     private String content; // 내용
@@ -21,8 +22,9 @@ public class GetMailRes {
     private int senderFontIdx; // 발신인 User.fontIdx
 
     // type = diary
-    public GetMailRes(String firstHistoryType, String type, int typeIdx, String content, int emotionIdx, String sendAt, int senderIdx, String senderNickName, int senderFontIdx) {
+    public GetMailRes(String firstHistoryType, int sendIdx, String type, int typeIdx, String content, int emotionIdx, String sendAt, int senderIdx, String senderNickName, int senderFontIdx) {
         this.firstHistoryType = firstHistoryType;
+        this.sendIdx = sendIdx;
         this.type = type;
         this.typeIdx = typeIdx;
         this.content = content;
@@ -34,8 +36,9 @@ public class GetMailRes {
     }
 
     // type = letter, reply
-    public GetMailRes(String firstHistoryType, String type, int typeIdx, String content, String sendAt, int senderIdx, String senderNickName, int senderFontIdx) {
+    public GetMailRes(String firstHistoryType, int sendIdx, String type, int typeIdx, String content, String sendAt, int senderIdx, String senderNickName, int senderFontIdx) {
         this.firstHistoryType = firstHistoryType;
+        this.sendIdx = sendIdx;
         this.type = type;
         this.typeIdx = typeIdx;
         this.content = content;
