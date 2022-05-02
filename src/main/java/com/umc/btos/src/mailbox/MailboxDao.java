@@ -202,34 +202,64 @@ public class MailboxDao {
 
     // type = reply
     public GetMailRes getMail_reply(int receiverIdx, int replyIdx) {
-        String get_sendIdx_query = "select Reply.sendIdx from Reply where replyIdx = ? and status = 'active'";
-        int sendIdx = this.jdbcTemplate.queryForObject(get_sendIdx_query, int.class, replyIdx);
+        String replierIdx_query = "select replierIdx from Reply where replyIdx = ? and status = 'active'";
+        int replierIdx = this.jdbcTemplate.queryForObject(replierIdx_query, int.class, replyIdx);
 
-        String query = "SELECT Reply.firstHistoryType, " +
-                "       Reply.replyIdx, " +
-                "       Reply.content, " +
-                "       date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt, " +
-                "       User.userIdx                             AS senderIdx, " +
-                "       User.nickName                            AS senderNickName, " +
-                "       User.fontIdx                             AS senderFontIdx " +
-                "FROM Reply " +
-                "         INNER JOIN User ON Reply.replierIdx = User.userIdx " +
-                "WHERE Reply.receiverIdx = ? " +
-                "  AND Reply.replyIdx = ?" +
-                "  AND Reply.status = 'active'";
+        // 시스템 메일인 경우
+        if (replierIdx == 1) {
+            String query = "SELECT Reply.content, " +
+                    "       date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt, " +
+                    "       User.userIdx                             AS senderIdx, " +
+                    "       User.nickName                            AS senderNickName, " +
+                    "       User.fontIdx                             AS senderFontIdx " +
+                    "FROM Reply " +
+                    "         INNER JOIN User ON Reply.replierIdx = User.userIdx " +
+                    "WHERE Reply.receiverIdx = ? " +
+                    "  AND Reply.replyIdx = ?" +
+                    "  AND Reply.status = 'active'";
 
-        return this.jdbcTemplate.queryForObject(query,
-                (rs, rowNum) -> new GetMailRes(
-                        rs.getString("firstHistoryType"),
-                        sendIdx,
-                        "reply",
-                        replyIdx,
-                        rs.getString("content"),
-                        rs.getString("sendAt"),
-                        rs.getInt("senderIdx"),
-                        rs.getString("senderNickName"),
-                        rs.getInt("senderFontIdx")
-                ), receiverIdx, replyIdx);
+            return this.jdbcTemplate.queryForObject(query,
+                    (rs, rowNum) -> new GetMailRes(
+                            "reply",
+                            0,
+                            "reply",
+                            replyIdx,
+                            rs.getString("content"),
+                            rs.getString("sendAt"),
+                            rs.getInt("senderIdx"),
+                            rs.getString("senderNickName"),
+                            rs.getInt("senderFontIdx")
+                    ), receiverIdx, replyIdx);
+        } else {
+            String get_sendIdx_query = "select Reply.sendIdx from Reply where replyIdx = ? and status = 'active'";
+            int sendIdx = this.jdbcTemplate.queryForObject(get_sendIdx_query, int.class, replyIdx);
+
+            String query = "SELECT Reply.firstHistoryType, " +
+                    "       Reply.replyIdx, " +
+                    "       Reply.content, " +
+                    "       date_format(Reply.createdAt, '%Y.%m.%d') AS sendAt, " +
+                    "       User.userIdx                             AS senderIdx, " +
+                    "       User.nickName                            AS senderNickName, " +
+                    "       User.fontIdx                             AS senderFontIdx " +
+                    "FROM Reply " +
+                    "         INNER JOIN User ON Reply.replierIdx = User.userIdx " +
+                    "WHERE Reply.receiverIdx = ? " +
+                    "  AND Reply.replyIdx = ?" +
+                    "  AND Reply.status = 'active'";
+
+            return this.jdbcTemplate.queryForObject(query,
+                    (rs, rowNum) -> new GetMailRes(
+                            rs.getString("firstHistoryType"),
+                            sendIdx,
+                            "reply",
+                            replyIdx,
+                            rs.getString("content"),
+                            rs.getString("sendAt"),
+                            rs.getInt("senderIdx"),
+                            rs.getString("senderNickName"),
+                            rs.getInt("senderFontIdx")
+                    ), receiverIdx, replyIdx);
+        }
     }
 
     // ------------------------------------ modifyIsChecked ------------------------------------
