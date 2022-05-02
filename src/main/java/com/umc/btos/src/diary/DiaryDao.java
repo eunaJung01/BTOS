@@ -129,9 +129,18 @@ public class DiaryDao {
     // =================================== 일기 발송 ===================================
 
     // 당일 발송해야 하는 모든 diaryIdx 반환
-    public List<Integer> getDiaryIdxList(String date) {
-        String query = "SELECT diaryIdx FROM Diary WHERE left(createdAt, 10) = ? AND isPublic = 1 AND status = 'active'";
-        return this.jdbcTemplate.queryForList(query, int.class, date);
+    public List<Integer> getDiaryIdxList(String yesterday, String today) {
+        String time = "19:00:00";
+        yesterday = yesterday + " " + time;
+        today = today + " " + time;
+
+        String query = "select diaryIdx " +
+                "from Diary " +
+                "where createdAt > ? " +
+                "  and createdAt <= ? " +
+                "  and isPublic = 1 " +
+                "  and status = 'active'";
+        return this.jdbcTemplate.queryForList(query, int.class, yesterday, today);
     }
 
     // 수신 동의한 모든 userIdx 반환 (User.recOthers = 1)
@@ -202,10 +211,18 @@ public class DiaryDao {
     public void modifyIsSend() {
         LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
 
-        String query = "UPDATE Diary SET isSend = 1 " +
-                "WHERE left(createdAt, 10) = ? AND isPublic = 1 AND status = 'active'";
+        String time = "19:00:00";
+        String yesterday = now.minusDays(1) + " " + time;
+        String today = now + " " + time;
 
-        this.jdbcTemplate.update(query, now.toString());
+        String query = "update Diary " +
+                "set isSend = 1 " +
+                "where createdAt > ? " +
+                "  and createdAt <= ? " +
+                "  and isPublic = 1 " +
+                "  and status = 'active'";
+
+        this.jdbcTemplate.update(query, yesterday, today);
     }
 
 }

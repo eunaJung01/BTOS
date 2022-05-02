@@ -100,8 +100,7 @@ public class DiaryController {
     }
 
     /*
-     * 일기 발송 리스트 조회
-     * 매일 18:59:59 Firebase에서 호출
+     * 일기 발송 리스트 조회 (확인용)
      * [GET] /diaries/diarySendList
      */
     @ResponseBody
