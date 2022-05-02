@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -168,9 +169,19 @@ public class DiaryDao {
     // =================================== 일기 발송 ===================================
 
     // 당일 발송해야 하는 모든 diaryIdx 반환
-    public List<Integer> getDiaryIdxList(String date) {
-        String query = "SELECT diaryIdx FROM Diary WHERE diaryDate = ? AND isPublic = 1 AND status = 'active'";
-        return this.jdbcTemplate.queryForList(query, int.class, date);
+    public List<Integer> getDiaryIdxList(String yesterday, String today) {
+        String time = "19:00:00";
+        yesterday = yesterday + " " + time;
+        today = today + " " + time;
+
+        String query = "select diaryIdx " +
+                "from Diary " +
+                "where createdAt > ? " +
+                "  and createdAt <= ? " +
+                "  and isPublic = 1 " +
+                "  and status = 'active'";
+
+        return this.jdbcTemplate.queryForList(query, int.class, yesterday, today);
     }
 
     // 수신 동의한 모든 userIdx 반환 (User.recOthers = 1)
@@ -273,34 +284,57 @@ public class DiaryDao {
     }
 
     // 일기 발송 리스트 반환
-    public List<Integer> getReceiverIdxList(int diaryIdx, String diaryDate) {
+    public List<Integer> getReceiverIdxList(int diaryIdx, String yesterday, String today) {
+        String time = "19:00:00";
+        yesterday = yesterday + " " + time;
+        today = today + " " + time;
+
         String query = "SELECT receiverIdx " +
                 "FROM DiarySendList " +
                 "INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "WHERE Diary.diaryIdx = ? " +
-                "AND diaryDate = ? " +
+                "  and Diary.createdAt > ? " +
+                "  and Diary.createdAt <= ? " +
                 "AND DiarySendList.status = 'active' " +
                 "ORDER BY receiverIdx";
 
-        return this.jdbcTemplate.queryForList(query, int.class, diaryIdx, diaryDate);
+        return this.jdbcTemplate.queryForList(query, int.class, diaryIdx, yesterday, today);
     }
 
     // ================================================================================
 
     // 당일 발송되는 일기의 Diary.isSend = 1로 변경
     public void modifyIsSend() {
-        String yesterday = LocalDate.now().minusDays(1).toString().replaceAll("-", "."); // 어제 날짜 (yyyy.MM.dd)
+        LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
 
-        String query = "UPDATE Diary SET isSend = 1 " +
-                "WHERE diaryDate = ? AND isPublic = 1 AND status = 'active'";
+        String time = "19:00:00";
+        String yesterday = now.minusDays(1) + " " + time;
+        String today = now + " " + time;
 
-        this.jdbcTemplate.update(query, yesterday);
+        String query = "update Diary " +
+                "set isSend = 1 " +
+                "where createdAt > ? " +
+                "  and createdAt <= ? " +
+                "  and isPublic = 1 " +
+                "  and status = 'active'";
+
+        this.jdbcTemplate.update(query, yesterday, today);
     }
 
     // 수신인 User.fcmToken 반환
     public String getFcmToken(int userIdx) {
         String query = "SELECT fcmToken FROM User WHERE userIdx = ?";
         return this.jdbcTemplate.queryForObject(query, String.class, userIdx);
+    }
+
+    public ArrayList<Integer> pushUserList(List<Integer> receiverIdxList) {
+        String query = "SELECT pushAlarm FROM User WHERE userIdx = ?";
+        ArrayList<Integer> pushUsers = new ArrayList<>();
+        for (int idx : receiverIdxList) {
+            if (jdbcTemplate.queryForObject(query, int.class, idx) == 1) // 푸시 알람을 수신하는 유저만
+                pushUsers.add(idx);
+        }
+        return pushUsers;
     }
 
 }

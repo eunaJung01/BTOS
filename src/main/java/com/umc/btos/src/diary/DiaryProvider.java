@@ -137,9 +137,9 @@ public class DiaryProvider {
     @Scheduled(cron = "55 59 18 * * *") // 매일 18:59:55에 DiarySendList 생성
 //    @Scheduled(cron = "15 41 19 * * *") // test
     public void sendDiary() throws BaseException {
-        String yesterday = LocalDate.now().minusDays(1).toString().replaceAll("-", "."); // 어제 날짜 (yyyy.MM.dd)
-        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(yesterday); // 당일 발송해야 하는 모든 diaryIdx
-//        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022.03.17"); // test
+        LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
+        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(now.minusDays(1).toString(), now.toString()); // 당일 발송해야 하는 모든 diaryIdx
+//        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-05-01", "2022-05-02"); // test
 //        System.out.println("diaryIdxList = " + diaryIdxList);
 //        System.out.println();
 
@@ -359,7 +359,7 @@ public class DiaryProvider {
         /*
          * TODO : 알림 테이블에 저장
          */
-        diaryIdxList = diaryDao.getDiaryIdxList(yesterday); // 당일 발송해야 하는 모든 diaryIdx
+        diaryIdxList = diaryDao.getDiaryIdxList(now.minusDays(1).toString(), now.toString()); // 당일 발송해야 하는 모든 diaryIdx
 
         List<GetSendListRes> diarySendList = new ArrayList<>();
 
@@ -367,8 +367,8 @@ public class DiaryProvider {
         for (int diaryIdx : diaryIdxList) {
             String senderNickName = diaryDao.getSenderNickName(diaryIdx); // 발신인 nickName
             GetSendListRes diary = new GetSendListRes(diaryIdx, senderNickName);
-            diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, yesterday));
-//            diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, "2022.02.05")); // test
+            diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, now.minusDays(1).toString(), now.toString()));
+//            diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, "2022-05-01", "2022-05-02")); // test
             diarySendList.add(diary);
         }
         alarmService.postAlarm_diary(diarySendList); // 알림 저장
@@ -385,27 +385,32 @@ public class DiaryProvider {
 
             // 푸시 알림 발송
             // 일기에 따른 발송 리스트 조회
-            String yesterday = LocalDate.now().minusDays(1).toString().replaceAll("-", "."); // 어제 날짜 (yyyy.MM.dd)
-            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(yesterday); // 당일 발송된 모든 diaryIdx
+            LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
+            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(now.minusDays(1).toString(), now.toString()); // 당일 발송해야 하는 모든 diaryIdx
+//            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-05-01", "2022-05-02"); // test
+            List<Integer> pushUserList = new ArrayList<>();
 
             List<GetSendListRes> diarySendList = new ArrayList<>();
             for (int diaryIdx : diaryIdxList) {
                 String senderNickName = diaryDao.getSenderNickName(diaryIdx); // 발신인 nickName
                 GetSendListRes diary = new GetSendListRes(diaryIdx, senderNickName);
-                diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, yesterday));
+                diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, now.minusDays(1).toString(), now.toString()));
                 diarySendList.add(diary);
+
             }
 
             // title : 일기 도착!
             // body : nickName님의 일기가 도착했습니다.
-            for (GetSendListRes diary : diarySendList) {
-                for (int i = 0; i < diary.getReceiverIdxList().size(); i++) {
+            for (GetSendListRes diary : diarySendList) { // 각 일기에 대해서
+                pushUserList = diaryDao.pushUserList(diary.getReceiverIdxList());
+                for (int idx : pushUserList) { // 발송할 사람 리스트에 대해서 푸시 알람 수신할 유저 필터링
                     diaryFcmService.sendMessageTo(
-                            diaryDao.getFcmToken(diary.getReceiverIdxList().get(i)),
+                            diaryDao.getFcmToken(idx),
                             Constant.DIARY_TITLE,
                             diary.getSenderNickName() + Constant.DIARY_BODY);
                 }
             }
+
 
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
@@ -445,9 +450,9 @@ public class DiaryProvider {
         try {
             List<GetSendListRes> result = new ArrayList<>();
 
-            String yesterday = LocalDate.now().minusDays(1).toString().replaceAll("-", "."); // 어제 날짜 (yyyy.MM.dd)
-            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(yesterday); // 당일 발송해야 하는 모든 diaryIdx
-//            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022.03.17"); // test
+            LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
+            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(now.minusDays(1).toString(), now.toString()); // 당일 발송해야 하는 모든 diaryIdx
+//            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-05-01", "2022-05-02"); // test
 
             if (diaryIdxList.size() == 0) {
                 throw new BaseException(NO_DIARY_SENT_TODAY); // 오늘 발송되는 일기는 없습니다.
@@ -457,7 +462,7 @@ public class DiaryProvider {
             for (int diaryIdx : diaryIdxList) {
                 String senderNickName = diaryDao.getSenderNickName(diaryIdx); // 발신인 nickName
                 GetSendListRes diary = new GetSendListRes(diaryIdx, senderNickName);
-                diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, yesterday));
+                diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, now.minusDays(1).toString(), now.toString()));
 //                diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, "2022.02.05")); // test
                 result.add(diary);
             }
