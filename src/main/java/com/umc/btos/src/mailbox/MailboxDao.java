@@ -119,6 +119,11 @@ public class MailboxDao {
 
     // type = diary
     public GetMailRes getMail_diary(int receiverIdx, int diaryIdx) {
+        String get_sendIdx_query = "select DiarySendList.sendIdx " +
+                "from Diary inner join DiarySendList on Diary.diaryIdx = DiarySendList.diaryIdx " +
+                "where Diary.diaryIdx = ? and receiverIdx = ? and DiarySendList.status = 'active'";
+        int sendIdx = this.jdbcTemplate.queryForObject(get_sendIdx_query, int.class, diaryIdx, receiverIdx);
+
         String query = "SELECT Diary.content, " +
                 "       Diary.emotionIdx, " +
                 "       Diary.diaryDate AS sendAt, " +
@@ -136,6 +141,7 @@ public class MailboxDao {
         return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new GetMailRes(
                         "diary",
+                        sendIdx,
                         "diary",
                         diaryIdx,
                         rs.getString("content"),
@@ -162,6 +168,11 @@ public class MailboxDao {
 
     // type = letter
     public GetMailRes getMail_letter(int receiverIdx, int letterIdx) {
+        String get_sendIdx_query = "select LetterSendList.sendIdx " +
+                "from Letter inner join LetterSendList on Letter.letterIdx = LetterSendList.letterIdx " +
+                "where Letter.letterIdx = ? and receiverIdx = ? and LetterSendList.status = 'active'";
+        int sendIdx = this.jdbcTemplate.queryForObject(get_sendIdx_query, int.class, letterIdx, receiverIdx);
+
         String query = "SELECT Letter.letterIdx, " +
                 "       Letter.content, " +
                 "       date_format(LetterSendList.createdAt, '%Y.%m.%d') AS sendAt, " +
@@ -178,6 +189,7 @@ public class MailboxDao {
         return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new GetMailRes(
                         "letter",
+                        sendIdx,
                         "letter",
                         letterIdx,
                         rs.getString("content"),
@@ -190,6 +202,9 @@ public class MailboxDao {
 
     // type = reply
     public GetMailRes getMail_reply(int receiverIdx, int replyIdx) {
+        String get_sendIdx_query = "select Reply.sendIdx from Reply where replyIdx = ? and status = 'active'";
+        int sendIdx = this.jdbcTemplate.queryForObject(get_sendIdx_query, int.class, replyIdx);
+
         String query = "SELECT Reply.firstHistoryType, " +
                 "       Reply.replyIdx, " +
                 "       Reply.content, " +
@@ -206,6 +221,7 @@ public class MailboxDao {
         return this.jdbcTemplate.queryForObject(query,
                 (rs, rowNum) -> new GetMailRes(
                         rs.getString("firstHistoryType"),
+                        sendIdx,
                         "reply",
                         replyIdx,
                         rs.getString("content"),

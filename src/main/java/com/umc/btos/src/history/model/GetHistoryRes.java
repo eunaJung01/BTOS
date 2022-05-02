@@ -11,6 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 // History 본문 보기
 public class GetHistoryRes {
+    private String firstHistoryType; // 시작점 type (diary : 일기 / letter : 편지)
+    private int sendIdx; // 일기일 경우 DiarySendList.sendIdx / 편지일 경우 LetterSendList.sendIdx
     private String type; // diary : 일기 / letter : 편지 / reply : 답장
     private int typeIdx; // 식별자 (diary - diaryIdx / letter - letterIdx / reply - replyIdx)
     private String content; // 내용 - createdAt 기준 내림차순 정렬 시 첫 항목
@@ -25,7 +27,9 @@ public class GetHistoryRes {
     private boolean positioning = false;
 
     // type = diary
-    public GetHistoryRes(String type, int typeIdx, String content, int emotionIdx, String sendAt_raw, String sendAt, int senderIdx, String senderNickName, boolean senderActive, int senderFontIdx) {
+    public GetHistoryRes(String firstHistoryType, int sendIdx, String type, int typeIdx, String content, int emotionIdx, String sendAt_raw, String sendAt, int senderIdx, String senderNickName, boolean senderActive, int senderFontIdx) {
+        this.firstHistoryType = firstHistoryType;
+        this.sendIdx = sendIdx;
         this.type = type;
         this.typeIdx = typeIdx;
         this.content = content;
@@ -39,7 +43,9 @@ public class GetHistoryRes {
     }
 
     // type = letter, reply
-    public GetHistoryRes(String type, int typeIdx, String content, String sendAt_raw, String sendAt, int senderIdx, String senderNickName, boolean senderActive, int senderFontIdx) {
+    public GetHistoryRes(String firstHistoryType, int sendIdx, String type, int typeIdx, String content, String sendAt_raw, String sendAt, int senderIdx, String senderNickName, boolean senderActive, int senderFontIdx) {
+        this.firstHistoryType = firstHistoryType;
+        this.sendIdx = sendIdx;
         this.type = type;
         this.typeIdx = typeIdx;
         this.content = content;
@@ -52,6 +58,20 @@ public class GetHistoryRes {
     }
 
     // replyList
+    public GetHistoryRes(String firstHistoryType, int sendIdx, String type, int typeIdx, String content, String sendAt_raw, String sendAt, int senderIdx, String senderNickName, int senderFontIdx) {
+        this.firstHistoryType = firstHistoryType;
+        this.sendIdx = sendIdx;
+        this.type = type;
+        this.typeIdx = typeIdx;
+        this.content = content;
+        this.sendAt_raw = sendAt_raw;
+        this.sendAt = sendAt;
+        this.senderIdx = senderIdx;
+        this.senderNickName = senderNickName;
+        this.senderFontIdx = senderFontIdx;
+    }
+
+    // system mail
     public GetHistoryRes(String type, int typeIdx, String content, String sendAt_raw, String sendAt, int senderIdx, String senderNickName, int senderFontIdx) {
         this.type = type;
         this.typeIdx = typeIdx;
