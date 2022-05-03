@@ -876,7 +876,6 @@ public class HistoryDao {
             sendIdx = this.jdbcTemplate.queryForObject(sendIdx_query, int.class, diaryIdx, userIdx);
         }
 
-
         String query = "SELECT Reply.replyIdx                    AS typeIdx, " +
                 "       Reply.content, " +
                 "       Reply.createdAt                          AS sendAt_raw, " +
@@ -889,7 +888,8 @@ public class HistoryDao {
                 "         INNER JOIN Reply ON Reply.sendIdx = DiarySendList.sendIdx " +
                 "         INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.firstHistoryType = 'diary' " +
-                "  AND DiarySendList.sendIdx = ?";
+                "  AND Reply.sendIdx = ? " +
+                "order by Reply.createdAt asc";
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetHistoryRes(
@@ -907,11 +907,10 @@ public class HistoryDao {
     }
 
     public List<GetHistoryRes> getReplyList_diary(int userIdx, String firstHistoryType, int diaryIdx) {
-        String get_sendIdx_query = "select DiarySendList.sendIdx " +
+        String sendIdx_query = "select DiarySendList.sendIdx " +
                 "from Diary inner join DiarySendList on Diary.diaryIdx = DiarySendList.diaryIdx " +
                 "where Diary.diaryIdx = ? and receiverIdx = ? and DiarySendList.status = 'active'";
-        int sendIdx = this.jdbcTemplate.queryForObject(get_sendIdx_query, int.class, diaryIdx, userIdx);
-
+        int sendIdx = this.jdbcTemplate.queryForObject(sendIdx_query, int.class, diaryIdx, userIdx);
 
         String query = "SELECT Reply.replyIdx                    AS typeIdx, " +
                 "       Reply.content, " +
@@ -925,7 +924,8 @@ public class HistoryDao {
                 "         INNER JOIN Reply ON Reply.sendIdx = DiarySendList.sendIdx " +
                 "         INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.firstHistoryType = 'diary' " +
-                "  AND DiarySendList.sendIdx = ?";
+                "  AND Reply.sendIdx = ? " +
+                "order by Reply.createdAt asc";
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetHistoryRes(
@@ -980,7 +980,8 @@ public class HistoryDao {
                 "         INNER JOIN Reply ON Reply.sendIdx = LetterSendList.sendIdx " +
                 "         INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.firstHistoryType = 'letter' " +
-                "  AND Reply.replyIdx = ?";
+                "  AND Reply.sendIdx = ? " +
+                "order by Reply.createdAt asc";
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetHistoryRes(
@@ -994,7 +995,7 @@ public class HistoryDao {
                         rs.getInt("senderIdx"),
                         rs.getString("senderNickName"),
                         rs.getInt("senderFontIdx")
-                ), replyIdx);
+                ), sendIdx);
     }
 
     public List<GetHistoryRes> getReplyList_letter(int userIdx, String firstHistoryType, int letterIdx) {
@@ -1015,7 +1016,8 @@ public class HistoryDao {
                 "         INNER JOIN Reply ON Reply.sendIdx = LetterSendList.sendIdx " +
                 "         INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.firstHistoryType = 'letter' " +
-                "  AND LetterSendList.sendIdx = ?";
+                "  AND Reply.sendIdx = ? " +
+                "order by Reply.createdAt asc";
 
         return this.jdbcTemplate.query(query,
                 (rs, rowNum) -> new GetHistoryRes(
