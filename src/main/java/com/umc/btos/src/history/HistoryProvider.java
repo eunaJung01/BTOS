@@ -282,6 +282,7 @@ public class HistoryProvider {
 
             if (type.compareTo("diary") == 0) {
                 GetHistoryRes diary = historyDao.getDiary_main(userIdx, typeIdx, historyDao.setSenderActive(type, typeIdx));
+                System.out.println(diary);
                 diary.setPositioning(true);
 
                 // set done list
@@ -289,6 +290,7 @@ public class HistoryProvider {
                 historyList.add(diary);
 
                 if (historyDao.hasReply_diary(userIdx, typeIdx) == 1) { // 답장 유무 확인
+                    System.out.println(typeIdx);
                     historyList.addAll(historyDao.getReplyList_diary(userIdx, type, typeIdx)); // 답장 목록
 
                     // set senderActive
@@ -341,14 +343,14 @@ public class HistoryProvider {
                     // 시작점이 일기인 경우
                     if (firstHistoryType.compareTo("diary") == 0) {
                         int diaryIdx = historyDao.getDiaryIdx_main(typeIdx);
-                        GetHistoryRes diary = historyDao.getDiary_main(userIdx, diaryIdx, historyDao.setSenderActive(type, typeIdx));
+                        GetHistoryRes diary = historyDao.getDiary_main(userIdx, diaryIdx, typeIdx, historyDao.setSenderActive(type, typeIdx));
 
                         // set done list
                         diary.setDoneList(historyDao.getDoneList_main(diaryIdx));
                         historyList.add(diary);
 
                         // 답장 목록
-                        List<GetHistoryRes> replyList = historyDao.getReplyList_diary(userIdx, firstHistoryType, diaryIdx);
+                        List<GetHistoryRes> replyList = historyDao.getReplyList_diary(userIdx, firstHistoryType, typeIdx, diaryIdx);
                         for (GetHistoryRes reply : replyList) {
                             // set senderActive
                             int replyIdx = reply.getTypeIdx();
@@ -364,10 +366,10 @@ public class HistoryProvider {
                     // 시작점이 편지인 경우
                     else if (firstHistoryType.compareTo("letter") == 0) {
                         int letterIdx = historyDao.getLetterIdx_main(typeIdx);
-                        GetHistoryRes letter = historyDao.getLetter_main(userIdx, letterIdx, historyDao.setSenderActive(type, typeIdx));
+                        GetHistoryRes letter = historyDao.getLetter_main(userIdx, letterIdx, typeIdx, historyDao.setSenderActive(type, typeIdx));
                         historyList.add(letter);
 
-                        List<GetHistoryRes> replyList = historyDao.getReplyList_letter(userIdx, type, letterIdx);
+                        List<GetHistoryRes> replyList = historyDao.getReplyList_letter(userIdx, firstHistoryType, typeIdx, letterIdx);
                         for (GetHistoryRes reply : replyList) {
                             // set senderActive
                             int replyIdx = reply.getTypeIdx();
@@ -385,7 +387,6 @@ public class HistoryProvider {
             return historyList;
 
         } catch (Exception exception) {
-            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
