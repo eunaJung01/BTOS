@@ -134,12 +134,12 @@ public class DiaryProvider {
     // ================================================== 일기 발송 ===================================================
 
     // TODO: Diary - Send Algorithm
-//    @Scheduled(cron = "55 59 18 * * *") // 매일 18:59:55에 DiarySendList 생성
-    @Scheduled(cron = "00 34 12 * * *") // test
+    @Scheduled(cron = "50 59 18 * * *") // 매일 18:59:50에 DiarySendList 생성
+//    @Scheduled(cron = "40 42 12 * * *") // test
     public void sendDiary() throws BaseException {
         LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
-//        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(now.minusDays(1).toString(), now.toString()); // 당일 발송해야 하는 모든 diaryIdx
-        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-05-05", "2022-05-06"); // test
+        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(now.minusDays(1).toString(), now.toString()); // 당일 발송해야 하는 모든 diaryIdx
+//        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-05-05", "2022-05-06"); // test
 //        System.out.println("diaryIdxList = " + diaryIdxList);
 //        System.out.println();
 
@@ -376,8 +376,8 @@ public class DiaryProvider {
     }
 
     // TODO : 매일 19:00:00에 당일 발송되는 일기의 Diary.isSend = 1로 변경 & 푸시 알림 발송
-//    @Scheduled(cron = "00 00 19 * * *")
-    @Scheduled(cron = "00 35 12 * * *") // test
+    @Scheduled(cron = "00 00 19 * * *")
+//    @Scheduled(cron = "00 00 13 * * *") // 수동 발송
     private void sendPushAlarm_diary() throws BaseException {
         try {
             // 당일 발송되는 일기의 Diary.isSend = 1로 변경
@@ -386,8 +386,8 @@ public class DiaryProvider {
             // 푸시 알림 발송
             // 일기에 따른 발송 리스트 조회
             LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
-//            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(now.minusDays(1).toString(), now.toString()); // 당일 발송해야 하는 모든 diaryIdx
-            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-05-05", "2022-05-06"); // test
+            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(now.minusDays(1).toString(), now.toString()); // 당일 발송해야 하는 모든 diaryIdx
+//            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-05-05", "2022-05-06"); // 수동 발송
             List<Integer> pushUserList = new ArrayList<>();
 
             List<GetSendListRes> diarySendList = new ArrayList<>();
@@ -395,8 +395,8 @@ public class DiaryProvider {
                 String senderNickName = diaryDao.getSenderNickName(diaryIdx); // 발신인 nickName
                 GetSendListRes diary = new GetSendListRes(diaryIdx, senderNickName);
                 diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, now.minusDays(1).toString(), now.toString()));
+//                diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, "2022-05-05", "2022-05-06")); // 수동 발송
                 diarySendList.add(diary);
-
             }
 
             // title : 일기 도착!
@@ -452,7 +452,7 @@ public class DiaryProvider {
 
             LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
             List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(now.minusDays(1).toString(), now.toString()); // 당일 발송해야 하는 모든 diaryIdx
-//            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-05-01", "2022-05-02"); // test
+//            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-05-05", "2022-05-06"); // 수동 발송
 
             if (diaryIdxList.size() == 0) {
                 throw new BaseException(NO_DIARY_SENT_TODAY); // 오늘 발송되는 일기는 없습니다.
@@ -463,7 +463,7 @@ public class DiaryProvider {
                 String senderNickName = diaryDao.getSenderNickName(diaryIdx); // 발신인 nickName
                 GetSendListRes diary = new GetSendListRes(diaryIdx, senderNickName);
                 diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, now.minusDays(1).toString(), now.toString()));
-//                diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, "2022.02.05")); // test
+//                diary.setReceiverIdxList(diaryDao.getReceiverIdxList(diaryIdx, "2022-05-05", "2022-05-06")); // 수동 발송
                 result.add(diary);
             }
 

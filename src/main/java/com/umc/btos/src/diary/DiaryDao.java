@@ -310,6 +310,8 @@ public class DiaryDao {
         String time = "19:00:00";
         String yesterday = now.minusDays(1) + " " + time;
         String today = now + " " + time;
+//        String yesterday = "2022-05-05" + " " + time; // 수동 발송
+//        String today = "2022-05-06" + " " + time; // 수동 발송
 
         String query = "update Diary " +
                 "set isSend = 1 " +
