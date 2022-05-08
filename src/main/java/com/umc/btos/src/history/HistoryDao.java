@@ -98,7 +98,7 @@ public class HistoryDao {
         String query = "SELECT DISTINCT senderNickName " +
                 "FROM ( " +
                 // Diary
-                "         SELECT User.nickName AS senderNickName, Diary.createdAt AS sendAt " +
+                "         SELECT User.nickName AS senderNickName, DiarySendList.createdAt AS sendAt " +
                 "         FROM User " +
                 "                  INNER JOIN (DiarySendList INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx) " +
                 "                             ON User.userIdx = Diary.userIdx " +
@@ -108,7 +108,7 @@ public class HistoryDao {
                 "           AND REPLACE(User.nickName, ' ', '') LIKE REPLACE(?, ' ', '') " +
                 "         UNION " +
                 // Letter
-                "         SELECT User.nickName AS senderNickName, Letter.createdAt AS sendAt " +
+                "         SELECT User.nickName AS senderNickName, LetterSendList.createdAt AS sendAt " +
                 "         FROM User " +
                 "                  INNER JOIN (LetterSendList INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx) " +
                 "                             ON User.userIdx = Letter.userIdx " +
