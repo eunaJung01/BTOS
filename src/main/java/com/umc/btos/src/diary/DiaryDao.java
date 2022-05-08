@@ -170,7 +170,7 @@ public class DiaryDao {
 
     // 당일 발송해야 하는 모든 diaryIdx 반환
     public List<Integer> getDiaryIdxList(String yesterday, String today) {
-        String time = "19:00:00";
+        String time = "18:59:50";
         yesterday = yesterday + " " + time;
         today = today + " " + time;
 
@@ -285,7 +285,7 @@ public class DiaryDao {
 
     // 일기 발송 리스트 반환
     public List<Integer> getReceiverIdxList(int diaryIdx, String yesterday, String today) {
-        String time = "19:00:00";
+        String time = "18:59:50";
         yesterday = yesterday + " " + time;
         today = today + " " + time;
 
@@ -307,9 +307,11 @@ public class DiaryDao {
     public void modifyIsSend() {
         LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
 
-        String time = "19:00:00";
+        String time = "18:59:50";
         String yesterday = now.minusDays(1) + " " + time;
         String today = now + " " + time;
+//        String yesterday = "2022-05-05" + " " + time; // 수동 발송
+//        String today = "2022-05-06" + " " + time; // 수동 발송
 
         String query = "update Diary " +
                 "set isSend = 1 " +
