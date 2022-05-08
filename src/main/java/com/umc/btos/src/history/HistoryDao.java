@@ -889,6 +889,7 @@ public class HistoryDao {
                 "         INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.firstHistoryType = 'diary' " +
                 "  AND Reply.sendIdx = ? " +
+                "  AND Reply.status = 'active' " +
                 "order by Reply.createdAt asc";
 
         return this.jdbcTemplate.query(query,
@@ -925,6 +926,7 @@ public class HistoryDao {
                 "         INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.firstHistoryType = 'diary' " +
                 "  AND Reply.sendIdx = ? " +
+                "  AND Reply.status = 'active' " +
                 "order by Reply.createdAt asc";
 
         return this.jdbcTemplate.query(query,
@@ -981,6 +983,7 @@ public class HistoryDao {
                 "         INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.firstHistoryType = 'letter' " +
                 "  AND Reply.sendIdx = ? " +
+                "  AND Reply.status = 'active' " +
                 "order by Reply.createdAt asc";
 
         return this.jdbcTemplate.query(query,
@@ -1017,6 +1020,7 @@ public class HistoryDao {
                 "         INNER JOIN User ON Reply.replierIdx = User.userIdx " +
                 "WHERE Reply.firstHistoryType = 'letter' " +
                 "  AND Reply.sendIdx = ? " +
+                "  AND Reply.status = 'active' " +
                 "order by Reply.createdAt asc";
 
         return this.jdbcTemplate.query(query,
@@ -1084,7 +1088,8 @@ public class HistoryDao {
                 "                              INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "                              INNER JOIN Reply ON Reply.sendIdx = DiarySendList.sendIdx " +
                 "                     WHERE (Reply.replierIdx = ? OR Reply.receiverIdx = ?) " +
-                "                       AND Diary.diaryIdx = ?))";
+                "                       AND Diary.diaryIdx = ? " +
+                "                       and DiarySendList.status = 'active'))";
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, userIdx, diaryIdx);
     }
@@ -1102,7 +1107,8 @@ public class HistoryDao {
                 "                              INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "                              INNER JOIN Reply ON Reply.sendIdx = LetterSendList.sendIdx " +
                 "                     WHERE (Reply.replierIdx = ? OR Reply.receiverIdx = ?) " +
-                "                       AND Letter.letterIdx = ?))";
+                "                       AND Letter.letterIdx = ? " +
+                "                       AND LetterSendList.status = 'active'))";
 
         return this.jdbcTemplate.queryForObject(query, int.class, userIdx, userIdx, letterIdx);
     }
