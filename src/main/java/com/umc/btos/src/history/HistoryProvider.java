@@ -282,7 +282,7 @@ public class HistoryProvider {
 
             if (type.compareTo("diary") == 0) {
                 GetHistoryRes diary = historyDao.getDiary_main(userIdx, typeIdx, historyDao.setSenderActive(type, typeIdx));
-                System.out.println(diary);
+//                System.out.println(diary);
                 diary.setPositioning(true);
 
                 // set done list
@@ -290,7 +290,7 @@ public class HistoryProvider {
                 historyList.add(diary);
 
                 if (historyDao.hasReply_diary(userIdx, typeIdx) == 1) { // 답장 유무 확인
-                    System.out.println(typeIdx);
+//                    System.out.println(typeIdx);
                     historyList.addAll(historyDao.getReplyList_diary(userIdx, type, typeIdx)); // 답장 목록
 
                     // set senderActive
