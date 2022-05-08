@@ -134,12 +134,12 @@ public class DiaryProvider {
     // ================================================== 일기 발송 ===================================================
 
     // TODO: Diary - Send Algorithm
-    @Scheduled(cron = "55 59 18 * * *") // 매일 18:59:55에 DiarySendList 생성
-//    @Scheduled(cron = "15 41 19 * * *") // test
+//    @Scheduled(cron = "55 59 18 * * *") // 매일 18:59:55에 DiarySendList 생성
+    @Scheduled(cron = "00 34 12 * * *") // test
     public void sendDiary() throws BaseException {
         LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
-        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(now.minusDays(1).toString(), now.toString()); // 당일 발송해야 하는 모든 diaryIdx
-//        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-05-01", "2022-05-02"); // test
+//        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(now.minusDays(1).toString(), now.toString()); // 당일 발송해야 하는 모든 diaryIdx
+        List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-05-05", "2022-05-06"); // test
 //        System.out.println("diaryIdxList = " + diaryIdxList);
 //        System.out.println();
 
@@ -376,8 +376,8 @@ public class DiaryProvider {
     }
 
     // TODO : 매일 19:00:00에 당일 발송되는 일기의 Diary.isSend = 1로 변경 & 푸시 알림 발송
-    @Scheduled(cron = "00 00 19 * * *")
-//    @Scheduled(cron = "50 56 21 * * *") // test
+//    @Scheduled(cron = "00 00 19 * * *")
+    @Scheduled(cron = "00 35 12 * * *") // test
     private void sendPushAlarm_diary() throws BaseException {
         try {
             // 당일 발송되는 일기의 Diary.isSend = 1로 변경
@@ -386,8 +386,8 @@ public class DiaryProvider {
             // 푸시 알림 발송
             // 일기에 따른 발송 리스트 조회
             LocalDate now = LocalDate.now(); // 오늘 날짜 (yyyy-MM-dd)
-            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(now.minusDays(1).toString(), now.toString()); // 당일 발송해야 하는 모든 diaryIdx
-//            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-05-01", "2022-05-02"); // test
+//            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList(now.minusDays(1).toString(), now.toString()); // 당일 발송해야 하는 모든 diaryIdx
+            List<Integer> diaryIdxList = diaryDao.getDiaryIdxList("2022-05-05", "2022-05-06"); // test
             List<Integer> pushUserList = new ArrayList<>();
 
             List<GetSendListRes> diarySendList = new ArrayList<>();
