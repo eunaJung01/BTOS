@@ -1088,6 +1088,7 @@ public class HistoryDao {
                 "                              INNER JOIN Diary ON DiarySendList.diaryIdx = Diary.diaryIdx " +
                 "                              INNER JOIN Reply ON Reply.sendIdx = DiarySendList.sendIdx " +
                 "                     WHERE (Reply.replierIdx = ? OR Reply.receiverIdx = ?) " +
+                "                       AND Reply.firstHistoryType = 'diary' " +
                 "                       AND Diary.diaryIdx = ? " +
                 "                       and DiarySendList.status = 'active'))";
 
@@ -1107,6 +1108,7 @@ public class HistoryDao {
                 "                              INNER JOIN Letter ON LetterSendList.letterIdx = Letter.letterIdx " +
                 "                              INNER JOIN Reply ON Reply.sendIdx = LetterSendList.sendIdx " +
                 "                     WHERE (Reply.replierIdx = ? OR Reply.receiverIdx = ?) " +
+                "                       AND Reply.firstHistoryType = 'letter' " +
                 "                       AND Letter.letterIdx = ? " +
                 "                       AND LetterSendList.status = 'active'))";
 
